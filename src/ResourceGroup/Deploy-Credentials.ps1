@@ -8,6 +8,7 @@ function CreateKeyVault {
 
 	if (-not (Get-AzureRmKeyVault -VaultName $KeyVaultName))
 	{
+		Write-Host "Creating KeyVault: [$KeyVaultName]"
 		New-AzureRmKeyVault -VaultName $KeyVaultName -ResourceGroupName $ResourceGroupName -Location $ResourceGroupLocation -EnabledForTemplateDeployment
 	}
 }
@@ -20,6 +21,7 @@ function AddNewSecret {
 
 	if (-not (Get-AzureKeyVaultSecret -VaultName $KeyVaultName -Name $SecretName))
 	{
+		Write-Host "Adding a new secret [$SecretName]"
 		$Credentials = Get-Credential -Message "Provide password for $SecretName [put anything as an username]. Password can be found in the KeePass database."
 		Set-AzureKeyVaultSecret -VaultName $KeyVaultName -Name $SecretName -SecretValue $Credentials.Password
 	}
@@ -32,6 +34,7 @@ function DeployCredentials {
 		[string] [Parameter(Mandatory=$true)] $ResourceGroupLocation
 	)
 
+	Write-Host "Deploying credentials"
 	$KeyVaultName = "burnformoneykv" + $Environment.ToLower();
 	CreateKeyVault -Environment $Environment `
 					-ResourceGroupName $ResourceGroupName `

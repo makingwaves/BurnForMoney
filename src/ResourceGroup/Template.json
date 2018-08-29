@@ -214,6 +214,19 @@
           }
         },
         {
+          "name": "AllowPawelHome",
+          "type": "firewallrules",
+          "location": "[resourceGroup().location]",
+          "apiVersion": "2014-04-01-preview",
+          "dependsOn": [
+            "[resourceId('Microsoft.Sql/servers', variables('sqlserverName'))]"
+          ],
+          "properties": {
+            "startIpAddress": "193.25.0.11",
+            "endIpAddress": "193.25.0.11"
+          }
+        },
+        {
           "name": "[variables('sqlDbName')]",
           "type": "databases",
           "location": "[resourceGroup().location]",

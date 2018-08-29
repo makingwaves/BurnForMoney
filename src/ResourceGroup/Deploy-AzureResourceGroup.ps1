@@ -56,7 +56,6 @@ if ($ValidateOnly) {
 }
 else {
 
-	Write-Host "Deploying credentials"
 	DeployCredentials -Environment $Environment `
 					-ResourceGroupName $ResourceGroupName `
 					-ResourceGroupLocation $ResourceGroupLocation
