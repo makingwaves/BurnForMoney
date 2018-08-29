@@ -20,7 +20,7 @@ function AddNewSecret {
 
 	if (-not (Get-AzureKeyVaultSecret -VaultName $KeyVaultName -Name $SecretName))
 	{
-		$Credentials = Get-Credential -Message "Provide password for $SecretName [put anything as an username]"
+		$Credentials = Get-Credential -Message "Provide password for $SecretName [put anything as an username]. Password can be found in the KeePass database."
 		Set-AzureKeyVaultSecret -VaultName $KeyVaultName -Name $SecretName -SecretValue $Credentials.Password
 	}
 }
