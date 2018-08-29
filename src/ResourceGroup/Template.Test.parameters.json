@@ -1,0 +1,17 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "environmentCode": {
+      "value": "test"
+    },
+    "sqlServerPassword": {
+      "reference": {
+        "keyVault": {
+          "id": "/subscriptions/4920733c-19cb-4434-819c-176ee48f6453/resourceGroups/BurnForMoney-Test/providers/Microsoft.KeyVault/vaults/burnformoneykvtest"
+        },
+        "secretName": "sqlServerPassword"
+      }
+    }
+  }
+}

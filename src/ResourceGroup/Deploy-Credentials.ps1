@@ -1,0 +1,45 @@
+function CreateKeyVault {
+	Param(
+		[string] [Parameter(Mandatory=$true)] $Environment,
+		[string] [Parameter(Mandatory=$true)] $ResourceGroupName,
+		[string] [Parameter(Mandatory=$true)] $ResourceGroupLocation,
+		[string] [Parameter(Mandatory=$true)] $KeyVaultName
+	)
+
+	if (-not (Get-AzureRmKeyVault -VaultName $KeyVaultName))
+	{
+		New-AzureRmKeyVault -VaultName $KeyVaultName -ResourceGroupName $ResourceGroupName -Location $ResourceGroupLocation -EnabledForTemplateDeployment
+	}
+}
+
+function AddNewSecret {
+	Param(
+		[string] [Parameter(Mandatory=$true)] $SecretName,
+		[string] [Parameter(Mandatory=$true)] $KeyVaultName
+	)
+
+	if (-not (Get-AzureKeyVaultSecret -VaultName $KeyVaultName -Name $SecretName))
+	{
+		$Credentials = Get-Credential -Message "Provide password for $SecretName [put anything as an username]"
+		Set-AzureKeyVaultSecret -VaultName $KeyVaultName -Name $SecretName -SecretValue $Credentials.Password
+	}
+}
+
+function DeployCredentials {
+	Param(
+		[string] [Parameter(Mandatory=$true)] $Environment,
+		[string] [Parameter(Mandatory=$true)] $ResourceGroupName,
+		[string] [Parameter(Mandatory=$true)] $ResourceGroupLocation
+	)
+
+	$KeyVaultName = "burnformoneykv" + $Environment.ToLower();
+	CreateKeyVault -Environment $Environment `
+					-ResourceGroupName $ResourceGroupName `
+					-ResourceGroupLocation $ResourceGroupLocation `
+					-KeyVaultName $KeyVaultName
+	
+	Set-AzureRmKeyVaultAccessPolicy -VaultName $KeyVaultName -EmailAddress 'pawel.maga@makingwaves.com' -PermissionsToKeys decrypt,sign,get,unwrapKey -PermissionsToSecrets Get, Set, List, Delete
+
+	AddNewSecret -SecretName "sqlServerPassword" `
+				-KeyVaultName $KeyVaultName
+}
