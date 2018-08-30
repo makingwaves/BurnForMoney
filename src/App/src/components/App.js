@@ -14,7 +14,8 @@ class App extends Component {
     return (
       <Router>
         <div className="container">
-          <ul style={{display:"none"}}>
+          {/*
+          <ul>
             <li>
               <Link to="/">Home</Link>
             </li>
@@ -22,6 +23,7 @@ class App extends Component {
               <Link to="/strava">Strava Authorization</Link>
             </li>
           </ul>
+          */}
           <Route exact path="/" component={Home} />
           <Route path="/strava" component={StravaAuth} />
         </div>

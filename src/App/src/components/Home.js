@@ -1,10 +1,16 @@
 import React, { Component } from 'react';
-import ReactDOM from 'react-dom';
+import VideoHeader from './VideoHeader.js';
+import BfmProgress from './BfmProgress.js';
+import Slider from './Slider.js';
 
 class Home extends Component {
   render() {
     return (
-      <div>Home sweet home!</div>
+      <div className="home">
+        <VideoHeader/>
+        <BfmProgress/>
+        <Slider/>
+      </div>
     );
   }
 }

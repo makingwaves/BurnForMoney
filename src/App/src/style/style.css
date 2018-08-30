@@ -19,6 +19,56 @@ body {
   50%  { top: 15px;}
   100% { top: 0; }
 }
+.videoHeader{
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    overflow: hidden;
+    z-index: -100;
+
+}
+.videoHeader__video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+@media (min-aspect-ratio: 16/9) {
+  .videoHeader__video {
+    height: 300%;
+    top: -100%;
+  }
+}
+
+@media (max-aspect-ratio: 16/9) {
+  .videoHeader__video {
+    width: 300%;
+    left: -100%;
+  }
+}
+.videoHeader__content{
+    position: absolute;
+    top: 0;
+    bottom:0;
+    left: 0;
+    right:0;
+    width: 25%;
+    height:25%;
+    margin: auto;
+    z-index:1;
+    text-align: center;
+}
+.videoHeader__logo{
+    width: 100%;
+}
+
+.bfmProgress{
+  margin-top: 100%;
+}
+
 
 .strava-contanier{
   display:flex;

@@ -1,6 +1,4 @@
 import React, { Component } from 'react';
-import ReactDOM from 'react-dom';
-
 import logo from '../img/logo.svg';
 
 import arrow from '../img/arrow_down.svg';
