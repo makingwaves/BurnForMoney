@@ -1,0 +1,250 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "environmentCode": {
+      "type": "string",
+      "minLength": 3
+    },
+    "websiteSkuName": {
+      "type": "string",
+      "defaultValue": "F1",
+      "allowedValues": [
+        "F1",
+        "D1",
+        "B1",
+        "B2",
+        "B3",
+        "S1"
+      ],
+      "metadata": {
+        "description": "Describes plan's pricing tier and capacity. Check details at https://azure.microsoft.com/en-us/pricing/details/app-service/"
+      }
+    },
+    "websiteSkuCapacity": {
+      "type": "int",
+      "defaultValue": 1,
+      "minValue": 1,
+      "maxValue": 1,
+      "metadata": {
+        "description": "Describes plan's instance count"
+      }
+    },
+    "functionStorageAccountType": {
+      "type": "string",
+      "defaultValue": "Standard_LRS",
+      "allowedValues": [
+        "Standard_LRS"
+      ],
+      "metadata": {
+        "description": "Storage Account type"
+      }
+    },
+    "burnformoneySqlDbCollation": {
+      "type": "string",
+      "minLength": 1,
+      "defaultValue": "SQL_Latin1_General_CP1_CI_AS"
+    },
+    "burnformoneySqlDbEdition": {
+      "type": "string",
+      "defaultValue": "Basic",
+      "allowedValues": [
+        "Basic",
+        "Standard"
+      ]
+    },
+    "burnformoneySqlDbRequestedServiceObjectiveName": {
+      "type": "string",
+      "defaultValue": "Basic",
+      "allowedValues": [
+        "Basic",
+        "S0",
+        "S1",
+        "S2"
+      ],
+      "metadata": {
+        "description": "Describes the performance level for Edition"
+      }
+    },
+    "sqlServerLogin": {
+      "type": "string",
+      "defaultValue": "sqladmin"
+    },
+    "sqlServerPassword": {
+      "type": "securestring"
+    }
+  },
+  "variables": {
+    "applicationName": "burnformoney",
+    "webSiteName": "[concat(variables('applicationName'), '-', parameters('environmentCode'))]",
+    "websiteHostingPlanName": "[concat(variables('applicationName'), '-', parameters('environmentCode'))]",
+    "functionAppName": "[concat(variables('applicationName'), 'func-', parameters('environmentCode'))]",
+    "functionHostingPlanName": "[concat(variables('applicationName'), 'func-', parameters('environmentCode'))]",
+    "functionStorageAccountName": "[concat(variables('applicationName'), 'func', parameters('environmentCode'))]",
+    "functionStorageAccountId": "[concat(resourceGroup().id,'/providers/','Microsoft.Storage/storageAccounts/', variables('functionStorageAccountName'))]",
+    "sqlDbName": "[concat(variables('applicationName'), 'sqldb', parameters('environmentCode'))]",
+    "sqlServerName": "[concat(variables('applicationName'), 'sqlserver', parameters('environmentCode'))]",
+    "burnformoneykv": "[concat(variables('applicationName'), 'kv', parameters('environmentCode'))]"
+  },
+  "resources": [
+    {
+      "apiVersion": "2015-08-01",
+      "name": "[variables('websiteHostingPlanName')]",
+      "type": "Microsoft.Web/serverfarms",
+      "location": "[resourceGroup().location]",
+      "tags": {
+        "displayName": "WebsiteHostingPlan"
+      },
+      "sku": {
+        "name": "[parameters('websiteSkuName')]",
+        "capacity": "[parameters('websiteSkuCapacity')]"
+      },
+      "properties": {
+        "name": "[variables('websiteHostingPlanName')]"
+      }
+    },
+    {
+      "apiVersion": "2015-04-01",
+      "name": "[variables('functionHostingPlanName')]",
+      "type": "Microsoft.Web/serverfarms",
+      "location": "[resourceGroup().location]",
+      "tags": {
+        "displayName": "FunctionHostingPlan"
+      },
+      "properties": {
+        "name": "[variables('functionHostingPlanName')]",
+        "computeMode": "Dynamic",
+        "sku": "Dynamic"
+      }
+    },
+    {
+      "apiVersion": "2015-08-01",
+      "name": "[variables('webSiteName')]",
+      "type": "Microsoft.Web/sites",
+      "location": "[resourceGroup().location]",
+      "tags": {
+        "[concat('hidden-related:', resourceGroup().id, '/providers/Microsoft.Web/serverfarms/', variables('websiteHostingPlanName'))]": "Resource",
+        "displayName": "Website"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/serverfarms/', variables('websiteHostingPlanName'))]"
+      ],
+      "properties": {
+        "name": "[variables('webSiteName')]",
+        "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('websiteHostingPlanName'))]"
+      }
+    },
+    {
+      "apiVersion": "2016-01-01",
+      "name": "[variables('functionStorageAccountName')]",
+      "type": "Microsoft.Storage/storageAccounts",
+      "location": "[resourceGroup().location]",
+      "kind": "Storage",
+      "sku": {
+        "name": "[parameters('functionStorageAccountType')]"
+      }
+    },
+    {
+      "apiVersion": "2015-08-01",
+      "type": "Microsoft.Web/sites",
+      "name": "[variables('functionAppName')]",
+      "location": "[resourceGroup().location]",
+      "kind": "functionapp",
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/serverfarms', variables('functionHostingPlanName'))]",
+        "[resourceId('Microsoft.Storage/storageAccounts', variables('functionStorageAccountName'))]"
+      ],
+      "properties": {
+        "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('functionHostingPlanName'))]",
+        "siteConfig": {
+          "appSettings": [
+            {
+              "name": "AzureWebJobsDashboard",
+              "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('functionStorageAccountName'), ';AccountKey=', listKeys(variables('functionStorageAccountid'),'2015-05-01-preview').key1)]"
+            },
+            {
+              "name": "AzureWebJobsStorage",
+              "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('functionStorageAccountName'), ';AccountKey=', listKeys(variables('functionStorageAccountid'),'2015-05-01-preview').key1)]"
+            },
+            {
+              "name": "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING",
+              "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('functionStorageAccountName'), ';AccountKey=', listKeys(variables('functionStorageAccountid'),'2015-05-01-preview').key1)]"
+            },
+            {
+              "name": "WEBSITE_CONTENTSHARE",
+              "value": "[toLower(variables('functionAppName'))]"
+            },
+            {
+              "name": "FUNCTIONS_EXTENSION_VERSION",
+              "value": "beta"
+            },
+            {
+              "name": "WEBSITE_NODE_DEFAULT_VERSION",
+              "value": "6.5.0"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "[variables('sqlserverName')]",
+      "type": "Microsoft.Sql/servers",
+      "location": "[resourceGroup().location]",
+      "apiVersion": "2014-04-01",
+      "dependsOn": [],
+      "tags": {
+        "displayName": "burnformoneysqlserver"
+      },
+      "properties": {
+        "administratorLogin": "[parameters('sqlServerLogin')]",
+        "administratorLoginPassword": "[parameters('sqlServerPassword')]"
+      },
+      "resources": [
+        {
+          "name": "AllowAllWindowsAzureIps",
+          "type": "firewallrules",
+          "location": "[resourceGroup().location]",
+          "apiVersion": "2014-04-01-preview",
+          "dependsOn": [
+            "[resourceId('Microsoft.Sql/servers', variables('sqlserverName'))]"
+          ],
+          "properties": {
+            "startIpAddress": "0.0.0.0",
+            "endIpAddress": "0.0.0.0"
+          }
+        },
+        {
+          "name": "AllowPawelHome",
+          "type": "firewallrules",
+          "location": "[resourceGroup().location]",
+          "apiVersion": "2014-04-01-preview",
+          "dependsOn": [
+            "[resourceId('Microsoft.Sql/servers', variables('sqlserverName'))]"
+          ],
+          "properties": {
+            "startIpAddress": "193.25.0.11",
+            "endIpAddress": "193.25.0.11"
+          }
+        },
+        {
+          "name": "[variables('sqlDbName')]",
+          "type": "databases",
+          "location": "[resourceGroup().location]",
+          "apiVersion": "2014-04-01-preview",
+          "dependsOn": [
+            "[resourceId('Microsoft.Sql/servers', variables('sqlserverName'))]"
+          ],
+          "tags": {
+            "displayName": "burnformoneySqlDb"
+          },
+          "properties": {
+            "collation": "[parameters('burnformoneySqlDbCollation')]",
+            "edition": "[parameters('burnformoneySqlDbEdition')]",
+            "maxSizeBytes": "1073741824",
+            "requestedServiceObjectiveName": "[parameters('burnformoneySqlDbRequestedServiceObjectiveName')]"
+          }
+        }
+      ]
+    }
+  ]
+}
