@@ -6,7 +6,7 @@ import Slider from './Slider.js';
 class Home extends Component {
   render() {
     return (
-      <div className="home">
+      <div className="Home">
         <VideoHeader/>
         <BfmProgress/>
         <Slider/>

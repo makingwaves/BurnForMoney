@@ -5,8 +5,8 @@ import {
   Link
 } from 'react-router-dom';
 
-import Home from './Home';
-import StravaAuth from './StravaAuth';
+import Home from './screens/home/Home';
+import StravaAuth from './screens/stravaAuth/StravaAuth';
 
 
 class App extends Component {

@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
 
+import './BfmProgress.css';
 
 class BfmProgress extends Component {
   render() {
     return (
-      <div className="bfmProgress">
+      <div className="BfmProgress">
         <div>
           792 km
           on route
