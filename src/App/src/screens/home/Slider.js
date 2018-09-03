@@ -1,5 +1,8 @@
 import React, { Component } from 'react';
 
+import SliderItem from './SliderItem.js';
+import './Slider.css';
+
 
 class Slider extends Component {
   render() {
@@ -9,9 +12,7 @@ class Slider extends Component {
         <button href="#" className="Slider__next"></button>
         <div className="Slider__container">
           <ul className="Slider__list">
-            <li>
-              A
-            </li>
+            <SliderItem/>
             <li>
               B
             </li>
