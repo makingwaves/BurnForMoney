@@ -7,6 +7,10 @@
 * [Azure Storage Emulator](https://go.microsoft.com/fwlink/?LinkId=717179&clcid=0x409)
 * [PowerShell](https://www.microsoft.com/web/handlers/webpi.ashx/getinstaller/WindowsAzurePowershellGet.3f.3f.3fnew.appids)
 
+### Azure functions
+
+* Documentation: https://docs.microsoft.com/en-us/azure/azure-functions/
+
 
 ### Strava API
 
