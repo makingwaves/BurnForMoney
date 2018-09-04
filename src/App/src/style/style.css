@@ -1,77 +1,15 @@
 body {
   margin: 0;
   padding: 0;
-  font-size:18px;
-  font-family: 'Volte2', sans-serif;
-}
+  font-size: 18px;
+  font-family: 'Volte2', sans-serif; }
+
 @font-face {
-    font-family: 'Volte2';
-    font-weight: normal;
-    src: url('../font/Volte-Regular.otf') format('opentype');
-}
+  font-family: 'Volte2';
+  font-weight: normal;
+  src: url("../font/Volte-Regular.otf") format("opentype"); }
+
 @font-face {
-    font-family: 'Volte2';
-    font-weight: bold;
-    src: url('../font/Volte-Bold.otf') format('opentype');
-}
-@keyframes arrow-bounce {
-  0%   { top: 0; }
-  50%  { top: 15px;}
-  100% { top: 0; }
-}
-
-.strava-contanier{
-  display:flex;
-  flex-direction: column;
-  justify-content: center;
-  flex-wrap: wrap;
-}
-.strava-contanier .logo{
-  margin-bottom: 30px;
-}
-
-.strava-contanier p{
-  text-align: center;
-}
-
-.authorizeIndicator{
-  margin: 0 auto 30px;
-}
-.authorizeIndicator p{
-  color: #3D3D3D;
-  font-size:28px;
+  font-family: 'Volte2';
   font-weight: bold;
-  margin-bottom: 10px;
-}
-.authorizeArrow{
-    display: block;
-    margin: 0 auto;
-    position: relative;
-    animation: arrow-bounce 1.8s infinite;
-
-}
-
-.bigButton{
-  margin: 0 auto;
-  position: relative;
-  width:180px;
-  height: 180px;
-
-}
-.bigButton:hover .bigButtonTop{
-  top:20px;
-}
-.bigButtonTop{
-  position: absolute;
-  display: block;
-  top:0;
-  left: 23px;
-  width:134px;
-  transition: top 0.2s ;
-}
-.bigButtonBottom{
-  position: absolute;
-  display: block;
-  top:71px;
-  width:100%;
-}
+  src: url("../font/Volte-Bold.otf") format("opentype"); }
