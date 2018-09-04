@@ -52,7 +52,7 @@ namespace BurnForMoney.Functions
             var response = client.Execute(request);
             if (response.StatusCode != HttpStatusCode.OK)
             {
-                throw new Exception(response.ErrorMessage);
+                throw new Exception($"Content: {response.Content}. Error message: {response.ErrorMessage ?? "null"}");
             }
 
             return new AccessToken
