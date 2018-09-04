@@ -8,7 +8,7 @@ namespace BurnForMoney.Functions.Configuration
         public ConfigurationRoot GetSettings(ExecutionContext context)
         {
             var config = GetApplicationConfiguration(context.FunctionAppDirectory);
-            var sqlConnectionString = config.GetConnectionString("SQLConnectionString");
+            var sqlConnectionString = config.GetConnectionString("SQL.ConnectionString");
 
             return new ConfigurationRoot
             {
