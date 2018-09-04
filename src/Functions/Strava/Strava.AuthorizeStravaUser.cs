@@ -10,7 +10,6 @@ namespace BurnForMoney.Functions
 {
     public static class AuthorizeStravaUser
     {
-
         [FunctionName("AuthorizeStravaUser")]
         public static async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Function, "get", Route = null)]
             HttpRequest req, TraceWriter log, [Queue(QueueNames.AuthorizationCodes)] CloudQueue authorizationCodesQueue)

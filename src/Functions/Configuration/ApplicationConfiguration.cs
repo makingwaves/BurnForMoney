@@ -12,16 +12,15 @@ namespace BurnForMoney.Functions.Configuration
 
             return new ConfigurationRoot
             {
-                Strava = GetStravaSection(config),
+                Strava = GetStravaConfiguration(config),
                 SqlDbConnectionString = sqlConnectionString
             };
         }
 
-        private static StravaConfigurationSection GetStravaSection(IConfigurationRoot config)
+        private static StravaConfigurationSection GetStravaConfiguration(IConfigurationRoot config)
         {
-            var stravaConfig = config.GetSection("Strava");
-            int.TryParse(stravaConfig["ClientId"], out var clientId);
-            var clientSecret = stravaConfig["ClientSecret"];
+            int.TryParse(config["Strava.ClientId"], out var clientId);
+            var clientSecret = config["Strava.ClientSecret"];
             return new StravaConfigurationSection(clientId, clientSecret);
         }
 

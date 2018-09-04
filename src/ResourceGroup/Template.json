@@ -72,6 +72,12 @@
     },
     "sqlServerPassword": {
       "type": "securestring"
+    },
+    "strava.clientId": {
+      "type": "int"
+    },
+    "strava.clientSecret": {
+      "type": "string"
     }
   },
   "variables": {
@@ -181,6 +187,14 @@
             {
               "name": "WEBSITE_NODE_DEFAULT_VERSION",
               "value": "6.5.0"
+            },
+            {
+              "name": "Strava.ClientId",
+              "value": "[parameters('strava.clientId')]"
+            },
+            {
+              "name": "Strava.ClientSecret",
+              "value": "[parameters('strava.clientSecret')]"
             }
           ]
         }

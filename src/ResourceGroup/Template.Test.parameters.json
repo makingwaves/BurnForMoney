@@ -12,6 +12,12 @@
         },
         "secretName": "sqlServerPassword"
       }
+    },
+    "strava.clientId": {
+      "value": 26733
+    },
+    "strava.clientSecret": {
+      "value": "078658ebda70d9f211e9788d44512d17a9737b42"
     }
   }
 }
