@@ -16,15 +16,17 @@ namespace BurnForMoney.Functions.Strava
     public static class GenerateAccessToken
     {
         private const string StravaBaseUrl = "https://www.strava.com";
-        private static readonly ApplicationConfiguration Configuration = new ApplicationConfiguration();
-        private static KeyVaultClient keyVaultClient;
         private const string KeyVaultSecretNameOfEncryptionKey = "stravaAccessTokensEncryptionKey";
+        private static readonly ApplicationConfiguration Configuration = new ApplicationConfiguration();
+        private static KeyVaultClient _keyVaultClient;
+        private static TraceWriter _log;
 
         [FunctionName("GenerateAccessToken")]
         public static async Task RunGenerateAccessToken([QueueTrigger(QueueNames.AuthorizationCodes)]string myQueueItem, TraceWriter log,
             ExecutionContext context)
         {
-            log.Info("GenerateAccessToken function processed a request.");
+            _log = log;
+            _log.Info("GenerateAccessToken function processed a request.");
 
             var settings = Configuration.GetSettings(context);
             if (!settings.IsValid())
@@ -32,30 +34,31 @@ namespace BurnForMoney.Functions.Strava
                 throw new Exception("Cannot read configuration file.");
             }
 
-            var a = await EncryptAccessTokenAsync(new AccessToken("ac"), settings.ConnectionStrings.KeyVaultConnectionString).ConfigureAwait(false);
+            var accessToken = RequestForAccessToken(settings.Strava.ClientId, settings.Strava.ClientSecret, myQueueItem);
+            var encryptedAccessToken = await EncryptAccessTokenAsync(accessToken, settings.ConnectionStrings.KeyVaultConnectionString).ConfigureAwait(false);
 
-            var accessToken = GetAccessToken(settings.Strava.ClientId, settings.Strava.ClientSecret, myQueueItem);
-
-            await InsertAccessTokenToSqlDatabaseAsync(settings.ConnectionStrings.SqlDbConnectionString, accessToken, log)
+            await InsertAccessTokenToSqlDatabaseAsync(settings.ConnectionStrings.SqlDbConnectionString, encryptedAccessToken)
                 .ConfigureAwait(false);
         }
 
         private static async Task<EncryptedAccessToken> EncryptAccessTokenAsync(AccessToken accessToken, string keyVaultConnectionString)
         {
-            if (keyVaultClient == null)
+            if (_keyVaultClient == null)
             {
                 var azureServiceTokenProvider = new AzureServiceTokenProvider();
-                keyVaultClient = new KeyVaultClient(
+                _keyVaultClient = new KeyVaultClient(
                     new KeyVaultClient.AuthenticationCallback(azureServiceTokenProvider.KeyVaultTokenCallback));
+                _log.Info("Created a new Key Vault client");
             }
 
             //var secret = await keyVaultClient.GetSecretAsync(keyVaultConnectionString + "secrets/" + KeyVaultSecretNameOfEncryptionKey)
             //    .ConfigureAwait(false);
+            _log.Info("Access token has been encrypted.");
 
             return new EncryptedAccessToken(accessToken.Token);
         }
 
-        private static AccessToken GetAccessToken(int clientId, string clientSecret, string code)
+        private static AccessToken RequestForAccessToken(int clientId, string clientSecret, string code)
         {
             var client = new RestClient(StravaBaseUrl);
             var request = new RestRequest("/oauth/token", Method.POST)
@@ -78,7 +81,7 @@ namespace BurnForMoney.Functions.Strava
             return new AccessToken(TokenExchangeResponse.FromJson(response.Content).AccessToken);
         }
 
-        private static async Task InsertAccessTokenToSqlDatabaseAsync(string connectionString, AccessToken accessToken, TraceWriter log)
+        private static async Task InsertAccessTokenToSqlDatabaseAsync(string connectionString, EncryptedAccessToken accessToken)
         {
             using (var conn = new SqlConnection(connectionString))
             {
@@ -86,7 +89,7 @@ namespace BurnForMoney.Functions.Strava
                         accessToken)
                     .ConfigureAwait(false);
 
-                log.Info("Added token to database.");
+                _log.Info("Access token has been saved successfully");
             }
         }
     }
