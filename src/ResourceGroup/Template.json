@@ -161,6 +161,9 @@
       "name": "[variables('functionAppName')]",
       "location": "[resourceGroup().location]",
       "kind": "functionapp",
+      "identity": {
+        "type": "SystemAssigned"
+      },
       "dependsOn": [
         "[resourceId('Microsoft.Web/serverfarms', variables('functionHostingPlanName'))]",
         "[resourceId('Microsoft.Storage/storageAccounts', variables('functionStorageAccountName'))]"
@@ -282,6 +285,26 @@
           }
         }
       ]
+    },
+    {
+      "type": "Microsoft.KeyVault/vaults/accessPolicies",
+      "name": "[concat(variables('burnformoneykv'), '/add')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/sites', variables('functionAppName'))]"
+      ],
+      "apiVersion": "2016-10-01",
+      "properties": {
+        "accessPolicies": [
+          {
+            "tenantId": "[reference(concat('Microsoft.Web/sites/', variables('functionAppName')), '2015-08-01', 'Full').identity.tenantId]",
+            "objectId": "[reference(concat('Microsoft.Web/sites/', variables('functionAppName')), '2015-08-01', 'Full').identity.principalId]",
+            "permissions": {
+              "keys": [ "get" ],
+              "secrets": [ "get" ]
+            }
+          }
+        ]
+      }
     }
   ]
 }
