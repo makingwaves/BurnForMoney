@@ -95,7 +95,7 @@
     "functionStorageAccountId": "[concat(resourceGroup().id,'/providers/','Microsoft.Storage/storageAccounts/', variables('functionStorageAccountName'))]",
     "sqlDbName": "[concat(variables('applicationName'), 'sqldb', parameters('environmentCode'))]",
     "sqlServerName": "[concat(variables('applicationName'), 'sqlserver', parameters('environmentCode'))]",
-    "burnformoneykv": "[concat(variables('applicationName'), 'kv', parameters('environmentCode'))]"
+    "keyVaultName": "[concat(variables('applicationName'), 'kv', parameters('environmentCode'))]"
   },
   "resources": [
     {
@@ -221,6 +221,10 @@
             "SQL.ConnectionString": {
               "value": "[concat('Data Source=tcp:', reference(concat('Microsoft.Sql/servers/', variables('sqlserverName'))).fullyQualifiedDomainName, ',1433;Initial Catalog=', variables('sqlDbName'), ';User Id=', parameters('sqlServerLogin'), ';Password=', parameters('sqlServerPassword'), ';')]",
               "type": "SQLServer"
+            },
+            "KeyVault.ConnectionString": {
+              "type": "Custom",
+              "value": "[concat('https://', variables('keyVaultName'), '.vault.azure.net/')]"
             }
           }
         }
@@ -288,7 +292,7 @@
     },
     {
       "type": "Microsoft.KeyVault/vaults/accessPolicies",
-      "name": "[concat(variables('burnformoneykv'), '/add')]",
+      "name": "[concat(variables('keyVaultName'), '/add')]",
       "dependsOn": [
         "[resourceId('Microsoft.Web/sites', variables('functionAppName'))]"
       ],

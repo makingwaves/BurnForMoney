@@ -8,12 +8,20 @@ namespace BurnForMoney.Functions.Configuration
         public ConfigurationRoot GetSettings(ExecutionContext context)
         {
             var config = GetApplicationConfiguration(context.FunctionAppDirectory);
-            var sqlConnectionString = config.GetConnectionString("SQL.ConnectionString");
 
             return new ConfigurationRoot
             {
                 Strava = GetStravaConfiguration(config),
-                SqlDbConnectionString = sqlConnectionString
+                ConnectionStrings = GetConnectionStrings(config)
+            };
+        }
+
+        private static ConnectionStringsSection GetConnectionStrings(IConfigurationRoot config)
+        {
+            return new ConnectionStringsSection
+            {
+                SqlDbConnectionString = config.GetConnectionString("SQL.ConnectionString"),
+                KeyVaultConnectionString = config.GetConnectionString("KeyVault.ConnectionString")
             };
         }
 
