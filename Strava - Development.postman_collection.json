@@ -1,0 +1,43 @@
+{
+	"variables": [],
+	"info": {
+		"name": "Strava - Development",
+		"_postman_id": "a3bc625e-5e8c-6a75-4a01-96da2e4b49ef",
+		"description": "",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "AuthorizeStravaUser",
+			"request": {
+				"url": {
+					"raw": "http://localhost:7071/api/strava/authorize?code=abc",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "7071",
+					"path": [
+						"api",
+						"strava",
+						"authorize"
+					],
+					"query": [
+						{
+							"key": "code",
+							"value": "abc",
+							"equals": true,
+							"description": ""
+						}
+					],
+					"variable": []
+				},
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"description": ""
+			},
+			"response": []
+		}
+	]
+}

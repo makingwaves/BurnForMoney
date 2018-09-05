@@ -1,0 +1,54 @@
+{
+	"variables": [],
+	"info": {
+		"name": "Strava Official API",
+		"_postman_id": "22dd7895-d18a-abab-2da1-747b0f76ef76",
+		"description": "",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Get activities",
+			"request": {
+				"url": "https://www.strava.com/api/v3/athlete/activities ",
+				"method": "GET",
+				"header": [
+					{
+						"key": "",
+						"value": "",
+						"description": "",
+						"disabled": true
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer",
+						"description": ""
+					}
+				],
+				"body": {},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Exchange code to token",
+			"request": {
+				"url": "https://www.strava.com/oauth/token",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"client_id\": 0,\n\t\"client_secret\": \"\",\n\t\"code\": \"\"\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		}
+	]
+}

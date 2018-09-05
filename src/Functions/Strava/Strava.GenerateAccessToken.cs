@@ -9,7 +9,7 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Host;
 using RestSharp;
 
-namespace BurnForMoney.Functions
+namespace BurnForMoney.Functions.Strava
 {
     public static class GenerateAccessToken
     {
@@ -17,7 +17,7 @@ namespace BurnForMoney.Functions
         private static readonly ApplicationConfiguration Configuration = new ApplicationConfiguration();
 
         [FunctionName("GenerateAccessToken")]
-        public static async Task Run([QueueTrigger(QueueNames.AuthorizationCodes)]string myQueueItem, TraceWriter log,
+        public static async Task RunGenerateAccessToken([QueueTrigger(QueueNames.AuthorizationCodes)]string myQueueItem, TraceWriter log,
             ExecutionContext context)
         {
             log.Info("GenerateAccessToken function processed a request.");

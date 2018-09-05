@@ -1,17 +1,17 @@
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Azure.WebJobs.Host;
 using Microsoft.WindowsAzure.Storage.Queue;
 
-namespace BurnForMoney.Functions
+namespace BurnForMoney.Functions.Strava
 {
     public static class AuthorizeStravaUser
     {
         [FunctionName("AuthorizeStravaUser")]
-        public static async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Function, "get", Route = null)]
+        public static async Task<IActionResult> RunAuthorizeStravaUser([HttpTrigger(AuthorizationLevel.Function, "get", Route = "strava/authorize")]
             HttpRequest req, TraceWriter log, [Queue(QueueNames.AuthorizationCodes)] CloudQueue authorizationCodesQueue)
         {
             log.Info("AuthorizeStravaUser function processed a request.");
