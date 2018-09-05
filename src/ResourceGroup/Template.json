@@ -4,7 +4,12 @@
   "parameters": {
     "environmentCode": {
       "type": "string",
-      "minLength": 3
+      "minLength": 4,
+      "maxLength": 4,
+      "allowedValues": [
+        "test",
+        "prod"
+      ]
     },
     "websiteSkuName": {
       "type": "string",
@@ -74,10 +79,10 @@
       "type": "securestring"
     },
     "strava.clientId": {
-      "type": "int"
+      "type": "securestring"
     },
     "strava.clientSecret": {
-      "type": "string"
+      "type": "securestring"
     }
   },
   "variables": {
