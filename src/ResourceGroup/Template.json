@@ -197,6 +197,10 @@
               "value": "6.5.0"
             },
             {
+              "name": "MSDEPLOY_RENAME_LOCKED_FILES",
+              "value": "1"
+            },
+            {
               "name": "Strava.ClientId",
               "value": "[parameters('strava.clientId')]"
             },
