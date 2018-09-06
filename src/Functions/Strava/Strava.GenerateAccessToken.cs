@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Concurrent;
+using System.ComponentModel.DataAnnotations;
 using System.Data.SqlClient;
 using System.Net;
 using System.Threading.Tasks;
@@ -9,16 +11,14 @@ using Microsoft.Azure.KeyVault;
 using Microsoft.Azure.Services.AppAuthentication;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Host;
-using RestSharp;
 
 namespace BurnForMoney.Functions.Strava
 {
     public static class GenerateAccessToken
     {
-        private const string StravaBaseUrl = "https://www.strava.com";
         private const string KeyVaultSecretNameOfEncryptionKey = "stravaAccessTokensEncryptionKey";
         private static readonly ApplicationConfiguration Configuration = new ApplicationConfiguration();
-        private static KeyVaultClient _keyVaultClient;
+        private static string _accessTokenEncryptionKey;
         private static TraceWriter _log;
 
         [FunctionName("GenerateAccessToken")]
@@ -43,39 +43,33 @@ namespace BurnForMoney.Functions.Strava
 
         private static async Task<EncryptedAccessToken> EncryptAccessTokenAsync(AccessToken accessToken, string keyVaultConnectionString)
         {
-            if (_keyVaultClient == null)
-            {
-                var azureServiceTokenProvider = new AzureServiceTokenProvider();
-                _keyVaultClient = new KeyVaultClient(
-                    new KeyVaultClient.AuthenticationCallback(azureServiceTokenProvider.KeyVaultTokenCallback));
-                _log.Info("Created a new Key Vault client");
-            }
-
-            //var secret = await keyVaultClient.GetSecretAsync(keyVaultConnectionString + "secrets/" + KeyVaultSecretNameOfEncryptionKey)
-            //    .ConfigureAwait(false);
+            var encryptionKey = await GetEncryptionKeyAsync(keyVaultConnectionString).ConfigureAwait(false);
+            var encryptedToken = Cryptography.EncryptString(accessToken.Token, encryptionKey);
             _log.Info("Access token has been encrypted.");
 
-            return new EncryptedAccessToken(accessToken.Token);
+            return new EncryptedAccessToken(encryptedToken);
+        }
+
+        private static async Task<string> GetEncryptionKeyAsync(string keyVaultConnectionString)
+        {
+            if (string.IsNullOrEmpty(_accessTokenEncryptionKey))
+            {
+                var keyVaultClient = KeyVaultClientFactory.Create();
+                var secret = await keyVaultClient.GetSecretAsync(keyVaultConnectionString + "secrets/" + KeyVaultSecretNameOfEncryptionKey)
+                    .ConfigureAwait(false);
+                _accessTokenEncryptionKey = secret.Value;
+            }
+
+            return _accessTokenEncryptionKey;
         }
 
         private static AccessToken RequestForAccessToken(int clientId, string clientSecret, string code)
         {
-            var client = new RestClient(StravaBaseUrl);
-            var request = new RestRequest("/oauth/token", Method.POST)
-            {
-                RequestFormat = DataFormat.Json
-            };
-            var payLoad = new TokenExchangeRequest
-            {
-                ClientId = clientId,
-                ClientSecret = clientSecret,
-                Code = code
-            };
-            request.AddParameter("application/json", payLoad.ToJson(), ParameterType.RequestBody);
-            var response = client.Execute(request);
+            var stravaService = new StravaService();
+            var response = stravaService.ExchangeToken(clientId, clientSecret, code);
             if (response.StatusCode != HttpStatusCode.OK)
             {
-                throw new Exception($"Content: {response.Content}. Error message: {response.ErrorMessage ?? "null"}");
+                throw new Exception($"Strava API returned an unsuccessfull status code. Status code: {response.StatusCode}. Content: {response.Content}. Error message: {response.ErrorMessage ?? "null"}");
             }
 
             return new AccessToken(TokenExchangeResponse.FromJson(response.Content).AccessToken);
