@@ -1,33 +1,39 @@
 .VideoHeader{
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    overflow: hidden;
-    z-index: -100;
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  overflow: hidden;
+  z-index: -100;
 
-}
-.VideoHeader__video {
+  &__background {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-}
-@media (min-aspect-ratio: 16/9) {
-  .VideoHeader__video {
-    height: 300%;
-    top: -100%;
+    @media (min-aspect-ratio: 16/9) {
+      height: 300%;
+      top: -100%;
+    }
+    @media (max-aspect-ratio: 16/9) {
+      width: 300%;
+      left: -100%;
+    }
+  }
+  &__video {
+    position: relative;
+  }
+  &__close {
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    top:10px;
+    right: 10px;
   }
 }
 
-@media (max-aspect-ratio: 16/9) {
-  .VideoHeader__video {
-    width: 300%;
-    left: -100%;
-  }
-}
 .VideoHeader__content{
     position: absolute;
     top: 0;
