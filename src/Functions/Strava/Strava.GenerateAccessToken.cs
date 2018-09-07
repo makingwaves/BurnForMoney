@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Concurrent;
-using System.ComponentModel.DataAnnotations;
 using System.Data.SqlClient;
 using System.Net;
 using System.Threading.Tasks;
@@ -8,7 +6,6 @@ using BurnForMoney.Functions.Auth;
 using BurnForMoney.Functions.Configuration;
 using Dapper;
 using Microsoft.Azure.KeyVault;
-using Microsoft.Azure.Services.AppAuthentication;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Host;
 

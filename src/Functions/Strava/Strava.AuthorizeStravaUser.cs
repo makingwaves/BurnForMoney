@@ -14,7 +14,7 @@ namespace BurnForMoney.Functions.Strava
         private static TraceWriter _log;
 
         [FunctionName("AuthorizeStravaUser")]
-        public static async Task<IActionResult> RunAuthorizeStravaUser([HttpTrigger(AuthorizationLevel.Function, "get", Route = "strava/authorize")]
+        public static async Task<IActionResult> RunAuthorizeStravaUser([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "strava/authorize")]
             HttpRequest req, TraceWriter log, [Queue(QueueNames.AuthorizationCodes)] CloudQueue authorizationCodesQueue)
         {
             _log = log;
