@@ -1,3 +1,4 @@
+using BurnForMoney.Functions.Configuration;
 using Newtonsoft.Json;
 
 namespace BurnForMoney.Functions.Auth

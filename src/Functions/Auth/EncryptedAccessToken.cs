@@ -1,10 +1,10 @@
 namespace BurnForMoney.Functions.Auth
 {
-    public class AccessToken
+    public class EncryptedAccessToken
     {
         public string Token { get; }
 
-        public AccessToken(string token)
+        public EncryptedAccessToken(string token)
         {
             Token = token;
         }

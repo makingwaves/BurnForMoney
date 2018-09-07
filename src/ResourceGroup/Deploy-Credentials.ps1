@@ -43,6 +43,10 @@ function DeployCredentials {
 	
 	Set-AzureRmKeyVaultAccessPolicy -VaultName $KeyVaultName -EmailAddress 'pawel.maga@makingwaves.com' -PermissionsToKeys decrypt,sign,get,unwrapKey -PermissionsToSecrets Get, Set, List, Delete
 
-	AddNewSecret -SecretName "sqlServerPassword" `
+	$secrets = "sqlServerPassword", "stravaAccessTokensEncryptionKey", "stravaClientId", "stravaClientSecret"
+
+	for ($i=0; $i -lt $secrets.length; $i++) {
+		AddNewSecret -SecretName $secrets[$i] `
 				-KeyVaultName $KeyVaultName
+	}
 }

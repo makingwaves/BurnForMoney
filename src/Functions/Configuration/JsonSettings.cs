@@ -1,7 +1,7 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
-namespace BurnForMoney.Functions
+namespace BurnForMoney.Functions.Configuration
 {
     public class JsonSettings : JsonSerializerSettings
     {

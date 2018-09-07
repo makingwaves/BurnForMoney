@@ -1,4 +1,4 @@
-﻿namespace BurnForMoney.Functions
+﻿namespace BurnForMoney.Functions.Strava
 {
     public static class QueueNames
     {

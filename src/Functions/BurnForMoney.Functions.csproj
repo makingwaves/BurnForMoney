@@ -5,7 +5,10 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Dapper" Version="1.50.5" />
-    <PackageReference Include="Microsoft.NET.Sdk.Functions" Version="1.0.13" />
+    <PackageReference Include="Microsoft.Azure.KeyVault" Version="3.0.0" />
+    <PackageReference Include="Microsoft.Azure.Services.AppAuthentication" Version="1.1.0-preview" />
+    <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.Storage" Version="3.0.0-beta8" />
+    <PackageReference Include="Microsoft.NET.Sdk.Functions" Version="1.0.19" />
     <PackageReference Include="RestSharp" Version="106.3.1" />
     <PackageReference Include="System.Data.SqlClient" Version="4.4.0" />
   </ItemGroup>
@@ -17,8 +20,5 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <CopyToPublishDirectory>Never</CopyToPublishDirectory>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Properties\PublishProfiles\" />
   </ItemGroup>
 </Project>

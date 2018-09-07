@@ -4,7 +4,12 @@
   "parameters": {
     "environmentCode": {
       "type": "string",
-      "minLength": 3
+      "minLength": 4,
+      "maxLength": 4,
+      "allowedValues": [
+        "test",
+        "prod"
+      ]
     },
     "websiteSkuName": {
       "type": "string",
@@ -72,6 +77,12 @@
     },
     "sqlServerPassword": {
       "type": "securestring"
+    },
+    "strava.clientId": {
+      "type": "securestring"
+    },
+    "strava.clientSecret": {
+      "type": "securestring"
     }
   },
   "variables": {
@@ -84,7 +95,7 @@
     "functionStorageAccountId": "[concat(resourceGroup().id,'/providers/','Microsoft.Storage/storageAccounts/', variables('functionStorageAccountName'))]",
     "sqlDbName": "[concat(variables('applicationName'), 'sqldb', parameters('environmentCode'))]",
     "sqlServerName": "[concat(variables('applicationName'), 'sqlserver', parameters('environmentCode'))]",
-    "burnformoneykv": "[concat(variables('applicationName'), 'kv', parameters('environmentCode'))]"
+    "keyVaultName": "[concat(variables('applicationName'), 'kv', parameters('environmentCode'))]"
   },
   "resources": [
     {
@@ -150,6 +161,9 @@
       "name": "[variables('functionAppName')]",
       "location": "[resourceGroup().location]",
       "kind": "functionapp",
+      "identity": {
+        "type": "SystemAssigned"
+      },
       "dependsOn": [
         "[resourceId('Microsoft.Web/serverfarms', variables('functionHostingPlanName'))]",
         "[resourceId('Microsoft.Storage/storageAccounts', variables('functionStorageAccountName'))]"
@@ -181,10 +195,40 @@
             {
               "name": "WEBSITE_NODE_DEFAULT_VERSION",
               "value": "6.5.0"
+            },
+            {
+              "name": "Strava.ClientId",
+              "value": "[parameters('strava.clientId')]"
+            },
+            {
+              "name": "Strava.ClientSecret",
+              "value": "[parameters('strava.clientSecret')]"
             }
           ]
         }
-      }
+      },
+      "resources": [
+        {
+          "apiVersion": "2015-08-01",
+          "type": "config",
+          "name": "connectionstrings",
+          "dependsOn": [
+            "[concat('Microsoft.Web/Sites/', variables('functionAppName'))]",
+            "[concat('Microsoft.Storage/storageAccounts/', variables('functionStorageAccountName'))]",
+            "[concat('Microsoft.Sql/servers/', variables('sqlServerName'))]"
+          ],
+          "properties": {
+            "SQL.ConnectionString": {
+              "value": "[concat('Data Source=tcp:', reference(concat('Microsoft.Sql/servers/', variables('sqlserverName'))).fullyQualifiedDomainName, ',1433;Initial Catalog=', variables('sqlDbName'), ';User Id=', parameters('sqlServerLogin'), ';Password=', parameters('sqlServerPassword'), ';')]",
+              "type": "SQLServer"
+            },
+            "KeyVault.ConnectionString": {
+              "type": "Custom",
+              "value": "[concat('https://', variables('keyVaultName'), '.vault.azure.net/')]"
+            }
+          }
+        }
+      ]
     },
     {
       "name": "[variables('sqlserverName')]",
@@ -245,6 +289,26 @@
           }
         }
       ]
+    },
+    {
+      "type": "Microsoft.KeyVault/vaults/accessPolicies",
+      "name": "[concat(variables('keyVaultName'), '/add')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/sites', variables('functionAppName'))]"
+      ],
+      "apiVersion": "2016-10-01",
+      "properties": {
+        "accessPolicies": [
+          {
+            "tenantId": "[reference(concat('Microsoft.Web/sites/', variables('functionAppName')), '2015-08-01', 'Full').identity.tenantId]",
+            "objectId": "[reference(concat('Microsoft.Web/sites/', variables('functionAppName')), '2015-08-01', 'Full').identity.principalId]",
+            "permissions": {
+              "keys": [ "get" ],
+              "secrets": [ "get" ]
+            }
+          }
+        ]
+      }
     }
   ]
 }

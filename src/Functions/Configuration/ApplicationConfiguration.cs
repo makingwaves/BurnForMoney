@@ -8,20 +8,27 @@ namespace BurnForMoney.Functions.Configuration
         public ConfigurationRoot GetSettings(ExecutionContext context)
         {
             var config = GetApplicationConfiguration(context.FunctionAppDirectory);
-            var sqlConnectionString = config.GetConnectionString("SQLConnectionString");
 
             return new ConfigurationRoot
             {
-                Strava = GetStravaSection(config),
-                SqlDbConnectionString = sqlConnectionString
+                Strava = GetStravaConfiguration(config),
+                ConnectionStrings = GetConnectionStrings(config)
             };
         }
 
-        private static StravaConfigurationSection GetStravaSection(IConfigurationRoot config)
+        private static ConnectionStringsSection GetConnectionStrings(IConfigurationRoot config)
         {
-            var stravaConfig = config.GetSection("Strava");
-            int.TryParse(stravaConfig["ClientId"], out var clientId);
-            var clientSecret = stravaConfig["ClientSecret"];
+            return new ConnectionStringsSection
+            {
+                SqlDbConnectionString = config.GetConnectionString("SQL.ConnectionString"),
+                KeyVaultConnectionString = config.GetConnectionString("KeyVault.ConnectionString")
+            };
+        }
+
+        private static StravaConfigurationSection GetStravaConfiguration(IConfigurationRoot config)
+        {
+            int.TryParse(config["Strava.ClientId"], out var clientId);
+            var clientSecret = config["Strava.ClientSecret"];
             return new StravaConfigurationSection(clientId, clientSecret);
         }
 
