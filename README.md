@@ -18,7 +18,7 @@
 
 ### Strava API
 
-* Authorization: https://www.strava.com/oauth/authorize?client_id=25708&response_type=code&redirect_uri=http://localhost&approval_prompt=force
+* Authorization: https://www.strava.com/oauth/authorize?client_id=client_id&response_type=code&redirect_uri=redirect_url&approval_prompt=force
 * Rate limits: 600 requests every 15 minutes, 30000 daily
 * Documentation: https://developers.strava.com/docs/
 * Authentication: https://developers.strava.com/docs/authentication/
@@ -31,7 +31,7 @@ All passwords are stored in the [KeePass](https://keepass.info/) database, inclu
 Application passwords are deployed by ARM scripts to [Key Vault](https://docs.microsoft.com/en-us/azure/key-vault/) storage and should be retrieved only from this service. All apllications must be properly authorised to have an access to Key Vault services.
 
 * Documentation: https://docs.microsoft.com/en-us/azure/key-vault/
-* Access: In order to get secrets from Azure Key Vault, user/application must be authorized. User can be authorized via email address, but applications must be registered via [Azure Managed Service Identity](https://docs.microsoft.com/en-us/azure/app-service/app-service-managed-service-identity#creating-an-app-with-an-identity). All access policies should be added in ARM script (section Microsoft.KeyVault/vaults/accessPolicies).
+* Access: In order to get secrets from Azure Key Vault, user/application must be authorized. User can be authorized via email address, but applications must be registered via [Azure Managed Service Identity](https://docs.microsoft.com/en-us/azure/app-service/app-service-managed-service-identity#creating-an-app-with-an-identity). All access policies should be added to ARM script (section Microsoft.KeyVault/vaults/accessPolicies).
 
 ### Automation
 
