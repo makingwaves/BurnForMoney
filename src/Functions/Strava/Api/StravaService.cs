@@ -1,4 +1,4 @@
-using BurnForMoney.Functions.Auth;
+using BurnForMoney.Functions.Strava.Auth;
 using RestSharp;
 
 namespace BurnForMoney.Functions.Strava.Api

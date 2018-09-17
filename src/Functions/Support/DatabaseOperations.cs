@@ -28,7 +28,7 @@ namespace BurnForMoney.Functions.Support
 
             using (var conn = new SqlConnection(settings.ConnectionStrings.SqlDbConnectionString))
             {
-                await conn.ExecuteAsync("CREATE TABLE dbo.[Strava.AccessTokens] ([AccessToken][nvarchar](100) NOT NULL, [Active][bit] NOT NULL)")
+                await conn.ExecuteAsync("CREATE TABLE dbo.[Strava.AccessTokens] ([AthleteId][int] NOT NULL, [FirstName][nvarchar](50), [LastName][nvarchar](50), [AccessToken][nvarchar](100) NOT NULL, [Active][bit] NOT NULL, PRIMARY KEY (AthleteId))")
                     .ConfigureAwait(false);
 
                 log.Info("dbo.[Strava.AccessTokens] table created.");

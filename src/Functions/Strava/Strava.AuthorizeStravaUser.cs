@@ -1,5 +1,6 @@
 using System.Linq;
 using System.Threading.Tasks;
+using BurnForMoney.Functions.Configuration;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
@@ -13,18 +14,20 @@ namespace BurnForMoney.Functions.Strava
     {
         private const int AuthorisationCodeLength = 40;
         private static TraceWriter _log;
+        private static readonly ApplicationConfiguration Configuration = new ApplicationConfiguration();
         private const string StravaAuthorizationUrl = "https://www.strava.com/oauth/authorize";
         private const string AzureHostUrl = "https://functions.azure.com";
 
         [FunctionName("AuthorizeStravaUser")]
         public static async Task<IActionResult> RunAuthorizeStravaUser([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "strava/authorize")]
-            HttpRequest req, TraceWriter log, [Queue(QueueNames.AuthorizationCodes)] CloudQueue authorizationCodesQueue)
+            HttpRequest req, TraceWriter log, [Queue(QueueNames.AuthorizationCodes)] CloudQueue authorizationCodesQueue,
+            ExecutionContext context)
         {
             _log = log;
             _log.Info("AuthorizeStravaUser function processed a request.");
 
             var referer = req.Headers["Referer"].FirstOrDefault();
-            if (string.IsNullOrEmpty(referer) || !(referer.StartsWith(StravaAuthorizationUrl) || referer.StartsWith(AzureHostUrl)))
+            if (!Configuration.GetSettings(context).IsLocalEnvironment && !IsRequestRefererValid(referer))
             {
                 log.Warning($"Request referer [{referer ?? "null"}] is not authorized.");
                 return new UnauthorizedResult();
@@ -54,5 +57,7 @@ namespace BurnForMoney.Functions.Strava
             await queue.AddMessageAsync(message).ConfigureAwait(false);
             _log.Info($"Inserted authorization code to {QueueNames.AuthorizationCodes} queue.");
         }
+
+        private static bool IsRequestRefererValid(string referer) => !string.IsNullOrEmpty(referer) && (referer.StartsWith(StravaAuthorizationUrl) || referer.StartsWith(AzureHostUrl));
     }
 }

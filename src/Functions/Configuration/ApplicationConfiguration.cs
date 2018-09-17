@@ -1,4 +1,5 @@
-﻿using Microsoft.Azure.WebJobs;
+﻿using System;
+using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Configuration;
 
 namespace BurnForMoney.Functions.Configuration
@@ -12,8 +13,9 @@ namespace BurnForMoney.Functions.Configuration
             return new ConfigurationRoot
             {
                 Strava = GetStravaConfiguration(config),
-                ConnectionStrings = GetConnectionStrings(config)
-            };
+                ConnectionStrings = GetConnectionStrings(config),
+                IsLocalEnvironment = string.IsNullOrEmpty(GetEnvironmentVariable(EnvironmentSettingNames.AzureWebsiteInstanceId))
+    };
         }
 
         private static ConnectionStringsSection GetConnectionStrings(IConfigurationRoot config)
@@ -21,7 +23,7 @@ namespace BurnForMoney.Functions.Configuration
             return new ConnectionStringsSection
             {
                 SqlDbConnectionString = config.GetConnectionString("SQL.ConnectionString"),
-                KeyVaultConnectionString = config.GetConnectionString("KeyVault.ConnectionString")
+                KeyVaultConnectionString = config.GetConnectionString("KeyVault.ConnectionString"),
             };
         }
 
@@ -41,5 +43,16 @@ namespace BurnForMoney.Functions.Configuration
                 .Build();
             return config;
         }
-    }
+
+        public string GetEnvironmentVariable(string settingKey)
+        {
+            string settingValue = null;
+            if (!string.IsNullOrEmpty(settingKey))
+            {
+                settingValue = Environment.GetEnvironmentVariable(settingKey);
+            }
+
+            return settingValue;
+        }
+}
 }
