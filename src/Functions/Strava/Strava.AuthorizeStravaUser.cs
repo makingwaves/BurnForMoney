@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -12,6 +13,8 @@ namespace BurnForMoney.Functions.Strava
     {
         private const int AuthorisationCodeLength = 40;
         private static TraceWriter _log;
+        private const string StravaAuthorizationUrl = "https://www.strava.com/oauth/authorize";
+        private const string AzureHostUrl = "https://functions.azure.com";
 
         [FunctionName("AuthorizeStravaUser")]
         public static async Task<IActionResult> RunAuthorizeStravaUser([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "strava/authorize")]
@@ -19,6 +22,13 @@ namespace BurnForMoney.Functions.Strava
         {
             _log = log;
             _log.Info("AuthorizeStravaUser function processed a request.");
+
+            var referer = req.Headers["Referer"].FirstOrDefault();
+            if (string.IsNullOrEmpty(referer) || !(referer.StartsWith(StravaAuthorizationUrl) || referer.StartsWith(AzureHostUrl)))
+            {
+                log.Warning($"Request referer [{referer ?? "null"}] is not authorized.");
+                return new UnauthorizedResult();
+            }
 
             string code = req.Query["code"];
             if (string.IsNullOrWhiteSpace(code))
