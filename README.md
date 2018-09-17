@@ -18,7 +18,7 @@
 
 ### Strava API
 
-* Authorization: https://www.strava.com/oauth/authorize?client_id=client_id&response_type=code&redirect_uri=https://burnformoney-test.azurewebsites.net/api/strava/authorize/&approval_prompt=force
+* Authorization: https://www.strava.com/oauth/authorize?client_id=client_id&response_type=code&redirect_uri=https://burnformoneyfunc-test.azurewebsites.net/api/strava/authorize/&approval_prompt=force
 * Rate limits: 600 requests every 15 minutes, 30000 daily
 * Documentation: https://developers.strava.com/docs/
 * Authentication: https://developers.strava.com/docs/authentication/
