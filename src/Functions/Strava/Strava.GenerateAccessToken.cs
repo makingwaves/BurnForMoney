@@ -4,6 +4,7 @@ using System.Net;
 using System.Threading.Tasks;
 using BurnForMoney.Functions.Auth;
 using BurnForMoney.Functions.Configuration;
+using BurnForMoney.Functions.Strava.Api;
 using Dapper;
 using Microsoft.Azure.KeyVault;
 using Microsoft.Azure.WebJobs;

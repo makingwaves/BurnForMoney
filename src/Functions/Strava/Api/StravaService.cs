@@ -1,7 +1,7 @@
 using BurnForMoney.Functions.Auth;
 using RestSharp;
 
-namespace BurnForMoney.Functions.Strava
+namespace BurnForMoney.Functions.Strava.Api
 {
     public class StravaService
     {

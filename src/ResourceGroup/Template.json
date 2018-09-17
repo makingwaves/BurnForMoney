@@ -275,6 +275,19 @@
           }
         },
         {
+          "name": "AllowMakingWaves",
+          "type": "firewallrules",
+          "location": "[resourceGroup().location]",
+          "apiVersion": "2014-04-01-preview",
+          "dependsOn": [
+            "[resourceId('Microsoft.Sql/servers', variables('sqlserverName'))]"
+          ],
+          "properties": {
+            "startIpAddress": "89.174.102.0",
+            "endIpAddress": "89.174.102.63"
+          }
+        },
+        {
           "name": "[variables('sqlDbName')]",
           "type": "databases",
           "location": "[resourceGroup().location]",
