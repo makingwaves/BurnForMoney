@@ -1,8 +1,7 @@
 ﻿using System;
-using System.Data.SqlClient;
 using System.Threading.Tasks;
 using BurnForMoney.Functions.Configuration;
-using Dapper;
+using BurnForMoney.Functions.Strava.Repository;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
@@ -21,18 +20,8 @@ namespace BurnForMoney.Functions.Support
             log.Info("InitializeDatabase function processed a request.");
 
             var settings = Configuration.GetSettings(context);
-            if (!settings.IsValid())
-            {
-                throw new Exception("Cannot read configuration file.");
-            }
-
-            using (var conn = new SqlConnection(settings.ConnectionStrings.SqlDbConnectionString))
-            {
-                await conn.ExecuteAsync("CREATE TABLE dbo.[Strava.AccessTokens] ([AthleteId][int] NOT NULL, [FirstName][nvarchar](50), [LastName][nvarchar](50), [AccessToken][nvarchar](100) NOT NULL, [Active][bit] NOT NULL, PRIMARY KEY (AthleteId))")
-                    .ConfigureAwait(false);
-
-                log.Info("dbo.[Strava.AccessTokens] table created.");
-            }
+            var repository = new AthleteRepository(settings.ConnectionStrings.SqlDbConnectionString, log);
+            await repository.BootstrapAsync().ConfigureAwait(false);
 
             return new OkObjectResult("SQL database hase been bootstrapped successfully.");
         }
