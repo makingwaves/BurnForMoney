@@ -9,7 +9,9 @@ function CreateKeyVault {
 	if (-not (Get-AzureRmKeyVault -VaultName $KeyVaultName))
 	{
 		Write-Host "Creating KeyVault: [$KeyVaultName]"
-		New-AzureRmKeyVault -VaultName $KeyVaultName -ResourceGroupName $ResourceGroupName -Location $ResourceGroupLocation -EnabledForTemplateDeployment
+		New-AzureRmKeyVault -VaultName $KeyVaultName -ResourceGroupName $ResourceGroupName -Location $ResourceGroupLocation -EnabledForTemplateDeployment -EnableSoftDelete
+
+		Set-AzureRmKeyVaultAccessPolicy -VaultName $KeyVaultName -EmailAddress 'pawel.maga@makingwaves.com' -PermissionsToKeys decrypt,sign,get,unwrapKey -PermissionsToSecrets Get, Set, List, Delete
 	}
 }
 
@@ -40,8 +42,6 @@ function DeployCredentials {
 					-ResourceGroupName $ResourceGroupName `
 					-ResourceGroupLocation $ResourceGroupLocation `
 					-KeyVaultName $KeyVaultName
-	
-	Set-AzureRmKeyVaultAccessPolicy -VaultName $KeyVaultName -EmailAddress 'pawel.maga@makingwaves.com' -PermissionsToKeys decrypt,sign,get,unwrapKey -PermissionsToSecrets Get, Set, List, Delete
 
 	$secrets = "sqlServerPassword", "stravaAccessTokensEncryptionKey", "stravaClientId", "stravaClientSecret"
 
