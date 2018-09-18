@@ -32,6 +32,7 @@ Application passwords are deployed by ARM scripts to [Key Vault](https://docs.mi
 
 * Documentation: https://docs.microsoft.com/en-us/azure/key-vault/
 * Access: In order to get secrets from Azure Key Vault, user/application must be authorized. User can be authorized via email address, but applications must be registered via [Azure Managed Service Identity](https://docs.microsoft.com/en-us/azure/app-service/app-service-managed-service-identity#creating-an-app-with-an-identity). All access policies should be added to ARM script (section Microsoft.KeyVault/vaults/accessPolicies).
+* Azure Key Vault is additionally protected by a '[soft-delete](https://docs.microsoft.com/en-us/azure/key-vault/key-vault-ovw-soft-delete)' feature that allows to recover an entire resource in case of accidental deletion.
 
 ### Automation
 
