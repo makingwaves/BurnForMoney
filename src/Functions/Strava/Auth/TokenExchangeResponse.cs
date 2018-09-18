@@ -1,11 +1,13 @@
 using BurnForMoney.Functions.Configuration;
+using BurnForMoney.Functions.Strava.Model;
 using Newtonsoft.Json;
 
-namespace BurnForMoney.Functions.Auth
+namespace BurnForMoney.Functions.Strava.Auth
 {
     public class TokenExchangeResponse
     {
         public string AccessToken { get; set; }
+        public Athlete Athlete { get; set; }
 
         public static TokenExchangeResponse FromJson(string json)
         {

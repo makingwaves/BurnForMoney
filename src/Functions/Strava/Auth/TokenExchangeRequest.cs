@@ -1,7 +1,7 @@
 using BurnForMoney.Functions.Configuration;
 using Newtonsoft.Json;
 
-namespace BurnForMoney.Functions.Auth
+namespace BurnForMoney.Functions.Strava.Auth
 {
     public class TokenExchangeRequest
     {

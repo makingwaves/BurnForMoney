@@ -1,7 +1,9 @@
-using BurnForMoney.Functions.Auth;
+using System;
+using System.Net;
+using BurnForMoney.Functions.Strava.Auth;
 using RestSharp;
 
-namespace BurnForMoney.Functions.Strava
+namespace BurnForMoney.Functions.Strava.Api
 {
     public class StravaService
     {
@@ -26,7 +28,13 @@ namespace BurnForMoney.Functions.Strava
                 Code = code
             };
             request.AddParameter("application/json", payLoad.ToJson(), ParameterType.RequestBody);
-            return _restClient.Execute(request);
+            var response = _restClient.Execute(request);
+            if (response.StatusCode != HttpStatusCode.OK)
+            {
+                throw new Exception($"Strava API returned an unsuccessfull status code. Status code: {response.StatusCode}. Content: {response.Content}. Error message: {response.ErrorMessage ?? "null"}");
+            }
+
+            return response;
         }
     }
 }

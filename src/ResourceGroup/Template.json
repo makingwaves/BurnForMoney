@@ -197,6 +197,10 @@
               "value": "6.5.0"
             },
             {
+              "name": "MSDEPLOY_RENAME_LOCKED_FILES",
+              "value": "1"
+            },
+            {
               "name": "Strava.ClientId",
               "value": "[parameters('strava.clientId')]"
             },
@@ -268,6 +272,19 @@
           "properties": {
             "startIpAddress": "193.25.0.11",
             "endIpAddress": "193.25.0.11"
+          }
+        },
+        {
+          "name": "AllowMakingWaves",
+          "type": "firewallrules",
+          "location": "[resourceGroup().location]",
+          "apiVersion": "2014-04-01-preview",
+          "dependsOn": [
+            "[resourceId('Microsoft.Sql/servers', variables('sqlserverName'))]"
+          ],
+          "properties": {
+            "startIpAddress": "89.174.102.0",
+            "endIpAddress": "89.174.102.63"
           }
         },
         {

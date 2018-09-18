@@ -1,8 +1,0 @@
-.Slider {
-  width: 100%; }
-  .Slider__prev, .Slider__next {
-    display: block;
-    background: transparent;
-    border: 1px solid #000;
-    padding: 15px 15px;
-    cursor: pointer; }

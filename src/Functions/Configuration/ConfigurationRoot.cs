@@ -4,6 +4,7 @@ namespace BurnForMoney.Functions.Configuration
     {
         public StravaConfigurationSection Strava { get; set; }
         public ConnectionStringsSection ConnectionStrings { get; set; }
+        public bool IsLocalEnvironment { get; set; }
 
         public bool IsValid()
         {
