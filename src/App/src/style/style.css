@@ -4,6 +4,9 @@ body {
   font-size: 18px;
   font-family: 'Volte2', sans-serif; }
 
+button {
+  border: none; }
+
 @font-face {
   font-family: 'Volte2';
   font-weight: normal;

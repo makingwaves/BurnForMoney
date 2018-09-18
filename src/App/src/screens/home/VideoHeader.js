@@ -2,7 +2,10 @@ import React, { Component } from 'react';
 import Modal from 'react-modal';
 
 import './VideoHeader.css';
-import logo from 'img/logo.svg';
+import logoMW from 'img/mw-logo.svg';
+import logoBFMblue from 'img/bfm-logo-blue.svg';
+import awardCSR from 'img/award-csr.svg';
+import arrowDown from 'img/arrow-down.svg';
 import bfmVideo from 'video/BFM.mp4';
 
 const customStyles = {
@@ -63,14 +66,24 @@ class VideoHeader extends Component {
   render() {
     return (
       <div className="VideoHeader">
-        <video loop muted autoPlay poster={logo} className="VideoHeader__background">
+        <video loop muted autoPlay className="VideoHeader__background">
             <source src={bfmVideo} type="video/mp4"/>
         </video>
+        <a href="http://makingwaves.com">
+          <img src={logoMW} alt="Making Waves" className="VideoHeader__logoMw" />
+        </a>
+        <img src={awardCSR} alt="1. miejsce Dobra Praktyka CSR" className="VideoHeader__award" />
+
         <div className="VideoHeader__content">
-          <img src={logo} alt="Burn for money" className="VideoHeader__logo" />
-          <p>workout to support charity</p>
-          <button onClick = {this.openModal} >watch in action</button>
+          <img src={logoBFMblue} alt="Burn for money" className="VideoHeader__logo" />
+          <div className="VideoHeader__title">
+            <span className="VideoHeader__title-line">Workout</span><br/>
+            <span className="VideoHeader__title-line">to support</span><br/>
+            <span className="VideoHeader__title-line">charity</span>
+          </div>
+          <button className="VideoHeader__openVideo" onClick={this.openModal} >Watch in action</button>
         </div>
+        <button className="VideoHeader__goDown"></button>
 
         <Modal
           isOpen={this.state.modalIsOpen}

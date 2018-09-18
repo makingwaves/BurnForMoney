@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="25px" height="25px" viewBox="0 0 25 25" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 51.3 (57544) - http://www.bohemiancoding.com/sketch -->
+    <title>Combined Shape</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="bfm-home" transform="translate(-465.000000, -514.000000)" fill="#000000" fill-rule="nonzero">
+            <g id="Group" transform="translate(452.000000, 501.000000)">
+                <path d="M25.5,38 C18.5964406,38 13,32.4035594 13,25.5 C13,18.5964406 18.5964406,13 25.5,13 C32.4035594,13 38,18.5964406 38,25.5 C38,32.4035594 32.4035594,38 25.5,38 Z M30.3261719,25.3261719 L22.3261719,20.3261719 L22.3261719,30.3261719 L30.3261719,25.3261719 Z" id="Combined-Shape"></path>
+            </g>
+        </g>
+    </g>
+</svg>
