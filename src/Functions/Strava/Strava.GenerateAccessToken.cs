@@ -1,5 +1,3 @@
-using System;
-using System.Net;
 using System.Threading.Tasks;
 using BurnForMoney.Functions.Configuration;
 using BurnForMoney.Functions.Strava.Api;
@@ -31,7 +29,7 @@ namespace BurnForMoney.Functions.Strava
             response.AccessToken = encryptedAccessToken;
 
             var repository = new AthleteRepository(_configuration.ConnectionStrings.SqlDbConnectionString, _log);
-            await repository.AddAsync(response.Athlete, response.AccessToken).ConfigureAwait(false);
+            await repository.UpsertAsync(response.Athlete, response.AccessToken).ConfigureAwait(false);
         }
 
         private static void LoadSettings(ExecutionContext context)
@@ -42,6 +40,23 @@ namespace BurnForMoney.Functions.Strava
             }
 
             _configuration = new ApplicationConfiguration().GetSettings(context);
+        }
+
+        private static TokenExchangeResponse RequestForAccessToken(int clientId, string clientSecret, string code)
+        {
+            var stravaService = new StravaService();
+            var response = stravaService.ExchangeToken(clientId, clientSecret, code);
+
+            return TokenExchangeResponse.FromJson(response.Content);
+        }
+
+        private static async Task<string> EncryptAccessTokenAsync(string accessToken, string keyVaultConnectionString)
+        {
+            var encryptionKey = await GetEncryptionKeyAsync(keyVaultConnectionString).ConfigureAwait(false);
+            var encryptedToken = Cryptography.EncryptString(accessToken, encryptionKey);
+            _log.Info("Access token has been encrypted.");
+
+            return encryptedToken;
         }
 
         private static async Task<string> GetEncryptionKeyAsync(string keyVaultConnectionString)
@@ -55,27 +70,6 @@ namespace BurnForMoney.Functions.Strava
             }
 
             return _accessTokenEncryptionKey;
-        }
-
-        private static TokenExchangeResponse RequestForAccessToken(int clientId, string clientSecret, string code)
-        {
-            var stravaService = new StravaService();
-            var response = stravaService.ExchangeToken(clientId, clientSecret, code);
-            if (response.StatusCode != HttpStatusCode.OK)
-            {
-                throw new Exception($"Strava API returned an unsuccessfull status code. Status code: {response.StatusCode}. Content: {response.Content}. Error message: {response.ErrorMessage ?? "null"}");
-            }
-
-            return TokenExchangeResponse.FromJson(response.Content);
-        }
-
-        private static async Task<string> EncryptAccessTokenAsync(string accessToken, string keyVaultConnectionString)
-        {
-            var encryptionKey = await GetEncryptionKeyAsync(keyVaultConnectionString).ConfigureAwait(false);
-            var encryptedToken = Cryptography.EncryptString(accessToken, encryptionKey);
-            _log.Info("Access token has been encrypted.");
-
-            return encryptedToken;
         }
     }
 }
