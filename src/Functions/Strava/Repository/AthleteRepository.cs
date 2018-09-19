@@ -47,7 +47,7 @@ namespace BurnForMoney.Functions.Strava.Repository
                         }, commandType: CommandType.StoredProcedure)
                     .ConfigureAwait(false);
 
-                _log.Info($"Athlete {athlete.Firstname} {athlete.Lastname} has been saved successfully");
+                _log.Info($"Athlete: {athlete.Firstname} {athlete.Lastname} has been saved successfully");
             }
         }
     }
