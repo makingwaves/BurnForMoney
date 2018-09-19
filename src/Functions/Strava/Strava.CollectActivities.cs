@@ -1,7 +1,7 @@
+using System;
 using System.Threading.Tasks;
 using BurnForMoney.Functions.Configuration;
 using BurnForMoney.Functions.Strava.Api;
-using BurnForMoney.Functions.Strava.Auth;
 using BurnForMoney.Functions.Strava.Repository;
 using Microsoft.Azure.KeyVault;
 using Microsoft.Azure.WebJobs;
@@ -9,25 +9,29 @@ using Microsoft.Extensions.Logging;
 
 namespace BurnForMoney.Functions.Strava
 {
-    public static class GenerateAccessToken
+    public static class CollectActivities
     {
         private static ConfigurationRoot _configuration;
         private static string _accessTokenEncryptionKey;
         private static ILogger _log;
 
-        [FunctionName("GenerateAccessToken")]
-        public static async Task RunGenerateAccessToken([QueueTrigger(QueueNames.AuthorizationCodes)]string myQueueItem, ILogger log,
-            ExecutionContext context)
+        [Disable]
+        [FunctionName("CollectActivities")]
+        public static async Task RunCollectActivitiesAsync([TimerTrigger("0 */20 * * * *")]TimerInfo myTimer, ILogger log, ExecutionContext context)
         {
             _log = log;
-            _log.LogInformation("GenerateAccessToken function processed a request.");
-
+            _log.LogInformation($"CollectActivities timer trigger processed a request at {DateTime.Now}.");
             await LoadSettingsAsync(context).ConfigureAwait(false);
 
-            var response = RequestForAccessToken(_configuration.Strava.ClientId, _configuration.Strava.ClientSecret, myQueueItem);
-           
-            var repository = new AthleteRepository(_configuration.ConnectionStrings.SqlDbConnectionString, _log, _accessTokenEncryptionKey);
-            await repository.UpsertAsync(response.Athlete, response.AccessToken).ConfigureAwait(false);
+            var athletesRepository = new AthleteRepository(_configuration.ConnectionStrings.SqlDbConnectionString, log, _accessTokenEncryptionKey);
+            var accessTokens = await athletesRepository.GetAllActiveAccessTokensAsync().ConfigureAwait(false);
+
+            var stravaService = new StravaService();
+
+            foreach (var accessToken in accessTokens)
+            {
+                var activities = stravaService.GetActivities(accessToken);
+            }
         }
 
         private static async Task LoadSettingsAsync(ExecutionContext context)
@@ -46,12 +50,6 @@ namespace BurnForMoney.Functions.Strava
                     .ConfigureAwait(false);
                 _accessTokenEncryptionKey = secret.Value;
             }
-        }
-
-        private static TokenExchangeResponse RequestForAccessToken(int clientId, string clientSecret, string code)
-        {
-            var stravaService = new StravaService();
-            return stravaService.ExchangeToken(clientId, clientSecret, code);
         }
     }
 }

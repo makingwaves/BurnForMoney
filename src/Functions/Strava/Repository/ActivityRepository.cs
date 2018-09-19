@@ -1,16 +1,16 @@
 ﻿using System.Data.SqlClient;
 using System.Threading.Tasks;
 using Dapper;
-using Microsoft.Azure.WebJobs.Host;
+using Microsoft.Extensions.Logging;
 
 namespace BurnForMoney.Functions.Strava.Repository
 {
     public class ActivityRepository : IRepository
     {
         private readonly string _connectionString;
-        private readonly TraceWriter _log;
+        private readonly ILogger _log;
 
-        public ActivityRepository(string connectionString, TraceWriter log)
+        public ActivityRepository(string connectionString, ILogger log)
         {
             _connectionString = connectionString;
             _log = log;
@@ -23,7 +23,7 @@ namespace BurnForMoney.Functions.Strava.Repository
                 await conn.ExecuteAsync("CREATE TABLE dbo.[Strava.Activities] ([AthleteId][int] NOT NULL, [ActivityId][int] NOT NULL, [ActivityTime][datetime2], [ActivityType][nvarchar](50), [Distance][int], [MovingTime][int], FOREIGN KEY (AthleteId) REFERENCES dbo.[Strava.Athletes](AthleteId))")
                     .ConfigureAwait(false);
 
-                _log.Info("dbo.[Strava.Activities] table created.");
+                _log.LogInformation("dbo.[Strava.Activities] table created.");
             }
         }
     }

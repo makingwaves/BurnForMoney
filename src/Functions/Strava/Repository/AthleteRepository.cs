@@ -1,21 +1,25 @@
-﻿using System.Data;
+﻿using System.Collections.Generic;
+using System.Data;
 using System.Data.SqlClient;
+using System.Linq;
 using System.Threading.Tasks;
 using BurnForMoney.Functions.Strava.Model;
 using Dapper;
-using Microsoft.Azure.WebJobs.Host;
+using Microsoft.Extensions.Logging;
 
 namespace BurnForMoney.Functions.Strava.Repository
 {
     public class AthleteRepository : IRepository
     {
         private readonly string _connectionString;
-        private readonly TraceWriter _log;
+        private readonly ILogger _log;
+        private readonly string _accessTokensEncryptionKey;
 
-        public AthleteRepository(string connectionString, TraceWriter log)
+        public AthleteRepository(string connectionString, ILogger log, string accessTokensEncryptionKey)
         {
             _connectionString = connectionString;
             _log = log;
+            _accessTokensEncryptionKey = accessTokensEncryptionKey;
         }
 
         public async Task BootstrapAsync()
@@ -28,8 +32,20 @@ namespace BurnForMoney.Functions.Strava.Repository
                 await conn.ExecuteAsync(StoredProcedures.StoredProcedures.Strava_Athlete_Upsert)
                     .ConfigureAwait(false);
 
-                _log.Info("dbo.[Strava.Athletes] table created.");
+                _log.LogInformation("dbo.[Strava.Athletes] table created.");
             }
+        }
+
+        public async Task<List<string>> GetAllActiveAccessTokensAsync()
+        {
+            IEnumerable<string> tokens = Enumerable.Empty<string>();
+            using (var conn = new SqlConnection(_connectionString))
+            {
+                tokens = await conn.QueryAsync<string>("SELECT AccessToken FROM dbo.[Strava.Athletes] where Active = 1")
+                    .ConfigureAwait(false);
+            }
+
+            return tokens.Select(token => DecryptAccessToken(token)).ToList();
         }
 
         public async Task UpsertAsync(Athlete athlete, string accessToken)
@@ -42,13 +58,29 @@ namespace BurnForMoney.Functions.Strava.Repository
                             AthleteId = athlete.Id,
                             FirstName = athlete.Firstname,
                             LastName = athlete.Lastname,
-                            AccessToken = accessToken,
+                            AccessToken = EncryptAccessToken(accessToken),
                             Active = true
                         }, commandType: CommandType.StoredProcedure)
                     .ConfigureAwait(false);
 
-                _log.Info($"Athlete: {athlete.Firstname} {athlete.Lastname} has been saved successfully");
+                _log.LogInformation($"Athlete: {athlete.Firstname} {athlete.Lastname} has been saved successfully");
             }
+        }
+
+        private string DecryptAccessToken(string encryptedAccessToken)
+        {
+            var encryptedToken = Cryptography.DecryptString(encryptedAccessToken, _accessTokensEncryptionKey);
+            _log.LogInformation("Access token has been decrypted.");
+
+            return encryptedToken;
+        }
+
+        private string EncryptAccessToken(string accessToken)
+        {
+            var encryptedToken = Cryptography.EncryptString(accessToken, _accessTokensEncryptionKey);
+            _log.LogInformation("Access token has been encrypted.");
+
+            return encryptedToken;
         }
     }
 }
