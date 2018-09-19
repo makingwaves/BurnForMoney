@@ -38,14 +38,14 @@ namespace BurnForMoney.Functions.Strava.Repository
 
         public async Task<List<string>> GetAllActiveAccessTokensAsync()
         {
-            IEnumerable<string> tokens = Enumerable.Empty<string>();
+            var tokens = Enumerable.Empty<string>();
             using (var conn = new SqlConnection(_connectionString))
             {
                 tokens = await conn.QueryAsync<string>("SELECT AccessToken FROM dbo.[Strava.Athletes] where Active = 1")
                     .ConfigureAwait(false);
             }
 
-            return tokens.Select(token => DecryptAccessToken(token)).ToList();
+            return tokens.Select(DecryptAccessToken).ToList();
         }
 
         public async Task UpsertAsync(Athlete athlete, string accessToken)
@@ -69,10 +69,10 @@ namespace BurnForMoney.Functions.Strava.Repository
 
         private string DecryptAccessToken(string encryptedAccessToken)
         {
-            var encryptedToken = Cryptography.DecryptString(encryptedAccessToken, _accessTokensEncryptionKey);
+            var decryptedToken = Cryptography.DecryptString(encryptedAccessToken, _accessTokensEncryptionKey);
             _log.LogInformation("Access token has been decrypted.");
 
-            return encryptedToken;
+            return decryptedToken;
         }
 
         private string EncryptAccessToken(string accessToken)

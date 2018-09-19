@@ -61,20 +61,35 @@ namespace BurnForMoney.Functions.Strava.Repository.StoredProcedures {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to CREATE PROCEDURE s_Athletes_Upsert ( @AthleteId int, @FirstName nvarchar(50), @LastName nvarchar(50), @AccessToken nvarchar(100), @Active bit)
+        ///   Looks up a localized string similar to CREATE PROCEDURE Strava_Athlete_Upsert ( @AthleteId int, @ActivityId int, @ActivityTime datetime2, @ActivityType nvarchar(50), @Distance float, @MovingTime int)
         ///AS 
         ///  SET TRANSACTION ISOLATION LEVEL SERIALIZABLE;
         ///  BEGIN TRAN
         /// 
-        ///    IF EXISTS ( SELECT * FROM dbo.[Strava.Athletes] WITH (UPDLOCK) WHERE AthleteId = @Id )
+        ///    IF NOT EXISTS ( SELECT * FROM dbo.[Strava.Activities] WITH (UPDLOCK) WHERE ActivityId = @ActivityId)
+        ///
+        ///      INSERT dbo.[Strava.Activities] ( AthleteId, ActivityId, ActivityTime, ActivityType, Distance, MovingTime)
+        ///      VALUES ( @AthleteId, @ActivityId, @ActivityTime, @Ac [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string Strava_Activity_Insert {
+            get {
+                return ResourceManager.GetString("Strava_Activity_Insert", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to CREATE PROCEDURE Strava_Athlete_Upsert ( @AthleteId int, @FirstName nvarchar(50), @LastName nvarchar(50), @AccessToken nvarchar(100), @Active bit)
+        ///AS 
+        ///  SET TRANSACTION ISOLATION LEVEL SERIALIZABLE;
+        ///  BEGIN TRAN
+        /// 
+        ///    IF EXISTS ( SELECT * FROM dbo.[Strava.Athletes] WITH (UPDLOCK) WHERE AthleteId = @AthleteId)
         /// 
         ///      UPDATE dbo.[Strava.Athletes]
-        ///         SET FirstName = @FirstName, LastName = @LastName, AccessToken = @Token, Active = @Active
+        ///         SET FirstName = @FirstName, LastName = @LastName, AccessToken = @AccessToken, Active = @Active
         ///       WHERE AthleteId = @AthleteId;
         /// 
-        ///    ELSE 
-        /// 
-        ///      INSERT [rest of string was truncated]&quot;;.
+        ///    ELSE         /// [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string Strava_Athlete_Upsert {
             get {

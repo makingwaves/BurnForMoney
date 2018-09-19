@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using BurnForMoney.Functions.Configuration;
 using BurnForMoney.Functions.Strava.Api;
@@ -26,11 +27,20 @@ namespace BurnForMoney.Functions.Strava
             var athletesRepository = new AthleteRepository(_configuration.ConnectionStrings.SqlDbConnectionString, log, _accessTokenEncryptionKey);
             var accessTokens = await athletesRepository.GetAllActiveAccessTokensAsync().ConfigureAwait(false);
 
+            var activityRepository = new ActivityRepository(_configuration.ConnectionStrings.SqlDbConnectionString, log);
             var stravaService = new StravaService();
 
             foreach (var accessToken in accessTokens)
             {
                 var activities = stravaService.GetActivities(accessToken);
+                var activitiesFromCurrentMonth =
+                    activities.Where(activity => activity.StartDate.Month == DateTime.UtcNow.Month)
+                    .ToList();
+
+                foreach (var activity in activitiesFromCurrentMonth)
+                {
+                    await activityRepository.InsertAsync(activity).ConfigureAwait(false);
+                }
             }
         }
 
