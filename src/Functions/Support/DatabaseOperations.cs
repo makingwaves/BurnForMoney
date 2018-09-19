@@ -20,12 +20,11 @@ namespace BurnForMoney.Functions.Support
             log.Info("InitializeDatabase function processed a request.");
 
             var settings = Configuration.GetSettings(context);
-            var repositories = new IRepository[]
-            {
-                new AthleteRepository(settings.ConnectionStrings.SqlDbConnectionString, log),
-                new ActivityRepository(settings.ConnectionStrings.SqlDbConnectionString, log)
-            };
-            await Task.WhenAll(repositories.Select(r => r.BootstrapAsync())).ConfigureAwait(false);
+
+            await new AthleteRepository(settings.ConnectionStrings.SqlDbConnectionString, log).BootstrapAsync()
+                .ConfigureAwait(false);
+            await new ActivityRepository(settings.ConnectionStrings.SqlDbConnectionString, log).BootstrapAsync()
+                .ConfigureAwait(false);
 
             return new OkObjectResult("SQL database hase been bootstrapped successfully.");
         }
