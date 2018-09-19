@@ -7,7 +7,7 @@ using Microsoft.Azure.WebJobs.Host;
 
 namespace BurnForMoney.Functions.Strava.Repository
 {
-    public class AthleteRepository
+    public class AthleteRepository : IRepository
     {
         private readonly string _connectionString;
         private readonly TraceWriter _log;

@@ -1,4 +1,4 @@
-﻿using System;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using BurnForMoney.Functions.Configuration;
 using BurnForMoney.Functions.Strava.Repository;
@@ -20,8 +20,12 @@ namespace BurnForMoney.Functions.Support
             log.Info("InitializeDatabase function processed a request.");
 
             var settings = Configuration.GetSettings(context);
-            var repository = new AthleteRepository(settings.ConnectionStrings.SqlDbConnectionString, log);
-            await repository.BootstrapAsync().ConfigureAwait(false);
+            var repositories = new IRepository[]
+            {
+                new AthleteRepository(settings.ConnectionStrings.SqlDbConnectionString, log),
+                new ActivityRepository(settings.ConnectionStrings.SqlDbConnectionString, log)
+            };
+            await Task.WhenAll(repositories.Select(r => r.BootstrapAsync())).ConfigureAwait(false);
 
             return new OkObjectResult("SQL database hase been bootstrapped successfully.");
         }
