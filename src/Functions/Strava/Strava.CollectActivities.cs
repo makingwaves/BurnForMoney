@@ -18,7 +18,7 @@ namespace BurnForMoney.Functions.Strava
 
         [Disable]
         [FunctionName("CollectActivities")]
-        public static async Task RunCollectActivitiesAsync([TimerTrigger("0 */20 * * * *")]TimerInfo myTimer, ILogger log, ExecutionContext context)
+        public static async Task RunCollectActivitiesAsync([TimerTrigger("0 */20 * * * *"), Disable]TimerInfo myTimer, ILogger log, ExecutionContext context)
         {
             _log = log;
             _log.LogInformation($"CollectActivities timer trigger processed a request at {DateTime.Now}.");
