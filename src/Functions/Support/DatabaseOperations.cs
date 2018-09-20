@@ -1,5 +1,4 @@
 ﻿using System.Reflection;
-using System.Threading.Tasks;
 using BurnForMoney.Functions.Configuration;
 using DbUp;
 using Microsoft.AspNetCore.Http;
@@ -21,11 +20,12 @@ namespace BurnForMoney.Functions.Support
 
             var settings = Configuration.GetSettings(context);
 
+            var logger = new DbUpLogger(log);
             var upgrader =
                 DeployChanges.To
                     .SqlDatabase(settings.ConnectionStrings.SqlDbConnectionString)
                     .WithScriptsEmbeddedInAssembly(Assembly.GetExecutingAssembly())
-                    .LogToConsole()
+                    .LogTo(logger)
                     .Build();
 
             var result = upgrader.PerformUpgrade();
