@@ -1,6 +1,7 @@
-﻿using System.Threading.Tasks;
+﻿using System.Reflection;
+using System.Threading.Tasks;
 using BurnForMoney.Functions.Configuration;
-using BurnForMoney.Functions.Strava.Repository;
+using DbUp;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
@@ -20,10 +21,19 @@ namespace BurnForMoney.Functions.Support
 
             var settings = Configuration.GetSettings(context);
 
-            await new AthleteRepository(settings.ConnectionStrings.SqlDbConnectionString, log, null).BootstrapAsync()
-                .ConfigureAwait(false);
-            await new ActivityRepository(settings.ConnectionStrings.SqlDbConnectionString, log).BootstrapAsync()
-                .ConfigureAwait(false);
+            var upgrader =
+                DeployChanges.To
+                    .SqlDatabase(settings.ConnectionStrings.SqlDbConnectionString)
+                    .WithScriptsEmbeddedInAssembly(Assembly.GetExecutingAssembly())
+                    .LogToConsole()
+                    .Build();
+
+            var result = upgrader.PerformUpgrade();
+
+            if (!result.Successful)
+            {
+                return new BadRequestObjectResult(result.Error);
+            }
 
             return new OkObjectResult("SQL database hase been bootstrapped successfully.");
         }

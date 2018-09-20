@@ -4,7 +4,18 @@
     <AzureFunctionsVersion>v2</AzureFunctionsVersion>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="Persistance\SqlScripts\Script0001 - Create tables.sql" />
+    <None Remove="Persistance\SqlScripts\Script0002- Alter Strava_Athlete_Upsert procedure.sql" />
+    <None Remove="Persistance\SqlScripts\Script0003- Alter Strava_Activity_Insert procedure.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Persistance\SqlScripts\Script0001 - Create tables.sql" />
+    <EmbeddedResource Include="Persistance\SqlScripts\Script0002- Alter Strava_Athlete_Upsert procedure.sql" />
+    <EmbeddedResource Include="Persistance\SqlScripts\Script0003- Alter Strava_Activity_Insert procedure.sql" />
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="Dapper" Version="1.50.5" />
+    <PackageReference Include="dbup-sqlserver" Version="4.1.0" />
     <PackageReference Include="Microsoft.Azure.KeyVault" Version="3.0.0" />
     <PackageReference Include="Microsoft.Azure.Services.AppAuthentication" Version="1.1.0-preview" />
     <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.Storage" Version="3.0.0-rc1" />
