@@ -5,7 +5,7 @@ using BurnForMoney.Functions.Strava.Auth;
 using BurnForMoney.Functions.Strava.Repository;
 using Microsoft.Azure.KeyVault;
 using Microsoft.Azure.WebJobs;
-using Microsoft.Azure.WebJobs.Host;
+using Microsoft.Extensions.Logging;
 
 namespace BurnForMoney.Functions.Strava
 {
@@ -13,26 +13,24 @@ namespace BurnForMoney.Functions.Strava
     {
         private static ConfigurationRoot _configuration;
         private static string _accessTokenEncryptionKey;
-        private static TraceWriter _log;
+        private static ILogger _log;
 
         [FunctionName("GenerateAccessToken")]
-        public static async Task RunGenerateAccessToken([QueueTrigger(QueueNames.AuthorizationCodes)]string myQueueItem, TraceWriter log,
+        public static async Task RunGenerateAccessToken([QueueTrigger(QueueNames.AuthorizationCodes)]string myQueueItem, ILogger log,
             ExecutionContext context)
         {
             _log = log;
-            _log.Info("GenerateAccessToken function processed a request.");
+            _log.LogInformation("GenerateAccessToken function processed a request.");
 
-            LoadSettings(context);
+            await LoadSettingsAsync(context).ConfigureAwait(false);
 
             var response = RequestForAccessToken(_configuration.Strava.ClientId, _configuration.Strava.ClientSecret, myQueueItem);
-            var encryptedAccessToken = await EncryptAccessTokenAsync(response.AccessToken, _configuration.ConnectionStrings.KeyVaultConnectionString).ConfigureAwait(false);
-            response.AccessToken = encryptedAccessToken;
-
-            var repository = new AthleteRepository(_configuration.ConnectionStrings.SqlDbConnectionString, _log);
+           
+            var repository = new AthleteRepository(_configuration.ConnectionStrings.SqlDbConnectionString, _log, _accessTokenEncryptionKey);
             await repository.UpsertAsync(response.Athlete, response.AccessToken).ConfigureAwait(false);
         }
 
-        private static void LoadSettings(ExecutionContext context)
+        private static async Task LoadSettingsAsync(ExecutionContext context)
         {
             if (_configuration != null)
             {
@@ -40,36 +38,20 @@ namespace BurnForMoney.Functions.Strava
             }
 
             _configuration = new ApplicationConfiguration().GetSettings(context);
+
+            if (string.IsNullOrEmpty(_accessTokenEncryptionKey))
+            {
+                var keyVaultClient = KeyVaultClientFactory.Create();
+                var secret = await keyVaultClient.GetSecretAsync(_configuration.ConnectionStrings.KeyVaultConnectionString + "secrets/" + KeyVaultSecretNames.StravaTokensEncryptionKey)
+                    .ConfigureAwait(false);
+                _accessTokenEncryptionKey = secret.Value;
+            }
         }
 
         private static TokenExchangeResponse RequestForAccessToken(int clientId, string clientSecret, string code)
         {
             var stravaService = new StravaService();
-            var response = stravaService.ExchangeToken(clientId, clientSecret, code);
-
-            return TokenExchangeResponse.FromJson(response.Content);
-        }
-
-        private static async Task<string> EncryptAccessTokenAsync(string accessToken, string keyVaultConnectionString)
-        {
-            var encryptionKey = await GetEncryptionKeyAsync(keyVaultConnectionString).ConfigureAwait(false);
-            var encryptedToken = Cryptography.EncryptString(accessToken, encryptionKey);
-            _log.Info("Access token has been encrypted.");
-
-            return encryptedToken;
-        }
-
-        private static async Task<string> GetEncryptionKeyAsync(string keyVaultConnectionString)
-        {
-            if (string.IsNullOrEmpty(_accessTokenEncryptionKey))
-            {
-                var keyVaultClient = KeyVaultClientFactory.Create();
-                var secret = await keyVaultClient.GetSecretAsync(keyVaultConnectionString + "secrets/" + KeyVaultSecretNames.StravaTokensEncryptionKey)
-                    .ConfigureAwait(false);
-                _accessTokenEncryptionKey = secret.Value;
-            }
-
-            return _accessTokenEncryptionKey;
+            return stravaService.ExchangeToken(clientId, clientSecret, code);
         }
     }
 }

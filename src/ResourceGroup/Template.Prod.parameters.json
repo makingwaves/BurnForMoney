@@ -14,10 +14,20 @@
       }
     },
     "strava.clientId": {
-      "value": 0
+      "reference": {
+        "keyVault": {
+          "id": "/subscriptions/4920733c-19cb-4434-819c-176ee48f6453/resourceGroups/BurnForMoney-Prod/providers/Microsoft.KeyVault/vaults/burnformoneykvprod"
+        },
+        "secretName": "stravaClientId"
+      }
     },
     "strava.clientSecret": {
-      "value": "0"
+      "reference": {
+        "keyVault": {
+          "id": "/subscriptions/4920733c-19cb-4434-819c-176ee48f6453/resourceGroups/BurnForMoney-Prod/providers/Microsoft.KeyVault/vaults/burnformoneykvprod"
+        },
+        "secretName": "stravaClientSecret"
+      }
     }
   }
 }

@@ -11,6 +11,15 @@
 * [Azure Functions Core Tools](https://github.com/Azure/azure-functions-core-tools) - recommended for Mac OS / Linux users, optional for Windows users
 * IDE: [Visual Studio 2017](https://visualstudio.microsoft.com/downloads/) / [Visual Studio Code](https://visualstudio.microsoft.com/downloads/)
 
+### Environments
+
+* **Test:**
+  * Website: https://burnformoney-test.azurewebsites.net/
+  * Api: https://burnformoneyfunc-test.azurewebsites.net/
+* **Production:**
+  - Website: https://burnformoney-prod.azurewebsites.net/
+  - Api: https://burnformoneyfunc-prod.azurewebsites.net/
+
 ### Azure functions
 
 * Documentation: https://docs.microsoft.com/en-us/azure/azure-functions/
