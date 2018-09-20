@@ -15,7 +15,7 @@ namespace BurnForMoney.Functions.Support
         private static readonly ApplicationConfiguration Configuration = new ApplicationConfiguration();
 
         [FunctionName("InitializeDatabase")]
-        public static async Task<IActionResult> RunInitializeDatabase([HttpTrigger(AuthorizationLevel.Admin, "get", Route = "support/intializedatabase")]HttpRequest req, ILogger log, ExecutionContext context)
+        public static IActionResult RunInitializeDatabase([HttpTrigger(AuthorizationLevel.Admin, "get", Route = "support/intializedatabase")]HttpRequest req, ILogger log, ExecutionContext context)
         {
             log.LogInformation("InitializeDatabase function processed a request.");
 

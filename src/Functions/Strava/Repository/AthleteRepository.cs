@@ -22,20 +22,6 @@ namespace BurnForMoney.Functions.Strava.Repository
             _accessTokensEncryptionKey = accessTokensEncryptionKey;
         }
 
-        public async Task BootstrapAsync()
-        {
-            using (var conn = new SqlConnection(_connectionString))
-            {
-                await conn.ExecuteAsync("CREATE TABLE dbo.[Strava.Athletes] ([AthleteId][int] NOT NULL, [FirstName][nvarchar](50), [LastName][nvarchar](50), [AccessToken][nvarchar](100) NOT NULL, [Active][bit] NOT NULL, PRIMARY KEY (AthleteId))")
-                    .ConfigureAwait(false);
-                
-                await conn.ExecuteAsync(StoredProcedures.StoredProcedures.Strava_Athlete_Upsert)
-                    .ConfigureAwait(false);
-
-                _log.LogInformation("dbo.[Strava.Athletes] table created.");
-            }
-        }
-
         public async Task<List<string>> GetAllActiveAccessTokensAsync()
         {
             var tokens = Enumerable.Empty<string>();
@@ -52,7 +38,7 @@ namespace BurnForMoney.Functions.Strava.Repository
         {
             using (var conn = new SqlConnection(_connectionString))
             {
-                await conn.ExecuteAsync(nameof(StoredProcedures.StoredProcedures.Strava_Athlete_Upsert),
+                await conn.ExecuteAsync("Strava_Athlete_Upsert",
                         new
                         {
                             AthleteId = athlete.Id,
