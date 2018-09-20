@@ -1,5 +1,8 @@
-.Slider{
-  width: 100%;
+@import "style/variables.scss";
+
+.CharitySlider{
+  padding-top: 50px;
+  background-color: $secondary-color;
 
   &__prev,
   &__next{
