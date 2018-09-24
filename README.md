@@ -1,5 +1,22 @@
 # Burn for money
 
+### Supported systems
+
+|                 |  Strava  | Endomondo | Runkeeper |
+| :-------------: | :------: | :-------: | :-------: |
+|       Run       | &#x2714; | &#x2714;  | &#x2714;  |
+|      Ride       | &#x2714; | &#x2714;  | &#x2714;  |
+|      Walk       | &#x2714; | &#x2714;  | &#x2714;  |
+|  Winter sports  | &#x2714; | &#x2714;  | &#x2718;  |
+|  Water sports   | &#x2714; | &#x2714;  | &#x2714;  |
+|   Team sports   | &#x2718; | &#x2714;  | &#x2718;  |
+|       Gym       | &#x2714; | &#x2714;  | &#x2714;  |
+|      Hike       | &#x2714; | &#x2714;  | &#x2714;  |
+| Fitness / Dance | &#x2714; | &#x2714;  | &#x2714;  |
+|      Other      | &#x2714; | &#x2714;  | &#x2714;  |
+
+
+
 ### Installation
 
 ### Requirements
