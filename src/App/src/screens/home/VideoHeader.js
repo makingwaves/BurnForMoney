@@ -3,9 +3,8 @@ import Modal from 'react-modal';
 
 import './VideoHeader.css';
 import logoMW from 'img/mw-logo.svg';
-import logoBFMblue from 'img/bfm-logo-blue.svg';
-import awardCSR from 'img/award-csr.svg';
-import arrowDown from 'img/arrow-down.svg';
+import logoBFMblue from './img/bfm-logo-blue.svg';
+import awardCSR from './img/award-csr.svg';
 import bfmVideo from 'video/BFM.mp4';
 
 const customStyles = {

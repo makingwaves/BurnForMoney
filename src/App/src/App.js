@@ -13,7 +13,7 @@ class App extends Component {
   render() {
     return (
       <Router>
-        <div className="container">
+        <div className="App">
           {/*
           <ul>
             <li>

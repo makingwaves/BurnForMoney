@@ -18,3 +18,30 @@ button{
     font-weight: bold;
     src: url('../font/Volte-Bold.otf') format('opentype');
 }
+
+.container{
+  margin: 0 auto;
+  width:880px;
+}
+
+h2{
+  font-size: 50px;
+  line-height: 55px;
+}
+h5{
+  font-size: 18px;
+  line-height: 19px;
+}
+
+.flames{
+  &:before{
+    content:'';
+    background: url('../img/flames.svg') no-repeat;
+    width: 26px;
+    height: 31px;
+    display: inline-block;
+    position: relative;
+    margin-left: -31px;
+    margin-right: 5px;
+  }
+}

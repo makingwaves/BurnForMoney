@@ -1,3 +1,5 @@
+@import "style/variables.scss";
+
 .VideoHeader{
   position: absolute;
   top: 0;
@@ -74,7 +76,7 @@
 
     &:before{
       content:'';
-      background: url('../../img/playBtn.svg');
+      background: url('./img/playBtn.svg');
       display: inline-block;
       width: 25px;
       height:25px;
@@ -87,7 +89,7 @@
     height:60px;
     display: block;
     background-color: #000;
-    background-image: url('../../img/arrow-down.svg');
+    background-image: url('./img/arrowhead-down-blue.svg');
     background-repeat: no-repeat;
     background-position: center 22px;
     border-radius: 30px;

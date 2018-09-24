@@ -1,0 +1,40 @@
+@import "style/variables.scss";
+
+.TotalNumbers{
+  margin-top: 100vh;
+  padding-top: 150px;
+  background-color: $secondary-color;
+
+  &__header{
+    font-weight: normal;
+  }
+
+  &__equation{
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+
+    &-circle{
+      background-color: #fff;
+      width: 240px;
+      height: 240px;
+      border-radius:120px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      font-weight: bold;
+      font-size: 19px;
+      line-height: 1;
+    }
+    &-value{
+      font-size: 40px;
+    }
+
+    &-operator{
+      font-size: 60px;
+      font-weight: bold;
+    }
+  }
+}
