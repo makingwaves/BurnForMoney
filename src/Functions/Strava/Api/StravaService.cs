@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using BurnForMoney.Functions.Configuration;
 using BurnForMoney.Functions.Strava.Auth;
@@ -46,6 +47,14 @@ namespace BurnForMoney.Functions.Strava.Api
             ThrowExceptionIfNotSuccessful(response);
 
             return JsonConvert.DeserializeObject<List<Activity>>(response.Content, new JsonSettings());
+        }
+
+        public IList<Activity> GetActivitiesFromCurrentMonth(string accessToken)
+        {
+            var activitiesFromCurrentMonth = GetActivities(accessToken)
+                .Where(activity => activity.StartDate.Month == DateTime.UtcNow.Month)
+                .ToList();
+            return activitiesFromCurrentMonth;
         }
 
         private static void ThrowExceptionIfNotSuccessful(IRestResponse response)

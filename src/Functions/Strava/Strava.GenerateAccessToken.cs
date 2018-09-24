@@ -2,7 +2,7 @@ using System.Threading.Tasks;
 using BurnForMoney.Functions.Configuration;
 using BurnForMoney.Functions.Strava.Api;
 using BurnForMoney.Functions.Strava.Auth;
-using BurnForMoney.Functions.Strava.Repository;
+using BurnForMoney.Functions.Strava.Services;
 using Microsoft.Azure.KeyVault;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
@@ -24,10 +24,11 @@ namespace BurnForMoney.Functions.Strava
 
             await LoadSettingsAsync(context).ConfigureAwait(false);
 
+            _log.LogInformation($"Requesting for access token using clientId: {_configuration.Strava.ClientId}.");
             var response = RequestForAccessToken(_configuration.Strava.ClientId, _configuration.Strava.ClientSecret, myQueueItem);
            
-            var repository = new AthleteRepository(_configuration.ConnectionStrings.SqlDbConnectionString, _log, _accessTokenEncryptionKey);
-            await repository.UpsertAsync(response.Athlete, response.AccessToken).ConfigureAwait(false);
+            var athleteService = new AthleteService(_configuration.ConnectionStrings.SqlDbConnectionString, _log, _accessTokenEncryptionKey);
+            await athleteService.UpsertAsync(response.Athlete, response.AccessToken).ConfigureAwait(false);
         }
 
         private static async Task LoadSettingsAsync(ExecutionContext context)
@@ -42,7 +43,7 @@ namespace BurnForMoney.Functions.Strava
             if (string.IsNullOrEmpty(_accessTokenEncryptionKey))
             {
                 var keyVaultClient = KeyVaultClientFactory.Create();
-                var secret = await keyVaultClient.GetSecretAsync(_configuration.ConnectionStrings.KeyVaultConnectionString + "secrets/" + KeyVaultSecretNames.StravaTokensEncryptionKey)
+                var secret = await keyVaultClient.GetSecretAsync(_configuration.ConnectionStrings.KeyVaultConnectionString, KeyVaultSecretNames.StravaTokensEncryptionKey)
                     .ConfigureAwait(false);
                 _accessTokenEncryptionKey = secret.Value;
             }

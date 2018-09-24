@@ -5,14 +5,14 @@ using BurnForMoney.Functions.Strava.Model;
 using Dapper;
 using Microsoft.Extensions.Logging;
 
-namespace BurnForMoney.Functions.Strava.Repository
+namespace BurnForMoney.Functions.Strava.Services
 {
-    public class ActivityRepository : IRepository
+    public class ActivityService
     {
         private readonly string _connectionString;
         private readonly ILogger _log;
 
-        public ActivityRepository(string connectionString, ILogger log)
+        public ActivityService(string connectionString, ILogger log)
         {
             _connectionString = connectionString;
             _log = log;

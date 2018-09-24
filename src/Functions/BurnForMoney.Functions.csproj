@@ -7,8 +7,10 @@
     <None Remove="Persistance\SqlScripts\Script0001 - Create tables.sql" />
     <None Remove="Persistance\SqlScripts\Script0002- Alter Strava_Athlete_Upsert procedure.sql" />
     <None Remove="Persistance\SqlScripts\Script0003- Alter Strava_Activity_Insert procedure.sql" />
+    <None Remove="Persistance\SqlScripts\Script0004 - Initialize default activity types.sql" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Persistance\SqlScripts\Script0004 - Initialize default activity types.sql" />
     <EmbeddedResource Include="Persistance\SqlScripts\Script0001 - Create tables.sql" />
     <EmbeddedResource Include="Persistance\SqlScripts\Script0002- Alter Strava_Athlete_Upsert procedure.sql" />
     <EmbeddedResource Include="Persistance\SqlScripts\Script0003- Alter Strava_Activity_Insert procedure.sql" />

@@ -7,15 +7,15 @@ using BurnForMoney.Functions.Strava.Model;
 using Dapper;
 using Microsoft.Extensions.Logging;
 
-namespace BurnForMoney.Functions.Strava.Repository
+namespace BurnForMoney.Functions.Strava.Services
 {
-    public class AthleteRepository : IRepository
+    public class AthleteService
     {
         private readonly string _connectionString;
         private readonly ILogger _log;
         private readonly string _accessTokensEncryptionKey;
 
-        public AthleteRepository(string connectionString, ILogger log, string accessTokensEncryptionKey)
+        public AthleteService(string connectionString, ILogger log, string accessTokensEncryptionKey)
         {
             _connectionString = connectionString;
             _log = log;
