@@ -6,13 +6,13 @@
   <ItemGroup>
     <None Remove="Persistance\SqlScripts\Script0001 - Create tables.sql" />
     <None Remove="Persistance\SqlScripts\Script0002- Alter Strava_Athlete_Upsert procedure.sql" />
+    <None Remove="Persistance\SqlScripts\Script0003- Add index on StartDate dp;umn.sql" />
     <None Remove="Persistance\SqlScripts\Script0003- Alter Strava_Activity_Insert procedure.sql" />
-    <None Remove="Persistance\SqlScripts\Script0004 - Initialize default activity types.sql" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Persistance\SqlScripts\Script0004 - Initialize default activity types.sql" />
     <EmbeddedResource Include="Persistance\SqlScripts\Script0001 - Create tables.sql" />
     <EmbeddedResource Include="Persistance\SqlScripts\Script0002- Alter Strava_Athlete_Upsert procedure.sql" />
+    <EmbeddedResource Include="Persistance\SqlScripts\Script0004- Add index on ActivityTime column.sql" />
     <EmbeddedResource Include="Persistance\SqlScripts\Script0003- Alter Strava_Activity_Insert procedure.sql" />
   </ItemGroup>
   <ItemGroup>
@@ -20,6 +20,7 @@
     <PackageReference Include="dbup-sqlserver" Version="4.1.0" />
     <PackageReference Include="Microsoft.Azure.KeyVault" Version="3.0.0" />
     <PackageReference Include="Microsoft.Azure.Services.AppAuthentication" Version="1.1.0-preview" />
+    <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.DurableTask" Version="1.6.2" />
     <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.Storage" Version="3.0.0-rc1" />
     <PackageReference Include="Microsoft.NET.Sdk.Functions" Version="1.0.21" />
     <PackageReference Include="RestSharp" Version="106.3.1" />

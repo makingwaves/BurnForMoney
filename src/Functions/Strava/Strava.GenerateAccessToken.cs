@@ -27,7 +27,8 @@ namespace BurnForMoney.Functions.Strava
             _log.LogInformation($"Requesting for access token using clientId: {_configuration.Strava.ClientId}.");
             var response = RequestForAccessToken(_configuration.Strava.ClientId, _configuration.Strava.ClientSecret, myQueueItem);
            
-            var athleteService = new AthleteService(_configuration.ConnectionStrings.SqlDbConnectionString, _log, _accessTokenEncryptionKey);
+            var encryptionService = new AccessTokensEncryptionService(log, _accessTokenEncryptionKey);
+            var athleteService = new AthleteService(_configuration.ConnectionStrings.SqlDbConnectionString, _log, encryptionService);
             await athleteService.UpsertAsync(response.Athlete, response.AccessToken).ConfigureAwait(false);
         }
 

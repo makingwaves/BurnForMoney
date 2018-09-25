@@ -13,25 +13,24 @@ namespace BurnForMoney.Functions.Strava.Services
     {
         private readonly string _connectionString;
         private readonly ILogger _log;
-        private readonly string _accessTokensEncryptionKey;
+        private readonly IAccessTokensEncryptionService _encryptionService;
 
-        public AthleteService(string connectionString, ILogger log, string accessTokensEncryptionKey)
+        public AthleteService(string connectionString, ILogger log, IAccessTokensEncryptionService encryptionService)
         {
             _connectionString = connectionString;
             _log = log;
-            _accessTokensEncryptionKey = accessTokensEncryptionKey;
+            _encryptionService = encryptionService;
         }
 
-        public async Task<List<string>> GetAllActiveAccessTokensAsync()
+        public async Task<List<string>> GetAllEncryptedActiveAccessTokensAsync()
         {
             var tokens = Enumerable.Empty<string>();
             using (var conn = new SqlConnection(_connectionString))
             {
-                tokens = await conn.QueryAsync<string>("SELECT AccessToken FROM dbo.[Strava.Athletes] where Active = 1")
-                    .ConfigureAwait(false);
+                tokens = await conn.QueryAsync<string>("SELECT AccessToken FROM dbo.[Strava.Athletes] where Active = 1").ConfigureAwait(false);
             }
 
-            return tokens.Select(DecryptAccessToken).ToList();
+            return tokens.Select(_encryptionService.DecryptAccessToken).ToList();
         }
 
         public async Task UpsertAsync(Athlete athlete, string accessToken)
@@ -44,7 +43,7 @@ namespace BurnForMoney.Functions.Strava.Services
                             AthleteId = athlete.Id,
                             FirstName = athlete.Firstname,
                             LastName = athlete.Lastname,
-                            AccessToken = EncryptAccessToken(accessToken),
+                            AccessToken = _encryptionService.EncryptAccessToken(accessToken),
                             Active = true
                         }, commandType: CommandType.StoredProcedure)
                     .ConfigureAwait(false);
@@ -53,20 +52,6 @@ namespace BurnForMoney.Functions.Strava.Services
             }
         }
 
-        private string DecryptAccessToken(string encryptedAccessToken)
-        {
-            var decryptedToken = Cryptography.DecryptString(encryptedAccessToken, _accessTokensEncryptionKey);
-            _log.LogInformation("Access token has been decrypted.");
-
-            return decryptedToken;
-        }
-
-        private string EncryptAccessToken(string accessToken)
-        {
-            var encryptedToken = Cryptography.EncryptString(accessToken, _accessTokensEncryptionKey);
-            _log.LogInformation("Access token has been encrypted.");
-
-            return encryptedToken;
-        }
+        
     }
 }

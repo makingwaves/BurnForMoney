@@ -5,7 +5,7 @@ namespace BurnForMoney.Functions
 {
     public class KeyVaultClientFactory
     {
-        public static KeyVaultClient Create()
+        public static IKeyVaultClient Create()
         {
             var azureServiceTokenProvider = new AzureServiceTokenProvider();
             return new KeyVaultClient(

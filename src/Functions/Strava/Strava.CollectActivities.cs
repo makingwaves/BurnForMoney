@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 using BurnForMoney.Functions.Configuration;
 using BurnForMoney.Functions.Strava.Api;
@@ -14,30 +13,61 @@ namespace BurnForMoney.Functions.Strava
     {
         private static ConfigurationRoot _configuration;
         private static string _accessTokenEncryptionKey;
-        private static ILogger _log;
 
-        [FunctionName("CollectActivities")]
-        public static async Task RunCollectActivitiesAsync([TimerTrigger("0 */20 * * * *")]TimerInfo myTimer, ILogger log, ExecutionContext context)
+        [FunctionName("CollectStravaActivitiesInEvery20Minutes")]
+        public static async Task RunCollectStravaActivitiesInEvery20MinutesAsync([TimerTrigger("0 */2 * * * *")]TimerInfo timer, ILogger log, [OrchestrationClient]DurableOrchestrationClient starter, ExecutionContext executionContext)
         {
-            _log = log;
-            _log.LogInformation($"CollectActivities timer trigger processed a request at {DateTime.Now}.");
-            await LoadSettingsAsync(context).ConfigureAwait(false);
+            log.LogInformation($"CollectStravaActivitiesInEvery20Minutes timer trigger processed a request at {DateTime.Now}.");
 
-            var athletesService = new AthleteService(_configuration.ConnectionStrings.SqlDbConnectionString, log, _accessTokenEncryptionKey);
-            var accessTokens = await athletesService.GetAllActiveAccessTokensAsync().ConfigureAwait(false);
-            _log.LogInformation($"Received information about {accessTokens.Count} active access tokens.");
+            await LoadSettingsAsync(executionContext).ConfigureAwait(false);
+            var instanceId = await starter.StartNewAsync("CollectStravaActivities", null).ConfigureAwait(false);
+            log.LogInformation($"Started orchestration with ID = `{instanceId}`.");
+        }
 
+
+        [FunctionName("CollectStravaActivities")]
+        public static async Task RunCollectStravaActivitiesAsync(ILogger log, [OrchestrationTrigger] DurableOrchestrationContext context, ExecutionContext executionContext)
+        {
+            log.LogInformation("Orchestration function `CollectStravaActivities` received a request.");
+
+            var encryptedAccessTokens = await context.CallActivityAsync<string[]>("GetEncryptedAccessTokens", null).ConfigureAwait(false);
+            var tasks = new Task[encryptedAccessTokens.Length];
+            for (var i = 0; i < encryptedAccessTokens.Length; i++)
+            {
+                tasks[i] = context.CallActivityAsync("CollectSingleUserActivities", encryptedAccessTokens[i]);
+            }
+
+            await Task.WhenAll(tasks).ConfigureAwait(false);
+        }
+
+        [FunctionName("GetEncryptedAccessTokens")]
+        public static async Task<string[]> RunGetEncryptedAccessTokensAsync([ActivityTrigger]DurableActivityContext activityContext, ILogger log, ExecutionContext context)
+        {
+            log.LogInformation($"GetEncryptedAccessTokens function processed a request. Instance id: `{activityContext.InstanceId}`");
+
+            var encryptionService = new AccessTokensEncryptionService(log, _accessTokenEncryptionKey);
+            var athletesService = new AthleteService(_configuration.ConnectionStrings.SqlDbConnectionString, log, encryptionService);
+            var accessTokens = await athletesService.GetAllEncryptedActiveAccessTokensAsync().ConfigureAwait(false);
+            log.LogInformation($"Received information about {accessTokens.Count} active access tokens.");
+
+            return accessTokens.ToArray();
+        }
+
+        [FunctionName("CollectSingleUserActivities")]
+        public static async Task RunCollectSingleUserActivitiesAsync([ActivityTrigger]string accessToken, ILogger log, ExecutionContext context)
+        {
+            log.LogInformation("CollectSingleUserActivities function processed a request.");
+
+            var encryptionService = new AccessTokensEncryptionService(log, _accessTokenEncryptionKey);
             var activityService = new ActivityService(_configuration.ConnectionStrings.SqlDbConnectionString, log);
             var stravaService = new StravaService();
 
-            foreach (var accessToken in accessTokens)
-            {
-                var activities = stravaService.GetActivitiesFromCurrentMonth(accessToken);
+            var decryptedAccessToken = encryptionService.DecryptAccessToken(accessToken);
 
-                foreach (var activity in activities)
-                {
-                    await activityService.InsertAsync(activity).ConfigureAwait(false);
-                }
+            var activities = stravaService.GetActivitiesFromCurrentMonth(decryptedAccessToken);
+            foreach (var activity in activities)
+            {
+                await activityService.InsertAsync(activity).ConfigureAwait(false);
             }
         }
 
