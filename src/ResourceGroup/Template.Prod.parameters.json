@@ -5,6 +5,9 @@
     "environmentCode": {
       "value": "prod"
     },
+    "websiteSkuName": {
+        "value": "D1"
+    },
     "sqlServerPassword": {
       "reference": {
         "keyVault": {
