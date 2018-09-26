@@ -1,7 +1,7 @@
 ﻿using DbUp.Engine.Output;
 using Microsoft.Extensions.Logging;
 
-namespace BurnForMoney.Functions.Support
+namespace BurnForMoney.Functions.Support.Logging
 {
     public class DbUpLogger : IUpgradeLog
     {

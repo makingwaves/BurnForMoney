@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using BurnForMoney.Functions.Configuration;
+using BurnForMoney.Functions.Helpers;
 using BurnForMoney.Functions.Strava.Api;
 using BurnForMoney.Functions.Strava.Services;
 using Microsoft.Azure.KeyVault;
@@ -10,10 +11,10 @@ namespace BurnForMoney.Functions.Strava
 {
     public static class CollectActivitiesActivities
     {
-        [FunctionName("A_GetAccessTokens")]
+        [FunctionName(FunctionsNames.A_GetAccessTokens)]
         public static async Task<string[]> GetAccessTokensAsync([ActivityTrigger]DurableActivityContext activityContext, ILogger log, ExecutionContext context)
         {
-            log.LogInformation($"GetAccessTokens function processed a request. Instance id: `{activityContext.InstanceId}`");
+            log.LogInformation($"{FunctionsNames.A_GetAccessTokens} function processed a request. Instance id: `{activityContext.InstanceId}`");
 
             var configuration = ApplicationConfiguration.GetSettings(context);
             var keyVaultClient = KeyVaultClientFactory.Create();
@@ -30,10 +31,10 @@ namespace BurnForMoney.Functions.Strava
             return accessTokens.ToArray();
         }
 
-        [FunctionName("A_SaveSingleUserActivities")]
+        [FunctionName(FunctionsNames.A_SaveSingleUserActivities)]
         public static async Task SaveSingleUserActivitiesAsync([ActivityTrigger]string accessToken, ILogger log, ExecutionContext context)
         {
-            log.LogInformation("CollectSingleUserActivities function processed a request.");
+            log.LogInformation($"{FunctionsNames.A_SaveSingleUserActivities} function processed a request.");
 
             var configuration = ApplicationConfiguration.GetSettings(context);
             var activityService = new ActivityService(configuration.ConnectionStrings.SqlDbConnectionString, log);

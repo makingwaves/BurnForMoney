@@ -1,5 +1,7 @@
 ﻿using System.Reflection;
 using BurnForMoney.Functions.Configuration;
+using BurnForMoney.Functions.Helpers;
+using BurnForMoney.Functions.Support.Logging;
 using DbUp;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -13,10 +15,10 @@ namespace BurnForMoney.Functions.Support
     {
         private static ConfigurationRoot _configuration;
 
-        [FunctionName("InitializeDatabase")]
+        [FunctionName(FunctionsNames.Support_InitializeDatabase)]
         public static IActionResult RunInitializeDatabase([HttpTrigger(AuthorizationLevel.Admin, "get", Route = "support/intializedatabase")]HttpRequest req, ILogger log, ExecutionContext context)
         {
-            log.LogInformation("InitializeDatabase function processed a request.");
+            log.LogInformation($"{FunctionsNames.Support_InitializeDatabase} function processed a request.");
 
             _configuration = _configuration ?? ApplicationConfiguration.GetSettings(context);
 

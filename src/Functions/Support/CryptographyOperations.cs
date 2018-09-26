@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using BurnForMoney.Functions.Configuration;
+using BurnForMoney.Functions.Helpers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.KeyVault;
@@ -13,10 +14,10 @@ namespace BurnForMoney.Functions.Support
     {
         private static ConfigurationRoot _configuration;
 
-        [FunctionName("EncryptString")]
+        [FunctionName(FunctionsNames.Support_EncryptString)]
         public static async Task<IActionResult> RunEncryptString([HttpTrigger(AuthorizationLevel.Admin, "get", Route = "support/encryptstring")]HttpRequest req, TraceWriter log, ExecutionContext context)
         {
-            log.Info("EncryptString function processed a request.");
+            log.Info($"{FunctionsNames.Support_EncryptString} function processed a request.");
 
             string text = req.Query["text"];
             if (string.IsNullOrWhiteSpace(text))
@@ -33,10 +34,10 @@ namespace BurnForMoney.Functions.Support
             return new OkObjectResult(encryptedText);
         }
 
-        [FunctionName("DecryptString")]
+        [FunctionName(FunctionsNames.Support_DecryptString)]
         public static async Task<IActionResult> RunDecryptString([HttpTrigger(AuthorizationLevel.Admin, "get", Route = "support/decryptstring")]HttpRequest req, TraceWriter log, ExecutionContext context)
         {
-            log.Info("DecryptString function processed a request.");
+            log.Info($"{FunctionsNames.Support_DecryptString} function processed a request.");
 
             string text = req.Query["text"];
             if (string.IsNullOrWhiteSpace(text))
@@ -61,7 +62,7 @@ namespace BurnForMoney.Functions.Support
         {
             var keyVaultClient = KeyVaultClientFactory.Create();
 
-            var secret = await keyVaultClient.GetSecretAsync(keyVaultConnectionString + "secrets/stravaAccessTokensEncryptionKey")
+            var secret = await keyVaultClient.GetSecretAsync(keyVaultConnectionString, KeyVaultSecretNames.StravaTokensEncryptionKey)
                 .ConfigureAwait(false);
             return secret.Value;
         }
