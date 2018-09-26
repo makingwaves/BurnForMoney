@@ -49,12 +49,12 @@ namespace BurnForMoney.Functions.Strava.Api
             return JsonConvert.DeserializeObject<List<Activity>>(response.Content, new JsonSettings());
         }
 
-        public IList<Activity> GetActivitiesFromCurrentMonth(string accessToken)
+        public IList<Activity> GetActivitiesFrom(string accessToken, DateTime dateTimeFrom)
         {
-            var activitiesFromCurrentMonth = GetActivities(accessToken)
-                .Where(activity => activity.StartDate.Month == DateTime.UtcNow.Month)
+            var lastActivities = GetActivities(accessToken)
+                .Where(activity => activity.StartDate >= dateTimeFrom)
                 .ToList();
-            return activitiesFromCurrentMonth;
+            return lastActivities;
         }
 
         private static void ThrowExceptionIfNotSuccessful(IRestResponse response)

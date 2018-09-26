@@ -1,26 +1,22 @@
 ﻿using System.Data;
 using System.Data.SqlClient;
 using System.Threading.Tasks;
+using BurnForMoney.Functions.Persistance;
 using BurnForMoney.Functions.Strava.Model;
 using Dapper;
 using Microsoft.Extensions.Logging;
 
 namespace BurnForMoney.Functions.Strava.Services
 {
-    public class ActivityService
+    public class StravaActivityService : ActivityService
     {
-        private readonly string _connectionString;
-        private readonly ILogger _log;
-
-        public ActivityService(string connectionString, ILogger log)
+        public StravaActivityService(string connectionString, ILogger log) : base(connectionString, log)
         {
-            _connectionString = connectionString;
-            _log = log;
         }
 
         public async Task InsertAsync(Activity activity)
         {
-            using (var conn = new SqlConnection(_connectionString))
+            using (var conn = new SqlConnection(ConnectionString))
             {
                 var affectedRows = await conn.ExecuteAsync("Strava_Activity_Insert",
                         new
@@ -36,7 +32,7 @@ namespace BurnForMoney.Functions.Strava.Services
 
                 if (affectedRows > 0)
                 {
-                    _log.LogInformation($"Activity with id: {activity.Id} has been added.");
+                    Log.LogInformation($"Activity with id: {activity.Id} has been added.");
                 }
             }
         }

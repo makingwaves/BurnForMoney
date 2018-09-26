@@ -9,7 +9,7 @@ namespace BurnForMoney.Functions.Strava
     public static class CollectActivitiesStarter
     {
         [FunctionName(FunctionsNames.CollectStravaActivitiesInEvery20Minutes)]
-        public static async Task RunTimerStarter([TimerTrigger("0 */20 * * * *")]TimerInfo timer, ILogger log, [OrchestrationClient]DurableOrchestrationClient starter, ExecutionContext executionContext)
+        public static async Task RunTimerStarter([TimerTrigger("0 */30 * * * *")]TimerInfo timer, ILogger log, [OrchestrationClient]DurableOrchestrationClient starter, ExecutionContext executionContext)
         {
             log.LogInformation($"{FunctionsNames.CollectStravaActivitiesInEvery20Minutes} timer trigger processed a request at {DateTime.Now}.");
 

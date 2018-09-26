@@ -37,14 +37,17 @@ namespace BurnForMoney.Functions.Strava
             log.LogInformation($"{FunctionsNames.A_SaveSingleUserActivities} function processed a request.");
 
             var configuration = ApplicationConfiguration.GetSettings(context);
-            var activityService = new ActivityService(configuration.ConnectionStrings.SqlDbConnectionString, log);
+            var activityService = new StravaActivityService(configuration.ConnectionStrings.SqlDbConnectionString, log);
             var stravaService = new StravaService();
 
-            var activities = stravaService.GetActivitiesFromCurrentMonth(accessToken);
+            var updateHistoryState = await activityService.GetState();
+            var activities = stravaService.GetActivitiesFrom(accessToken, updateHistoryState.LastUpdate.AddDays(-3));
             foreach (var activity in activities)
             {
                 await activityService.InsertAsync(activity);
             }
+
+            await activityService.SaveState();
         }
     }
 }
