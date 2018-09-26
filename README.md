@@ -34,7 +34,7 @@
   * Website: https://burnformoney-test.azurewebsites.net/
   * Api: https://burnformoneyfunc-test.azurewebsites.net/
 * **Production:**
-  - Website: https://burnformoney-prod.azurewebsites.net/
+  - Website: https://bfm.makingwaves.pl/
   - Api: https://burnformoneyfunc-prod.azurewebsites.net/
 
 ### Azure functions

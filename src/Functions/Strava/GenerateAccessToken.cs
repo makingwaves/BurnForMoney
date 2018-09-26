@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using BurnForMoney.Functions.Configuration;
+using BurnForMoney.Functions.Helpers;
 using BurnForMoney.Functions.Strava.Api;
 using BurnForMoney.Functions.Strava.Auth;
 using BurnForMoney.Functions.Strava.Services;
