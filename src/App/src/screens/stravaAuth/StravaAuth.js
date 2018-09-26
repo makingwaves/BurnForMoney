@@ -8,6 +8,27 @@ import bigButtonTop from './img/bigButton_top.svg';
 import bigButtonBottom from './img/bigButton_bottom.svg';
 
 class StravaAuth extends Component {
+  constructor(props) {
+      super(props);
+      this.state = { stravaLink: undefined } ;
+    }
+
+    componentWillMount() {
+      let stravaLink;
+      switch(process.env.NODE_ENV){
+        case 'development':
+          stravaLink = "https://www.strava.com/oauth/authorize?client_id=28597&response_type=code&redirect_uri=http://localhost:7071/api/strava/authorize/&approval_prompt=force";
+          break;
+        case 'test':
+          stravaLink = "https://www.strava.com/oauth/authorize?client_id=28591&response_type=code&redirect_uri=https://burnformoneyfunc-test.azurewebsites.net/api/strava/authorize/&approval_prompt=force";
+          break;
+        case 'production':
+          stravaLink = "https://www.strava.com/oauth/authorize?client_id=26733&response_type=code&redirect_uri=https://burnformoneyfunc-prod.azurewebsites.net/api/strava/authorize/&approval_prompt=force";
+          break;
+      }
+      this.setState({ stravaLink });
+    }
+
   render() {
     return (
       <div className="strava-contanier">
@@ -19,7 +40,7 @@ so your points will be automatically counted in our stats.</p>
           <p>Authorize</p>
           <img src={arrow} className="authorizeArrow" alt="authorize below"/>
         </div>
-        <a href="#" className="bigButton">
+        <a href={this.state.stravaLink} className="bigButton">
           <img src={bigButtonTop} className="bigButtonTop" alt="big button top"/>
           <img src={bigButtonBottom} className="bigButtonBottom" alt="big button base"/>
         </a>
