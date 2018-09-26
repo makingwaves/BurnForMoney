@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using BurnForMoney.Functions.Configuration;
 using BurnForMoney.Functions.Helpers;
 using BurnForMoney.Functions.Strava.Api;
@@ -41,7 +42,8 @@ namespace BurnForMoney.Functions.Strava
             var stravaService = new StravaService();
 
             var updateHistoryState = await activityService.GetState();
-            var activities = stravaService.GetActivitiesFrom(accessToken, updateHistoryState.LastUpdate.AddDays(-3));
+            var lastUpdate = updateHistoryState.LastUpdate ?? DateTime.UtcNow.AddMonths(-3);
+            var activities = stravaService.GetActivitiesFrom(accessToken, lastUpdate);
             foreach (var activity in activities)
             {
                 await activityService.InsertAsync(activity);

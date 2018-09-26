@@ -23,7 +23,7 @@ namespace BurnForMoney.Functions.Persistance
             {
                 var result = await conn.QueryFirstOrDefaultAsync<UpdateHistoryState>("SELECT LastUpdate FROM dbo.[Systems.UpdateHistory] WHERE System='Strava'")
                     .ConfigureAwait(false);
-                return result ?? new UpdateHistoryState("Strava", DateTime.UtcNow.AddMonths(-3));
+                return result ?? new UpdateHistoryState("Strava", null);
             }
         }
 
@@ -57,9 +57,9 @@ namespace BurnForMoney.Functions.Persistance
         public class UpdateHistoryState
         {
             public string System { get; set; }
-            public DateTime LastUpdate { get; set; }
+            public DateTime? LastUpdate { get; set; }
 
-            public UpdateHistoryState(string system, DateTime lastUpdate)
+            public UpdateHistoryState(string system, DateTime? lastUpdate)
             {
                 System = system;
                 LastUpdate = lastUpdate;
