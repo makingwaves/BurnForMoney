@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using BurnForMoney.Functions.Configuration;
 using BurnForMoney.Functions.Strava.Api;
 using BurnForMoney.Functions.Strava.Services;
@@ -16,7 +15,7 @@ namespace BurnForMoney.Functions.Strava
         {
             log.LogInformation($"GetAccessTokens function processed a request. Instance id: `{activityContext.InstanceId}`");
 
-            var configuration = new ApplicationConfiguration().GetSettings(context);
+            var configuration = ApplicationConfiguration.GetSettings(context);
             var keyVaultClient = KeyVaultClientFactory.Create();
             var secret = await keyVaultClient.GetSecretAsync(
                 configuration.ConnectionStrings.KeyVaultConnectionString,
