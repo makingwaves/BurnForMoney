@@ -6,7 +6,7 @@ namespace BurnForMoney.Functions.Configuration
 {
     public class ApplicationConfiguration
     {
-        public ConfigurationRoot GetSettings(ExecutionContext context)
+        public static ConfigurationRoot GetSettings(ExecutionContext context)
         {
             var config = GetApplicationConfiguration(context.FunctionAppDirectory);
 
@@ -16,7 +16,7 @@ namespace BurnForMoney.Functions.Configuration
                 ConnectionStrings = GetConnectionStrings(config),
                 IsLocalEnvironment = string.IsNullOrEmpty(GetEnvironmentVariable(EnvironmentSettingNames.AzureWebsiteInstanceId))
             };
-
+            
             if (!settings.IsValid())
             {
                 throw new Exception("Cannot read configuration file.");
@@ -51,7 +51,7 @@ namespace BurnForMoney.Functions.Configuration
             return config;
         }
 
-        public string GetEnvironmentVariable(string settingKey)
+        public static string GetEnvironmentVariable(string settingKey)
         {
             string settingValue = null;
             if (!string.IsNullOrEmpty(settingKey))

@@ -59,7 +59,7 @@ namespace BurnForMoney.Functions.Strava
                 return;
             }
 
-            _configuration = new ApplicationConfiguration().GetSettings(context);
+            _configuration = ApplicationConfiguration.GetSettings(context);
         }
 
         private static async Task InsertCodeToAuthorizationQueueAsync(string code, CloudQueue queue)

@@ -4,6 +4,9 @@
     <AzureFunctionsVersion>v2</AzureFunctionsVersion>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Remove="Strava\Strava.CollectActivitiesActivities.cs" />
+  </ItemGroup>
+  <ItemGroup>
     <None Remove="Persistance\SqlScripts\Script0001 - Create tables.sql" />
     <None Remove="Persistance\SqlScripts\Script0002- Alter Strava_Athlete_Upsert procedure.sql" />
     <None Remove="Persistance\SqlScripts\Script0003- Add index on StartDate dp;umn.sql" />
@@ -39,5 +42,8 @@
     <Folder Include="Endomondo\" />
     <Folder Include="Runkeeper\" />
     <Folder Include="Properties\PublishProfiles\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Strava\Strava.CollectActivitiesActivities.cs" />
   </ItemGroup>
 </Project>

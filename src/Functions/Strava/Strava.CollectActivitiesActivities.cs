@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Threading.Tasks;
 using BurnForMoney.Functions.Configuration;
 using BurnForMoney.Functions.Strava.Api;
@@ -9,35 +9,9 @@ using Microsoft.Extensions.Logging;
 
 namespace BurnForMoney.Functions.Strava
 {
-    public static class CollectActivities
+    public static class CollectActivitiesActivities
     {
-        [FunctionName("CollectStravaActivitiesInEvery20Minutes")]
-        public static async Task RunTimer([TimerTrigger("0 */1 * * * *")]TimerInfo timer, ILogger log, [OrchestrationClient]DurableOrchestrationClient starter, ExecutionContext executionContext)
-        {
-            log.LogInformation($"CollectStravaActivitiesInEvery20Minutes timer trigger processed a request at {DateTime.Now}.");
-
-            //await LoadSettingsAsync(executionContext);
-            var instanceId = await starter.StartNewAsync("CollectStravaActivities", null);
-            log.LogInformation($"Started orchestration with ID = `{instanceId}`.");
-        }
-
-
-        [FunctionName("CollectStravaActivities")]
-        public static async Task CollectStravaActivitiesAsync(ILogger log, [OrchestrationTrigger] DurableOrchestrationContext context, ExecutionContext executionContext)
-        {
-            log.LogInformation("Orchestration function `CollectStravaActivities` received a request.");
-
-            var encryptedAccessTokens = await context.CallActivityAsync<string[]>("GetAccessTokens", null);
-            var tasks = new Task[encryptedAccessTokens.Length];
-            for (var i = 0; i < encryptedAccessTokens.Length; i++)
-            {
-                tasks[i] = context.CallActivityAsync("SaveSingleUserActivities", encryptedAccessTokens[i]);
-            }
-
-            await Task.WhenAll(tasks);
-        }
-
-        [FunctionName("GetAccessTokens")]
+        [FunctionName("A_GetAccessTokens")]
         public static async Task<string[]> GetAccessTokensAsync([ActivityTrigger]DurableActivityContext activityContext, ILogger log, ExecutionContext context)
         {
             log.LogInformation($"GetAccessTokens function processed a request. Instance id: `{activityContext.InstanceId}`");
@@ -57,12 +31,12 @@ namespace BurnForMoney.Functions.Strava
             return accessTokens.ToArray();
         }
 
-        [FunctionName("SaveSingleUserActivities")]
+        [FunctionName("A_SaveSingleUserActivities")]
         public static async Task SaveSingleUserActivitiesAsync([ActivityTrigger]string accessToken, ILogger log, ExecutionContext context)
         {
             log.LogInformation("CollectSingleUserActivities function processed a request.");
 
-            var configuration = new ApplicationConfiguration().GetSettings(context);
+            var configuration = ApplicationConfiguration.GetSettings(context);
             var activityService = new ActivityService(configuration.ConnectionStrings.SqlDbConnectionString, log);
             var stravaService = new StravaService();
 

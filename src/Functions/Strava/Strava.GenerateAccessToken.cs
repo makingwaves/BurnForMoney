@@ -39,7 +39,7 @@ namespace BurnForMoney.Functions.Strava
                 return;
             }
 
-            _configuration = new ApplicationConfiguration().GetSettings(context);
+            _configuration = ApplicationConfiguration.GetSettings(context);
 
             if (string.IsNullOrEmpty(_accessTokenEncryptionKey))
             {

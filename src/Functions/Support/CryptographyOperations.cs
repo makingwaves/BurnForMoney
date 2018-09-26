@@ -11,7 +11,7 @@ namespace BurnForMoney.Functions.Support
 {
     public static class CryptographyOperations
     {
-        private static readonly ApplicationConfiguration Configuration = new ApplicationConfiguration();
+        private static ConfigurationRoot _configuration;
 
         [FunctionName("EncryptString")]
         public static async Task<IActionResult> RunEncryptString([HttpTrigger(AuthorizationLevel.Admin, "get", Route = "support/encryptstring")]HttpRequest req, TraceWriter log, ExecutionContext context)
@@ -25,7 +25,8 @@ namespace BurnForMoney.Functions.Support
                 return new BadRequestObjectResult("Text is required.");
             }
 
-            var keyVaultConnectionString = Configuration.GetSettings(context).ConnectionStrings.KeyVaultConnectionString;
+            _configuration = _configuration ?? ApplicationConfiguration.GetSettings(context);
+            var keyVaultConnectionString = _configuration.ConnectionStrings.KeyVaultConnectionString;
             var encryptionKey = await GetEncryptionKeyAsync(keyVaultConnectionString).ConfigureAwait(false);
             var encryptedText = Cryptography.EncryptString(text, encryptionKey);
 
@@ -46,7 +47,8 @@ namespace BurnForMoney.Functions.Support
 
             text = FillMissingSpecialCharacters(text);
 
-            var keyVaultConnectionString = Configuration.GetSettings(context).ConnectionStrings.KeyVaultConnectionString;
+            _configuration = _configuration ?? ApplicationConfiguration.GetSettings(context);
+            var keyVaultConnectionString = _configuration.ConnectionStrings.KeyVaultConnectionString;
             var encryptionKey = await GetEncryptionKeyAsync(keyVaultConnectionString).ConfigureAwait(false);
             var encryptedText = Cryptography.DecryptString(text, encryptionKey);
 
