@@ -22,7 +22,7 @@ namespace BurnForMoney.Functions.Strava.Services
             _encryptionService = encryptionService;
         }
 
-        public async Task<List<string>> GetAllEncryptedActiveAccessTokensAsync()
+        public async Task<List<string>> GetAllActiveAccessTokensAsync()
         {
             var tokens = Enumerable.Empty<string>();
             using (var conn = new SqlConnection(_connectionString))

@@ -22,19 +22,22 @@ namespace BurnForMoney.Functions.Strava.Services
         {
             using (var conn = new SqlConnection(_connectionString))
             {
-                await conn.ExecuteAsync("Strava_Activity_Insert",
+                var affectedRows = await conn.ExecuteAsync("Strava_Activity_Insert",
                         new
                         {
                             AthleteId = activity.Athlete.Id,
                             ActivityId = activity.Id,
                             ActivityTime = activity.StartDate,
-                            ActivityType = activity.Type,
+                            ActivityType = activity.Type.ToString(),
                             Distance = activity.Distance,
                             MovingTime = activity.MovingTime
                         }, commandType: CommandType.StoredProcedure)
                     .ConfigureAwait(false);
 
-                _log.LogInformation($"Activity with id: {activity.Id} has been added.");
+                if (affectedRows > 0)
+                {
+                    _log.LogInformation($"Activity with id: {activity.Id} has been added.");
+                }
             }
         }
     }
