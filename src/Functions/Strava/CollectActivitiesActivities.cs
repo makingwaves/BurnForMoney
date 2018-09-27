@@ -18,6 +18,8 @@ namespace BurnForMoney.Functions.Strava
 {
     public static class CollectActivitiesActivities
     {
+        private static readonly IPointsCalculatingStrategy PointsCalculator = new DefaultPointsCalculatingStrategy();
+
         [FunctionName(FunctionsNames.A_GetAccessTokens)]
         public static async Task<string[]> GetAccessTokensAsync([ActivityTrigger]DurableActivityContext activityContext, ILogger log, ExecutionContext executionContext)
         {
@@ -70,6 +72,9 @@ namespace BurnForMoney.Functions.Strava
         {
             using (var conn = new SqlConnection(connectionString))
             {
+                var activityCategory = StravaActivityMapper.MapToActivityCategory(activity.Type);
+                var points = PointsCalculator.Calculate(activityCategory, activity.Distance, activity.MovingTime);
+
                 var affectedRows = await conn.ExecuteAsync("Strava_Activity_Insert",
                         new
                         {
@@ -79,8 +84,8 @@ namespace BurnForMoney.Functions.Strava
                             ActivityType = activity.Type.ToString(),
                             Distance = activity.Distance,
                             MovingTime = activity.MovingTime,
-                            Category = StravaActivityMapper.MapToActivityCategory(activity.Type).ToString(),
-                            Points = 0
+                            Category = activityCategory.ToString(),
+                            Points = points
                         }, commandType: CommandType.StoredProcedure)
                     .ConfigureAwait(false);
 

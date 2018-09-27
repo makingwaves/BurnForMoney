@@ -1,6 +1,6 @@
 ﻿DROP PROCEDURE Strava_Activity_Insert
 GO
-CREATE PROCEDURE Strava_Activity_Insert (@AthleteId int, @ActivityId int, @ActivityTime datetime2, @ActivityType nvarchar(50), @Distance float, @MovingTime int, @Category nvarchar(60), @Points int)
+CREATE PROCEDURE Strava_Activity_Insert (@AthleteId int, @ActivityId int, @ActivityTime datetime2, @ActivityType nvarchar(50), @Distance float, @MovingTime int, @Category nvarchar(60), @Points float)
 AS 
   SET TRANSACTION ISOLATION LEVEL SERIALIZABLE;
   BEGIN TRAN
