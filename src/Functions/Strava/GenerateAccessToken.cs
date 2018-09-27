@@ -1,9 +1,13 @@
+using System.Data;
+using System.Data.SqlClient;
 using System.Threading.Tasks;
 using BurnForMoney.Functions.Configuration;
 using BurnForMoney.Functions.Helpers;
 using BurnForMoney.Functions.Strava.Api;
+using BurnForMoney.Functions.Strava.Api.Model;
 using BurnForMoney.Functions.Strava.Auth;
 using BurnForMoney.Functions.Strava.Services;
+using Dapper;
 using Microsoft.Azure.KeyVault;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
@@ -28,9 +32,27 @@ namespace BurnForMoney.Functions.Strava
             _log.LogInformation($"Requesting for access token using clientId: {_configuration.Strava.ClientId}.");
             var response = RequestForAccessToken(_configuration.Strava.ClientId, _configuration.Strava.ClientSecret, myQueueItem);
            
-            var encryptionService = new AccessTokensEncryptionService(log, _accessTokenEncryptionKey);
-            var athleteService = new AthleteService(_configuration.ConnectionStrings.SqlDbConnectionString, _log, encryptionService);
-            await athleteService.UpsertAsync(response.Athlete, response.AccessToken).ConfigureAwait(false);
+            await UpsertAsync(response.Athlete, response.AccessToken).ConfigureAwait(false);
+        }
+
+        public static async Task UpsertAsync(Athlete athlete, string accessToken)
+        {
+            var encryptionService = new AccessTokensEncryptionService(_log, _accessTokenEncryptionKey);
+            using (var conn = new SqlConnection(_configuration.ConnectionStrings.SqlDbConnectionString))
+            {
+                await conn.ExecuteAsync("Strava_Athlete_Upsert",
+                        new
+                        {
+                            AthleteId = athlete.Id,
+                            FirstName = athlete.Firstname,
+                            LastName = athlete.Lastname,
+                            AccessToken = encryptionService.EncryptAccessToken(accessToken),
+                            Active = true
+                        }, commandType: CommandType.StoredProcedure)
+                    .ConfigureAwait(false);
+
+                _log.LogInformation($"Athlete: {athlete.Firstname} {athlete.Lastname} has been saved successfully");
+            }
         }
 
         private static async Task LoadSettingsAsync(ExecutionContext context)

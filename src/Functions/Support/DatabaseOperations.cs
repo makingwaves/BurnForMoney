@@ -1,7 +1,7 @@
 ﻿using System.Reflection;
 using BurnForMoney.Functions.Configuration;
 using BurnForMoney.Functions.Helpers;
-using BurnForMoney.Functions.Support.Logging;
+using BurnForMoney.Functions.Persistance.Logging;
 using DbUp;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

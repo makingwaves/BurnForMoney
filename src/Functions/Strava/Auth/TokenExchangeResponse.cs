@@ -1,5 +1,5 @@
 using BurnForMoney.Functions.Configuration;
-using BurnForMoney.Functions.Strava.Model;
+using BurnForMoney.Functions.Strava.Api.Model;
 using Newtonsoft.Json;
 
 namespace BurnForMoney.Functions.Strava.Auth

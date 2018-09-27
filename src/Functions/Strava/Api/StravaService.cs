@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using BurnForMoney.Functions.Configuration;
+using BurnForMoney.Functions.Strava.Api.Model;
 using BurnForMoney.Functions.Strava.Auth;
-using BurnForMoney.Functions.Strava.Model;
 using Newtonsoft.Json;
 using RestSharp;
 
@@ -39,17 +39,17 @@ namespace BurnForMoney.Functions.Strava.Api
             return TokenExchangeResponse.FromJson(response.Content);
         }
 
-        public IList<Activity> GetActivities(string accessToken)
+        public IList<StravaActivity> GetActivities(string accessToken)
         {
             var request = new RestRequest("api/v3/athlete/activities", Method.GET);
             request.AddQueryParameter("access_token", accessToken);
             var response = _restClient.Execute(request);
             ThrowExceptionIfNotSuccessful(response);
 
-            return JsonConvert.DeserializeObject<List<Activity>>(response.Content, new JsonSettings());
+            return JsonConvert.DeserializeObject<List<StravaActivity>>(response.Content, new JsonSettings());
         }
 
-        public IList<Activity> GetActivitiesFrom(string accessToken, DateTime dateTimeFrom)
+        public IList<StravaActivity> GetActivitiesFrom(string accessToken, DateTime dateTimeFrom)
         {
             var lastActivities = GetActivities(accessToken)
                 .Where(activity => activity.StartDate >= dateTimeFrom)
