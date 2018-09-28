@@ -1,6 +1,6 @@
-﻿namespace BurnForMoney.Functions.Strava.Model
+﻿namespace BurnForMoney.Functions.Strava.Api.Model
 {
-    public enum ActivityType
+    public enum StravaActivityType
     {
         AlpineSki,
         BackcountrySki,

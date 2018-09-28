@@ -10,7 +10,7 @@ namespace BurnForMoney.Functions.Support
     public static class ActivitiesOperations
     {
         [FunctionName(FunctionsNames.Support_Strava_CollectActivities)]
-        public static async Task<HttpResponseMessage> CollectActivitiesAsync([HttpTrigger(AuthorizationLevel.Admin, "get", Route = "support/strava/collectactivities")]HttpRequestMessage req, ILogger log, 
+        public static async Task<HttpResponseMessage> Support_Strava_CollectActivities([HttpTrigger(AuthorizationLevel.Admin, "get", Route = "support/strava/collectactivities")]HttpRequestMessage req, ILogger log, 
             [OrchestrationClient]DurableOrchestrationClient starter)
         {
             log.LogInformation($"{FunctionsNames.Support_Strava_CollectActivities} function processed a request.");

@@ -6,28 +6,26 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.KeyVault;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
-using Microsoft.Azure.WebJobs.Host;
+using Microsoft.Extensions.Logging;
 
 namespace BurnForMoney.Functions.Support
 {
     public static class CryptographyOperations
     {
-        private static ConfigurationRoot _configuration;
-
         [FunctionName(FunctionsNames.Support_EncryptString)]
-        public static async Task<IActionResult> RunEncryptString([HttpTrigger(AuthorizationLevel.Admin, "get", Route = "support/encryptstring")]HttpRequest req, TraceWriter log, ExecutionContext context)
+        public static async Task<IActionResult> RunEncryptString([HttpTrigger(AuthorizationLevel.Admin, "get", Route = "support/encryptstring")]HttpRequest req, ILogger log, ExecutionContext context)
         {
-            log.Info($"{FunctionsNames.Support_EncryptString} function processed a request.");
+            log.LogInformation($"{FunctionsNames.Support_EncryptString} function processed a request.");
 
             string text = req.Query["text"];
             if (string.IsNullOrWhiteSpace(text))
             {
-                log.Warning("Function invoked with incorrect parameters. [text] is null or empty.");
+                log.LogWarning("Function invoked with incorrect parameters. [text] is null or empty.");
                 return new BadRequestObjectResult("Text is required.");
             }
 
-            _configuration = _configuration ?? ApplicationConfiguration.GetSettings(context);
-            var keyVaultConnectionString = _configuration.ConnectionStrings.KeyVaultConnectionString;
+            var configuration = ApplicationConfiguration.GetSettings(context);
+            var keyVaultConnectionString = configuration.ConnectionStrings.KeyVaultConnectionString;
             var encryptionKey = await GetEncryptionKeyAsync(keyVaultConnectionString).ConfigureAwait(false);
             var encryptedText = Cryptography.EncryptString(text, encryptionKey);
 
@@ -35,21 +33,21 @@ namespace BurnForMoney.Functions.Support
         }
 
         [FunctionName(FunctionsNames.Support_DecryptString)]
-        public static async Task<IActionResult> RunDecryptString([HttpTrigger(AuthorizationLevel.Admin, "get", Route = "support/decryptstring")]HttpRequest req, TraceWriter log, ExecutionContext context)
+        public static async Task<IActionResult> RunDecryptString([HttpTrigger(AuthorizationLevel.Admin, "get", Route = "support/decryptstring")]HttpRequest req, ILogger log, ExecutionContext context)
         {
-            log.Info($"{FunctionsNames.Support_DecryptString} function processed a request.");
+            log.LogInformation($"{FunctionsNames.Support_DecryptString} function processed a request.");
 
             string text = req.Query["text"];
             if (string.IsNullOrWhiteSpace(text))
             {
-                log.Warning("Function invoked with incorrect parameters. [text] is null or empty.");
+                log.LogWarning("Function invoked with incorrect parameters. [text] is null or empty.");
                 return new BadRequestObjectResult("Text is required.");
             }
 
             text = FillMissingSpecialCharacters(text);
 
-            _configuration = _configuration ?? ApplicationConfiguration.GetSettings(context);
-            var keyVaultConnectionString = _configuration.ConnectionStrings.KeyVaultConnectionString;
+            var configuration = ApplicationConfiguration.GetSettings(context);
+            var keyVaultConnectionString = configuration.ConnectionStrings.KeyVaultConnectionString;
             var encryptionKey = await GetEncryptionKeyAsync(keyVaultConnectionString).ConfigureAwait(false);
             var encryptedText = Cryptography.DecryptString(text, encryptionKey);
 

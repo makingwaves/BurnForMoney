@@ -1,4 +1,4 @@
-﻿namespace BurnForMoney.Functions.Strava.Model
+﻿namespace BurnForMoney.Functions.Strava.Api.Model
 {
     public class Athlete
     {

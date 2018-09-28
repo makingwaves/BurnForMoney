@@ -1,91 +1,59 @@
-﻿using BurnForMoney.Functions.Strava.Model;
+﻿using System;
+using BurnForMoney.Functions.Model;
 
 namespace BurnForMoney.Functions
 {
     public class PointsCalculator
     {
-        
-    }
-
-
-    public class DefaultPointsCalculatingStrategy : IPointsCalculatingStrategy
-    {
-        public int Calculate()
+        public static double Calculate(ActivityCategory category, double distanceInMeters, int timeInMinutes)
         {
-            throw new System.NotImplementedException();
-        }
-    }
+            double points;
 
-
-    public interface IPointsCalculatingStrategy
-    {
-        int Calculate();
-    }
-
-    public enum ActivityCategory
-    {
-        Run,
-        Ride,
-        Walk,
-        WinterSports,
-        WaterSports,
-        TeamSports,
-        Gym,
-        Hike,
-        Fitness,
-        Other
-    }
-
-    public class StravaActivityMapper
-    {
-        public static ActivityCategory MapToActivityCategory(ActivityType activityType)
-        {
-            switch (activityType)
+            switch (category)
             {
-                case ActivityType.Snowboard:
-                case ActivityType.AlpineSki:
-                case ActivityType.BackcountrySki:
-                case ActivityType.IceSkate:
-                case ActivityType.NordicSki:
-                    return ActivityCategory.WinterSports;
-                case ActivityType.Canoeing:
-                case ActivityType.Kayaking:
-                case ActivityType.Kitesurf:
-                case ActivityType.Rowing:
-                case ActivityType.StandUpPaddling:
-                case ActivityType.Surfing:
-                case ActivityType.Swim:
-                case ActivityType.Windsurf:
-                    return ActivityCategory.WaterSports;
-                case ActivityType.Crossfit:
-                case ActivityType.WeightTraining:
-                    return ActivityCategory.Gym;
-                case ActivityType.Ride:
-                case ActivityType.EBikeRide:
-                case ActivityType.Handcycle:
-                case ActivityType.VirtualRide:
-                    return ActivityCategory.Ride;
-                case ActivityType.Run:
-                case ActivityType.Elliptical:
-                case ActivityType.VirtualRun:
-                    return ActivityCategory.Run;
-                case ActivityType.Hike:
-                case ActivityType.RockClimbing:
-                case ActivityType.Snowshoe:
-                    return ActivityCategory.Hike;
-                case ActivityType.InlineSkate:
-                case ActivityType.RollerSki:
-                case ActivityType.StairStepper:
-                case ActivityType.Wheelchair:
-                    return ActivityCategory.Other;
-                case ActivityType.Walk:
-                    return ActivityCategory.Walk;
-                case ActivityType.Workout:
-                case ActivityType.Yoga:
-                    return ActivityCategory.Fitness;
+                case ActivityCategory.Run:
+                    points = GetPointsForDistanceBasedCategory(distanceInMeters, 2); // 1km = 2 points
+                    break;
+                case ActivityCategory.Ride:
+                    points = GetPointsForDistanceBasedCategory(distanceInMeters); // 1km = 1 point
+                    break;
+                case ActivityCategory.Walk:
+                    points = GetPointsForDistanceBasedCategory(distanceInMeters);
+                    break;
+                case ActivityCategory.WinterSports:
+                    points = GetPointsForTimeBasedCategory(timeInMinutes); // 10min = 1 point
+                    break;
+                case ActivityCategory.WaterSports:
+                    points = GetPointsForTimeBasedCategory(timeInMinutes);
+                    break;
+                case ActivityCategory.TeamSports:
+                    points = GetPointsForTimeBasedCategory(timeInMinutes);
+                    break;
+                case ActivityCategory.Gym:
+                    points = GetPointsForTimeBasedCategory(timeInMinutes);
+                    break;
+                case ActivityCategory.Hike:
+                    points = GetPointsForDistanceBasedCategory(distanceInMeters);
+                    break;
+                case ActivityCategory.Fitness:
+                    points = GetPointsForTimeBasedCategory(timeInMinutes);
+                    break;
                 default:
-                    return ActivityCategory.Other;
+                    points = GetPointsForTimeBasedCategory(timeInMinutes);
+                    break;
             }
+
+            return Math.Round(points, 2);
+        }
+
+        private static double GetPointsForDistanceBasedCategory(double distanceInMeters, double factor = 1)
+        {
+            return distanceInMeters * factor / 1000; 
+        }
+
+        private static double GetPointsForTimeBasedCategory(int timeInMinutes, double factor = 1)
+        {
+            return timeInMinutes * factor / 10;
         }
     }
 }
