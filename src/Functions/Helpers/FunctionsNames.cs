@@ -18,7 +18,9 @@
         public const string Support_DecryptString = "Support_DecryptString";
         public const string Support_InitializeDatabase = "Support_InitializeDatabase";
         public const string Support_Strava_CollectActivities = "Support_Strava_CollectActivities";
-
+        public const string Support_Strava_DeactivateAthlete = "Support_Strava_DeactivateAthlete";
+        public const string Support_Strava_ActivateAthlete = "Support_Strava_ActivateAthlete";
+        
         public const string AuthorizeNewAthleteStarter = "AuthorizeNewAthleteStarter";
         public const string O_AuthorizeNewAthlete = "O_AuthorizeNewAthlete";
         public const string A_GenerateAccessToken = "A_GenerateAccessToken";

@@ -20,9 +20,14 @@ namespace BurnForMoney.Functions.Strava.CollectActivitiesFunctions
 
             // 1. Get all active access tokens
             var encryptedAccessTokens = await context.CallActivityAsync<string[]>(FunctionsNames.A_GetAccessTokens, null);
+            if (encryptedAccessTokens.Length == 0)
+            {
+                log.LogInformation($"[{FunctionsNames.O_CollectStravaActivities}] cannot find any active access tokens.");
+                return;
+            }
             if (!context.IsReplaying)
             {
-                log.LogInformation($"[{FunctionsNames.O_CollectStravaActivities}] Retrieved all encrypted access tokens.");
+                log.LogInformation($"[{FunctionsNames.O_CollectStravaActivities}] Retrieved {encryptedAccessTokens.Length} encrypted access tokens.");
             }
 
             // 2. Decrypted all access tokens
@@ -35,7 +40,7 @@ namespace BurnForMoney.Functions.Strava.CollectActivitiesFunctions
             var decryptedAccessTokens = await Task.WhenAll(decryptionTasks);
             if (!context.IsReplaying)
             {
-                log.LogInformation($"[{FunctionsNames.O_CollectStravaActivities}] Decrypted access tokens.");
+                log.LogInformation($"[{FunctionsNames.O_CollectStravaActivities}] Decrypted {decryptedAccessTokens.Length} access tokens.");
             }
 
             // 3. Get time of the last update
@@ -65,7 +70,7 @@ namespace BurnForMoney.Functions.Strava.CollectActivitiesFunctions
                 (SystemName: SystemName, LastUpdate: context.CurrentUtcDateTime));
             if (!context.IsReplaying)
             {
-                log.LogInformation($"[{FunctionsNames.O_CollectStravaActivities}] Set time of the last update.");
+                log.LogInformation($"[{FunctionsNames.O_CollectStravaActivities}] Updated time of the last update [{context.CurrentUtcDateTime}].");
             }
         }
     }

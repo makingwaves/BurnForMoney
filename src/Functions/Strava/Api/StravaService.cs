@@ -57,6 +57,15 @@ namespace BurnForMoney.Functions.Strava.Api
             return lastActivities;
         }
 
+        public void DeauthorizeAthlete(string accessToken)
+        {
+            var request = new RestRequest("/oauth/deauthorize", Method.POST);
+            request.AddQueryParameter("access_token", accessToken);
+            var response = _restClient.Execute(request);
+            ThrowExceptionIfNotSuccessful(response);
+
+        }
+
         private static void ThrowExceptionIfNotSuccessful(IRestResponse response)
         {
             if (response.StatusCode != HttpStatusCode.OK)
