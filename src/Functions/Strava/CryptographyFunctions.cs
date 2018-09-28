@@ -9,7 +9,6 @@ namespace BurnForMoney.Functions.Strava
 {
     public static class CryptographyFunctions
     {
-        private static ConfigurationRoot _configuration;
         private static string _accessTokenEncryptionKey;
 
         [FunctionName(FunctionsNames.A_EncryptAccessToken)]
@@ -38,17 +37,12 @@ namespace BurnForMoney.Functions.Strava
 
         private static async Task LoadSettingsAsync(ExecutionContext context)
         {
-            if (_configuration != null)
-            {
-                return;
-            }
-            _configuration = ApplicationConfiguration.GetSettings(context);
-
+            var configuration = ApplicationConfiguration.GetSettings(context);
 
             if (string.IsNullOrEmpty(_accessTokenEncryptionKey))
             {
                 var keyVaultClient = KeyVaultClientFactory.Create();
-                var secret = await keyVaultClient.GetSecretAsync(_configuration.ConnectionStrings.KeyVaultConnectionString, KeyVaultSecretNames.StravaTokensEncryptionKey)
+                var secret = await keyVaultClient.GetSecretAsync(configuration.ConnectionStrings.KeyVaultConnectionString, KeyVaultSecretNames.StravaTokensEncryptionKey)
                     .ConfigureAwait(false);
                 _accessTokenEncryptionKey = secret.Value;
             }

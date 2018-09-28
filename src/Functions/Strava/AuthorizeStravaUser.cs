@@ -17,7 +17,6 @@ namespace BurnForMoney.Functions.Strava
         private static ILogger _log;
         private const string StravaAuthorizationUrl = "https://www.strava.com/oauth/authorize";
         private const string AzureHostUrl = "https://functions.azure.com";
-        private static ConfigurationRoot _configuration;
 
         [FunctionName(FunctionsNames.AuthorizeStravaUser)]
         public static async Task<IActionResult> RunAuthorizeStravaUser([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "strava/authorize")]
@@ -26,13 +25,20 @@ namespace BurnForMoney.Functions.Strava
         {
             _log = log;
             _log.LogInformation($"{FunctionsNames.AuthorizeStravaUser} function processed a request.");
-            LoadSettings(context);
+            var configuration = ApplicationConfiguration.GetSettings(context);
 
             var referer = req.Headers["Referer"].FirstOrDefault();
-            if (!_configuration.IsLocalEnvironment && !IsRequestRefererValid(referer))
+            if (!configuration.IsLocalEnvironment && !IsRequestRefererValid(referer))
             {
                 log.LogWarning($"Request referer [{referer ?? "null"}] is not authorized.");
                 return new UnauthorizedResult();
+            }
+
+            string error = req.Query["error"];
+            if (!string.IsNullOrWhiteSpace(error))
+            {
+                log.LogWarning($"Error occured during athlete authorization. Error code: [{error}].");
+                return new BadRequestObjectResult($"An error occured, Error code: [{error}]");
             }
 
             string code = req.Query["code"];
@@ -52,17 +58,7 @@ namespace BurnForMoney.Functions.Strava
 
             return new OkObjectResult("Ok");
         }
-
-        private static void LoadSettings(ExecutionContext context)
-        {
-            if (_configuration != null)
-            {
-                return;
-            }
-
-            _configuration = ApplicationConfiguration.GetSettings(context);
-        }
-
+        
         private static async Task InsertCodeToAuthorizationQueueAsync(string code, CloudQueue queue)
         {
             var message = new CloudQueueMessage(code);

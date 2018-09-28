@@ -16,8 +16,6 @@ namespace BurnForMoney.Functions.Strava.CollectActivitiesFunctions
 {
     public static class CollectActivitiesActivities
     {
-        private static readonly PointsCalculator PointsCalculator = new PointsCalculator();
-
         [FunctionName(FunctionsNames.A_GetAccessTokens)]
         public static async Task<string[]> GetAccessTokensAsync([ActivityTrigger]DurableActivityContext activityContext, ILogger log, ExecutionContext executionContext)
         {
