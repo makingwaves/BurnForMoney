@@ -4,57 +4,58 @@
   100% { top: 0; }
 }
 
-.strava-contanier{
+.StravaAuth{
+  padding-top: 50px;
   display:flex;
   flex-direction: column;
   justify-content: center;
   flex-wrap: wrap;
+
  .logo{
     margin-bottom: 30px;
   }
   p{
     text-align: center;
   }
-}
-
-
-.authorizeIndicator{
-  margin: 0 auto 30px;
-  p{
-    color: #3D3D3D;
-    font-size:28px;
-    font-weight: bold;
-    margin-bottom: 10px;
+  &__authorize{
+    margin: 0 auto 30px;
+    p{
+      color: #3D3D3D;
+      font-size:28px;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+    &-indicator{
+        display: block;
+        margin: 0 auto;
+        position: relative;
+        animation: arrow-bounce 1.8s infinite;
+    }
   }
-}
-.authorizeArrow{
-    display: block;
+
+  &__bigButton{
     margin: 0 auto;
     position: relative;
-    animation: arrow-bounce 1.8s infinite;
+    width:180px;
+    height: 180px;
 
-}
+    &:hover &-top{
+      top:20px;
+    }
 
-.bigButton{
-  margin: 0 auto;
-  position: relative;
-  width:180px;
-  height: 180px;
-}
-.bigButton:hover .bigButtonTop{
-  top:20px;
-}
-.bigButtonTop{
-  position: absolute;
-  display: block;
-  top:0;
-  left: 23px;
-  width:134px;
-  transition: top 0.2s ;
-}
-.bigButtonBottom{
-  position: absolute;
-  display: block;
-  top:71px;
-  width:100%;
+    &-top{
+      position: absolute;
+      display: block;
+      top:0;
+      left: 23px;
+      width:134px;
+      transition: top 0.2s ;
+    }
+    &-bottom{
+      position: absolute;
+      display: block;
+      top:71px;
+      width:100%;
+    }
+  }
 }

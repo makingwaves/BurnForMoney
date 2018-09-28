@@ -2,8 +2,8 @@
 
 .TotalNumbers{
   margin-top: 100vh;
-  padding-top: 150px;
-  background-color: $secondary-color;
+  padding: 50px 0 50px;
+  background-color: #fff;
 
   &__header{
     font-weight: normal;
@@ -16,7 +16,7 @@
     align-items: center;
 
     &-circle{
-      background-color: #fff;
+      background-color: $primary-color;
       width: 240px;
       height: 240px;
       border-radius:120px;

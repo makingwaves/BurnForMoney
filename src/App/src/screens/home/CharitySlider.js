@@ -16,10 +16,10 @@ class CharitySlider extends Component {
             <ul className="CharitySlider__list">
               <CharitySliderItem/>
               <li>
-                B
+                Second option
               </li>
               <li>
-                C
+                Third option
               </li>
             </ul>
           </div>

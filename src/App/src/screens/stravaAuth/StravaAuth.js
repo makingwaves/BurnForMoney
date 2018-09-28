@@ -31,18 +31,18 @@ class StravaAuth extends Component {
 
   render() {
     return (
-      <div className="strava-contanier">
+      <div className="StravaAuth">
         <img src={logo} alt="Logo" className="logo"/>
         <p>Hi Strava user,<br/>
 Authorize Burn For Money to connect to Strava,<br/>
 so your points will be automatically counted in our stats.</p>
-        <div className="authorizeIndicator">
+        <div className="StravaAuth__authorize">
           <p>Authorize</p>
-          <img src={arrow} className="authorizeArrow" alt="authorize below"/>
+          <img src={arrow} className="StravaAuth__authorize-indicator" alt="authorize below"/>
         </div>
-        <a href={this.state.stravaLink} className="bigButton">
-          <img src={bigButtonTop} className="bigButtonTop" alt="big button top"/>
-          <img src={bigButtonBottom} className="bigButtonBottom" alt="big button base"/>
+        <a href={this.state.stravaLink} className="StravaAuth__bigButton">
+          <img src={bigButtonTop} className="StravaAuth__bigButton-top" alt="big button top"/>
+          <img src={bigButtonBottom} className="StravaAuth__bigButton-bottom" alt="big button base"/>
         </a>
       </div>
     );
