@@ -44,6 +44,5 @@
   <ItemGroup>
     <Folder Include="Endomondo\" />
     <Folder Include="Runkeeper\" />
-    <Folder Include="Properties\PublishProfiles\" />
   </ItemGroup>
 </Project>
