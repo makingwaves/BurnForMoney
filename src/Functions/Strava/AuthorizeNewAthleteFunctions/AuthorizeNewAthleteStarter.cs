@@ -4,7 +4,7 @@ using BurnForMoney.Functions.Helpers;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 
-namespace BurnForMoney.Functions.Strava.GenerateAccessTokenFunctions
+namespace BurnForMoney.Functions.Strava.AuthorizeNewAthleteFunctions
 {
     public static class AuthorizeNewAthleteStarter
     {

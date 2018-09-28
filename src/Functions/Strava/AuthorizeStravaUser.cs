@@ -56,7 +56,7 @@ namespace BurnForMoney.Functions.Strava
 
             await InsertCodeToAuthorizationQueueAsync(code, authorizationCodesQueue).ConfigureAwait(false);
 
-            return new OkResult();
+            return new OkObjectResult("Authorization completed.");
         }
         
         private static async Task InsertCodeToAuthorizationQueueAsync(string code, CloudQueue queue)
