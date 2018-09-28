@@ -5,14 +5,14 @@ using Microsoft.Extensions.Logging;
 
 namespace BurnForMoney.Functions.Strava.GenerateAccessTokenFunctions
 {
-    public static class GenerateAccessTokenOrchestrator
+    public static class AuthorizeNewAthleteStarterOrchestrator
     {
-        [FunctionName(FunctionsNames.O_GenerateAccessToken)]
-        public static async Task O_GenerateAccessToken(ILogger log, [OrchestrationTrigger] DurableOrchestrationContext context, ExecutionContext executionContext)
+        [FunctionName(FunctionsNames.O_AuthorizeNewAthlete)]
+        public static async Task O_AuthorizeNewAthlete(ILogger log, [OrchestrationTrigger] DurableOrchestrationContext context, ExecutionContext executionContext)
         {
             if (!context.IsReplaying)
             {
-                log.LogInformation($"Orchestration function `{FunctionsNames.O_GenerateAccessToken}` received a request.");
+                log.LogInformation($"Orchestration function `{FunctionsNames.O_AuthorizeNewAthlete}` received a request.");
             }
 
             var authorizationCode = context.GetInput<string>();
@@ -21,7 +21,7 @@ namespace BurnForMoney.Functions.Strava.GenerateAccessTokenFunctions
             var generateTokenResponse = await context.CallActivityAsync<GenerateAccessTokenActivities.A_GenerateAccessToken_Response>(FunctionsNames.A_GenerateAccessToken, authorizationCode);
             if (!context.IsReplaying)
             {
-                log.LogInformation($"[{FunctionsNames.O_GenerateAccessToken}] generated access token for user {generateTokenResponse.Athlete.Firstname} {generateTokenResponse.Athlete.Lastname}.");
+                log.LogInformation($"[{FunctionsNames.O_AuthorizeNewAthlete}] generated access token for user {generateTokenResponse.Athlete.Firstname} {generateTokenResponse.Athlete.Lastname}.");
             }
 
             // 2. Encrypt access token
@@ -29,14 +29,14 @@ namespace BurnForMoney.Functions.Strava.GenerateAccessTokenFunctions
                 await context.CallActivityAsync<string>(FunctionsNames.A_EncryptAccessToken, generateTokenResponse.AccessToken);
             if (!context.IsReplaying)
             {
-                log.LogInformation($"[{FunctionsNames.O_GenerateAccessToken}] encrypted access token.");
+                log.LogInformation($"[{FunctionsNames.O_AuthorizeNewAthlete}] encrypted access token.");
             }
 
             // 3. Save encrypted access token in database
             await context.CallActivityAsync<string>(FunctionsNames.A_AddAthleteToDatabase, new GenerateAccessTokenActivities.A_AddAthleteToDatabase_Request { Athlete = generateTokenResponse.Athlete, EncryptedAccessToken = encryptedAccessToken});
             if (!context.IsReplaying)
             {
-                log.LogInformation($"[{FunctionsNames.O_GenerateAccessToken}] saved athlete information.");
+                log.LogInformation($"[{FunctionsNames.O_AuthorizeNewAthlete}] saved athlete information.");
             }
         }
     }

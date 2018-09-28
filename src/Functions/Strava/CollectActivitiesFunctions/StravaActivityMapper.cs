@@ -1,7 +1,7 @@
 ﻿using BurnForMoney.Functions.Model;
 using BurnForMoney.Functions.Strava.Api.Model;
 
-namespace BurnForMoney.Functions.Strava
+namespace BurnForMoney.Functions.Strava.CollectActivitiesFunctions
 {
     public static class StravaActivityMapper
     {

@@ -19,8 +19,8 @@
         public const string Support_InitializeDatabase = "Support_InitializeDatabase";
         public const string Support_Strava_CollectActivities = "Support_Strava_CollectActivities";
 
-        public const string GenerateAccessTokenStarter = "GenerateAccessTokenStarter";
-        public const string O_GenerateAccessToken = "O_GenerateAccessToken";
+        public const string AuthorizeNewAthleteStarter = "AuthorizeNewAthleteStarter";
+        public const string O_AuthorizeNewAthlete = "O_AuthorizeNewAthlete";
         public const string A_GenerateAccessToken = "A_GenerateAccessToken";
         public const string A_AddAthleteToDatabase = "A_AddAthleteToDatabase";
 
