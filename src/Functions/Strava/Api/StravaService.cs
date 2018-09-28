@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using BurnForMoney.Functions.Configuration;
+using BurnForMoney.Functions.Strava.Api.Auth;
 using BurnForMoney.Functions.Strava.Api.Model;
-using BurnForMoney.Functions.Strava.Auth;
 using Newtonsoft.Json;
 using RestSharp;
 

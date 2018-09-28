@@ -3,12 +3,7 @@ using BurnForMoney.Functions.Model;
 
 namespace BurnForMoney.Functions
 {
-    public interface IPointsCalculatingStrategy
-    {
-        double Calculate(ActivityCategory category, double distanceInMeters, int timeInMinutes);
-    }
-
-    public class DefaultPointsCalculatingStrategy: IPointsCalculatingStrategy
+    public class PointsCalculator
     {
         public double Calculate(ActivityCategory category, double distanceInMeters, int timeInMinutes)
         {
@@ -17,38 +12,48 @@ namespace BurnForMoney.Functions
             switch (category)
             {
                 case ActivityCategory.Run:
-                    points = distanceInMeters * 2.00 / 1000; // 1km = 2 points
+                    points = GetPointsForDistanceBasedCategory(distanceInMeters, 2); // 1km = 2 points
                     break;
                 case ActivityCategory.Ride:
-                    points = distanceInMeters * 1.00 / 1000; // 1km = 1 point
+                    points = GetPointsForDistanceBasedCategory(distanceInMeters); // 1km = 1 point
                     break;
                 case ActivityCategory.Walk:
-                    points = distanceInMeters * 1.00 / 1000;
+                    points = GetPointsForDistanceBasedCategory(distanceInMeters);
                     break;
                 case ActivityCategory.WinterSports:
-                    points = timeInMinutes * 1.00 / 10; // 10min = 1 point
+                    points = GetPointsForTimeBasedCategory(timeInMinutes); // 10min = 1 point
                     break;
                 case ActivityCategory.WaterSports:
-                    points = timeInMinutes * 1.00 / 10;
+                    points = GetPointsForTimeBasedCategory(timeInMinutes);
                     break;
                 case ActivityCategory.TeamSports:
-                    points = timeInMinutes * 1.00 / 10;
+                    points = GetPointsForTimeBasedCategory(timeInMinutes);
                     break;
                 case ActivityCategory.Gym:
-                    points = timeInMinutes * 1.00 / 10;
+                    points = GetPointsForTimeBasedCategory(timeInMinutes);
                     break;
                 case ActivityCategory.Hike:
-                    points = distanceInMeters * 1.00 / 1000;
+                    points = GetPointsForDistanceBasedCategory(distanceInMeters);
                     break;
                 case ActivityCategory.Fitness:
-                    points = timeInMinutes * 1.00 / 10;
+                    points = GetPointsForTimeBasedCategory(timeInMinutes);
                     break;
                 default:
-                    points = timeInMinutes * 1.00 / 10;
+                    points = GetPointsForTimeBasedCategory(timeInMinutes);
                     break;
             }
 
             return Math.Round(points, 2);
+        }
+
+        private static double GetPointsForDistanceBasedCategory(double distanceInMeters, double factor = 1)
+        {
+            return distanceInMeters * factor / 1000; 
+        }
+
+        private static double GetPointsForTimeBasedCategory(int timeInMinutes, double factor = 1)
+        {
+            return timeInMinutes * factor / 10;
         }
     }
 }

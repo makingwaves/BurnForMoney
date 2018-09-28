@@ -8,47 +8,37 @@ using BurnForMoney.Functions.Configuration;
 using BurnForMoney.Functions.Helpers;
 using BurnForMoney.Functions.Strava.Api;
 using BurnForMoney.Functions.Strava.Api.Model;
-using BurnForMoney.Functions.Strava.Services;
 using Dapper;
-using Microsoft.Azure.KeyVault;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 
-namespace BurnForMoney.Functions.Strava
+namespace BurnForMoney.Functions.Strava.CollectActivitiesFunctions
 {
     public static class CollectActivitiesActivities
     {
-        private static readonly IPointsCalculatingStrategy PointsCalculator = new DefaultPointsCalculatingStrategy();
+        private static readonly PointsCalculator PointsCalculator = new PointsCalculator();
 
         [FunctionName(FunctionsNames.A_GetAccessTokens)]
         public static async Task<string[]> GetAccessTokensAsync([ActivityTrigger]DurableActivityContext activityContext, ILogger log, ExecutionContext executionContext)
         {
             log.LogInformation($"{FunctionsNames.A_GetAccessTokens} function processed a request. Instance id: `{activityContext.InstanceId}`");
 
-            var accessTokens = await GetAllActiveAccessTokensAsync(log, executionContext);
+            var configuration = ApplicationConfiguration.GetSettings(executionContext);
+            var accessTokens = await GetAllActiveAccessTokensAsync(log, executionContext, configuration.ConnectionStrings.SqlDbConnectionString);
             log.LogInformation($"Received information about {accessTokens.Count} active access tokens.");
 
             return accessTokens.ToArray();
         }
 
-        public static async Task<List<string>> GetAllActiveAccessTokensAsync(ILogger log, ExecutionContext executionContext)
+        public static async Task<List<string>> GetAllActiveAccessTokensAsync(ILogger log, ExecutionContext executionContext, string connectionString)
         {
-            var configuration = ApplicationConfiguration.GetSettings(executionContext);
-            var keyVaultClient = KeyVaultClientFactory.Create();
-            var secret = await keyVaultClient.GetSecretAsync(
-                configuration.ConnectionStrings.KeyVaultConnectionString,
-                KeyVaultSecretNames.StravaTokensEncryptionKey);
-            var accessTokenEncryptionKey = secret.Value;
-
-            var encryptionService = new AccessTokensEncryptionService(log, accessTokenEncryptionKey);
-
             IEnumerable<string> tokens;
-            using (var conn = new SqlConnection(configuration.ConnectionStrings.SqlDbConnectionString))
+            using (var conn = new SqlConnection(connectionString))
             {
                 tokens = await conn.QueryAsync<string>("SELECT AccessToken FROM dbo.[Strava.Athletes] where Active = 1").ConfigureAwait(false);
             }
 
-            return tokens.Select(encryptionService.DecryptAccessToken).ToList();
+            return tokens.ToList();
         }
 
         [FunctionName(FunctionsNames.A_SaveSingleUserActivities)]

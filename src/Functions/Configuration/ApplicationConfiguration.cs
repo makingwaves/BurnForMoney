@@ -6,23 +6,28 @@ namespace BurnForMoney.Functions.Configuration
 {
     public class ApplicationConfiguration
     {
+        private static ConfigurationRoot _settings;
+
         public static ConfigurationRoot GetSettings(ExecutionContext context)
         {
-            var config = GetApplicationConfiguration(context.FunctionAppDirectory);
+            if (_settings == null)
+            {
+                var config = GetApplicationConfiguration(context.FunctionAppDirectory);
 
-            var settings = new ConfigurationRoot
-            {
-                Strava = GetStravaConfiguration(config),
-                ConnectionStrings = GetConnectionStrings(config),
-                IsLocalEnvironment = string.IsNullOrEmpty(GetEnvironmentVariable(EnvironmentSettingNames.AzureWebsiteInstanceId))
-            };
-            
-            if (!settings.IsValid())
-            {
-                throw new Exception("Cannot read configuration file.");
+                _settings = new ConfigurationRoot
+                {
+                    Strava = GetStravaConfiguration(config),
+                    ConnectionStrings = GetConnectionStrings(config),
+                    IsLocalEnvironment = string.IsNullOrEmpty(GetEnvironmentVariable(EnvironmentSettingNames.AzureWebsiteInstanceId))
+                };
+
+                if (!_settings.IsValid())
+                {
+                    throw new Exception("Cannot read configuration file.");
+                }
             }
 
-            return settings;
+            return _settings;
         }
 
         private static ConnectionStringsSection GetConnectionStrings(IConfigurationRoot config)
