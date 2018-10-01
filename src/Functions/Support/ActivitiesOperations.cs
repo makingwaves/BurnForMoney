@@ -45,7 +45,7 @@ namespace BurnForMoney.Functions.Support
 
             var instanceId = await starter.StartNewAsync(FunctionsNames.O_CalculateMonthlyAthleteResults, new DateTime(int.Parse(year), int.Parse(month), 1));
 
-            return starter.CreateCheckStatusResponse(new HttpRequestMessage(new HttpMethod(req.Method), req.Host.Host), instanceId);
+            return starter.CreateCheckStatusResponse(new HttpRequestMessage(), instanceId);
         }
     }
 }
