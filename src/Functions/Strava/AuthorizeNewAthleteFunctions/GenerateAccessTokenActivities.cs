@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using BurnForMoney.Functions.Configuration;
 using BurnForMoney.Functions.Helpers;
 using BurnForMoney.Functions.Strava.Api;
-using BurnForMoney.Functions.Strava.Api.Model;
+using BurnForMoney.Functions.Strava.DatabaseSchema;
 using Dapper;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
@@ -14,7 +14,7 @@ namespace BurnForMoney.Functions.Strava.AuthorizeNewAthleteFunctions
     public static class GenerateAccessTokenActivities
     {
         [FunctionName(FunctionsNames.A_GenerateAccessToken)]
-        public static async Task<A_GenerateAccessToken_Response> A_GenerateAccessToken([ActivityTrigger]string authorizationCode, ILogger log,
+        public static async Task<A_GenerateAccessToken_Output> A_GenerateAccessToken([ActivityTrigger]string authorizationCode, ILogger log,
             ExecutionContext context)
         {
             log.LogInformation($"{FunctionsNames.A_GenerateAccessToken} function processed a request.");
@@ -24,16 +24,16 @@ namespace BurnForMoney.Functions.Strava.AuthorizeNewAthleteFunctions
 
             var stravaService = new StravaService();
             var response = stravaService.ExchangeToken(configuration.Strava.ClientId, configuration.Strava.ClientSecret, authorizationCode);
-            return new A_GenerateAccessToken_Response
+            return new A_GenerateAccessToken_Output
             {
                 Athlete = response.Athlete,
                 AccessToken = response.AccessToken
             };
         }
 
-        public class A_GenerateAccessToken_Response
+        public class A_GenerateAccessToken_Output
         {
-            public Athlete Athlete { get; set; }
+            public Api.Model.Athlete Athlete { get; set; }
             public string AccessToken { get; set; }
         }
 
@@ -41,7 +41,7 @@ namespace BurnForMoney.Functions.Strava.AuthorizeNewAthleteFunctions
         public static async Task A_AddAthleteToDatabase([ActivityTrigger]DurableActivityContext activityContext, ILogger log,
             ExecutionContext context)
         {
-            var request = activityContext.GetInput<A_AddAthleteToDatabase_Request>();
+            var request = activityContext.GetInput<A_AddAthleteToDatabase_Input>();
             var athlete = request.Athlete;
             var encryptedAccessToken = request.EncryptedAccessToken;
             var configuration = ApplicationConfiguration.GetSettings(context);
@@ -49,7 +49,7 @@ namespace BurnForMoney.Functions.Strava.AuthorizeNewAthleteFunctions
             using (var conn = new SqlConnection(configuration.ConnectionStrings.SqlDbConnectionString))
             {
                 await conn.ExecuteAsync("Strava_Athlete_Upsert",
-                        new
+                        new Athlete
                         {
                             AthleteId = athlete.Id,
                             FirstName = athlete.Firstname,
@@ -63,10 +63,12 @@ namespace BurnForMoney.Functions.Strava.AuthorizeNewAthleteFunctions
             }
         }
 
-        public class A_AddAthleteToDatabase_Request
+        public class A_AddAthleteToDatabase_Input
         {
-            public Athlete Athlete { get; set; }
+            public Api.Model.Athlete Athlete { get; set; }
             public string EncryptedAccessToken { get; set; }
         }
+
+
     }
 }

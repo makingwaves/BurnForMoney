@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using BurnForMoney.Functions.Helpers;
+using BurnForMoney.Functions.Strava.DatabaseSchema;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 
@@ -20,9 +21,12 @@ namespace BurnForMoney.Functions.Strava.CalculateMonthlyAthleteResults
             var lastMonthActivities = await context.CallActivityAsync<List<Activity>>(FunctionsNames.A_GetLastMonthActivities, null);
             if (lastMonthActivities.Count == 0)
             {
-                log.LogWarning($"[{FunctionsNames.O_CollectStravaActivities}] cannot find any activities from last month.");
+                log.LogWarning($"[{FunctionsNames.A_GetLastMonthActivities}] cannot find any activities from last month.");
                 return;
             }
+
+            // 2. Store aggregated athlete results
+            await context.CallActivityAsync<List<Activity>>(FunctionsNames.A_StoreAggregatedAthleteResults, lastMonthActivities);
         }
     }
 }

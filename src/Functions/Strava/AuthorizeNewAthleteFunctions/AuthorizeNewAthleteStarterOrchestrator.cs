@@ -18,7 +18,7 @@ namespace BurnForMoney.Functions.Strava.AuthorizeNewAthleteFunctions
             var authorizationCode = context.GetInput<string>();
 
             // 1. Generate token and get information about athlete
-            var generateTokenResponse = await context.CallActivityAsync<GenerateAccessTokenActivities.A_GenerateAccessToken_Response>(FunctionsNames.A_GenerateAccessToken, authorizationCode);
+            var generateTokenResponse = await context.CallActivityAsync<GenerateAccessTokenActivities.A_GenerateAccessToken_Output>(FunctionsNames.A_GenerateAccessToken, authorizationCode);
             if (!context.IsReplaying)
             {
                 log.LogInformation($"[{FunctionsNames.O_AuthorizeNewAthlete}] generated access token for user {generateTokenResponse.Athlete.Firstname} {generateTokenResponse.Athlete.Lastname}.");
@@ -33,7 +33,7 @@ namespace BurnForMoney.Functions.Strava.AuthorizeNewAthleteFunctions
             }
 
             // 3. Save encrypted access token in database
-            await context.CallActivityAsync<string>(FunctionsNames.A_AddAthleteToDatabase, new GenerateAccessTokenActivities.A_AddAthleteToDatabase_Request { Athlete = generateTokenResponse.Athlete, EncryptedAccessToken = encryptedAccessToken});
+            await context.CallActivityAsync<string>(FunctionsNames.A_AddAthleteToDatabase, new GenerateAccessTokenActivities.A_AddAthleteToDatabase_Input { Athlete = generateTokenResponse.Athlete, EncryptedAccessToken = encryptedAccessToken});
             if (!context.IsReplaying)
             {
                 log.LogInformation($"[{FunctionsNames.O_AuthorizeNewAthlete}] saved athlete information.");

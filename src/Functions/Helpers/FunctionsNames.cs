@@ -29,5 +29,6 @@
         public const string CalculateMonthlyAthleteResultsOnFirstDayOfTheMonth = "CalculateMonthlyAthleteResultsOnFirstDayOfTheMonth";
         public const string O_CalculateMonthlyAthleteResults = "O_CalculateMonthlyAthleteResults";
         public const string A_GetLastMonthActivities = "A_GetLastMonthActivities";
+        public const string A_StoreAggregatedAthleteResults = "A_StoreAggregatedAthleteResults";
     }
 }

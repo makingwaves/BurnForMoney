@@ -8,6 +8,7 @@ using BurnForMoney.Functions.Configuration;
 using BurnForMoney.Functions.Helpers;
 using BurnForMoney.Functions.Strava.Api;
 using BurnForMoney.Functions.Strava.Api.Model;
+using BurnForMoney.Functions.Strava.DatabaseSchema;
 using Dapper;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
@@ -87,18 +88,6 @@ namespace BurnForMoney.Functions.Strava.CollectActivitiesFunctions
         private static double ToMinutes(int seconds)
         {
             return Math.Round(seconds / 60.0, 2);
-        }
-
-        public class Activity
-        {
-            public int AthleteId { get; set; }
-            public long ActivityId { get; set; }
-            public DateTime ActivityTime { get; set; }
-            public string ActivityType { get; set; }
-            public double Distance { get; set; }
-            public double MovingTime { get; set; }
-            public string Category { get; set; }
-            public double Points { get; set; }
         }
     }
 }
