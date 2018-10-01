@@ -10,7 +10,7 @@ namespace BurnForMoney.Functions.Strava.CalculateMonthlyAthleteResults
     {
         // first day of the month at 5:00
         [FunctionName(FunctionsNames.CalculateMonthlyAthleteResultsOnFirstDayOfTheMonth)]
-        public static async Task Run([TimerTrigger("0 */1 * * * *")]TimerInfo timer, [OrchestrationClient]DurableOrchestrationClient starter, ILogger log, ExecutionContext context)
+        public static async Task Run([TimerTrigger("0 0 5 1 * *")]TimerInfo timer, [OrchestrationClient]DurableOrchestrationClient starter, ILogger log, ExecutionContext context)
         {
             log.LogInformation($"{FunctionsNames.CalculateMonthlyAthleteResultsOnFirstDayOfTheMonth} timer trigger processed a request at {DateTime.UtcNow}.");
 
@@ -18,6 +18,4 @@ namespace BurnForMoney.Functions.Strava.CalculateMonthlyAthleteResults
             log.LogInformation($"Started orchestration function: `{FunctionsNames.O_CalculateMonthlyAthleteResults}` with ID = `{instanceId}`.");
         }
     }
-    //0 0 5 1 * *")
-
 }
