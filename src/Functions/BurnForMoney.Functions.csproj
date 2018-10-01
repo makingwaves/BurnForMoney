@@ -11,11 +11,13 @@
     <None Remove="Persistance\SqlScripts\Script0005- Create ActivitiesUpdateHistory table.sql" />
     <None Remove="Persistance\SqlScripts\Script0006- Alter Category and Points to Activities table.sql" />
     <None Remove="Persistance\SqlScripts\Script0007- Modify Strava_Activity_Insert procedure.sql" />
+    <None Remove="Persistance\SqlScripts\Script0008- Create Strava.AthleteMonthlyResults table.sql" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Persistance\SqlScripts\Script0001 - Create tables.sql" />
     <EmbeddedResource Include="Persistance\SqlScripts\Script0002- Alter Strava_Athlete_Upsert procedure.sql" />
     <EmbeddedResource Include="Persistance\SqlScripts\Script0006- Alter Category and Points to Activities table.sql" />
+    <EmbeddedResource Include="Persistance\SqlScripts\Script0008- Create Strava.AthleteMonthlyResults table.sql" />
     <EmbeddedResource Include="Persistance\SqlScripts\Script0007- Modify Strava_Activity_Insert procedure.sql" />
     <EmbeddedResource Include="Persistance\SqlScripts\Script0005- Create ActivitiesUpdateHistory table.sql" />
     <EmbeddedResource Include="Persistance\SqlScripts\Script0004- Add index on ActivityTime column.sql" />

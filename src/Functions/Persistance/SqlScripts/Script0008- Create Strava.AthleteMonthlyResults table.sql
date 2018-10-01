@@ -1,0 +1,1 @@
+﻿CREATE TABLE dbo.[Strava.AthleteMonthlyResults] (Id int primary key identity, Date datetime2 NOT NULL, AthleteId int UNIQUE NOT NULL, Results nvarchar(max) NOT NULL, FOREIGN KEY (AthleteId) REFERENCES dbo.[Strava.Athletes](AthleteId) )
