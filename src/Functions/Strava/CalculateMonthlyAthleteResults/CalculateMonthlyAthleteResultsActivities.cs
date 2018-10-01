@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
@@ -15,21 +16,22 @@ namespace BurnForMoney.Functions.Strava.CalculateMonthlyAthleteResults
 {
     public static class CalculateMonthlyAthleteResultsActivities
     {
-        [FunctionName(FunctionsNames.A_GetLastMonthActivities)]
-        public static async Task<List<Activity>> A_GetLastMonthActivities([ActivityTrigger] DurableActivityContext context, ILogger log, ExecutionContext executionContext)
+        [FunctionName(FunctionsNames.A_GetActivitiesFromGivenMonth)]
+        public static async Task<List<Activity>> A_GetActivitiesFromGivenMonth([ActivityTrigger] DurableActivityContext context, ILogger log, ExecutionContext executionContext)
         {
-            log.LogInformation($"{FunctionsNames.A_GetLastMonthActivities} function processed a request. Instance id: `{context.InstanceId}`");
-            var currentDate = DateTime.UtcNow;
+            log.LogInformation($"{FunctionsNames.A_GetActivitiesFromGivenMonth} function processed a request. Instance id: `{context.InstanceId}`");
+
+            var date = context.GetInput<DateTime>();
 
             var configuration = ApplicationConfiguration.GetSettings(executionContext);
             using (var conn = new SqlConnection(configuration.ConnectionStrings.SqlDbConnectionString))
             {
                 var result = await conn.QueryAsync<Activity>("SELECT * FROM dbo.[Strava.Activities] WHERE MONTH(ActivityTime)=@Month AND YEAR(ActivityTime)=@Year", new
                 {
-                    Month = currentDate.Month - 1,
-                    currentDate.Year
+                    date.Month,
+                    date.Year
                 })
-                    .ConfigureAwait(false);
+                .ConfigureAwait(false);
                 return result.ToList();
             }
         }
@@ -39,8 +41,8 @@ namespace BurnForMoney.Functions.Strava.CalculateMonthlyAthleteResults
         {
             log.LogInformation($"{FunctionsNames.A_StoreAggregatedAthleteResults} function processed a request. Instance id: `{context.InstanceId}`");
 
-            var activities = context.GetInput<List<Activity>>();
-            var aggregatedActivities = activities.GroupBy(key => key.AthleteId, element => element, (key, g) =>
+            var input = context.GetInput<A_StoreAggregatedAthleteResults_Input>();
+            var aggregatedActivities = input.Activities.GroupBy(key => key.AthleteId, element => element, (key, g) =>
             {
                 return new
                 {
@@ -68,19 +70,23 @@ namespace BurnForMoney.Functions.Strava.CalculateMonthlyAthleteResults
                 foreach (var aggregatedActivity in aggregatedActivities)
                 {
                     var json = JsonConvert.SerializeObject(aggregatedActivities);
-                    var currentDate = DateTime.UtcNow;
-                    var previousMonth = currentDate.AddMonths(-1);
-                    var result = await conn.ExecuteAsync("INSERT dbo.[Strava.AthleteMonthlyResults] (Date, AthleteId, Results) VALUES(@Date, @AthleteId, @Results); ", new
+
+                    await conn.ExecuteAsync("Strava_AthleteMonthlyResults_Upsert", new
                     {
-                        Date = previousMonth,
-                        aggregatedActivity.AthleteId,
+                        Date = $"{input.Date.Year}/{input.Date.Month}",
                         Results = json
-                    })
+                    }, commandType: CommandType.StoredProcedure)
                     .ConfigureAwait(false);
 
                     log.LogInformation($"Aggregated statistic for athlete with id: {aggregatedActivity.AthleteId}. {json}");
                 }
             }
+        }
+
+        public class A_StoreAggregatedAthleteResults_Input
+        {
+            public List<Activity> Activities { get; set; }
+            public DateTime Date { get; set; }
         }
     }
 }

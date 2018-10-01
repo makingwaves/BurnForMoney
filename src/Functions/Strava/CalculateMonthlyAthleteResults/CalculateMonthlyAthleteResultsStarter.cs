@@ -8,13 +8,24 @@ namespace BurnForMoney.Functions.Strava.CalculateMonthlyAthleteResults
 {
     public static class CalculateMonthlyAthleteResultsStarter
     {
-        // first day of the month at 5:00
-        [FunctionName(FunctionsNames.CalculateMonthlyAthleteResultsOnFirstDayOfTheMonth)]
-        public static async Task Run([TimerTrigger("0 0 5 1 * *")]TimerInfo timer, [OrchestrationClient]DurableOrchestrationClient starter, ILogger log, ExecutionContext context)
+        // every hour
+        [FunctionName(FunctionsNames.CalculateMonthlyAthleteResults)]
+        public static async Task CalculateMonthlyAthleteResults([TimerTrigger("0 0 * * * *")]TimerInfo timer, [OrchestrationClient]DurableOrchestrationClient starter, ILogger log, ExecutionContext context)
         {
-            log.LogInformation($"{FunctionsNames.CalculateMonthlyAthleteResultsOnFirstDayOfTheMonth} timer trigger processed a request at {DateTime.UtcNow}.");
+            log.LogInformation($"{FunctionsNames.CalculateMonthlyAthleteResults} timer trigger processed a request at {DateTime.UtcNow}.");
 
-            var instanceId = await starter.StartNewAsync(FunctionsNames.O_CalculateMonthlyAthleteResults, null);
+            var instanceId = await starter.StartNewAsync(FunctionsNames.O_CalculateMonthlyAthleteResults, DateTime.UtcNow);
+            log.LogInformation($"Started orchestration function: `{FunctionsNames.O_CalculateMonthlyAthleteResults}` with ID = `{instanceId}`.");
+        }
+
+        // first day of the month at 1:00
+        [FunctionName(FunctionsNames.CalculateMonthlyAthleteResultsFromPreviousMonth)]
+        public static async Task CalculateMonthlyAthleteResultsFromPreviousMonth([TimerTrigger("0 0 1 1 * *")]TimerInfo timer, [OrchestrationClient]DurableOrchestrationClient starter, ILogger log, ExecutionContext context)
+        {
+            log.LogInformation($"{FunctionsNames.CalculateMonthlyAthleteResultsFromPreviousMonth} timer trigger processed a request at {DateTime.UtcNow}.");
+
+            var currentDate = DateTime.UtcNow;
+            var instanceId = await starter.StartNewAsync(FunctionsNames.O_CalculateMonthlyAthleteResults, currentDate.AddMonths(-1));
             log.LogInformation($"Started orchestration function: `{FunctionsNames.O_CalculateMonthlyAthleteResults}` with ID = `{instanceId}`.");
         }
     }

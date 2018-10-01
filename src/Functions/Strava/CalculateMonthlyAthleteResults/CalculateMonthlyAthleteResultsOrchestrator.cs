@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using BurnForMoney.Functions.Helpers;
 using BurnForMoney.Functions.Strava.DatabaseSchema;
@@ -17,16 +18,22 @@ namespace BurnForMoney.Functions.Strava.CalculateMonthlyAthleteResults
                 log.LogInformation($"Orchestration function `{FunctionsNames.O_CalculateMonthlyAthleteResults}` received a request.");
             }
 
-            // 1. Get last month activities
-            var lastMonthActivities = await context.CallActivityAsync<List<Activity>>(FunctionsNames.A_GetLastMonthActivities, null);
-            if (lastMonthActivities.Count == 0)
+            var date = context.GetInput<DateTime>();
+
+            // 1. Get activities
+            var activities = await context.CallActivityAsync<List<Activity>>(FunctionsNames.A_GetActivitiesFromGivenMonth, date);
+            if (activities.Count == 0)
             {
-                log.LogWarning($"[{FunctionsNames.A_GetLastMonthActivities}] cannot find any activities from last month.");
+                log.LogWarning($"[{FunctionsNames.A_GetActivitiesFromGivenMonth}] cannot find any activities from given date: {date.Month}/{date.Year}.");
                 return;
             }
 
             // 2. Store aggregated athlete results
-            await context.CallActivityAsync<List<Activity>>(FunctionsNames.A_StoreAggregatedAthleteResults, lastMonthActivities);
+            await context.CallActivityAsync<List<Activity>>(FunctionsNames.A_StoreAggregatedAthleteResults, new CalculateMonthlyAthleteResultsActivities.A_StoreAggregatedAthleteResults_Input
+            {
+                Date = date,
+                Activities = activities
+            });
         }
     }
 }
