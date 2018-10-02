@@ -33,7 +33,7 @@ namespace BurnForMoney.Functions
                     points = GetPointsForTimeBasedCategory(timeInMinutes);
                     break;
                 case ActivityCategory.Hike:
-                    points = GetPointsForDistanceBasedCategory(distanceInMeters);
+                    points = GetPointsForTimeBasedCategory(timeInMinutes);
                     break;
                 case ActivityCategory.Fitness:
                     points = GetPointsForTimeBasedCategory(timeInMinutes);

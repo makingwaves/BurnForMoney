@@ -24,7 +24,7 @@ namespace BurnForMoney.Functions.Support
         }
 
         [FunctionName(FunctionsNames.Support_Strava_Activities_CollectMonthlyStatistics)]
-        public static async Task<IActionResult> Support_Strava_Activities_MohlyStatisticsCollect([HttpTrigger(AuthorizationLevel.Admin, "get", Route = "support/strava/activities/collectmonthlystatistics")]HttpRequest req, ILogger log,
+        public static async Task<IActionResult> Support_Strava_Activities_MonthlyStatisticsCollect([HttpTrigger(AuthorizationLevel.Admin, "get", Route = "support/strava/activities/collectmonthlystatistics")]HttpRequest req, ILogger log,
             [OrchestrationClient]DurableOrchestrationClient starter)
         {
             log.LogInformation($"{FunctionsNames.Support_Strava_Activities_CollectMonthlyStatistics} function processed a request.");
