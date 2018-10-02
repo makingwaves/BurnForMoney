@@ -1,5 +1,5 @@
 ﻿using System;
-using BurnForMoney.Functions.Model;
+using BurnForMoney.Functions.Persistence.DatabaseSchema;
 
 namespace BurnForMoney.Functions
 {
