@@ -28,6 +28,10 @@
 * [Azure Functions Core Tools](https://github.com/Azure/azure-functions-core-tools) - recommended for Mac OS / Linux users, optional for Windows users
 * IDE: [Visual Studio 2017](https://visualstudio.microsoft.com/downloads/) / [Visual Studio Code](https://visualstudio.microsoft.com/downloads/)
 
+### Design
+
+Dashboard: https://makingwaves.invisionapp.com/share/Y5OB37AQ349
+
 ### Environments
 
 * **Test:**

@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using BurnForMoney.Functions.Configuration;
 using BurnForMoney.Functions.Helpers;
-using BurnForMoney.Functions.Strava.Api;
 using Dapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -14,11 +13,11 @@ namespace BurnForMoney.Functions.Support
 {
     public static class AthleteOperations
     {
-        [FunctionName(FunctionsNames.Support_Strava_DeactivateAthlete)]
+        [FunctionName(FunctionsNames.Support_Strava_Athlete_Deactivate)]
         public static async Task<IActionResult> Support_Strava_DeactivateAthlete([HttpTrigger(AuthorizationLevel.Admin, "post", Route = "support/strava/athlete/deactivate")]HttpRequest req, ILogger log,
             ExecutionContext executionContext)
         {
-            log.LogInformation($"{FunctionsNames.Support_Strava_DeactivateAthlete} function processed a request.");
+            log.LogInformation($"{FunctionsNames.Support_Strava_Athlete_Deactivate} function processed a request.");
 
             string athleteId = req.Query["athleteId"];
             if (string.IsNullOrWhiteSpace(athleteId))
@@ -39,11 +38,11 @@ namespace BurnForMoney.Functions.Support
             return new BadRequestResult();
         }
 
-        [FunctionName(FunctionsNames.Support_Strava_ActivateAthlete)]
+        [FunctionName(FunctionsNames.Support_Strava_Athlete_Activate)]
         public static async Task<IActionResult> Support_Strava_ActivateAthlete([HttpTrigger(AuthorizationLevel.Admin, "post", Route = "support/strava/athlete/activate")]HttpRequest req, ILogger log,
             ExecutionContext executionContext)
         {
-            log.LogInformation($"{FunctionsNames.Support_Strava_ActivateAthlete} function processed a request.");
+            log.LogInformation($"{FunctionsNames.Support_Strava_Athlete_Activate} function processed a request.");
 
             string athleteId = req.Query["athleteId"];
             if (string.IsNullOrWhiteSpace(athleteId))

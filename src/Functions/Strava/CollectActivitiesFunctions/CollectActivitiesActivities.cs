@@ -8,6 +8,7 @@ using BurnForMoney.Functions.Configuration;
 using BurnForMoney.Functions.Helpers;
 using BurnForMoney.Functions.Strava.Api;
 using BurnForMoney.Functions.Strava.Api.Model;
+using BurnForMoney.Functions.Strava.DatabaseSchema;
 using Dapper;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
@@ -61,20 +62,20 @@ namespace BurnForMoney.Functions.Strava.CollectActivitiesFunctions
             using (var conn = new SqlConnection(connectionString))
             {
                 var activityCategory = StravaActivityMapper.MapToActivityCategory(activity.Type);
-                var points = PointsCalculator.Calculate(activityCategory, activity.Distance, activity.MovingTime);
 
-                var affectedRows = await conn.ExecuteAsync("Strava_Activity_Insert",
-                        new
-                        {
-                            AthleteId = activity.Athlete.Id,
-                            ActivityId = activity.Id,
-                            ActivityTime = activity.StartDate,
-                            ActivityType = activity.Type.ToString(),
-                            Distance = activity.Distance,
-                            MovingTime = activity.MovingTime,
-                            Category = activityCategory.ToString(),
-                            Points = points
-                        }, commandType: CommandType.StoredProcedure)
+                var model = new Activity
+                {
+                    AthleteId = activity.Athlete.Id,
+                    ActivityId = activity.Id,
+                    ActivityTime = activity.StartDate,
+                    ActivityType = activity.Type.ToString(),
+                    Distance = activity.Distance,
+                    MovingTime = ToMinutes(activity.MovingTime),
+                    Category = activityCategory.ToString()
+                };
+                model.Points = PointsCalculator.Calculate(activityCategory, model.Distance, model.MovingTime);
+
+                var affectedRows = await conn.ExecuteAsync("Strava_Activity_Insert", model, commandType: CommandType.StoredProcedure)
                     .ConfigureAwait(false);
 
                 if (affectedRows > 0)
@@ -82,6 +83,11 @@ namespace BurnForMoney.Functions.Strava.CollectActivitiesFunctions
                     log.LogInformation($"Activity with id: {activity.Id} has been added.");
                 }
             }
+        }
+
+        private static double ToMinutes(int seconds)
+        {
+            return Math.Round(seconds / 60.0, 2);
         }
     }
 }

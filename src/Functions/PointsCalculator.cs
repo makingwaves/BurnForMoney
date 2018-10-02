@@ -5,7 +5,7 @@ namespace BurnForMoney.Functions
 {
     public class PointsCalculator
     {
-        public static double Calculate(ActivityCategory category, double distanceInMeters, int timeInMinutes)
+        public static double Calculate(ActivityCategory category, double distanceInMeters, double timeInMinutes)
         {
             double points;
 
@@ -51,7 +51,7 @@ namespace BurnForMoney.Functions
             return distanceInMeters * factor / 1000; 
         }
 
-        private static double GetPointsForTimeBasedCategory(int timeInMinutes, double factor = 1)
+        private static double GetPointsForTimeBasedCategory(double timeInMinutes, double factor = 1)
         {
             return timeInMinutes * factor / 10;
         }

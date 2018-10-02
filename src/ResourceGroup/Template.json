@@ -83,18 +83,6 @@
     },
     "strava.clientSecret": {
       "type": "securestring"
-    },
-    "apiManagementSku": {
-      "type": "string",
-      "allowedValues": [
-        "Developer",
-        "Standard",
-        "Premium"
-      ],
-      "defaultValue": "Developer",
-      "metadata": {
-        "description": "The pricing tier of this API Management service"
-      }
     }
   },
   "variables": {
@@ -107,9 +95,7 @@
     "functionStorageAccountId": "[concat(resourceGroup().id,'/providers/','Microsoft.Storage/storageAccounts/', variables('functionStorageAccountName'))]",
     "sqlDbName": "[concat(variables('applicationName'), 'sqldb', parameters('environmentCode'))]",
     "sqlServerName": "[concat(variables('applicationName'), 'sqlserver', parameters('environmentCode'))]",
-    "keyVaultName": "[concat(variables('applicationName'), 'kv', parameters('environmentCode'))]",
-    "companyName": "Making Waves",
-    "apiManagementServiceName": "[concat(variables('applicationName'), 'api', parameters('environmentCode'))]"
+    "keyVaultName": "[concat(variables('applicationName'), 'kv', parameters('environmentCode'))]"
   },
   "resources": [
     {
@@ -339,21 +325,6 @@
             }
           }
         ]
-      }
-    },
-    {
-      "apiVersion": "2017-03-01",
-      "name": "[variables('apiManagementServiceName')]",
-      "type": "Microsoft.ApiManagement/service",
-      "location": "[resourceGroup().location]",
-      "tags": {},
-      "sku": {
-        "name": "[parameters('apiManagementSku')]",
-        "capacity": "1"
-      },
-      "properties": {
-        "publisherName": "[variables('companyName')]",
-        "publisherEmail": "pawel.maga@makingwaves.com"
       }
     }
   ]
