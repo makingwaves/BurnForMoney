@@ -1,7 +1,7 @@
 @import "style/variables.scss";
 
 .CurrentCharts{
-  padding-top: 100px;
+  padding-top: 50px;
   background-color: $secondary-color;
 
   &__stats{
@@ -41,11 +41,11 @@
       }
     }
     &-trainings{
-      background-color: $primary-color;
+      background-color: #fff;
       grid-area: trainings;
     }
     &-engagement{
-      background-color: $primary-color;
+      background-color: #fff;
       grid-area: engagement;
     }
     &-money{
