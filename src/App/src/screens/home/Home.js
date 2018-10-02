@@ -3,6 +3,7 @@ import VideoHeader from './VideoHeader.js';
 import TotalNumbers from './TotalNumbers.js';
 import CurrentCharts from './CurrentCharts.js';
 import CharitySlider from './CharitySlider.js';
+import TeamGoals from './TeamGoals.js';
 
 class Home extends Component {
   render() {
@@ -12,6 +13,7 @@ class Home extends Component {
         <TotalNumbers/>
         <CurrentCharts/>
         <CharitySlider/>
+        <TeamGoals/>
       </div>
     );
   }
