@@ -14,7 +14,7 @@ namespace BurnForMoney.Functions.Functions.Strava.AuthorizeNewAthlete
     public static class GenerateAccessTokenActivities
     {
         [FunctionName(FunctionsNames.A_GenerateAccessToken)]
-        public static async Task<A_GenerateAccessToken_Output> A_GenerateAccessToken([ActivityTrigger]string authorizationCode, ILogger log,
+        public static A_GenerateAccessToken_Output A_GenerateAccessToken([ActivityTrigger]string authorizationCode, ILogger log,
             ExecutionContext context)
         {
             log.LogInformation($"{FunctionsNames.A_GenerateAccessToken} function processed a request.");

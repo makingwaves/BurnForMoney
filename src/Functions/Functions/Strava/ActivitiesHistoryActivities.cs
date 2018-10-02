@@ -36,8 +36,8 @@ namespace BurnForMoney.Functions.Functions.Strava
             {
                 var affectedRows = await conn.ExecuteAsync("UPDATE dbo.[Systems.UpdateHistory] SET LastUpdate=@LastUpdate WHERE System=@System", new
                 {
-                    LastUpdate = lastUpdateDate,
-                    System = systemName
+                    System = systemName,
+                    LastUpdate = lastUpdateDate
                 }).ConfigureAwait(false);
 
                 if (affectedRows == 0)

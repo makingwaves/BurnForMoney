@@ -44,14 +44,16 @@ namespace BurnForMoney.Functions.Functions.Strava.CalculateMonthlyAthleteResults
             var input = context.GetInput<A_StoreAggregatedAthleteResults_Input>();
             var aggregatedActivities = input.Activities.GroupBy(key => key.AthleteId, element => element, (key, g) =>
             {
+                var allSingleAthleteActivities = g.ToList();
+
                 return new
                 {
                     AthleteId = key,
-                    Distance = g.Sum(activity => activity.Distance),
-                    Time = g.Sum(activity => activity.MovingTime),
-                    Points = Convert.ToInt32(g.Sum(activity => activity.Points)),
-                    Trainings = g.Count(),
-                    Activities = g.GroupBy(k => k.Category, el => el, (k, a) =>
+                    Distance = allSingleAthleteActivities.Sum(activity => activity.Distance),
+                    Time = allSingleAthleteActivities.Sum(activity => activity.MovingTime),
+                    Points = Convert.ToInt32(allSingleAthleteActivities.Sum(activity => activity.Points)),
+                    Trainings = allSingleAthleteActivities.Count,
+                    Activities = allSingleAthleteActivities.GroupBy(k => k.Category, el => el, (k, a) =>
                     {
                         var categoryActivities = a.ToList();
                         return new
