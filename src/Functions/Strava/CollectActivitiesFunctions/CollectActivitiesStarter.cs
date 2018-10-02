@@ -14,7 +14,7 @@ namespace BurnForMoney.Functions.Strava.CollectActivitiesFunctions
         {
             log.LogInformation($"{FunctionsNames.CollectStravaActivitiesInEvery20Minutes} timer trigger processed a request at {DateTime.UtcNow}.");
 
-            var instanceId = await starter.StartNewAsync(FunctionsNames.O_CollectStravaActivities, null);
+            var instanceId = await starter.StartNewAsync(FunctionsNames.O_CollectStravaActivities, true);
             log.LogInformation($"Started orchestration function: `{FunctionsNames.O_CollectStravaActivities}` with ID = `{instanceId}`.");
         }
     }

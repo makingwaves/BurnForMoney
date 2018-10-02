@@ -40,16 +40,16 @@ namespace BurnForMoney.Functions.Strava.CollectActivitiesFunctions
             return tokens.ToList();
         }
 
-        [FunctionName(FunctionsNames.A_SaveSingleUserActivities)]
-        public static async Task SaveSingleUserActivitiesAsync([ActivityTrigger]DurableActivityContext context, ILogger log, ExecutionContext executionContext)
+        [FunctionName(FunctionsNames.A_RetrieveAndSaveSingleUserActivities)]
+        public static async Task A_RetrieveAndSaveSingleUserActivities([ActivityTrigger]DurableActivityContext context, ILogger log, ExecutionContext executionContext)
         {
-            log.LogInformation($"{FunctionsNames.A_SaveSingleUserActivities} function processed a request.");
+            log.LogInformation($"{FunctionsNames.A_RetrieveAndSaveSingleUserActivities} function processed a request.");
 
-            var (accessToken, lastUpdate) = context.GetInput<ValueTuple<string, DateTime?>>();
+            var (accessToken, from) = context.GetInput<ValueTuple<string, DateTime>>();
 
             var configuration = ApplicationConfiguration.GetSettings(executionContext);
             var stravaService = new StravaService();
-            var activities = stravaService.GetActivitiesFrom(accessToken, lastUpdate ?? DateTime.UtcNow.AddMonths(-3));
+            var activities = stravaService.GetActivities(accessToken, from);
 
             foreach (var activity in activities)
             {

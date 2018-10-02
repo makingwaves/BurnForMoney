@@ -13,9 +13,11 @@ namespace BurnForMoney.Functions.Strava.CollectActivitiesFunctions
         [FunctionName(FunctionsNames.O_CollectStravaActivities)]
         public static async Task CollectStravaActivitiesAsync(ILogger log, [OrchestrationTrigger] DurableOrchestrationContext context, ExecutionContext executionContext)
         {
+            var optimize = context.GetInput<bool?>() ?? true;
+
             if (!context.IsReplaying)
             {
-                log.LogInformation($"Orchestration function `{FunctionsNames.O_CollectStravaActivities}` received a request.");
+                log.LogInformation($"Orchestration function `{FunctionsNames.O_CollectStravaActivities}` received a request. {{optimize}}: {optimize}.");
             }
 
             // 1. Get all active access tokens
@@ -43,12 +45,16 @@ namespace BurnForMoney.Functions.Strava.CollectActivitiesFunctions
                 log.LogInformation($"[{FunctionsNames.O_CollectStravaActivities}] Decrypted {decryptedAccessTokens.Length} access tokens.");
             }
 
-            // 3. Get time of the last update
-            var lastUpdate =
-                await context.CallActivityAsync<DateTime?>(FunctionsNames.A_GetLastActivitiesUpdateDate, SystemName);
-            if (!context.IsReplaying)
+            var getActivitiesFrom = DateTime.UtcNow.AddMonths(-3);
+            if (optimize)
             {
-                log.LogInformation($"[{FunctionsNames.O_CollectStravaActivities}] Retrieved time of the last update: {lastUpdate}.");
+                // 3. Get time of the last update
+                var lastUpdate = await context.CallActivityAsync<DateTime?>(FunctionsNames.A_GetLastActivitiesUpdateDate, SystemName);
+                getActivitiesFrom = lastUpdate ?? getActivitiesFrom;
+                if (!context.IsReplaying)
+                {
+                    log.LogInformation($"[{FunctionsNames.O_CollectStravaActivities}] Retrieved time of the last update: {lastUpdate?.ToString() ?? "null"}.");
+                }
             }
 
             // 4. Receive and store all new user activities
@@ -56,8 +62,8 @@ namespace BurnForMoney.Functions.Strava.CollectActivitiesFunctions
             for (var i = 0; i < encryptedAccessTokens.Length; i++)
             {
                 tasks[i] = context.CallActivityAsync(
-                    FunctionsNames.A_SaveSingleUserActivities, 
-                    (AccessToken: decryptedAccessTokens[i], LastUpdateDate: lastUpdate));
+                    FunctionsNames.A_RetrieveAndSaveSingleUserActivities, 
+                    (AccessToken: decryptedAccessTokens[i], from: getActivitiesFrom));
             }
             await Task.WhenAll(tasks);
             if (!context.IsReplaying)

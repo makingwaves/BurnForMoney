@@ -13,6 +13,7 @@ namespace BurnForMoney.Functions.Strava.Api
     public class StravaService
     {
         private const string StravaBaseUrl = "https://www.strava.com";
+        private const int ActivitiesPerPage = 50;
         private readonly RestClient _restClient;
 
         public StravaService()
@@ -39,22 +40,28 @@ namespace BurnForMoney.Functions.Strava.Api
             return TokenExchangeResponse.FromJson(response.Content);
         }
 
-        public IList<StravaActivity> GetActivities(string accessToken)
+        public IList<StravaActivity> GetActivities(string accessToken, DateTime? from = null, int page = 1)
         {
             var request = new RestRequest("api/v3/athlete/activities", Method.GET);
             request.AddQueryParameter("access_token", accessToken);
+            if (from != null)
+            {
+                request.AddQueryParameter("after", ToEpoch(from.Value).ToString());
+            }
+            request.AddQueryParameter("per_page", ActivitiesPerPage.ToString());
+            request.AddQueryParameter("page", page.ToString());
+
             var response = _restClient.Execute(request);
             ThrowExceptionIfNotSuccessful(response);
 
-            return JsonConvert.DeserializeObject<List<StravaActivity>>(response.Content, new JsonSettings());
-        }
+            var activities = JsonConvert.DeserializeObject<List<StravaActivity>>(response.Content, new JsonSettings());
+            if (activities.Count == ActivitiesPerPage)
+            {
+                var nextPage = GetActivities(accessToken, from, page + 1);
+                return activities.Concat(nextPage).ToList();
+            }
 
-        public IList<StravaActivity> GetActivitiesFrom(string accessToken, DateTime dateTimeFrom)
-        {
-            var lastActivities = GetActivities(accessToken)
-                .Where(activity => activity.StartDate >= dateTimeFrom)
-                .ToList();
-            return lastActivities;
+            return activities;
         }
 
         public void DeauthorizeAthlete(string accessToken)
@@ -73,5 +80,7 @@ namespace BurnForMoney.Functions.Strava.Api
                 throw new Exception($"Strava API returned an unsuccessfull status code. Status code: {response.StatusCode}. Content: {response.Content}. Error message: {response.ErrorMessage ?? "null"}");
             }
         }
+
+        private static long ToEpoch(DateTime dateTime) => (long)(dateTime - new DateTime(1970, 1, 1)).TotalSeconds;
     }
 }

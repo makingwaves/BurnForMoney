@@ -13,14 +13,14 @@ namespace BurnForMoney.Functions.Support
     public static class ActivitiesOperations
     {
         [FunctionName(FunctionsNames.Support_Strava_Activities_Collect)]
-        public static async Task<HttpResponseMessage> Support_Strava_CollectActivities([HttpTrigger(AuthorizationLevel.Admin, "get", Route = "support/strava/activities/collect")]HttpRequestMessage req, ILogger log, 
+        public static async Task<HttpResponseMessage> Support_Strava_CollectActivities([HttpTrigger(AuthorizationLevel.Admin, "get", Route = "support/strava/activities/collect")]HttpRequest req, ILogger log, 
             [OrchestrationClient]DurableOrchestrationClient starter)
         {
             log.LogInformation($"{FunctionsNames.Support_Strava_Activities_Collect} function processed a request.");
+            string optimize = req.Query["optimize"];
+            var instanceId = await starter.StartNewAsync(FunctionsNames.O_CollectStravaActivities, optimize);
 
-            var instanceId = await starter.StartNewAsync(FunctionsNames.O_CollectStravaActivities, null);
-
-            return starter.CreateCheckStatusResponse(req, instanceId);
+            return starter.CreateCheckStatusResponse(new HttpRequestMessage(), instanceId);
         }
 
         [FunctionName(FunctionsNames.Support_Strava_Activities_CollectMonthlyStatistics)]
