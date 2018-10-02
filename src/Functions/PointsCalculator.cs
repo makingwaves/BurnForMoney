@@ -48,12 +48,12 @@ namespace BurnForMoney.Functions
 
         private static double GetPointsForDistanceBasedCategory(double distanceInMeters, double factor = 1)
         {
-            return distanceInMeters * factor / 1000; 
+            return Math.Round(distanceInMeters * factor / 1000, 2); 
         }
 
         private static double GetPointsForTimeBasedCategory(double timeInMinutes, double factor = 1)
         {
-            return timeInMinutes * factor / 10;
+            return Math.Round(timeInMinutes * factor / 10, 2);
         }
     }
 }

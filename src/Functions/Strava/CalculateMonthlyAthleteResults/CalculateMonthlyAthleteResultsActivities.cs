@@ -50,6 +50,7 @@ namespace BurnForMoney.Functions.Strava.CalculateMonthlyAthleteResults
                     Distance = g.Sum(activity => activity.Distance),
                     Time = g.Sum(activity => activity.MovingTime),
                     Points = g.Sum(activity => activity.Points),
+                    Trainings = g.Count(),
                     Activities = g.GroupBy(k => k.Category, el => el, (k, a) =>
                     {
                         var categoryActivities = a.ToList();
@@ -58,7 +59,8 @@ namespace BurnForMoney.Functions.Strava.CalculateMonthlyAthleteResults
                             Category = k,
                             Distance = categoryActivities.Sum(activity => activity.Distance),
                             Time = categoryActivities.Sum(activity => activity.MovingTime),
-                            Points = categoryActivities.Sum(activity => activity.Points)
+                            Points = categoryActivities.Sum(activity => activity.Points),
+                            Trainings = categoryActivities.Count
                         };
                     })
                 };
