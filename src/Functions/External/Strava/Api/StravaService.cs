@@ -46,7 +46,8 @@ namespace BurnForMoney.Functions.External.Strava.Api
             request.AddQueryParameter("access_token", accessToken);
             if (from != null)
             {
-                request.AddQueryParameter("after", ToEpoch(from.Value).ToString());
+                var fixedDate = from.Value.AddHours(-2); // Start dates in Strava are not accurate https://groups.google.com/forum/#!topic/strava-api/s1OH5mcmCo8
+                request.AddQueryParameter("after", ToEpoch(fixedDate).ToString());
             }
             request.AddQueryParameter("per_page", ActivitiesPerPage.ToString());
             request.AddQueryParameter("page", page.ToString());

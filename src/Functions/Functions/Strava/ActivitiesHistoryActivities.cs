@@ -49,12 +49,12 @@ namespace BurnForMoney.Functions.Functions.Strava
                     }).ConfigureAwait(false);
                     if (insertedRows != 1)
                     {
-                        log.LogError($"Last update date of system: {systemName} cannot be updated.");
+                        log.LogError($"Last update date of the system: {systemName} cannot be updated.");
                         return;
                     }
                 }
 
-                log.LogInformation($"Updated last update date of system: {systemName}");
+                log.LogInformation($"Updated last update date of the system: {systemName}");
             }
         }
     }

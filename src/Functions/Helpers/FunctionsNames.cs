@@ -4,7 +4,7 @@
     {
         public const string AuthorizeStravaUser = "AuthorizeStravaUser";
 
-        public const string CollectStravaActivitiesInEvery20Minutes = "CollectStravaActivitiesInEvery20Minutes";
+        public const string CollectStravaActivitiesInEveryHour = "CollectStravaActivitiesInEveryHour";
         public const string O_CollectStravaActivities = "O_CollectStravaActivities";
         public const string A_GetAccessTokens = "A_GetAccessTokens";
         public const string A_RetrieveAndSaveSingleUserActivities = "A_RetrieveAndSaveSingleUserActivities";
