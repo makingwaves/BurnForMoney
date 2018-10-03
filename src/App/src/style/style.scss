@@ -1,3 +1,6 @@
+@import "~slick-carousel/slick/slick.css";
+@import "~slick-carousel/slick/slick-theme.css";
+
 body {
   margin: 0;
   padding: 0;
@@ -18,6 +21,18 @@ button{
     font-weight: bold;
     src: url('../font/Volte-Bold.otf') format('opentype');
 }
+@font-face {
+    font-family: 'AftenScreen';
+    font-weight: normal;
+    src: url('../font/Aften-Screen.ttf') format('truetype');
+}
+@font-face {
+    font-family: 'AftenScreen';
+    font-weight: bold;
+    src: url('../font/Aften-Screen-Bold.ttf') format('truetype');
+}
+
+
 
 .container{
   margin: 0 auto;
@@ -26,6 +41,10 @@ button{
 
 h2{
   font-size: 50px;
+  line-height: 55px;
+}
+h3{
+  font-size: 40px;
   line-height: 55px;
 }
 h5{

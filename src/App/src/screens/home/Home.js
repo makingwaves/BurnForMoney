@@ -4,6 +4,7 @@ import TotalNumbers from './TotalNumbers.js';
 import CurrentCharts from './CurrentCharts.js';
 import CharitySlider from './CharitySlider.js';
 import TeamGoals from './TeamGoals.js';
+import HowItWorks from './HowItWorks.js';
 
 class Home extends Component {
   render() {
@@ -14,6 +15,7 @@ class Home extends Component {
         <CurrentCharts/>
         <CharitySlider/>
         <TeamGoals/>
+        <HowItWorks/>
       </div>
     );
   }
