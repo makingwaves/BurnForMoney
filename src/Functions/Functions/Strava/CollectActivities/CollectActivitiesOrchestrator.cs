@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using BurnForMoney.Functions.Helpers;
 using Microsoft.Azure.WebJobs;
@@ -32,14 +33,9 @@ namespace BurnForMoney.Functions.Functions.Strava.CollectActivities
                 log.LogInformation($"[{FunctionsNames.O_CollectStravaActivities}] Retrieved {encryptedAccessTokens.Length} encrypted access tokens.");
             }
 
-            // 2. Decrypted all access tokens
-            var decryptionTasks = new Task<string>[encryptedAccessTokens.Length];
-            for (var i = 0; i < encryptedAccessTokens.Length; i++)
-            {
-                decryptionTasks[i] = context.CallActivityAsync<string>(
-                    FunctionsNames.A_DecryptAccessToken, encryptedAccessTokens[i]);
-            }
-            var decryptedAccessTokens = await Task.WhenAll(decryptionTasks);
+            // 2. Decrypt all access tokens
+            var decryptedAccessTokens =
+                await context.CallSubOrchestratorAsync<string[]>(FunctionsNames.O_DecryptAllAccessTokens, encryptedAccessTokens);
             if (!context.IsReplaying)
             {
                 log.LogInformation($"[{FunctionsNames.O_CollectStravaActivities}] Decrypted {decryptedAccessTokens.Length} access tokens.");
@@ -58,17 +54,10 @@ namespace BurnForMoney.Functions.Functions.Strava.CollectActivities
             }
 
             // 4. Receive and store all new user activities
-            var tasks = new Task[encryptedAccessTokens.Length];
-            for (var i = 0; i < encryptedAccessTokens.Length; i++)
-            {
-                tasks[i] = context.CallActivityAsync(
-                    FunctionsNames.A_RetrieveAndSaveSingleUserActivities, 
-                    (AccessToken: decryptedAccessTokens[i], from: getActivitiesFrom));
-            }
-            await Task.WhenAll(tasks);
+            await context.CallSubOrchestratorAsync<string[]>(FunctionsNames.O_SaveAllStravaActivities, (decryptedAccessTokens, getActivitiesFrom));
             if (!context.IsReplaying)
             {
-                log.LogInformation($"[{FunctionsNames.O_CollectStravaActivities}] Received and stored all new activities for {encryptedAccessTokens.Length} users.");
+                log.LogInformation($"[{FunctionsNames.O_SaveAllStravaActivities}] Received and stored all new activities for {encryptedAccessTokens.Length} users.");
             }
 
             // 5. Set a new time of the last update
@@ -76,8 +65,40 @@ namespace BurnForMoney.Functions.Functions.Strava.CollectActivities
                 (SystemName: SystemName, LastUpdate: context.CurrentUtcDateTime));
             if (!context.IsReplaying)
             {
-                log.LogInformation($"[{FunctionsNames.O_CollectStravaActivities}] Updated time of the last update [{context.CurrentUtcDateTime}].");
+                log.LogInformation($"[{FunctionsNames.A_SetLastActivitiesUpdateDate}] Updated time of the last update [{context.CurrentUtcDateTime}].");
             }
+        }
+
+        [FunctionName(FunctionsNames.O_DecryptAllAccessTokens)]
+        public static async Task<string[]> O_DecryptAllAccessTokens(ILogger log,
+            [OrchestrationTrigger] DurableOrchestrationContext context, ExecutionContext executionContext)
+        {
+            var encryptedAccessTokens = context.GetInput<string[]>();
+
+            var decryptionTasks = new Task<string>[encryptedAccessTokens.Length];
+            for (var i = 0; i < encryptedAccessTokens.Length; i++)
+            {
+                decryptionTasks[i] = context.CallActivityAsync<string>(
+                    FunctionsNames.A_DecryptAccessToken, encryptedAccessTokens[i]);
+            }
+            var decryptedAccessTokens = await Task.WhenAll(decryptionTasks);
+            return decryptedAccessTokens;
+        }
+
+        [FunctionName(FunctionsNames.O_SaveAllStravaActivities)]
+        public static async Task O_SaveAllStravaActivities(ILogger log,
+            [OrchestrationTrigger] DurableOrchestrationContext context, ExecutionContext executionContext)
+        {
+            var (decryptedAccessTokens, startDate) = context.GetInput<(string[], DateTime)>();
+
+            var tasks = new Task[decryptedAccessTokens.Length];
+            for (var i = 0; i < decryptedAccessTokens.Length; i++)
+            {
+                tasks[i] = context.CallActivityAsync(
+                    FunctionsNames.A_RetrieveAndSaveSingleUserActivities,
+                    (AccessToken: decryptedAccessTokens[i], from: startDate));
+            }
+            await Task.WhenAll(tasks);
         }
     }
 }

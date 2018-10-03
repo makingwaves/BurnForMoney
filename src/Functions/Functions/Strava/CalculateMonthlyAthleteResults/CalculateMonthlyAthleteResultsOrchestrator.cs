@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using BurnForMoney.Functions.Helpers;
 using BurnForMoney.Functions.Persistence.DatabaseSchema;
@@ -18,22 +17,21 @@ namespace BurnForMoney.Functions.Functions.Strava.CalculateMonthlyAthleteResults
                 log.LogInformation($"Orchestration function `{FunctionsNames.O_CalculateMonthlyAthleteResults}` received a request.");
             }
 
-            var date = context.GetInput<DateTime>();
+            var (month, year) = context.GetInput<(int, int)>();
 
             // 1. Get activities
-            var activities = await context.CallActivityAsync<List<Activity>>(FunctionsNames.A_GetActivitiesFromGivenMonth, date);
+            var activities = await context.CallActivityAsync<List<Activity>>(FunctionsNames.A_GetActivitiesFromGivenMonth, (month, year));
             if (activities.Count == 0)
             {
-                log.LogWarning($"[{FunctionsNames.A_GetActivitiesFromGivenMonth}] cannot find any activities from given date: {date.Month}/{date.Year}.");
+                log.LogWarning($"[{FunctionsNames.A_GetActivitiesFromGivenMonth}] cannot find any activities from given date: {month}/{year}.");
                 return;
             }
 
-            // 2. Store aggregated athlete results
-            await context.CallActivityAsync<List<Activity>>(FunctionsNames.A_StoreAggregatedAthleteResults, new CalculateMonthlyAthleteResultsActivities.A_StoreAggregatedAthleteResults_Input
-            {
-                Date = date,
-                Activities = activities
-            });
+            // 2. Group activities by athlete
+            var aggregatedActivities = await context.CallActivityAsync<List<AthleteMonthlyResult>>(FunctionsNames.A_GroupActivitiesByAthlete, activities);
+            
+            // 3. Store aggregated athlete monthly results
+            await context.CallActivityAsync<List<Activity>>(FunctionsNames.A_StoreAggregatedAthleteMonthlyResults, (aggregatedActivities, (month, year)));
         }
     }
 }

@@ -21,28 +21,28 @@ namespace BurnForMoney.Functions.Functions.Strava.CalculateMonthlyAthleteResults
         {
             log.LogInformation($"{FunctionsNames.A_GetActivitiesFromGivenMonth} function processed a request. Instance id: `{context.InstanceId}`");
 
-            var date = context.GetInput<DateTime>();
+            var (month, year) = context.GetInput<(int, int)>();
 
             var configuration = ApplicationConfiguration.GetSettings(executionContext);
             using (var conn = new SqlConnection(configuration.ConnectionStrings.SqlDbConnectionString))
             {
                 var result = await conn.QueryAsync<Activity>("SELECT * FROM dbo.[Strava.Activities] WHERE MONTH(ActivityTime)=@Month AND YEAR(ActivityTime)=@Year", new
                 {
-                    date.Month,
-                    date.Year
+                    Month = month,
+                    Year = year
                 })
                 .ConfigureAwait(false);
                 return result.ToList();
             }
         }
 
-        [FunctionName(FunctionsNames.A_StoreAggregatedAthleteResults)]
-        public static async Task Run([ActivityTrigger] DurableActivityContext context, ILogger log, ExecutionContext executionContext)
+        [FunctionName(FunctionsNames.A_GroupActivitiesByAthlete)]
+        public static List<AthleteMonthlyResult> A_GroupActivitiesByAthlete([ActivityTrigger] DurableActivityContext context, ILogger log, ExecutionContext executionContext)
         {
-            log.LogInformation($"{FunctionsNames.A_StoreAggregatedAthleteResults} function processed a request. Instance id: `{context.InstanceId}`");
+            log.LogInformation($"{FunctionsNames.A_GroupActivitiesByAthlete} function processed a request. Instance id: `{context.InstanceId}`");
 
-            var input = context.GetInput<A_StoreAggregatedAthleteResults_Input>();
-            var aggregatedActivities = input.Activities.GroupBy(key => key.AthleteId, element => element, (key, g) =>
+            var activities = context.GetInput<List<Activity>>();
+            var aggregatedActivities = activities.GroupBy(key => key.AthleteId, element => element, (key, g) =>
             {
                 var allSingleAthleteActivities = g.ToList();
 
@@ -68,29 +68,32 @@ namespace BurnForMoney.Functions.Functions.Strava.CalculateMonthlyAthleteResults
                 };
             });
 
+            return aggregatedActivities.ToList();
+        }
+
+        [FunctionName(FunctionsNames.A_StoreAggregatedAthleteMonthlyResults)]
+        public static async Task A_StoreAggregatedAthleteMonthlyResults([ActivityTrigger] DurableActivityContext context, ILogger log, ExecutionContext executionContext)
+        {
+            log.LogInformation($"{FunctionsNames.A_StoreAggregatedAthleteMonthlyResults} function processed a request. Instance id: `{context.InstanceId}`");
+
+            var ( activities, (month, year)) = context.GetInput<ValueTuple<List<AthleteMonthlyResult>, (int, int)>>();
             var configuration = ApplicationConfiguration.GetSettings(executionContext);
             using (var conn = new SqlConnection(configuration.ConnectionStrings.SqlDbConnectionString))
             {
-                foreach (var aggregatedActivity in aggregatedActivities)
+                foreach (var aggregatedActivity in activities)
                 {
-                    var json = JsonConvert.SerializeObject(aggregatedActivities);
+                    var json = JsonConvert.SerializeObject(activities);
 
                     await conn.ExecuteAsync("Strava_AthleteMonthlyResults_Upsert", new
                     {
-                        Date = $"{input.Date.Year}/{input.Date.Month}",
+                        Date = $"{year}/{month}",
                         Results = json
                     }, commandType: CommandType.StoredProcedure)
                     .ConfigureAwait(false);
 
-                    log.LogInformation($"Aggregated statistic for athlete with id: {aggregatedActivity.AthleteId}. {json}");
+                    log.LogInformation($"Aggregated statistics for athlete with id: {aggregatedActivity.AthleteId}. {json}");
                 }
             }
-        }
-
-        public class A_StoreAggregatedAthleteResults_Input
-        {
-            public List<Activity> Activities { get; set; }
-            public DateTime Date { get; set; }
         }
     }
 }

@@ -14,7 +14,8 @@ namespace BurnForMoney.Functions.Functions.Strava.CalculateMonthlyAthleteResults
         {
             log.LogInformation($"{FunctionsNames.CalculateMonthlyAthleteResults} timer trigger processed a request at {DateTime.UtcNow}.");
 
-            var instanceId = await starter.StartNewAsync(FunctionsNames.O_CalculateMonthlyAthleteResults, DateTime.UtcNow);
+            var date = DateTime.UtcNow;
+            var instanceId = await starter.StartNewAsync(FunctionsNames.O_CalculateMonthlyAthleteResults, (date.Month, date.Year));
             log.LogInformation($"Started orchestration function: `{FunctionsNames.O_CalculateMonthlyAthleteResults}` with ID = `{instanceId}`.");
         }
 
@@ -24,8 +25,8 @@ namespace BurnForMoney.Functions.Functions.Strava.CalculateMonthlyAthleteResults
         {
             log.LogInformation($"{FunctionsNames.CalculateMonthlyAthleteResultsFromPreviousMonth} timer trigger processed a request at {DateTime.UtcNow}.");
 
-            var currentDate = DateTime.UtcNow;
-            var instanceId = await starter.StartNewAsync(FunctionsNames.O_CalculateMonthlyAthleteResults, currentDate.AddMonths(-1));
+            var date = DateTime.UtcNow.AddMonths(-1);
+            var instanceId = await starter.StartNewAsync(FunctionsNames.O_CalculateMonthlyAthleteResults, (date.Month, date.Year));
             log.LogInformation($"Started orchestration function: `{FunctionsNames.O_CalculateMonthlyAthleteResults}` with ID = `{instanceId}`.");
         }
     }

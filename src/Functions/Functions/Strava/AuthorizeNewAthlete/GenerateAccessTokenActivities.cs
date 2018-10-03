@@ -68,7 +68,5 @@ namespace BurnForMoney.Functions.Functions.Strava.AuthorizeNewAthlete
             public Athlete Athlete { get; set; }
             public string EncryptedAccessToken { get; set; }
         }
-
-
     }
 }

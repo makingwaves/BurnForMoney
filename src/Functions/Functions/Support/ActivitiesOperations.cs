@@ -45,7 +45,7 @@ namespace BurnForMoney.Functions.Functions.Support
                 return new BadRequestObjectResult(errorMessage);
             }
 
-            var instanceId = await starter.StartNewAsync(FunctionsNames.O_CalculateMonthlyAthleteResults, new DateTime(int.Parse(year), int.Parse(month), 1));
+            var instanceId = await starter.StartNewAsync(FunctionsNames.O_CalculateMonthlyAthleteResults, (int.Parse(month), int.Parse(year)));
 
             var payload = starter.CreateHttpManagementPayload(instanceId);
             return new OkObjectResult(payload);
