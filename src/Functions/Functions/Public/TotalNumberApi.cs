@@ -37,43 +37,29 @@ namespace BurnForMoney.Functions.Functions.Public
                 var totalDistance = jsons.Sum(j => j.Results.Sum(r => r.Distance));
                 var totalTime = jsons.Sum(j => j.Results.Sum(r => r.Time));
                 var totalPoints = jsons.Sum(j => j.Results.Sum(r => r.Points));
-                var totalPointsThisMonth = jsons.Last().Results.Sum(r => r.Points);
+
+                var thisMonth = jsons.Last();
+                var totalPointsThisMonth = thisMonth.Results.Sum(r => r.Points);
+                var mostFrequentActivities = thisMonth.Results.SelectMany(r => r.Activities)
+                    .GroupBy(key => key.Category, el => el.Points, (category, categoryPoints) => new
+                    {
+                        Category = category,
+                        Points = categoryPoints.Sum()
+                    }).OrderByDescending(o => o.Points)
+                    .Take(5);
+
 
                 var result = new
                 {
                     Distance = totalDistance,
                     Time = totalTime,
                     Money = totalPoints * 100 / 500,
-                    NumberOfTrainings = jsons.Sum(j => j.Results.Sum(r => r.NumberOfTrainings)),
-                    PercentOfEngagedEmployees = 37,
-                    MoneyEarnedThisMonth = totalPointsThisMonth * 100 / 500,
-                    MostFrequentActivities = new[]
+                    ThisMonth = new
                     {
-                        new
-                        {
-                            Category = "Ride",
-                            Points = 250
-                        },
-                        new
-                        {
-                            Category = "Running",
-                            Points = 210
-                        },
-                        new
-                        {
-                            Category = "Gym",
-                            Points = 57
-                        },
-                        new
-                        {
-                            Category = "Team sports",
-                            Points = 55
-                        },
-                        new
-                        {
-                            Category = "Fitness",
-                            Points = 10
-                        }
+                        NumberOfTrainings = jsons.Sum(j => j.Results.Sum(r => r.NumberOfTrainings)),
+                        PercentOfEngagedEmployees = 37,
+                        Money = totalPointsThisMonth * 100 / 500,
+                        MostFrequentActivities = mostFrequentActivities
                     }
                 };
 
