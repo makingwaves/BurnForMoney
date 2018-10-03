@@ -13,6 +13,11 @@ namespace BurnForMoney.Functions
 
             using (var aesAlg = Aes.Create())
             {
+                if (aesAlg == null)
+                {
+                    throw new NullReferenceException();
+                }
+
                 using (var encryptor = aesAlg.CreateEncryptor(key, aesAlg.IV))
                 {
                     using (var msEncrypt = new MemoryStream())
@@ -51,6 +56,11 @@ namespace BurnForMoney.Functions
 
             using (var aesAlg = Aes.Create())
             {
+                if (aesAlg == null)
+                {
+                    throw new NullReferenceException();
+                }
+
                 using (var decryptor = aesAlg.CreateDecryptor(key, iv))
                 {
                     string result;

@@ -1,6 +1,10 @@
 # Burn for money
 
-### Supported systems
+## Documentation
+
+https://makingwaves.sharepoint.com/sites/BurnforMoney
+
+## Supported systems
 
 |                 |  Strava  | Endomondo | Runkeeper |
 | :-------------: | :------: | :-------: | :-------: |
@@ -15,9 +19,7 @@
 | Fitness / Dance | &#x2714; | &#x2714;  | &#x2714;  |
 |      Other      | &#x2714; | &#x2714;  | &#x2714;  |
 
-
-
-### Installation
+## Installation
 
 ### Requirements
 
@@ -30,7 +32,8 @@
 
 ### Design
 
-Dashboard: https://makingwaves.invisionapp.com/share/Y5OB37AQ349
+UX: https://makingwaves.invisionapp.com/share/Y5OB37AQ349
+Design: https://makingwaves.invisionapp.com/share/TXNW58VVRU2#/screens/318202851_bfm_Home
 
 ### Environments
 

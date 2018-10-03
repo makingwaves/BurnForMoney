@@ -1,0 +1,38 @@
+﻿namespace BurnForMoney.Functions.External.Strava.Api.Model
+{
+    public enum StravaActivityType
+    {
+        AlpineSki,
+        BackcountrySki,
+        Canoeing,
+        Crossfit,
+        EBikeRide,
+        Elliptical,
+        Handcycle,
+        Hike,
+        IceSkate,
+        InlineSkate,
+        Kayaking,
+        Kitesurf,
+        NordicSki,
+        Ride,
+        RockClimbing,
+        RollerSki,
+        Rowing,
+        Run,
+        Snowboard,
+        Snowshoe,
+        StairStepper,
+        StandUpPaddling,
+        Surfing,
+        Swim,
+        VirtualRide,
+        VirtualRun,
+        Walk,
+        WeightTraining,
+        Wheelchair,
+        Windsurf,
+        Workout,
+        Yoga
+    }
+}

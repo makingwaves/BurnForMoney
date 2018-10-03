@@ -4,10 +4,12 @@
     {
         public const string AuthorizeStravaUser = "AuthorizeStravaUser";
 
-        public const string CollectStravaActivitiesInEvery20Minutes = "CollectStravaActivitiesInEvery20Minutes";
+        public const string CollectStravaActivitiesInEveryHour = "CollectStravaActivitiesInEveryHour";
         public const string O_CollectStravaActivities = "O_CollectStravaActivities";
+        public const string O_DecryptAllAccessTokens = "O_DecryptAllAccessTokens";
+        public const string O_SaveAllStravaActivities = "O_SaveAllStravaActivities";
         public const string A_GetAccessTokens = "A_GetAccessTokens";
-        public const string A_SaveSingleUserActivities = "A_SaveSingleUserActivities";
+        public const string A_RetrieveAndSaveSingleUserActivities = "A_RetrieveAndSaveSingleUserActivities";
         public const string A_GetLastActivitiesUpdateDate = "A_GetLastActivitiesUpdateDate";
         public const string A_SetLastActivitiesUpdateDate = "A_SetLastActivitiesUpdateDate";
         public const string A_EncryptAccessToken = "A_EncryptAccessToken";
@@ -31,6 +33,7 @@
         public const string CalculateMonthlyAthleteResultsFromPreviousMonth = "CalculateMonthlyAthleteResultsFromPreviousMonth";
         public const string O_CalculateMonthlyAthleteResults = "O_CalculateMonthlyAthleteResults";
         public const string A_GetActivitiesFromGivenMonth = "A_GetActivitiesFromGivenMonth";
-        public const string A_StoreAggregatedAthleteResults = "A_StoreAggregatedAthleteResults";
+        public const string A_GroupActivitiesByAthlete = "A_GroupActivitiesByAthlete";
+        public const string A_StoreAggregatedAthleteMonthlyResults = "A_StoreAggregatedAthleteMonthlyResults";
     }
 }
