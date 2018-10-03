@@ -41,11 +41,16 @@ namespace BurnForMoney.Functions.Functions.Public
                 var thisMonth = jsons.Last();
                 var totalPointsThisMonth = thisMonth.Results.Sum(r => r.Points);
                 var mostFrequentActivities = thisMonth.Results.SelectMany(r => r.Activities)
-                    .GroupBy(key => key.Category, el => el.Points, (category, categoryPoints) => new
+                    .GroupBy(key => key.Category, el => el, (category, activities) =>
                     {
-                        Category = category,
-                        Points = categoryPoints.Sum()
-                    }).OrderByDescending(o => o.Points)
+                        activities = activities.ToList();
+                        return new
+                        {
+                            Category = category,
+                            NumberOfTrainings = activities.Sum(a => a.NumberOfTrainings),
+                            Points = activities.Sum(a => a.Points)
+                        };
+                    }).OrderByDescending(o => o.NumberOfTrainings)
                     .Take(5);
 
 
