@@ -40,6 +40,11 @@ namespace BurnForMoney.Functions.Functions.Strava.AuthorizeNewAthlete
             {
                 log.LogInformation($"[{FunctionsNames.O_AuthorizeNewAthlete}] saved athlete information.");
             }
+
+            // 4. Send approval request
+
+
+            // 5. Make a record active.
         }
     }
 }

@@ -28,6 +28,8 @@
         public const string O_AuthorizeNewAthlete = "O_AuthorizeNewAthlete";
         public const string A_GenerateAccessToken = "A_GenerateAccessToken";
         public const string A_AddAthleteToDatabase = "A_AddAthleteToDatabase";
+        public const string A_SendAthleteApprovalRequest = "A_SendAthleteApprovalRequest";
+
 
         public const string CalculateMonthlyAthleteResults = "CalculateMonthlyAthleteResults";
         public const string CalculateMonthlyAthleteResultsFromPreviousMonth = "CalculateMonthlyAthleteResultsFromPreviousMonth";

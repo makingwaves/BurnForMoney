@@ -9,7 +9,7 @@ using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.WindowsAzure.Storage.Queue;
 
-namespace BurnForMoney.Functions.Functions.Strava
+namespace BurnForMoney.Functions.Functions.Strava.AuthorizeNewAthlete
 {
     public static class AuthorizeStravaUser
     {
@@ -18,6 +18,7 @@ namespace BurnForMoney.Functions.Functions.Strava
         private const string StravaAuthorizationUrl = "https://www.strava.com/oauth/authorize";
         private const string AzureHostUrl = "https://functions.azure.com";
 
+        // Authorize application to get athlete's data
         [FunctionName(FunctionsNames.AuthorizeStravaUser)]
         public static async Task<IActionResult> RunAuthorizeStravaUser([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "strava/authorize")]
             HttpRequest req, ILogger log, [Queue(QueueNames.AuthorizationCodes)] CloudQueue authorizationCodesQueue,

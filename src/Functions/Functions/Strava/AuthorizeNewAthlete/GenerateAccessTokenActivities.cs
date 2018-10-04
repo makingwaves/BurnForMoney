@@ -55,12 +55,19 @@ namespace BurnForMoney.Functions.Functions.Strava.AuthorizeNewAthlete
                             FirstName = athlete.Firstname,
                             LastName = athlete.Lastname,
                             AccessToken = encryptedAccessToken,
-                            Active = true
+                            Active = false
                         }, commandType: CommandType.StoredProcedure)
                     .ConfigureAwait(false);
 
                 log.LogInformation($"Athlete: {athlete.Firstname} {athlete.Lastname} has been saved successfully");
             }
+        }
+
+        [FunctionName(FunctionsNames.A_SendAthleteApprovalRequest)]
+        public static async Task A_SendAthleteApprovalRequest([ActivityTrigger]DurableActivityContext activityContext, ILogger log,
+            ExecutionContext context)
+        {
+            
         }
 
         public class A_AddAthleteToDatabase_Input
