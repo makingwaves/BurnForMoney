@@ -13,11 +13,10 @@ namespace BurnForMoney.Functions.Functions.Support
     public static class CryptographyOperations
     {
         [FunctionName(FunctionsNames.Support_EncryptString)]
-        public static async Task<IActionResult> RunEncryptString([HttpTrigger(AuthorizationLevel.Admin, "get", Route = "support/encryptstring")]HttpRequest req, ILogger log, ExecutionContext context)
+        public static async Task<IActionResult> RunEncryptString([HttpTrigger(AuthorizationLevel.Admin, "get", Route = "support/encryptstring/{text}")]HttpRequest req, ILogger log, ExecutionContext context, string text)
         {
             log.LogInformation($"{FunctionsNames.Support_EncryptString} function processed a request.");
 
-            string text = req.Query["text"];
             if (string.IsNullOrWhiteSpace(text))
             {
                 log.LogWarning("Function invoked with incorrect parameters. [text] is null or empty.");
@@ -33,11 +32,10 @@ namespace BurnForMoney.Functions.Functions.Support
         }
 
         [FunctionName(FunctionsNames.Support_DecryptString)]
-        public static async Task<IActionResult> RunDecryptString([HttpTrigger(AuthorizationLevel.Admin, "get", Route = "support/decryptstring")]HttpRequest req, ILogger log, ExecutionContext context)
+        public static async Task<IActionResult> RunDecryptString([HttpTrigger(AuthorizationLevel.Admin, "get", Route = "support/decryptstring/{text}")]HttpRequest req, ILogger log, ExecutionContext context, string text)
         {
             log.LogInformation($"{FunctionsNames.Support_DecryptString} function processed a request.");
 
-            string text = req.Query["text"];
             if (string.IsNullOrWhiteSpace(text))
             {
                 log.LogWarning("Function invoked with incorrect parameters. [text] is null or empty.");
