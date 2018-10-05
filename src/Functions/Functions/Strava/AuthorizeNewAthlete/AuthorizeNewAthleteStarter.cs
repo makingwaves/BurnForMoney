@@ -38,7 +38,7 @@ namespace BurnForMoney.Functions.Functions.Strava.AuthorizeNewAthlete
             log.LogInformation($"Sending athlete approval result to {approval.OrchestrationId} of {result}.");
             await client.RaiseEventAsync(approval.OrchestrationId, "AthleteApproval", result);
 
-            return new OkResult();
+            return new OkObjectResult($"Thank you! Athlete has been {result.ToLowerInvariant()}.");
         }
     }
 }
