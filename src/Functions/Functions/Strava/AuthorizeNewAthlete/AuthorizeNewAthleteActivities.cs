@@ -46,9 +46,7 @@ namespace BurnForMoney.Functions.Functions.Strava.AuthorizeNewAthlete
         public static async Task A_AddAthleteToDatabaseAsync([ActivityTrigger]DurableActivityContext activityContext, ILogger log,
             ExecutionContext context)
         {
-            var request = activityContext.GetInput<A_AddAthleteToDatabase_Input>();
-            var athlete = request.Athlete;
-            var encryptedAccessToken = request.EncryptedAccessToken;
+            var (encryptedAccessToken, athlete) = activityContext.GetInput<(string, Athlete)>();
             var configuration = ApplicationConfiguration.GetSettings(context);
 
             using (var conn = new SqlConnection(configuration.ConnectionStrings.SqlDbConnectionString))
@@ -77,17 +75,32 @@ namespace BurnForMoney.Functions.Functions.Strava.AuthorizeNewAthlete
 
         [FunctionName(FunctionsNames.A_SendAthleteApprovalRequest)]
         public static async Task A_SendAthleteApprovalRequest([ActivityTrigger]DurableActivityContext activityContext, ILogger log,
-            ExecutionContext context, [SendGrid(ApiKey = "SendGrid.ApiKey")] IAsyncCollector<SendGridMessage> messageCollector)
+            ExecutionContext context, [SendGrid(ApiKey = "SendGrid.ApiKey")] IAsyncCollector<SendGridMessage> messageCollector,
+            [Table("AthleteApprovals", "AzureWebJobsStorage")] IAsyncCollector<AthleteApproval> athleteApprovalCollector)
         {
+            var (athleteFirstName, athleteLastName) = activityContext.GetInput<(string, string)>();
+
             var configuration = ApplicationConfiguration.GetSettings(context);
+
+            var approvalCode = Guid.NewGuid().ToString("N");
+            var athleteApproval = new AthleteApproval
+            {
+                PartitionKey = "AthleteApproval",
+                RowKey = approvalCode,
+                OrchestrationId = activityContext.InstanceId
+            };
 
             var message = new SendGridMessage();
             message.From = new EmailAddress(configuration.Email.SenderEmail, "Burn for Money");
             message.AddTo(new EmailAddress(configuration.Email.MainRecipientEmail, configuration.Email.MainRecipientEmail));
-            message.Subject = "[subject]";
-            message.HtmlContent = "[content]";
-            message.PlainTextContent = "<strong>[content]</strong>";
-                
+            message.Subject = "Athlete is awaiting approval";
+
+            var approvalFunctionAddress = $"{configuration.HostName}/api/SubmitAthleteApproval/{approvalCode}";
+            message.HtmlContent = $"Please review a new authorization request. Athlete: {athleteFirstName} {athleteLastName}.<br>" +
+                $"<a href=\"{approvalFunctionAddress}?result={AthleteApprovalResult.Approved.ToString()}\">Approve</a><br>" +
+                $"<a href=\"{approvalFunctionAddress}?result={AthleteApprovalResult.Rejected.ToString()}\">Reject</a>";
+
+            await athleteApprovalCollector.AddAsync(athleteApproval);
             await messageCollector.AddAsync(message);
         }
 
@@ -109,11 +122,12 @@ namespace BurnForMoney.Functions.Functions.Strava.AuthorizeNewAthlete
                 }
             }
         }
+    }
 
-        public class A_AddAthleteToDatabase_Input
-        {
-            public Athlete Athlete { get; set; }
-            public string EncryptedAccessToken { get; set; }
-        }
+    public class AthleteApproval
+    {
+        public string PartitionKey { get; set; }
+        public string RowKey { get; set; }
+        public string OrchestrationId { get; set; }
     }
 }

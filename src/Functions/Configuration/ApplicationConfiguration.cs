@@ -19,7 +19,8 @@ namespace BurnForMoney.Functions.Configuration
                     Strava = GetStravaConfiguration(config),
                     ConnectionStrings = GetConnectionStrings(config),
                     Email = GetEmailConfiguration(config),
-                    IsLocalEnvironment = string.IsNullOrEmpty(GetEnvironmentVariable(EnvironmentSettingNames.AzureWebsiteInstanceId))
+                    IsLocalEnvironment = string.IsNullOrEmpty(GetEnvironmentVariable(EnvironmentSettingNames.AzureWebsiteInstanceId)),
+                    HostName = Environment.GetEnvironmentVariable(EnvironmentSettingNames.AzureWebsiteHostName)
                 };
 
                 if (!_settings.IsValid())

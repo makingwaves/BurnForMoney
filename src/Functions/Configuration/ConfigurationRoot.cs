@@ -6,6 +6,7 @@ namespace BurnForMoney.Functions.Configuration
         public EmailSection Email { get; set; }
         public ConnectionStringsSection ConnectionStrings { get; set; }
         public bool IsLocalEnvironment { get; set; }
+        public string HostName { get; set; }
 
         public bool IsValid()
         {
