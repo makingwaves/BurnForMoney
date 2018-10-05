@@ -2,6 +2,7 @@
 using System.Data;
 using System.Data.SqlClient;
 using System.Net;
+using System.Net.Mail;
 using System.Threading.Tasks;
 using BurnForMoney.Functions.Configuration;
 using BurnForMoney.Functions.External.Strava.Api;
@@ -42,7 +43,7 @@ namespace BurnForMoney.Functions.Functions.Strava.AuthorizeNewAthlete
         }
 
         [FunctionName(FunctionsNames.A_AddAthleteToDatabase)]
-        public static async Task<bool> A_AddAthleteToDatabaseAsync([ActivityTrigger]DurableActivityContext activityContext, ILogger log,
+        public static async Task A_AddAthleteToDatabaseAsync([ActivityTrigger]DurableActivityContext activityContext, ILogger log,
             ExecutionContext context)
         {
             var request = activityContext.GetInput<A_AddAthleteToDatabase_Input>();
@@ -66,34 +67,46 @@ namespace BurnForMoney.Functions.Functions.Strava.AuthorizeNewAthlete
                 if (affectedRows > 0)
                 {
                     log.LogInformation($"Athlete: {athlete.Firstname} {athlete.Lastname} has been saved successfully");
-                    return true;
                 }
                 else
                 {
-                    log.LogWarning($"Athlete: {athlete.Firstname} {athlete.Lastname} already exists.");
-                    return false;
+                    throw new Exception("An error occurred while saving athlete data.");
                 }
             }
         }
 
         [FunctionName(FunctionsNames.A_SendAthleteApprovalRequest)]
         public static async Task A_SendAthleteApprovalRequest([ActivityTrigger]DurableActivityContext activityContext, ILogger log,
-            ExecutionContext context)
+            ExecutionContext context, [SendGrid(ApiKey = "SendGrid.ApiKey")] IAsyncCollector<SendGridMessage> messageCollector)
         {
             var configuration = ApplicationConfiguration.GetSettings(context);
 
-            var client = new SendGridClient(configuration.Email.SendGridApiKey);
-            var from = new EmailAddress(configuration.Email.SenderEmail, "Burn for Money");
-            var subject = "[subject]";
-            var to = new EmailAddress(configuration.Email.MainRecipientEmail, configuration.Email.MainRecipientEmail);
-            var plainTextContent = "[content]";
-            var htmlContent = "<strong>[content]/strong>";
-            var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, htmlContent);
-            var response = await client.SendEmailAsync(msg);
+            var message = new SendGridMessage();
+            message.From = new EmailAddress(configuration.Email.SenderEmail, "Burn for Money");
+            message.AddTo(new EmailAddress(configuration.Email.MainRecipientEmail, configuration.Email.MainRecipientEmail));
+            message.Subject = "[subject]";
+            message.HtmlContent = "[content]";
+            message.PlainTextContent = "<strong>[content]</strong>";
+                
+            await messageCollector.AddAsync(message);
+        }
 
-            if (response.StatusCode != HttpStatusCode.Accepted)
+        [FunctionName(FunctionsNames.A_ActivateANewAthlete)]
+        public static async Task A_ActivateANewAthleteAsync([ActivityTrigger]DurableActivityContext activityContext, ILogger log,
+            ExecutionContext context)
+        {
+            var athleteId = activityContext.GetInput<int>();
+
+            var configuration = ApplicationConfiguration.GetSettings(context);
+            using (var conn = new SqlConnection(configuration.ConnectionStrings.SqlDbConnectionString))
             {
-                throw new Exception($"Failed to send approval email. Received status code: {response.StatusCode}");
+                var affectedRows = await conn.ExecuteAsync(
+                    "UPDATE dbo.[Strava.Athletes] SET Active='1' WHERE AthleteId=@AthleteId",
+                    new { AthleteId = athleteId });
+                if (affectedRows != 1)
+                {
+                    throw new Exception($"Failed to activate athlete with id: {athleteId}");
+                }
             }
         }
 

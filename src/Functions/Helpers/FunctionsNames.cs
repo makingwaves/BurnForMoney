@@ -29,6 +29,7 @@
         public const string A_GenerateAccessToken = "A_GenerateAccessToken";
         public const string A_AddAthleteToDatabase = "A_AddAthleteToDatabase";
         public const string A_SendAthleteApprovalRequest = "A_SendAthleteApprovalRequest";
+        public const string A_ActivateANewAthlete = "A_ActivateANewAthlete";
 
 
         public const string CalculateMonthlyAthleteResults = "CalculateMonthlyAthleteResults";
