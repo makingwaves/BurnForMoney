@@ -8,6 +8,9 @@
     "websiteSkuName": {
       "value": "D1"
     },
+    "email.mainRecipient": {
+      "value": "miroslawa.zimon@makingwaves.com"
+    },
     "sqlServerPassword": {
       "reference": {
         "keyVault": {

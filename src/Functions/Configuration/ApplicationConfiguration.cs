@@ -18,7 +18,7 @@ namespace BurnForMoney.Functions.Configuration
                 {
                     Strava = GetStravaConfiguration(config),
                     ConnectionStrings = GetConnectionStrings(config),
-                    SendGridApiKey = config["SendGrid.ApiKey"],
+                    Email = GetEmailConfiguration(config),
                     IsLocalEnvironment = string.IsNullOrEmpty(GetEnvironmentVariable(EnvironmentSettingNames.AzureWebsiteInstanceId))
                 };
 
@@ -29,6 +29,16 @@ namespace BurnForMoney.Functions.Configuration
             }
 
             return _settings;
+        }
+
+        private static EmailSection GetEmailConfiguration(IConfigurationRoot config)
+        {
+            return new EmailSection
+            {
+                SendGridApiKey = config["SendGrid.ApiKey"],
+                MainRecipientEmail = config["Email.MainRecipient"],
+                SenderEmail = "burnformoney@makingwaves.com"
+            };
         }
 
         private static ConnectionStringsSection GetConnectionStrings(IConfigurationRoot config)

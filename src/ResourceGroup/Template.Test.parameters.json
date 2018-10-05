@@ -5,6 +5,9 @@
     "environmentCode": {
       "value": "test"
     },
+    "email.mainRecipient": {
+      "value":  "pawel.maga@makingwaves.com"
+    },
     "sqlServerPassword": {
       "reference": {
         "keyVault": {

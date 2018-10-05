@@ -1,5 +1,7 @@
+﻿using System;
 using System.Data;
 using System.Data.SqlClient;
+using System.Net;
 using System.Threading.Tasks;
 using BurnForMoney.Functions.Configuration;
 using BurnForMoney.Functions.External.Strava.Api;
@@ -7,11 +9,13 @@ using BurnForMoney.Functions.Helpers;
 using Dapper;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
+using SendGrid;
+using SendGrid.Helpers.Mail;
 using Athlete = BurnForMoney.Functions.External.Strava.Api.Model.Athlete;
 
 namespace BurnForMoney.Functions.Functions.Strava.AuthorizeNewAthlete
 {
-    public static class GenerateAccessTokenActivities
+    public static class AuthorizeNewAthleteActivities
     {
         [FunctionName(FunctionsNames.A_GenerateAccessToken)]
         public static A_GenerateAccessToken_Output A_GenerateAccessToken([ActivityTrigger]string authorizationCode, ILogger log,
@@ -38,7 +42,7 @@ namespace BurnForMoney.Functions.Functions.Strava.AuthorizeNewAthlete
         }
 
         [FunctionName(FunctionsNames.A_AddAthleteToDatabase)]
-        public static async Task A_AddAthleteToDatabase([ActivityTrigger]DurableActivityContext activityContext, ILogger log,
+        public static async Task<bool> A_AddAthleteToDatabaseAsync([ActivityTrigger]DurableActivityContext activityContext, ILogger log,
             ExecutionContext context)
         {
             var request = activityContext.GetInput<A_AddAthleteToDatabase_Input>();
@@ -48,7 +52,7 @@ namespace BurnForMoney.Functions.Functions.Strava.AuthorizeNewAthlete
 
             using (var conn = new SqlConnection(configuration.ConnectionStrings.SqlDbConnectionString))
             {
-                await conn.ExecuteAsync("Strava_Athlete_Upsert",
+                var affectedRows = await conn.ExecuteAsync("Strava_Athlete_Upsert",
                         new Persistence.DatabaseSchema.Athlete
                         {
                             AthleteId = athlete.Id,
@@ -59,7 +63,16 @@ namespace BurnForMoney.Functions.Functions.Strava.AuthorizeNewAthlete
                         }, commandType: CommandType.StoredProcedure)
                     .ConfigureAwait(false);
 
-                log.LogInformation($"Athlete: {athlete.Firstname} {athlete.Lastname} has been saved successfully");
+                if (affectedRows > 0)
+                {
+                    log.LogInformation($"Athlete: {athlete.Firstname} {athlete.Lastname} has been saved successfully");
+                    return true;
+                }
+                else
+                {
+                    log.LogWarning($"Athlete: {athlete.Firstname} {athlete.Lastname} already exists.");
+                    return false;
+                }
             }
         }
 
@@ -67,7 +80,21 @@ namespace BurnForMoney.Functions.Functions.Strava.AuthorizeNewAthlete
         public static async Task A_SendAthleteApprovalRequest([ActivityTrigger]DurableActivityContext activityContext, ILogger log,
             ExecutionContext context)
         {
-            
+            var configuration = ApplicationConfiguration.GetSettings(context);
+
+            var client = new SendGridClient(configuration.Email.SendGridApiKey);
+            var from = new EmailAddress(configuration.Email.SenderEmail, "Burn for Money");
+            var subject = "[subject]";
+            var to = new EmailAddress(configuration.Email.MainRecipientEmail, configuration.Email.MainRecipientEmail);
+            var plainTextContent = "[content]";
+            var htmlContent = "<strong>[content]/strong>";
+            var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, htmlContent);
+            var response = await client.SendEmailAsync(msg);
+
+            if (response.StatusCode != HttpStatusCode.Accepted)
+            {
+                throw new Exception($"Failed to send approval email. Received status code: {response.StatusCode}");
+            }
         }
 
         public class A_AddAthleteToDatabase_Input

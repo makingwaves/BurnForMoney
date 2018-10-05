@@ -86,6 +86,9 @@
     },
     "sendGrid.apiKey": {
       "type": "securestring"
+    },
+    "email.mainRecipient": {
+      "type": "string"
     }
   },
   "variables": {
@@ -214,6 +217,10 @@
             {
               "name": "SendGrid.ApiKey",
               "value": "[parameters('sendGrid.apiKey')]"
+            },
+            {
+              "name": "Email.MainRecipient",
+              "value": "[parameters('email.mainRecipient')]"
             }
           ]
         }
