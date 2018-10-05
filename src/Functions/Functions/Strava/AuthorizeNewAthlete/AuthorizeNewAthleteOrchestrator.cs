@@ -1,8 +1,11 @@
 using System;
+using System.Runtime.InteropServices.ComTypes;
+using System.Threading;
 using System.Threading.Tasks;
 using BurnForMoney.Functions.Helpers;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
+using ExecutionContext = Microsoft.Azure.WebJobs.ExecutionContext;
 
 namespace BurnForMoney.Functions.Functions.Strava.AuthorizeNewAthlete
 {
@@ -21,10 +24,12 @@ namespace BurnForMoney.Functions.Functions.Strava.AuthorizeNewAthlete
             // 1. Generate token and get information about athlete
             var athleteInformation = await context.CallActivityWithRetryAsync<AuthorizeNewAthleteActivities.A_GenerateAccessToken_Output>(FunctionsNames.A_GenerateAccessToken,
                 new RetryOptions(TimeSpan.FromSeconds(5), 3), authorizationCode);
+            var (athleteFirstName, athleteLastName) =
+                (athleteInformation.Athlete.Firstname, athleteInformation.Athlete.Lastname);
             if (!context.IsReplaying)
             {
-                log.LogInformation($"[{FunctionsNames.A_GenerateAccessToken}] generated access token for user {athleteInformation.Athlete.Firstname} " +
-                                   $"{athleteInformation.Athlete.Lastname}.");
+                log.LogInformation($"[{FunctionsNames.A_GenerateAccessToken}] generated access token for user {athleteFirstName} " +
+                                   $"{athleteLastName}.");
             }
 
             // 2. Encrypt access token
@@ -37,23 +42,55 @@ namespace BurnForMoney.Functions.Functions.Strava.AuthorizeNewAthlete
 
             // 3. Save athlete in the database
             await context.CallActivityAsync(FunctionsNames.A_AddAthleteToDatabase, (encryptedAccessToken, athleteInformation.Athlete));
-            if (context.IsReplaying)
+            if (!context.IsReplaying)
             {
                 log.LogInformation($"[{FunctionsNames.A_AddAthleteToDatabase}] saved athlete information.");
             }
 
             // 4. Send approval request
-            await context.CallActivityAsync(FunctionsNames.A_SendAthleteApprovalRequest, (athleteInformation.Athlete.Firstname, athleteInformation.Athlete.Lastname));
-            var approvalResult = await context.WaitForExternalEvent<string>(EventNames.AthleteApproval);
+            await context.CallActivityAsync(FunctionsNames.A_SendAthleteApprovalRequest, (athleteFirstName, athleteLastName));
+
+            // 5. Wait for approval
+            string approvalResult;
+            using (var cts = new CancellationTokenSource())
+            {
+                var timeoutTask = context.CreateTimer(context.CurrentUtcDateTime.AddDays(2), cts.Token);
+                var approvalTask = context.WaitForExternalEvent<string>(EventNames.AthleteApproval);
+
+                var winner = await Task.WhenAny(timeoutTask, approvalTask);
+                if (winner == approvalTask)
+                {
+                    approvalResult = approvalTask.Result;
+                    cts.Cancel();
+                }
+                else
+                {
+                    approvalResult = AthleteApprovalResult.Timeout.ToString();
+                }
+            }
 
             if (approvalResult == AthleteApprovalResult.Approved.ToString())
             {
-                // 5. Make a record active.
+                if (!context.IsReplaying)
+                {
+                    log.LogInformation($"[{FunctionsNames.A_SendAthleteApprovalRequest}] Athlete: {athleteFirstName} {athleteLastName} has been approved.");
+                }
+
+                // 6. Make a record active.
                 await context.CallActivityAsync(FunctionsNames.A_ActivateANewAthlete, athleteInformation.Athlete.Id);
+                if (!context.IsReplaying)
+                {
+                    log.LogInformation($"[{FunctionsNames.A_SendAthleteApprovalRequest}] Athlete: {athleteFirstName} {athleteLastName} has been activated.");
+                }
             }
             else
             {
-                // 5. Reject
+                // 6. Reject
+                await context.CallActivityAsync(FunctionsNames.A_DeleteRejectedAthlete, athleteInformation.Athlete.Id);
+                if (!context.IsReplaying)
+                {
+                    log.LogInformation($"[{FunctionsNames.A_DeleteRejectedAthlete}] Athlete: {athleteFirstName} {athleteLastName} has been rejected and deleted.");
+                }
             }
         }
     }

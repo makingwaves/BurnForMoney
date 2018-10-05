@@ -92,7 +92,7 @@ namespace BurnForMoney.Functions.Functions.Strava.AuthorizeNewAthlete
 
             var message = new SendGridMessage();
             message.From = new EmailAddress(configuration.Email.SenderEmail, "Burn for Money");
-            message.AddTo(new EmailAddress(configuration.Email.MainRecipientEmail, configuration.Email.MainRecipientEmail));
+            message.AddTo(new EmailAddress(configuration.Email.MainRecipientEmail));
             message.Subject = "Athlete is awaiting approval";
 
             var approvalFunctionAddress = $"{configuration.HostName}/api/SubmitAthleteApproval/{approvalCode}";
@@ -100,6 +100,7 @@ namespace BurnForMoney.Functions.Functions.Strava.AuthorizeNewAthlete
                 $"<a href=\"{approvalFunctionAddress}?result={AthleteApprovalResult.Approved.ToString()}\">Approve</a><br>" +
                 $"<a href=\"{approvalFunctionAddress}?result={AthleteApprovalResult.Rejected.ToString()}\">Reject</a>";
 
+            log.LogInformation($"Sending approval request for athlete {athleteFirstName} {athleteLastName} to: {configuration.Email.MainRecipientEmail}.");
             await athleteApprovalCollector.AddAsync(athleteApproval);
             await messageCollector.AddAsync(message);
         }
@@ -119,6 +120,25 @@ namespace BurnForMoney.Functions.Functions.Strava.AuthorizeNewAthlete
                 if (affectedRows != 1)
                 {
                     throw new Exception($"Failed to activate athlete with id: {athleteId}");
+                }
+            }
+        }
+
+        [FunctionName(FunctionsNames.A_DeleteRejectedAthlete)]
+        public static async Task A_DeleteRejectedAthleteAsync([ActivityTrigger]DurableActivityContext activityContext, ILogger log,
+            ExecutionContext context)
+        {
+            var athleteId = activityContext.GetInput<int>();
+
+            var configuration = ApplicationConfiguration.GetSettings(context);
+            using (var conn = new SqlConnection(configuration.ConnectionStrings.SqlDbConnectionString))
+            {
+                var affectedRows = await conn.ExecuteAsync(
+                    "DELETE FROM dbo.[Strava.Athletes] WHERE AthleteId=@AthleteId",
+                    new { AthleteId = athleteId });
+                if (affectedRows != 1)
+                {
+                    throw new Exception($"Failed to delete rejected athlete with id: {athleteId}");
                 }
             }
         }
