@@ -83,6 +83,9 @@
     },
     "strava.clientSecret": {
       "type": "securestring"
+    },
+    "sendGrid.apiKey": {
+      "type": "securestring"
     }
   },
   "variables": {
@@ -207,6 +210,10 @@
             {
               "name": "Strava.ClientSecret",
               "value": "[parameters('strava.clientSecret')]"
+            },
+            {
+              "name": "SendGrid.ApiKey",
+              "value": "[parameters('sendGrid.apiKey')]"
             }
           ]
         }

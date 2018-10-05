@@ -43,7 +43,7 @@ function DeployCredentials {
 					-ResourceGroupLocation $ResourceGroupLocation `
 					-KeyVaultName $KeyVaultName
 
-	$secrets = "sqlServerPassword", "stravaAccessTokensEncryptionKey", "stravaClientId", "stravaClientSecret"
+	$secrets = "sqlServerPassword", "stravaAccessTokensEncryptionKey", "stravaClientId", "stravaClientSecret", "sendGridApiKey"
 
 	for ($i=0; $i -lt $secrets.length; $i++) {
 		AddNewSecret -SecretName $secrets[$i] `

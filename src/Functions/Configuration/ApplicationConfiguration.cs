@@ -18,6 +18,7 @@ namespace BurnForMoney.Functions.Configuration
                 {
                     Strava = GetStravaConfiguration(config),
                     ConnectionStrings = GetConnectionStrings(config),
+                    SendGridApiKey = config["SendGrid.ApiKey"],
                     IsLocalEnvironment = string.IsNullOrEmpty(GetEnvironmentVariable(EnvironmentSettingNames.AzureWebsiteInstanceId))
                 };
 

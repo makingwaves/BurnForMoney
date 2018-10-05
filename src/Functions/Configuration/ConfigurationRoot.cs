@@ -3,6 +3,7 @@ namespace BurnForMoney.Functions.Configuration
     public class ConfigurationRoot
     {
         public StravaConfigurationSection Strava { get; set; }
+        public string SendGridApiKey{ get; set; }
         public ConnectionStringsSection ConnectionStrings { get; set; }
         public bool IsLocalEnvironment { get; set; }
 
