@@ -1,0 +1,11 @@
+﻿{
+  "$schema": "http://json.schemastore.org/proxies",
+  "proxies": {
+    "strava_authorization_page_proxy": {
+      "matchCondition": {
+        "route": "/api/strava/authorize/"
+      },
+      "backendUri": "https://www.strava.com/oauth/authorize?client_id=%Strava.ClientId%&response_type=code&redirect_uri=https://%WEBSITE_HOSTNAME%/api/strava/authenticate/&approval_prompt=force"
+    }
+  }
+}

@@ -2,7 +2,7 @@
 {
     public static class FunctionsNames
     {
-        public const string AuthorizeStravaUser = "AuthorizeStravaUser";
+        public const string AuthenticateStravaUser = "AuthenticateStravaUser";
 
         public const string CollectStravaActivitiesInEveryHour = "CollectStravaActivitiesInEveryHour";
         public const string O_CollectStravaActivities = "O_CollectStravaActivities";
