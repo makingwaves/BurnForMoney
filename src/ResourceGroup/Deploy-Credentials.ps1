@@ -3,7 +3,8 @@ function CreateKeyVault {
 		[string] [Parameter(Mandatory=$true)] $Environment,
 		[string] [Parameter(Mandatory=$true)] $ResourceGroupName,
 		[string] [Parameter(Mandatory=$true)] $ResourceGroupLocation,
-		[string] [Parameter(Mandatory=$true)] $KeyVaultName
+		[string] [Parameter(Mandatory=$true)] $KeyVaultName,
+		[string] [Parameter(Mandatory=$true)] $UserAccountId
 	)
 
 	if (-not (Get-AzureRmKeyVault -VaultName $KeyVaultName))
@@ -11,7 +12,7 @@ function CreateKeyVault {
 		Write-Host "Creating KeyVault: [$KeyVaultName]"
 		New-AzureRmKeyVault -VaultName $KeyVaultName -ResourceGroupName $ResourceGroupName -Location $ResourceGroupLocation -EnabledForTemplateDeployment -EnableSoftDelete
 
-		Set-AzureRmKeyVaultAccessPolicy -VaultName $KeyVaultName -EmailAddress 'pawel.maga@makingwaves.com' -PermissionsToKeys decrypt,sign,get,unwrapKey -PermissionsToSecrets Get, Set, List, Delete
+		Set-AzureRmKeyVaultAccessPolicy -VaultName $KeyVaultName -EmailAddress $UserAccountId -PermissionsToKeys decrypt,sign,get,unwrapKey -PermissionsToSecrets Get, Set, List, Delete
 	}
 }
 
@@ -33,7 +34,8 @@ function DeployCredentials {
 	Param(
 		[string] [Parameter(Mandatory=$true)] $Environment,
 		[string] [Parameter(Mandatory=$true)] $ResourceGroupName,
-		[string] [Parameter(Mandatory=$true)] $ResourceGroupLocation
+		[string] [Parameter(Mandatory=$true)] $ResourceGroupLocation,
+		[string] [Parameter(Mandatory=$true)] $UserAccountId
 	)
 
 	Write-Host "Deploying credentials"
@@ -41,7 +43,8 @@ function DeployCredentials {
 	CreateKeyVault -Environment $Environment `
 					-ResourceGroupName $ResourceGroupName `
 					-ResourceGroupLocation $ResourceGroupLocation `
-					-KeyVaultName $KeyVaultName
+					-KeyVaultName $KeyVaultName `
+					-UserAccountId $UserAccountId
 
 	$secrets = "sqlServerPassword", "stravaAccessTokensEncryptionKey", "stravaClientId", "stravaClientSecret", "sendGridApiKey"
 

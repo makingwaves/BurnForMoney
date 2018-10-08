@@ -28,16 +28,13 @@ $ResourceGroupLocation= 'West Europe';
 $TemplateFile = [System.IO.Path]::GetFullPath([System.IO.Path]::Combine($PSScriptRoot, "Template.json"))
 $TemplateParametersFile = [System.IO.Path]::GetFullPath([System.IO.Path]::Combine($PSScriptRoot, "Template.$Environment.parameters.json"))
 
-
 try {
-	Select-AzureRmSubscription -SubscriptionName  $SubscriptionName
+	$Subscription = Select-AzureRmSubscription -SubscriptionName  $SubscriptionName
 }
 catch{
 	Login-AzureRmAccount;
-	Select-AzureRmSubscription -SubscriptionName  $SubscriptionName
+	$Subscription = Select-AzureRmSubscription -SubscriptionName  $SubscriptionName
 }
-
-
 
 # Create or update the resource group using the specified template file and template parameters file
 New-AzureRmResourceGroup -Name $ResourceGroupName -Location $ResourceGroupLocation -Verbose -Force
@@ -58,7 +55,8 @@ else {
 
 	DeployCredentials -Environment $Environment `
 					-ResourceGroupName $ResourceGroupName `
-					-ResourceGroupLocation $ResourceGroupLocation
+					-ResourceGroupLocation $ResourceGroupLocation `
+					-UserAccountId $Subscription.Account.Id
 	
 
     New-AzureRmResourceGroupDeployment -Name ((Get-ChildItem $TemplateFile).BaseName + '-' + ((Get-Date).ToUniversalTime()).ToString('MMdd-HHmm')) `
