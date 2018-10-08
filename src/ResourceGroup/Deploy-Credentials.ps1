@@ -11,8 +11,6 @@ function CreateKeyVault {
 	{
 		Write-Host "Creating KeyVault: [$KeyVaultName]"
 		New-AzureRmKeyVault -VaultName $KeyVaultName -ResourceGroupName $ResourceGroupName -Location $ResourceGroupLocation -EnabledForTemplateDeployment -EnableSoftDelete
-
-		Set-AzureRmKeyVaultAccessPolicy -VaultName $KeyVaultName -EmailAddress $UserAccountId -PermissionsToKeys decrypt,sign,get,unwrapKey -PermissionsToSecrets Get, Set, List, Delete
 	}
 }
 
@@ -45,6 +43,8 @@ function DeployCredentials {
 					-ResourceGroupLocation $ResourceGroupLocation `
 					-KeyVaultName $KeyVaultName `
 					-UserAccountId $UserAccountId
+
+	Set-AzureRmKeyVaultAccessPolicy -VaultName $KeyVaultName -EmailAddress $UserAccountId -PermissionsToKeys decrypt,sign,get,unwrapKey -PermissionsToSecrets Get, Set, List, Delete
 
 	$secrets = "sqlServerPassword", "stravaAccessTokensEncryptionKey", "stravaClientId", "stravaClientSecret", "sendGridApiKey"
 
