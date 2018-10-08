@@ -17,13 +17,13 @@ class StravaAuth extends Component {
       let stravaLink;
       switch(process.env.NODE_ENV){
         case 'development':
-          stravaLink = "https://www.strava.com/oauth/authorize?client_id=28597&response_type=code&redirect_uri=http://localhost:7071/api/strava/authorize/&approval_prompt=force";
+          stravaLink = "http://localhost:7071/api/strava/authorize/";
           break;
         case 'test':
-          stravaLink = "https://www.strava.com/oauth/authorize?client_id=28591&response_type=code&redirect_uri=https://burnformoneyfunc-test.azurewebsites.net/api/strava/authorize/&approval_prompt=force";
+          stravaLink = "https://burnformoneyfunc-test.azurewebsites.net/api/strava/authorize/";
           break;
         case 'production':
-          stravaLink = "https://www.strava.com/oauth/authorize?client_id=26733&response_type=code&redirect_uri=https://burnformoneyfunc-prod.azurewebsites.net/api/strava/authorize/&approval_prompt=force";
+          stravaLink = "https://burnformoneyfunc-prod.azurewebsites.net/api/strava/authorize/";
           break;
       }
       this.setState({ stravaLink });
