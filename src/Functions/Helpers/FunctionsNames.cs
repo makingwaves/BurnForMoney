@@ -30,7 +30,7 @@
         public const string A_AddAthleteToDatabase = "A_AddAthleteToDatabase";
         public const string A_SendAthleteApprovalRequest = "A_SendAthleteApprovalRequest";
         public const string A_ActivateANewAthlete = "A_ActivateANewAthlete";
-        public const string A_DeleteRejectedAthlete = "A_DeleteRejectedAthlete";
+        public const string A_AnonymizeRejectedAthlete = "A_AnonymizeRejectedAthlete";
         public const string SubmitAthleteApproval = "SubmitAthleteApproval";
         
         public const string CalculateMonthlyAthleteResults = "CalculateMonthlyAthleteResults";

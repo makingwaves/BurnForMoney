@@ -84,11 +84,11 @@ namespace BurnForMoney.Functions.Functions.Strava.AuthorizeNewAthlete
             }
             else
             {
-                // 6. Reject
-                await context.CallActivityAsync(FunctionsNames.A_DeleteRejectedAthlete, athleteInformation.Athlete.Id);
+                // 6. Anonymize record. It should not be deleted, because foreign key might exist (historical data).
+                await context.CallActivityAsync(FunctionsNames.A_AnonymizeRejectedAthlete, athleteInformation.Athlete.Id);
                 if (!context.IsReplaying)
                 {
-                    log.LogInformation($"[{FunctionsNames.A_DeleteRejectedAthlete}] Athlete: {athleteFirstName} {athleteLastName} has been rejected and deleted.");
+                    log.LogInformation($"[{FunctionsNames.A_AnonymizeRejectedAthlete}] Athlete: {athleteFirstName} {athleteLastName} has been rejected and anonymized.");
                 }
             }
         }

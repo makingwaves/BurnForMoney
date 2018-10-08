@@ -125,8 +125,8 @@ namespace BurnForMoney.Functions.Functions.Strava.AuthorizeNewAthlete
             }
         }
 
-        [FunctionName(FunctionsNames.A_DeleteRejectedAthlete)]
-        public static async Task A_DeleteRejectedAthleteAsync([ActivityTrigger]DurableActivityContext activityContext, ILogger log,
+        [FunctionName(FunctionsNames.A_AnonymizeRejectedAthlete)]
+        public static async Task A_AnonymizeRejectedAthlete([ActivityTrigger]DurableActivityContext activityContext, ILogger log,
             ExecutionContext context)
         {
             var athleteId = activityContext.GetInput<int>();
@@ -135,8 +135,15 @@ namespace BurnForMoney.Functions.Functions.Strava.AuthorizeNewAthlete
             using (var conn = new SqlConnection(configuration.ConnectionStrings.SqlDbConnectionString))
             {
                 var affectedRows = await conn.ExecuteAsync(
-                    "DELETE FROM dbo.[Strava.Athletes] WHERE AthleteId=@AthleteId",
-                    new { AthleteId = athleteId });
+                    "UPDATE dbo.[Strava.Athletes] SET FirstName=@FirstName, LastName=@LastName, AccessToken=@AccessToken, Active=@Active WHERE AthleteId=@AthleteId",
+                    new
+                    {
+                        AthleteId = athleteId,
+                        FirstName = "Rejected",
+                        LastName = "Rejected",
+                        AccessToken = "Rejected",
+                        Active = false
+                    });
                 if (affectedRows != 1)
                 {
                     throw new Exception($"Failed to delete rejected athlete with id: {athleteId}");
