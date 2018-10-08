@@ -28,10 +28,11 @@ namespace BurnForMoney.Functions.Functions.Strava.AuthorizeNewAthlete
             _log.LogInformation($"{FunctionsNames.AuthenticateStravaUser} function processed a request.");
             var configuration = ApplicationConfiguration.GetSettings(context);
 
-            var referer = req.Headers["Referer"].FirstOrDefault();
+            var referer = req.Headers["Referer"].FirstOrDefault() ?? "null";
+            log.LogInformation($"Request referer: [{referer}].");
             if (!configuration.IsLocalEnvironment && !IsRequestRefererValid(referer))
             {
-                log.LogWarning($"Request referer [{referer ?? "null"}] is not authorized.");
+                log.LogWarning($"Request referer [{referer}] is not authorized.");
                 return new UnauthorizedResult();
             }
 

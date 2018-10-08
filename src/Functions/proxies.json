@@ -8,7 +8,7 @@
       },
       "responseOverrides": {
         "response.statusCode": "302",
-        "response.headers.location": "https://www.strava.com/oauth/authorize?response_type=code&client_id=%Strava.ClientId%&redirect_uri=http://%WEBSITE_HOSTNAME%/api/strava/authenticate/&approval_prompt=force"
+        "response.headers.location": "https://www.strava.com/oauth/authorize?response_type=code&client_id=%Strava.ClientId%&redirect_uri=https://%WEBSITE_HOSTNAME%/api/strava/authenticate/&approval_prompt=force"
       }
     }
   }
