@@ -3,9 +3,13 @@
   "proxies": {
     "strava_authorization_page_proxy": {
       "matchCondition": {
+        "methods": [ "GET" ],
         "route": "/api/strava/authorize/"
       },
-      "backendUri": "https://www.strava.com/oauth/authorize?client_id=%Strava.ClientId%&response_type=code&redirect_uri=https://%WEBSITE_HOSTNAME%/api/strava/authenticate/&approval_prompt=force"
+      "responseOverrides": {
+        "response.statusCode": "302",
+        "response.headers.location": "https://www.strava.com/oauth/authorize?response_type=code&client_id=%Strava.ClientId%&redirect_uri=http://%WEBSITE_HOSTNAME%/api/strava/authenticate/&approval_prompt=force"
+      }
     }
   }
 }
