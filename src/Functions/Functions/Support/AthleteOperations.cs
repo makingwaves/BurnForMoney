@@ -14,12 +14,11 @@ namespace BurnForMoney.Functions.Functions.Support
     public static class AthleteOperations
     {
         [FunctionName(FunctionsNames.Support_Strava_Athlete_Deactivate)]
-        public static async Task<IActionResult> Support_Strava_DeactivateAthlete([HttpTrigger(AuthorizationLevel.Admin, "post", Route = "support/strava/athlete/deactivate")]HttpRequest req, ILogger log,
-            ExecutionContext executionContext)
+        public static async Task<IActionResult> Support_Strava_DeactivateAthlete([HttpTrigger(AuthorizationLevel.Admin, "post", Route = "support/strava/athlete/{athleteId:int}/deactivate")]HttpRequest req, ILogger log,
+            ExecutionContext executionContext, string athleteId)
         {
             log.LogInformation($"{FunctionsNames.Support_Strava_Athlete_Deactivate} function processed a request.");
 
-            string athleteId = req.Query["athleteId"];
             if (string.IsNullOrWhiteSpace(athleteId))
             {
                 log.LogWarning("Function invoked with incorrect parameters. [athleteId] is null or empty.");
@@ -39,12 +38,11 @@ namespace BurnForMoney.Functions.Functions.Support
         }
 
         [FunctionName(FunctionsNames.Support_Strava_Athlete_Activate)]
-        public static async Task<IActionResult> Support_Strava_ActivateAthlete([HttpTrigger(AuthorizationLevel.Admin, "post", Route = "support/strava/athlete/activate")]HttpRequest req, ILogger log,
-            ExecutionContext executionContext)
+        public static async Task<IActionResult> Support_Strava_ActivateAthlete([HttpTrigger(AuthorizationLevel.Admin, "post", Route = "support/strava/athlete/{athleteId:int}/activate")]HttpRequest req, ILogger log,
+            ExecutionContext executionContext, string athleteId)
         {
             log.LogInformation($"{FunctionsNames.Support_Strava_Athlete_Activate} function processed a request.");
 
-            string athleteId = req.Query["athleteId"];
             if (string.IsNullOrWhiteSpace(athleteId))
             {
                 log.LogWarning("Function invoked with incorrect parameters. [athleteId] is null or empty.");

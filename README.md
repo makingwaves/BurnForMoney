@@ -8,16 +8,16 @@ https://makingwaves.sharepoint.com/sites/BurnforMoney
 
 |                 |  Strava  | Endomondo | Runkeeper |
 | :-------------: | :------: | :-------: | :-------: |
-|       Run       | &#x2714; | &#x2714;  | &#x2714;  |
-|      Ride       | &#x2714; | &#x2714;  | &#x2714;  |
-|      Walk       | &#x2714; | &#x2714;  | &#x2714;  |
-|  Winter sports  | &#x2714; | &#x2714;  | &#x2718;  |
-|  Water sports   | &#x2714; | &#x2714;  | &#x2714;  |
-|   Team sports   | &#x2718; | &#x2714;  | &#x2718;  |
-|       Gym       | &#x2714; | &#x2714;  | &#x2714;  |
-|      Hike       | &#x2714; | &#x2714;  | &#x2714;  |
-| Fitness / Dance | &#x2714; | &#x2714;  | &#x2714;  |
-|      Other      | &#x2714; | &#x2714;  | &#x2714;  |
+|       Run       | &#x2714; | &#x2718;  | &#x2718;  |
+|      Ride       | &#x2714; | &#x2718;  | &#x2718;  |
+|      Walk       | &#x2714; | &#x2718;  | &#x2718;  |
+|  Winter sports  | &#x2714; | &#x2718;  | &#x2718;  |
+|  Water sports   | &#x2714; | &#x2718;  | &#x2718;  |
+|   Team sports   | &#x2718; | &#x2718;  | &#x2718;  |
+|       Gym       | &#x2714; | &#x2718;  | &#x2718;  |
+|      Hike       | &#x2714; | &#x2718;  | &#x2718;  |
+| Fitness / Dance | &#x2714; | &#x2718;  | &#x2718;  |
+|      Other      | &#x2714; | &#x2718;  | &#x2718;  |
 
 ## Installation
 
@@ -32,8 +32,8 @@ https://makingwaves.sharepoint.com/sites/BurnforMoney
 
 ### Design
 
-UX: https://makingwaves.invisionapp.com/share/Y5OB37AQ349
-Design: https://makingwaves.invisionapp.com/share/TXNW58VVRU2#/screens/318202851_bfm_Home
+* UX: https://makingwaves.invisionapp.com/share/Y5OB37AQ349
+* Design: https://makingwaves.invisionapp.com/share/TXNW58VVRU2#/screens/318202851_bfm_Home
 
 ### Environments
 
@@ -51,7 +51,6 @@ Design: https://makingwaves.invisionapp.com/share/TXNW58VVRU2#/screens/318202851
 
 ### Strava API
 
-* Authorization: https://www.strava.com/oauth/authorize?client_id=client_id&response_type=code&redirect_uri=https://burnformoneyfunc-test.azurewebsites.net/api/strava/authorize/&approval_prompt=force
 * Rate limits: 600 requests every 15 minutes, 30000 daily
 * Documentation: https://developers.strava.com/docs/
 * Authentication: https://developers.strava.com/docs/authentication/

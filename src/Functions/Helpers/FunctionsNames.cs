@@ -2,7 +2,7 @@
 {
     public static class FunctionsNames
     {
-        public const string AuthorizeStravaUser = "AuthorizeStravaUser";
+        public const string AuthenticateStravaUser = "AuthenticateStravaUser";
 
         public const string CollectStravaActivitiesInEveryHour = "CollectStravaActivitiesInEveryHour";
         public const string O_CollectStravaActivities = "O_CollectStravaActivities";
@@ -28,7 +28,11 @@
         public const string O_AuthorizeNewAthlete = "O_AuthorizeNewAthlete";
         public const string A_GenerateAccessToken = "A_GenerateAccessToken";
         public const string A_AddAthleteToDatabase = "A_AddAthleteToDatabase";
-
+        public const string A_SendAthleteApprovalRequest = "A_SendAthleteApprovalRequest";
+        public const string A_ActivateANewAthlete = "A_ActivateANewAthlete";
+        public const string A_AnonymizeRejectedAthlete = "A_AnonymizeRejectedAthlete";
+        public const string SubmitAthleteApproval = "SubmitAthleteApproval";
+        
         public const string CalculateMonthlyAthleteResults = "CalculateMonthlyAthleteResults";
         public const string CalculateMonthlyAthleteResultsFromPreviousMonth = "CalculateMonthlyAthleteResultsFromPreviousMonth";
         public const string O_CalculateMonthlyAthleteResults = "O_CalculateMonthlyAthleteResults";

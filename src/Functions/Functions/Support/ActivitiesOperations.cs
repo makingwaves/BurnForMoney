@@ -24,12 +24,11 @@ namespace BurnForMoney.Functions.Functions.Support
         }
 
         [FunctionName(FunctionsNames.Support_Strava_Activities_CollectMonthlyStatistics)]
-        public static async Task<IActionResult> Support_Strava_Activities_MonthlyStatisticsCollect([HttpTrigger(AuthorizationLevel.Admin, "get", Route = "support/strava/activities/collectmonthlystatistics")]HttpRequest req, ILogger log,
-            [OrchestrationClient]DurableOrchestrationClient starter)
+        public static async Task<IActionResult> Support_Strava_Activities_MonthlyStatisticsCollect([HttpTrigger(AuthorizationLevel.Admin, "get", Route = "support/strava/activities/collectmonthlystatistics/{year}/{month}")]HttpRequest req, ILogger log,
+            [OrchestrationClient]DurableOrchestrationClient starter, string year, string month)
         {
             log.LogInformation($"{FunctionsNames.Support_Strava_Activities_CollectMonthlyStatistics} function processed a request.");
 
-            string month = req.Query["month"];
             if (string.IsNullOrWhiteSpace(month))
             {
                 var errorMessage = "Function invoked with incorrect parameters. [month] is null or empty.";
@@ -37,7 +36,6 @@ namespace BurnForMoney.Functions.Functions.Support
                 return new BadRequestObjectResult(errorMessage);
             }
 
-            string year = req.Query["year"];
             if (string.IsNullOrWhiteSpace(year))
             {
                 var errorMessage = "Function invoked with incorrect parameters. [year] is null or empty.";

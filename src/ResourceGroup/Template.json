@@ -83,6 +83,12 @@
     },
     "strava.clientSecret": {
       "type": "securestring"
+    },
+    "sendGrid.apiKey": {
+      "type": "securestring"
+    },
+    "email.athletesApprovalEmail": {
+      "type": "string"
     }
   },
   "variables": {
@@ -95,7 +101,8 @@
     "functionStorageAccountId": "[concat(resourceGroup().id,'/providers/','Microsoft.Storage/storageAccounts/', variables('functionStorageAccountName'))]",
     "sqlDbName": "[concat(variables('applicationName'), 'sqldb', parameters('environmentCode'))]",
     "sqlServerName": "[concat(variables('applicationName'), 'sqlserver', parameters('environmentCode'))]",
-    "keyVaultName": "[concat(variables('applicationName'), 'kv', parameters('environmentCode'))]"
+    "keyVaultName": "[concat(variables('applicationName'), 'kv', parameters('environmentCode'))]",
+    "appInsightsName": "[concat(variables('applicationName'), 'ai', parameters('environmentCode'))]"
   },
   "resources": [
     {
@@ -156,6 +163,19 @@
       }
     },
     {
+      "type": "microsoft.insights/components",
+      "kind": "other",
+      "name": "[variables('appInsightsName')]",
+      "apiVersion": "2014-04-01",
+      "location": "[resourceGroup().location]",
+      "tags": {},
+      "scale": null,
+      "properties": {
+        "ApplicationId": "[variables('appInsightsName')]"
+      },
+      "dependsOn": []
+    },
+    {
       "apiVersion": "2015-08-01",
       "type": "Microsoft.Web/sites",
       "name": "[variables('functionAppName')]",
@@ -166,7 +186,8 @@
       },
       "dependsOn": [
         "[resourceId('Microsoft.Web/serverfarms', variables('functionHostingPlanName'))]",
-        "[resourceId('Microsoft.Storage/storageAccounts', variables('functionStorageAccountName'))]"
+        "[resourceId('Microsoft.Storage/storageAccounts', variables('functionStorageAccountName'))]",
+        "[resourceId('microsoft.insights/components', variables('appInsightsName'))]"
       ],
       "properties": {
         "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('functionHostingPlanName'))]",
@@ -201,12 +222,24 @@
               "value": "1"
             },
             {
+              "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
+              "value": "[reference(concat('microsoft.insights/components/', variables('appInsightsName'))).InstrumentationKey]"
+            },
+            {
               "name": "Strava.ClientId",
               "value": "[parameters('strava.clientId')]"
             },
             {
               "name": "Strava.ClientSecret",
               "value": "[parameters('strava.clientSecret')]"
+            },
+            {
+              "name": "SendGrid.ApiKey",
+              "value": "[parameters('sendGrid.apiKey')]"
+            },
+            {
+              "name": "Email.AthletesApprovalEmail",
+              "value": "[parameters('email.athletesApprovalEmail')]"
             }
           ]
         }

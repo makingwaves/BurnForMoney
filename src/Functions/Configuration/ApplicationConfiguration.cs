@@ -18,7 +18,9 @@ namespace BurnForMoney.Functions.Configuration
                 {
                     Strava = GetStravaConfiguration(config),
                     ConnectionStrings = GetConnectionStrings(config),
-                    IsLocalEnvironment = string.IsNullOrEmpty(GetEnvironmentVariable(EnvironmentSettingNames.AzureWebsiteInstanceId))
+                    Email = GetEmailConfiguration(config),
+                    IsLocalEnvironment = string.IsNullOrEmpty(GetEnvironmentVariable(EnvironmentSettingNames.AzureWebsiteInstanceId)),
+                    HostName = Environment.GetEnvironmentVariable(EnvironmentSettingNames.AzureWebsiteHostName)
                 };
 
                 if (!_settings.IsValid())
@@ -28,6 +30,16 @@ namespace BurnForMoney.Functions.Configuration
             }
 
             return _settings;
+        }
+
+        private static EmailSection GetEmailConfiguration(IConfigurationRoot config)
+        {
+            return new EmailSection
+            {
+                SendGridApiKey = config["SendGrid.ApiKey"],
+                AthletesApprovalEmail = config["Email.AthletesApprovalEmail"],
+                SenderEmail = "burnformoney@makingwaves.com"
+            };
         }
 
         private static ConnectionStringsSection GetConnectionStrings(IConfigurationRoot config)

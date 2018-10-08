@@ -3,13 +3,22 @@ namespace BurnForMoney.Functions.Configuration
     public class ConfigurationRoot
     {
         public StravaConfigurationSection Strava { get; set; }
+        public EmailSection Email { get; set; }
         public ConnectionStringsSection ConnectionStrings { get; set; }
         public bool IsLocalEnvironment { get; set; }
+        public string HostName { get; set; }
 
         public bool IsValid()
         {
             return Strava != null && ConnectionStrings != null;
         }
+    }
+
+    public class EmailSection
+    {
+        public string SendGridApiKey { get; set; }
+        public string SenderEmail { get; set; }
+        public string AthletesApprovalEmail { get; set; }
     }
 
     public class ConnectionStringsSection

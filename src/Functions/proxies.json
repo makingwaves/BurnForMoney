@@ -1,0 +1,15 @@
+﻿{
+  "$schema": "http://json.schemastore.org/proxies",
+  "proxies": {
+    "strava_authorization_page_proxy": {
+      "matchCondition": {
+        "methods": [ "GET" ],
+        "route": "/api/strava/authorize/"
+      },
+      "responseOverrides": {
+        "response.statusCode": "302",
+        "response.headers.location": "https://www.strava.com/oauth/authorize?response_type=code&client_id=%Strava.ClientId%&redirect_uri=https://%WEBSITE_HOSTNAME%/api/strava/authenticate/&approval_prompt=force"
+      }
+    }
+  }
+}

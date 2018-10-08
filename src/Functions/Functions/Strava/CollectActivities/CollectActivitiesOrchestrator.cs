@@ -22,7 +22,7 @@ namespace BurnForMoney.Functions.Functions.Strava.CollectActivities
             }
 
             // 1. Get all active access tokens
-            var encryptedAccessTokens = await context.CallActivityAsync<string[]>(FunctionsNames.A_GetAccessTokens, null);
+            var encryptedAccessTokens = await context.CallActivityAsync<string[]>(FunctionsNames.A_GetAccessTokens, ActivityInput.Empty);
             if (encryptedAccessTokens.Length == 0)
             {
                 log.LogInformation($"[{FunctionsNames.O_CollectStravaActivities}] cannot find any active access tokens.");

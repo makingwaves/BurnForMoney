@@ -9,7 +9,7 @@ using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.WindowsAzure.Storage.Queue;
 
-namespace BurnForMoney.Functions.Functions.Strava
+namespace BurnForMoney.Functions.Functions.Strava.AuthorizeNewAthlete
 {
     public static class AuthorizeStravaUser
     {
@@ -18,19 +18,21 @@ namespace BurnForMoney.Functions.Functions.Strava
         private const string StravaAuthorizationUrl = "https://www.strava.com/oauth/authorize";
         private const string AzureHostUrl = "https://functions.azure.com";
 
-        [FunctionName(FunctionsNames.AuthorizeStravaUser)]
-        public static async Task<IActionResult> RunAuthorizeStravaUser([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "strava/authorize")]
+        // Authorize application to get athlete's data
+        [FunctionName(FunctionsNames.AuthenticateStravaUser)]
+        public static async Task<IActionResult> RunAuthorizeStravaUser([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "strava/authenticate")]
             HttpRequest req, ILogger log, [Queue(QueueNames.AuthorizationCodes)] CloudQueue authorizationCodesQueue,
             ExecutionContext context)
         {
             _log = log;
-            _log.LogInformation($"{FunctionsNames.AuthorizeStravaUser} function processed a request.");
+            _log.LogInformation($"{FunctionsNames.AuthenticateStravaUser} function processed a request.");
             var configuration = ApplicationConfiguration.GetSettings(context);
 
-            var referer = req.Headers["Referer"].FirstOrDefault();
+            var referer = req.Headers["Referer"].FirstOrDefault() ?? "null";
+            log.LogInformation($"Request referer: [{referer}].");
             if (!configuration.IsLocalEnvironment && !IsRequestRefererValid(referer))
             {
-                log.LogWarning($"Request referer [{referer ?? "null"}] is not authorized.");
+                log.LogWarning($"Request referer [{referer}] is not authorized.");
                 return new UnauthorizedResult();
             }
 
