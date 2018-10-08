@@ -2,6 +2,12 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <AzureFunctionsVersion>v2</AzureFunctionsVersion>
+    <Product>Burn for Money</Product>
+    <Company>Making Waves</Company>
+    <Authors>Making Waves</Authors>
+    <Copyright>Making Waves</Copyright>
+    <PackageProjectUrl>bfm.makingwaves.pl</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/makingwaves/BurnForMoney</RepositoryUrl>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="Persistence\SqlScripts\Script0001 - Create tables.sql" />
