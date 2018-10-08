@@ -26,12 +26,24 @@ namespace BurnForMoney.Functions.Functions.Strava.AuthorizeNewAthlete
             [Table("AthleteApprovals", "AthleteApproval", "{code}", Connection = "AzureWebJobsStorage")] AthleteApproval approval,
             ILogger log, string code)
         {
-            log.LogInformation($"{FunctionsNames.SubmitAthleteApproval} Http trigger processed a request.");
+            log.LogInformation($"{FunctionsNames.SubmitAthleteApproval} HTTP trigger processed a request.");
 
             string result = req.Query["result"];
             if (string.IsNullOrWhiteSpace(result))
             {
                 return new BadRequestObjectResult("Athlete approval result is required.");
+            }
+            var orchestrationStatus = await client.GetStatusAsync(approval.OrchestrationId);
+            switch (orchestrationStatus.RuntimeStatus)
+            {
+                case OrchestrationRuntimeStatus.Completed:
+                    return new OkObjectResult("Athlete approval request is already completed. The status cannot be updated twice.");
+                case OrchestrationRuntimeStatus.Failed:
+                    return new BadRequestObjectResult("Athlete approval request failed. The instance failed with an error.");
+                case OrchestrationRuntimeStatus.Canceled:
+                    return new BadRequestObjectResult("Athlete approval request is cancelled.");
+                case OrchestrationRuntimeStatus.Terminated:
+                    return new BadRequestObjectResult("Athlete approval request is teminated. The instance was abruptly terminated.");
             }
 
             log.LogInformation($"Sending athlete approval result to {approval.OrchestrationId} of {result}.");
