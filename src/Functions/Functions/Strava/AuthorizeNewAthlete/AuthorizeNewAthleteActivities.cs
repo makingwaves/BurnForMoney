@@ -92,7 +92,7 @@ namespace BurnForMoney.Functions.Functions.Strava.AuthorizeNewAthlete
 
             var message = new SendGridMessage();
             message.From = new EmailAddress(configuration.Email.SenderEmail, "Burn for Money");
-            message.AddTo(new EmailAddress(configuration.Email.MainRecipientEmail));
+            message.AddTo(new EmailAddress(configuration.Email.AthletesApprovalEmail));
             message.Subject = "Athlete is awaiting approval";
             
             var protocol = "https";
@@ -101,7 +101,7 @@ namespace BurnForMoney.Functions.Functions.Strava.AuthorizeNewAthlete
                 $"<a href=\"{approvalFunctionAddress}?result={AthleteApprovalResult.Approved.ToString()}\">Approve</a><br>" +
                 $"<a href=\"{approvalFunctionAddress}?result={AthleteApprovalResult.Rejected.ToString()}\">Reject</a>";
 
-            log.LogInformation($"Sending approval request for athlete {athleteFirstName} {athleteLastName} to: {configuration.Email.MainRecipientEmail}.");
+            log.LogInformation($"Sending approval request for athlete {athleteFirstName} {athleteLastName} to: {configuration.Email.AthletesApprovalEmail}.");
             await athleteApprovalCollector.AddAsync(athleteApproval);
             await messageCollector.AddAsync(message);
         }

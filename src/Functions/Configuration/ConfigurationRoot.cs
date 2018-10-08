@@ -18,7 +18,7 @@ namespace BurnForMoney.Functions.Configuration
     {
         public string SendGridApiKey { get; set; }
         public string SenderEmail { get; set; }
-        public string MainRecipientEmail { get; set; }
+        public string AthletesApprovalEmail { get; set; }
     }
 
     public class ConnectionStringsSection

@@ -87,7 +87,7 @@
     "sendGrid.apiKey": {
       "type": "securestring"
     },
-    "email.mainRecipient": {
+    "email.athletesApprovalEmail": {
       "type": "string"
     }
   },
@@ -238,8 +238,8 @@
               "value": "[parameters('sendGrid.apiKey')]"
             },
             {
-              "name": "Email.MainRecipient",
-              "value": "[parameters('email.mainRecipient')]"
+              "name": "Email.AthletesApprovalEmail",
+              "value": "[parameters('email.athletesApprovalEmail')]"
             }
           ]
         }

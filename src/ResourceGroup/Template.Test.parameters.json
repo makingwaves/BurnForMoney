@@ -5,8 +5,8 @@
     "environmentCode": {
       "value": "test"
     },
-    "email.mainRecipient": {
-      "value": "pawel.maga@makingwaves.com"
+    "email.athletesApprovalEmail": {
+      "value": "burnformoney@makingwaves.com"
     },
     "sqlServerPassword": {
       "reference": {

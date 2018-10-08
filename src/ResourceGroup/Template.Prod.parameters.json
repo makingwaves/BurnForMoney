@@ -8,7 +8,7 @@
     "websiteSkuName": {
       "value": "D1"
     },
-    "email.mainRecipient": {
+    "email.athletesApprovalEmail": {
       "value": "miroslawa.zimon@makingwaves.com"
     },
     "sqlServerPassword": {

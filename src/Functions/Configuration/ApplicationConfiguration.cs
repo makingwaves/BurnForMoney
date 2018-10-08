@@ -37,7 +37,7 @@ namespace BurnForMoney.Functions.Configuration
             return new EmailSection
             {
                 SendGridApiKey = config["SendGrid.ApiKey"],
-                MainRecipientEmail = config["Email.MainRecipient"],
+                AthletesApprovalEmail = config["Email.AthletesApprovalEmail"],
                 SenderEmail = "burnformoney@makingwaves.com"
             };
         }
