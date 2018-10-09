@@ -3,8 +3,7 @@ function CreateKeyVault {
 		[string] [Parameter(Mandatory=$true)] $Environment,
 		[string] [Parameter(Mandatory=$true)] $ResourceGroupName,
 		[string] [Parameter(Mandatory=$true)] $ResourceGroupLocation,
-		[string] [Parameter(Mandatory=$true)] $KeyVaultName,
-		[string] [Parameter(Mandatory=$true)] $UserAccountId
+		[string] [Parameter(Mandatory=$true)] $KeyVaultName
 	)
 
 	if (-not (Get-AzureRmKeyVault -VaultName $KeyVaultName))
@@ -32,8 +31,7 @@ function DeployCredentials {
 	Param(
 		[string] [Parameter(Mandatory=$true)] $Environment,
 		[string] [Parameter(Mandatory=$true)] $ResourceGroupName,
-		[string] [Parameter(Mandatory=$true)] $ResourceGroupLocation,
-		[string] [Parameter(Mandatory=$true)] $UserAccountId
+		[string] [Parameter(Mandatory=$true)] $ResourceGroupLocation
 	)
 
 	Write-Host "Deploying credentials"
@@ -41,10 +39,9 @@ function DeployCredentials {
 	CreateKeyVault -Environment $Environment `
 					-ResourceGroupName $ResourceGroupName `
 					-ResourceGroupLocation $ResourceGroupLocation `
-					-KeyVaultName $KeyVaultName `
-					-UserAccountId $UserAccountId
+					-KeyVaultName $KeyVaultName
 
-	Set-AzureRmKeyVaultAccessPolicy -VaultName $KeyVaultName -EmailAddress $UserAccountId -PermissionsToKeys decrypt,sign,get,unwrapKey -PermissionsToSecrets Get, Set, List, Delete
+	Set-AzureRmKeyVaultAccessPolicy -VaultName $KeyVaultName -EmailAddress (Get-AzureRmContext).Account.Id -PermissionsToKeys decrypt,sign,get,unwrapKey -PermissionsToSecrets Get, Set, List, Delete
 
 	$secrets = "sqlServerPassword", "stravaAccessTokensEncryptionKey", "stravaClientId", "stravaClientSecret", "sendGridApiKey"
 

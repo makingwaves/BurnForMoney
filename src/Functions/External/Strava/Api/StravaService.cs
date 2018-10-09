@@ -71,7 +71,6 @@ namespace BurnForMoney.Functions.External.Strava.Api
             request.AddQueryParameter("access_token", accessToken);
             var response = _restClient.Execute(request);
             ThrowExceptionIfNotSuccessful(response);
-
         }
 
         private static void ThrowExceptionIfNotSuccessful(IRestResponse response)

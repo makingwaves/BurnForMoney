@@ -6,6 +6,7 @@ Param(
 )
 
 . "$PSScriptRoot\Deploy-Credentials.ps1"
+. "$PSScriptRoot\Upgrade-Database.ps1"
 
 try {
     [Microsoft.Azure.Common.Authentication.AzureSession]::ClientFactory.AddUserAgent("VSAzureTools-$UI$($host.name)".replace(' ','_'), '3.0.0')
@@ -29,11 +30,11 @@ $TemplateFile = [System.IO.Path]::GetFullPath([System.IO.Path]::Combine($PSScrip
 $TemplateParametersFile = [System.IO.Path]::GetFullPath([System.IO.Path]::Combine($PSScriptRoot, "Template.$Environment.parameters.json"))
 
 try {
-	$Subscription = Select-AzureRmSubscription -SubscriptionName  $SubscriptionName
+	Select-AzureRmSubscription -SubscriptionName  $SubscriptionName
 }
 catch{
 	Login-AzureRmAccount;
-	$Subscription = Select-AzureRmSubscription -SubscriptionName  $SubscriptionName
+	Select-AzureRmSubscription -SubscriptionName  $SubscriptionName
 }
 
 # Create or update the resource group using the specified template file and template parameters file
@@ -52,11 +53,9 @@ if ($ValidateOnly) {
     }
 }
 else {
-
 	DeployCredentials -Environment $Environment `
-					-ResourceGroupName $ResourceGroupName `
-					-ResourceGroupLocation $ResourceGroupLocation `
-					-UserAccountId $Subscription.Account.Id
+		-ResourceGroupName $ResourceGroupName `
+		-ResourceGroupLocation $ResourceGroupLocation
 	
 
     New-AzureRmResourceGroupDeployment -Name ((Get-ChildItem $TemplateFile).BaseName + '-' + ((Get-Date).ToUniversalTime()).ToString('MMdd-HHmm')) `
@@ -66,9 +65,16 @@ else {
                                        @OptionalParameters `
                                        -Force -Verbose `
                                        -ErrorVariable ErrorMessages
+
     if ($ErrorMessages) {
         Write-Output '', 'Template deployment returned the following errors:', @(@($ErrorMessages) | ForEach-Object { $_.Exception.Message.TrimEnd("`r`n") })
     }
+	else {
+		$keyVaultName = "burnformoneykv" + $Environment.ToLower()
+		$connectionStringSecret = Get-AzureKeyVaultSecret -VaultName $keyVaultName -Name "SQLConnectionString"
+
+		Upgrade-Database -ConnectionString $connectionStringSecret.SecretValueText -ScriptsPath "$PSScriptRoot\SqlScripts\"
+	}
 }
 
 Read-Host "Press ENTER to continue"
