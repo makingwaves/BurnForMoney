@@ -52,6 +52,7 @@ if ($ValidateOnly) {
         Write-Output '', 'Template is valid.'
     }
 }
+
 else {
 	DeployCredentials -Environment $Environment `
 		-ResourceGroupName $ResourceGroupName `
