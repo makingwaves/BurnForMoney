@@ -1,3 +1,5 @@
+. "$PSScriptRoot\Utils.ps1"
+
 function Upgrade-Database {
 	Param(
 		[string] [Parameter(Mandatory=$true)] $ConnectionString,
@@ -6,7 +8,7 @@ function Upgrade-Database {
 
 	$dbUpLocation = Get-DbUp
 
-	Write-Output $dbUpLocation
+    Write-Host "Found location of DbUp library: $dbUpLocation"
 
 	Add-Type -Path $dbUpLocation
 
@@ -15,7 +17,10 @@ function Upgrade-Database {
 	$dbUp = [StandardExtensions]::WithScriptsFromFileSystem($dbUp, $ScriptsPath)
 	$dbUp = [SqlServerExtensions]::JournalToSqlTable($dbUp, 'dbo', 'SchemaVersions')
 	$dbUp = [StandardExtensions]::LogToConsole($dbUp)
+
+	Write-Status "Upgrading database... "
 	$upgradeResult = $dbUp.Build().PerformUpgrade()
+	Write-Succeed
 }
 
 function Get-DbUp {
@@ -57,21 +62,4 @@ function Get-DbUp {
         Write-Fail
         throw
     }
-}
-
-function Write-Status{
-    [cmdletbinding()]
-    param (
-        [Parameter(Mandatory=$true)]
-        [Object]$message
-    )
-    Write-Host "$message... " -NoNewline
-}
-
-function Write-Succeed{
-    Write-Host "[Succeed]" -ForegroundColor Green
-}
-
-function Write-Fail{
-    Write-Host "[Fail]" -ForegroundColor Red
 }
