@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Data;
 using System.Data.SqlClient;
-using System.Net;
-using System.Net.Mail;
 using System.Threading.Tasks;
 using BurnForMoney.Functions.Configuration;
 using BurnForMoney.Functions.External.Strava.Api;
@@ -10,7 +8,6 @@ using BurnForMoney.Functions.Helpers;
 using Dapper;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
-using SendGrid;
 using SendGrid.Helpers.Mail;
 using Athlete = BurnForMoney.Functions.External.Strava.Api.Model.Athlete;
 
@@ -19,7 +16,7 @@ namespace BurnForMoney.Functions.Functions.Strava.AuthorizeNewAthlete
     public static class AuthorizeNewAthleteActivities
     {
         [FunctionName(FunctionsNames.A_GenerateAccessToken)]
-        public static A_GenerateAccessToken_Output A_GenerateAccessToken([ActivityTrigger]string authorizationCode, ILogger log,
+        public static object A_GenerateAccessToken([ActivityTrigger]string authorizationCode, ILogger log,
             ExecutionContext context)
         {
             log.LogInformation($"{FunctionsNames.A_GenerateAccessToken} function processed a request.");
@@ -29,17 +26,7 @@ namespace BurnForMoney.Functions.Functions.Strava.AuthorizeNewAthlete
 
             var stravaService = new StravaService();
             var response = stravaService.ExchangeToken(configuration.Strava.ClientId, configuration.Strava.ClientSecret, authorizationCode);
-            return new A_GenerateAccessToken_Output
-            {
-                Athlete = response.Athlete,
-                AccessToken = response.AccessToken
-            };
-        }
-
-        public class A_GenerateAccessToken_Output
-        {
-            public Athlete Athlete { get; set; }
-            public string AccessToken { get; set; }
+            return (response.AccessToken, response.Athlete);
         }
 
         [FunctionName(FunctionsNames.A_AddAthleteToDatabase)]

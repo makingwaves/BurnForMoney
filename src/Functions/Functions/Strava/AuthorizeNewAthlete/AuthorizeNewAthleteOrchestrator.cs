@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using BurnForMoney.Functions.External.Strava.Api.Model;
 using BurnForMoney.Functions.Helpers;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
@@ -21,7 +22,7 @@ namespace BurnForMoney.Functions.Functions.Strava.AuthorizeNewAthlete
             var authorizationCode = context.GetInput<string>();
 
             // 1. Generate token and get information about athlete
-            var athleteInformation = await context.CallActivityWithRetryAsync<AuthorizeNewAthleteActivities.A_GenerateAccessToken_Output>(FunctionsNames.A_GenerateAccessToken,
+            (string AccessToken, Athlete Athlete) athleteInformation = await context.CallActivityWithRetryAsync<(string, Athlete)>(FunctionsNames.A_GenerateAccessToken,
                 new RetryOptions(TimeSpan.FromSeconds(5), 3), authorizationCode);
             var (athleteFirstName, athleteLastName) =
                 (athleteInformation.Athlete.Firstname, athleteInformation.Athlete.Lastname);
