@@ -1,0 +1,117 @@
+@import "style/variables.scss";
+
+.VideoHeader{
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  overflow: hidden;
+  z-index: -100;
+
+  &__background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    @media (min-aspect-ratio: 16/9) {
+      height: 300%;
+      top: -100%;
+    }
+    @media (max-aspect-ratio: 16/9) {
+      width: 300%;
+      left: -100%;
+    }
+  }
+  &__video {
+    position: relative;
+  }
+  &__close {
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    top:10px;
+    right: 10px;
+  }
+  &__content{
+    position: absolute;
+    top: 0;
+    bottom:0;
+    left: 0;
+    right:0;
+    width: 50vw;
+    height:40%;
+    margin: auto;
+    z-index:1;
+    text-align: left;
+  }
+  &__logo{
+    position: relative;
+    margin-bottom: 15px;
+    left:-30px;
+  }
+  &__title{
+    font-size:7vh;
+    line-height: 6vh;
+    font-family: "Volte2";
+    font-weight: bold;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    &-line{
+      display: inline-block;
+      background-color: #B4E6FF;
+      padding: 10px 110px 0 10px;
+      margin-bottom: 2px;
+    }
+  }
+  &__openVideo{
+    background-color: #B4E6FF;
+    border-radius: 25px;
+    font-family: "Volte2";
+    font-weight: bold;
+    font-size: 18px;
+    padding: 10px 15px 10px 10px;
+    cursor: pointer;
+
+    &:before{
+      content:'';
+      background: url('../img/playBtn.svg');
+      display: inline-block;
+      width: 25px;
+      height:25px;
+      vertical-align: bottom;
+      margin-right: 10px;
+    }
+  }
+  &__goDown{
+    width:60px;
+    height:60px;
+    display: block;
+    background-color: #000;
+    background-image: url('../img/arrowhead-down-blue.svg');
+    background-repeat: no-repeat;
+    background-position: center 22px;
+    border-radius: 30px;
+    cursor: pointer;
+    position: absolute;
+    z-index: 1;
+    bottom: 40px;
+    left: 0;
+    right:0;
+    margin: auto;
+  }
+
+  &__logoMw{
+    z-index: 1;
+    position: absolute;
+    top:40px;
+    left:40px;
+  }
+  &__award{
+    z-index: 1;
+    position: absolute;
+    top:40px;
+    right:40px;
+  }
+}
