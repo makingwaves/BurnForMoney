@@ -35,12 +35,12 @@ function DeployCredentials {
 	Param(
 		[string] [Parameter(Mandatory=$true)] $Environment,
 		[string] [Parameter(Mandatory=$true)] $ResourceGroupName,
-		[string] [Parameter(Mandatory=$true)] $ResourceGroupLocation
+		[string] [Parameter(Mandatory=$true)] $ResourceGroupLocation,
+		[string] [Parameter(Mandatory=$true)] $KeyVaultName
 	)
 
 	try {
 		Write-Host "Deploying credentials..."
-		$KeyVaultName = "burnformoneykv" + $Environment.ToLower();
 		CreateKeyVault -Environment $Environment `
 						-ResourceGroupName $ResourceGroupName `
 						-ResourceGroupLocation $ResourceGroupLocation `
