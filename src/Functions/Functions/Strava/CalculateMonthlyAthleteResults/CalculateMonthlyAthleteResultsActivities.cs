@@ -23,7 +23,7 @@ namespace BurnForMoney.Functions.Functions.Strava.CalculateMonthlyAthleteResults
 
             var (month, year) = context.GetInput<(int, int)>();
 
-            var configuration = ApplicationConfiguration.GetSettings(executionContext);
+            var configuration = await ApplicationConfiguration.GetSettingsAsync(executionContext);
             using (var conn = new SqlConnection(configuration.ConnectionStrings.SqlDbConnectionString))
             {
                 var result = await conn.QueryAsync<Activity>("SELECT * FROM dbo.[Strava.Activities] WHERE MONTH(ActivityTime)=@Month AND YEAR(ActivityTime)=@Year", new
@@ -77,7 +77,7 @@ namespace BurnForMoney.Functions.Functions.Strava.CalculateMonthlyAthleteResults
             log.LogInformation($"{FunctionsNames.A_StoreAggregatedAthleteMonthlyResults} function processed a request. Instance id: `{context.InstanceId}`");
 
             var ( activities, (month, year)) = context.GetInput<ValueTuple<List<AthleteMonthlyResult>, (int, int)>>();
-            var configuration = ApplicationConfiguration.GetSettings(executionContext);
+            var configuration = await ApplicationConfiguration.GetSettingsAsync(executionContext);
             using (var conn = new SqlConnection(configuration.ConnectionStrings.SqlDbConnectionString))
             {
                 foreach (var aggregatedActivity in activities)

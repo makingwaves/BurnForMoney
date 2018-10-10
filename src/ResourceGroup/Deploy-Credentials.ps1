@@ -1,16 +1,18 @@
+. "$PSScriptRoot\Utils.ps1"
+
 function CreateKeyVault {
 	Param(
 		[string] [Parameter(Mandatory=$true)] $Environment,
 		[string] [Parameter(Mandatory=$true)] $ResourceGroupName,
 		[string] [Parameter(Mandatory=$true)] $ResourceGroupLocation,
-		[string] [Parameter(Mandatory=$true)] $KeyVaultName,
-		[string] [Parameter(Mandatory=$true)] $UserAccountId
+		[string] [Parameter(Mandatory=$true)] $KeyVaultName
 	)
 
 	if (-not (Get-AzureRmKeyVault -VaultName $KeyVaultName))
 	{
-		Write-Host "Creating KeyVault: [$KeyVaultName]"
+		Write-Status "Creating KeyVault: [$KeyVaultName]... "
 		New-AzureRmKeyVault -VaultName $KeyVaultName -ResourceGroupName $ResourceGroupName -Location $ResourceGroupLocation -EnabledForTemplateDeployment -EnableSoftDelete
+		Write-Succeed
 	}
 }
 
@@ -22,9 +24,10 @@ function AddNewSecret {
 
 	if (-not (Get-AzureKeyVaultSecret -VaultName $KeyVaultName -Name $SecretName))
 	{
-		Write-Host "Adding a new secret [$SecretName]"
+		Write-Status "Adding a new secret [$SecretName]... "
 		$Credentials = Get-Credential -Message "Provide password for $SecretName [put anything as an username]. Password can be found in the KeePass database."
 		Set-AzureKeyVaultSecret -VaultName $KeyVaultName -Name $SecretName -SecretValue $Credentials.Password
+		Write-Succeed
 	}
 }
 
@@ -33,23 +36,30 @@ function DeployCredentials {
 		[string] [Parameter(Mandatory=$true)] $Environment,
 		[string] [Parameter(Mandatory=$true)] $ResourceGroupName,
 		[string] [Parameter(Mandatory=$true)] $ResourceGroupLocation,
-		[string] [Parameter(Mandatory=$true)] $UserAccountId
+		[string] [Parameter(Mandatory=$true)] $KeyVaultName
 	)
 
-	Write-Host "Deploying credentials"
-	$KeyVaultName = "burnformoneykv" + $Environment.ToLower();
-	CreateKeyVault -Environment $Environment `
-					-ResourceGroupName $ResourceGroupName `
-					-ResourceGroupLocation $ResourceGroupLocation `
-					-KeyVaultName $KeyVaultName `
-					-UserAccountId $UserAccountId
+	try {
+		Write-Host "Deploying credentials..."
+		CreateKeyVault -Environment $Environment `
+						-ResourceGroupName $ResourceGroupName `
+						-ResourceGroupLocation $ResourceGroupLocation `
+						-KeyVaultName $KeyVaultName
 
-	Set-AzureRmKeyVaultAccessPolicy -VaultName $KeyVaultName -EmailAddress $UserAccountId -PermissionsToKeys decrypt,sign,get,unwrapKey -PermissionsToSecrets Get, Set, List, Delete
+		$accountId = (Get-AzureRmContext).Account.Id
+		Write-Status "Setting KeyVault access policy for user: $accountId"
+		Set-AzureRmKeyVaultAccessPolicy -VaultName $KeyVaultName -EmailAddress $accountId -PermissionsToKeys decrypt,sign,get,unwrapKey -PermissionsToSecrets Get, Set, List, Delete
+		Write-Succeed
 
-	$secrets = "sqlServerPassword", "stravaAccessTokensEncryptionKey", "stravaClientId", "stravaClientSecret", "sendGridApiKey"
+		$secrets = "sqlServerPassword", "stravaAccessTokensEncryptionKey", "stravaClientId", "stravaClientSecret", "sendGridApiKey"
 
-	for ($i=0; $i -lt $secrets.length; $i++) {
-		AddNewSecret -SecretName $secrets[$i] `
-				-KeyVaultName $KeyVaultName
+		for ($i=0; $i -lt $secrets.length; $i++) {
+			AddNewSecret -SecretName $secrets[$i] `
+					-KeyVaultName $KeyVaultName
+		}
 	}
+    Catch {
+        Write-Fail
+        throw
+    }
 }

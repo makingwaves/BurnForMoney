@@ -19,7 +19,7 @@ namespace BurnForMoney.Functions.Functions.Public
         [FunctionName("TotalNumbers")]
         public static async Task<IActionResult> TotalNumbers([HttpTrigger(AuthorizationLevel.Function, "get", Route = "totalnumbers")]HttpRequest req, ILogger log, ExecutionContext executionContext)
         {
-            var configuration = ApplicationConfiguration.GetSettings(executionContext);
+            var configuration = await ApplicationConfiguration.GetSettingsAsync(executionContext);
             using (var conn = new SqlConnection(configuration.ConnectionStrings.SqlDbConnectionString))
             {
                 var jsonResults = await conn.QueryAsync<(string date, string json)>("SELECT Date, Results FROM dbo.[Strava.AthleteMonthlyResults]")

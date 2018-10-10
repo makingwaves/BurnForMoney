@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using BurnForMoney.Functions.External.Strava.Api.Model;
 using BurnForMoney.Functions.Helpers;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
@@ -21,14 +22,12 @@ namespace BurnForMoney.Functions.Functions.Strava.AuthorizeNewAthlete
             var authorizationCode = context.GetInput<string>();
 
             // 1. Generate token and get information about athlete
-            var athleteInformation = await context.CallActivityWithRetryAsync<AuthorizeNewAthleteActivities.A_GenerateAccessToken_Output>(FunctionsNames.A_GenerateAccessToken,
+            (string AccessToken, Athlete Athlete) athleteInformation = await context.CallActivityWithRetryAsync<(string, Athlete)>(FunctionsNames.A_GenerateAccessToken,
                 new RetryOptions(TimeSpan.FromSeconds(5), 3), authorizationCode);
-            var (athleteFirstName, athleteLastName) =
-                (athleteInformation.Athlete.Firstname, athleteInformation.Athlete.Lastname);
             if (!context.IsReplaying)
             {
-                log.LogInformation($"[{FunctionsNames.A_GenerateAccessToken}] generated access token for user {athleteFirstName} " +
-                                   $"{athleteLastName}.");
+                log.LogInformation($"[{FunctionsNames.A_GenerateAccessToken}] generated access token for user {athleteInformation.Athlete.Firstname} " +
+                                   $"{athleteInformation.Athlete.Lastname}.");
             }
 
             // 2. Encrypt access token
@@ -39,17 +38,14 @@ namespace BurnForMoney.Functions.Functions.Strava.AuthorizeNewAthlete
                 log.LogInformation($"[{FunctionsNames.A_EncryptAccessToken}] encrypted access token.");
             }
 
-            // 3. Save athlete in the database
-            await context.CallActivityAsync(FunctionsNames.A_AddAthleteToDatabase, (encryptedAccessToken, athleteInformation.Athlete));
+            // 3. Send approval request
             if (!context.IsReplaying)
             {
-                log.LogInformation($"[{FunctionsNames.A_AddAthleteToDatabase}] saved athlete information.");
+                log.LogInformation($"[{FunctionsNames.A_SendAthleteApprovalRequest}] sending approval email...");
             }
+            await context.CallActivityAsync(FunctionsNames.A_SendAthleteApprovalRequest, (athleteInformation.Athlete.Firstname, athleteInformation.Athlete.Lastname));
 
-            // 4. Send approval request
-            await context.CallActivityAsync(FunctionsNames.A_SendAthleteApprovalRequest, (athleteFirstName, athleteLastName));
-
-            // 5. Wait for approval
+            // 4. Wait for approval
             string approvalResult;
             using (var cts = new CancellationTokenSource())
             {
@@ -72,23 +68,22 @@ namespace BurnForMoney.Functions.Functions.Strava.AuthorizeNewAthlete
             {
                 if (!context.IsReplaying)
                 {
-                    log.LogInformation($"[{FunctionsNames.A_SendAthleteApprovalRequest}] Athlete: {athleteFirstName} {athleteLastName} has been approved.");
+                    log.LogInformation($"[{FunctionsNames.A_SendAthleteApprovalRequest}] Athlete: {athleteInformation.Athlete.Firstname} {athleteInformation.Athlete.Lastname} has been approved.");
                 }
 
-                // 6. Make a record active.
-                await context.CallActivityAsync(FunctionsNames.A_ActivateANewAthlete, athleteInformation.Athlete.Id);
+                // 5. Save athlete
+                var athlete = new Persistence.DatabaseSchema.Athlete
+                {
+                    AthleteId = athleteInformation.Athlete.Id,
+                    FirstName = athleteInformation.Athlete.Firstname,
+                    LastName = athleteInformation.Athlete.Lastname,
+                    AccessToken = encryptedAccessToken,
+                    Active = true
+                };
+                await context.CallActivityAsync(FunctionsNames.A_AddAthleteToDatabase, athlete);
                 if (!context.IsReplaying)
                 {
-                    log.LogInformation($"[{FunctionsNames.A_SendAthleteApprovalRequest}] Athlete: {athleteFirstName} {athleteLastName} has been activated.");
-                }
-            }
-            else
-            {
-                // 6. Anonymize record. It should not be deleted, because foreign key might exist (historical data).
-                await context.CallActivityAsync(FunctionsNames.A_AnonymizeRejectedAthlete, athleteInformation.Athlete.Id);
-                if (!context.IsReplaying)
-                {
-                    log.LogInformation($"[{FunctionsNames.A_AnonymizeRejectedAthlete}] Athlete: {athleteFirstName} {athleteLastName} has been rejected and anonymized.");
+                    log.LogInformation($"[{FunctionsNames.A_AddAthleteToDatabase}] saved athlete information.");
                 }
             }
         }

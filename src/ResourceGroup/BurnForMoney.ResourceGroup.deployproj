@@ -23,16 +23,28 @@
   <Import Condition=" Exists('$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Deployment\1.1\DeploymentProject.targets') " Project="$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Deployment\1.1\DeploymentProject.targets" />
   <!-- vertag<:>end -->
   <ItemGroup>
+    <None Include="SqlScripts\Script0001 - Create tables.sql" />
+    <None Include="SqlScripts\Script0002- Alter Strava_Athlete_Upsert procedure.sql" />
+    <None Include="SqlScripts\Script0003- Alter Strava_Activity_Insert procedure.sql" />
+    <None Include="SqlScripts\Script0004- Add index on ActivityTime column.sql" />
+    <None Include="SqlScripts\Script0005- Create ActivitiesUpdateHistory table.sql" />
+    <None Include="SqlScripts\Script0006- Alter Category and Points to Activities table.sql" />
+    <None Include="SqlScripts\Script0007- Modify Strava_Activity_Insert procedure.sql" />
+    <None Include="SqlScripts\Script0008- Create Strava.AthleteMonthlyResults table.sql" />
+    <None Include="SqlScripts\Script0009- Alter Strava_Strava.AthleteMonthlyResults_Upsert procedure .sql" />
+    <None Include="Upgrade-Database.ps1" />
     <None Include="Deploy-Credentials.ps1" />
-    <None Include="Deploy.Prod.ps1" />
-    <None Include="Deploy.Test.ps1" />
+    <None Include="_Deploy.Prod.ps1" />
+    <None Include="_Deploy.Test.ps1" />
     <None Include="Deployment.targets">
       <Visible>False</Visible>
     </None>
-    <Content Include="Deploy-AzureResourceGroup.ps1" />
+    <Content Include="Deploy.ps1" />
     <Content Include="Template.Test.parameters.json" />
     <Content Include="Template.json" />
     <Content Include="Template.Prod.parameters.json" />
+    <None Include="Upgrade-Local-Database.ps1" />
+    <None Include="Utils.ps1" />
   </ItemGroup>
   <Target Name="GetReferenceAssemblyPaths" />
 </Project>

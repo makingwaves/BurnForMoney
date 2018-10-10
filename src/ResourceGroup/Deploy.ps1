@@ -6,6 +6,8 @@ Param(
 )
 
 . "$PSScriptRoot\Deploy-Credentials.ps1"
+. "$PSScriptRoot\Upgrade-Database.ps1"
+. "$PSScriptRoot\Utils.ps1"
 
 try {
     [Microsoft.Azure.Common.Authentication.AzureSession]::ClientFactory.AddUserAgent("VSAzureTools-$UI$($host.name)".replace(' ','_'), '3.0.0')
@@ -28,37 +30,44 @@ $ResourceGroupLocation= 'West Europe';
 $TemplateFile = [System.IO.Path]::GetFullPath([System.IO.Path]::Combine($PSScriptRoot, "Template.json"))
 $TemplateParametersFile = [System.IO.Path]::GetFullPath([System.IO.Path]::Combine($PSScriptRoot, "Template.$Environment.parameters.json"))
 
+Write-Status "Selecting Azure subscription... "
 try {
-	$Subscription = Select-AzureRmSubscription -SubscriptionName  $SubscriptionName
+	Select-AzureRmSubscription -SubscriptionName  $SubscriptionName
 }
 catch{
 	Login-AzureRmAccount;
-	$Subscription = Select-AzureRmSubscription -SubscriptionName  $SubscriptionName
+	Select-AzureRmSubscription -SubscriptionName  $SubscriptionName
 }
+Write-Succeed
 
 # Create or update the resource group using the specified template file and template parameters file
 New-AzureRmResourceGroup -Name $ResourceGroupName -Location $ResourceGroupLocation -Verbose -Force
 
 if ($ValidateOnly) {
+	Write-Status "Running Azure deployment in ValidateOnly mode... "
     $ErrorMessages = Format-ValidationOutput (Test-AzureRmResourceGroupDeployment -ResourceGroupName $ResourceGroupName `
                                                                                   -TemplateFile $TemplateFile `
                                                                                   -TemplateParameterFile $TemplateParametersFile `
                                                                                   @OptionalParameters)
     if ($ErrorMessages) {
+		Write-Succeed
         Write-Output '', 'Validation returned the following errors:', @($ErrorMessages), '', 'Template is invalid.'
     }
     else {
+		Write-Fail
         Write-Output '', 'Template is valid.'
     }
 }
+
 else {
+	$KeyVaultName = "burnformoneykv" + $Environment.ToLower();
 
 	DeployCredentials -Environment $Environment `
-					-ResourceGroupName $ResourceGroupName `
-					-ResourceGroupLocation $ResourceGroupLocation `
-					-UserAccountId $Subscription.Account.Id
+		-ResourceGroupName $ResourceGroupName `
+		-ResourceGroupLocation $ResourceGroupLocation `
+		-KeyVaultName $KeyVaultName
 	
-
+	Write-Status "Processing a new group deployment... "
     New-AzureRmResourceGroupDeployment -Name ((Get-ChildItem $TemplateFile).BaseName + '-' + ((Get-Date).ToUniversalTime()).ToString('MMdd-HHmm')) `
                                        -ResourceGroupName $ResourceGroupName `
                                        -TemplateFile $TemplateFile `
@@ -66,9 +75,16 @@ else {
                                        @OptionalParameters `
                                        -Force -Verbose `
                                        -ErrorVariable ErrorMessages
-    if ($ErrorMessages) {
-        Write-Output '', 'Template deployment returned the following errors:', @(@($ErrorMessages) | ForEach-Object { $_.Exception.Message.TrimEnd("`r`n") })
+	Write-Succeed
+
+    if (-Not $ErrorMessages) {
+		$connectionStringSecret = Get-AzureKeyVaultSecret -VaultName $KeyVaultName -Name "SQLConnectionString"
+		Upgrade-Database -ConnectionString $connectionStringSecret.SecretValueText -ScriptsPath "$PSScriptRoot\SqlScripts\"
     }
+	else {
+		Write-Fail
+        Write-Output '', 'Template deployment returned the following errors:', @(@($ErrorMessages) | ForEach-Object { $_.Exception.Message.TrimEnd("`r`n") })
+	}
 }
 
 Read-Host "Press ENTER to continue"

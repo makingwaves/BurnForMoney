@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
@@ -8,7 +7,6 @@ using BurnForMoney.Functions.Configuration;
 using BurnForMoney.Functions.External.Strava.Api;
 using BurnForMoney.Functions.External.Strava.Api.Model;
 using BurnForMoney.Functions.Helpers;
-using BurnForMoney.Functions.Persistence.DatabaseSchema;
 using Dapper;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
@@ -22,72 +20,76 @@ namespace BurnForMoney.Functions.Functions.Strava.CollectActivities
         {
             log.LogInformation($"{FunctionsNames.A_GetAccessTokens} function processed a request. Instance id: `{activityContext.InstanceId}`");
 
-            var configuration = ApplicationConfiguration.GetSettings(executionContext);
-            var accessTokens = await GetAllActiveAccessTokensAsync(log, executionContext, configuration.ConnectionStrings.SqlDbConnectionString);
-            log.LogInformation($"Received information about {accessTokens.Count} active access tokens.");
+            var configuration = await ApplicationConfiguration.GetSettingsAsync(executionContext);
 
+            List<string> accessTokens;
+            using (var conn = new SqlConnection(configuration.ConnectionStrings.SqlDbConnectionString))
+            {
+                accessTokens = (await conn.QueryAsync<string>("SELECT AccessToken FROM dbo.[Strava.Athletes] where Active = 1")).ToList();
+            }
+
+            log.LogInformation($"Received information about {accessTokens.Count} active access tokens.");
             return accessTokens.ToArray();
         }
 
-        public static async Task<List<string>> GetAllActiveAccessTokensAsync(ILogger log, ExecutionContext executionContext, string connectionString)
+        [FunctionName(FunctionsNames.A_RetrieveSingleUserActivities)]
+        public static List<StravaActivity> A_RetrieveSingleUserActivities([ActivityTrigger]DurableActivityContext context, ILogger log, ExecutionContext executionContext)
         {
-            IEnumerable<string> tokens;
-            using (var conn = new SqlConnection(connectionString))
-            {
-                tokens = await conn.QueryAsync<string>("SELECT AccessToken FROM dbo.[Strava.Athletes] where Active = 1").ConfigureAwait(false);
-            }
-
-            return tokens.ToList();
-        }
-
-        [FunctionName(FunctionsNames.A_RetrieveAndSaveSingleUserActivities)]
-        public static async Task A_RetrieveAndSaveSingleUserActivities([ActivityTrigger]DurableActivityContext context, ILogger log, ExecutionContext executionContext)
-        {
-            log.LogInformation($"{FunctionsNames.A_RetrieveAndSaveSingleUserActivities} function processed a request.");
+            log.LogInformation($"{FunctionsNames.A_RetrieveSingleUserActivities} function processed a request.");
 
             var (accessToken, from) = context.GetInput<ValueTuple<string, DateTime>>();
 
-            var configuration = ApplicationConfiguration.GetSettings(executionContext);
             var stravaService = new StravaService();
             var activities = stravaService.GetActivities(accessToken, from);
 
-            foreach (var activity in activities)
-            {
-                await SaveActivityAsync(activity, configuration.ConnectionStrings.SqlDbConnectionString, log);
-            }
+            return activities.ToList();
         }
 
-        private static async Task SaveActivityAsync(StravaActivity activity, string connectionString, ILogger log)
+        [FunctionName(FunctionsNames.A_GetLastActivitiesUpdateDate)]
+        public static async Task<DateTime?> GetLastActivitiesUpdateDate([ActivityTrigger]string systemName, ILogger log, ExecutionContext context)
         {
-            using (var conn = new SqlConnection(connectionString))
+            var configuration = await ApplicationConfiguration.GetSettingsAsync(context);
+            using (var conn = new SqlConnection(configuration.ConnectionStrings.SqlDbConnectionString))
             {
-                var activityCategory = StravaActivityMapper.MapToActivityCategory(activity.Type);
-
-                var model = new Activity
-                {
-                    AthleteId = activity.Athlete.Id,
-                    ActivityId = activity.Id,
-                    ActivityTime = activity.StartDate,
-                    ActivityType = activity.Type.ToString(),
-                    Distance = activity.Distance,
-                    MovingTime = ToMinutes(activity.MovingTime),
-                    Category = activityCategory.ToString()
-                };
-                model.Points = PointsCalculator.Calculate(activityCategory, model.Distance, model.MovingTime);
-
-                var affectedRows = await conn.ExecuteAsync("Strava_Activity_Insert", model, commandType: CommandType.StoredProcedure)
+                var result = await conn.QueryFirstOrDefaultAsync<DateTime?>("SELECT LastUpdate FROM dbo.[Systems.UpdateHistory] WHERE System=@System", new
+                    {
+                        System = systemName
+                    })
                     .ConfigureAwait(false);
-
-                if (affectedRows > 0)
-                {
-                    log.LogInformation($"Activity with id: {activity.Id} has been added.");
-                }
+                return result;
             }
         }
 
-        private static double ToMinutes(int seconds)
+        [FunctionName(FunctionsNames.A_SetLastActivitiesUpdateDate)]
+        public static async Task SetLastActivitiesUpdateDate([ActivityTrigger]DurableActivityContext context, ILogger log, ExecutionContext executionContext)
         {
-            return Math.Round(seconds / 60.0, 2);
+            var (systemName, lastUpdateDate) = context.GetInput<ValueTuple<string, DateTime?>>();
+
+            var configuration = await ApplicationConfiguration.GetSettingsAsync(executionContext);
+            using (var conn = new SqlConnection(configuration.ConnectionStrings.SqlDbConnectionString))
+            {
+                var affectedRows = await conn.ExecuteAsync("UPDATE dbo.[Systems.UpdateHistory] SET LastUpdate=@LastUpdate WHERE System=@System", new
+                {
+                    System = systemName,
+                    LastUpdate = lastUpdateDate
+                }).ConfigureAwait(false);
+
+                if (affectedRows == 0)
+                {
+                    var insertedRows = await conn.ExecuteAsync("INSERT dbo.[Systems.UpdateHistory] (System, LastUpdate) VALUES (@System, @LastUpdate);", new
+                    {
+                        System = systemName,
+                        LastUpdate = lastUpdateDate
+                    }).ConfigureAwait(false);
+                    if (insertedRows != 1)
+                    {
+                        log.LogError($"Last update date of the system: {systemName} cannot be updated.");
+                        return;
+                    }
+                }
+
+                log.LogInformation($"Updated last update date of the system: {systemName}");
+            }
         }
     }
 }
