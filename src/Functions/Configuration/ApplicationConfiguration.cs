@@ -9,7 +9,7 @@ namespace BurnForMoney.Functions.Configuration
     public class ApplicationConfiguration
     {
         private static ConfigurationRoot _settings;
-        private static IKeyVaultClient _keyVaultClient = KeyVaultClientFactory.Create();
+        private static readonly IKeyVaultClient _keyVaultClient = KeyVaultClientFactory.Create();
 
         public static async Task<ConfigurationRoot> GetSettingsAsync(ExecutionContext context)
         {
@@ -17,12 +17,13 @@ namespace BurnForMoney.Functions.Configuration
             {
                 var config = GetApplicationConfiguration(context.FunctionAppDirectory);
 
+                var isLocal = string.IsNullOrEmpty(GetEnvironmentVariable(EnvironmentSettingNames.AzureWebsiteInstanceId));
                 _settings = new ConfigurationRoot
                 {
+                    IsLocalEnvironment = isLocal,
+                    ConnectionStrings = await GetConnectionStringsAsync(config, isLocal),
                     Strava = GetStravaConfiguration(config),
-                    ConnectionStrings = await GetConnectionStringsAsync(config),
                     Email = GetEmailConfiguration(config),
-                    IsLocalEnvironment = string.IsNullOrEmpty(GetEnvironmentVariable(EnvironmentSettingNames.AzureWebsiteInstanceId)),
                     HostName = Environment.GetEnvironmentVariable(EnvironmentSettingNames.AzureWebsiteHostName)
                 };
 
@@ -45,10 +46,10 @@ namespace BurnForMoney.Functions.Configuration
             };
         }
 
-        private static async Task<ConnectionStringsSection> GetConnectionStringsAsync(IConfigurationRoot config)
+        private static async Task<ConnectionStringsSection> GetConnectionStringsAsync(IConfigurationRoot config, bool isLocal)
         {
             var keyVaultConnectionString = config.GetConnectionString("KeyVault.ConnectionString");
-            var sqlDbConnectionString =
+            var sqlDbConnectionString = isLocal ? "Data Source=(LocalDB)\\.;Initial Catalog=BurnForMoney;Integrated Security=True" :
                 await GetSecretFromKeyVaultAsync(keyVaultConnectionString, KeyVaultSecretNames.SQLConnectionString);
 
             return new ConnectionStringsSection

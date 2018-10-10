@@ -7,13 +7,15 @@
         public const string CollectStravaActivitiesInEveryHour = "CollectStravaActivitiesInEveryHour";
         public const string O_CollectStravaActivities = "O_CollectStravaActivities";
         public const string O_DecryptAllAccessTokens = "O_DecryptAllAccessTokens";
-        public const string O_SaveAllStravaActivities = "O_SaveAllStravaActivities";
+        public const string O_RetrieveAllStravaActivities = "O_RetrieveAllStravaActivities";
         public const string A_GetAccessTokens = "A_GetAccessTokens";
-        public const string A_RetrieveAndSaveSingleUserActivities = "A_RetrieveAndSaveSingleUserActivities";
+        public const string A_RetrieveSingleUserActivities = "A_RetrieveSingleUserActivities";
+        public const string A_ProcessSingleUserActivities = "A_ProcessSingleUserActivities";
         public const string A_GetLastActivitiesUpdateDate = "A_GetLastActivitiesUpdateDate";
         public const string A_SetLastActivitiesUpdateDate = "A_SetLastActivitiesUpdateDate";
         public const string A_EncryptAccessToken = "A_EncryptAccessToken";
         public const string A_DecryptAccessToken = "A_DecryptAccessToken";
+        public const string Q_SubmitAthleteActivity = "Q_SubmitAthleteActivity";
 
 
         public const string Support_EncryptString = "Support_EncryptString";
@@ -29,8 +31,6 @@
         public const string A_GenerateAccessToken = "A_GenerateAccessToken";
         public const string A_AddAthleteToDatabase = "A_AddAthleteToDatabase";
         public const string A_SendAthleteApprovalRequest = "A_SendAthleteApprovalRequest";
-        public const string A_ActivateANewAthlete = "A_ActivateANewAthlete";
-        public const string A_AnonymizeRejectedAthlete = "A_AnonymizeRejectedAthlete";
         public const string SubmitAthleteApproval = "SubmitAthleteApproval";
         
         public const string CalculateMonthlyAthleteResults = "CalculateMonthlyAthleteResults";

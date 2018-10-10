@@ -6,6 +6,7 @@ using BurnForMoney.Functions.Configuration;
 using BurnForMoney.Functions.External.Strava.Api;
 using BurnForMoney.Functions.Helpers;
 using Dapper;
+using Microsoft.Azure.KeyVault;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 using SendGrid.Helpers.Mail;
@@ -29,29 +30,38 @@ namespace BurnForMoney.Functions.Functions.Strava.AuthorizeNewAthlete
             return (response.AccessToken, response.Athlete);
         }
 
+        [FunctionName(FunctionsNames.A_EncryptAccessToken)]
+        public static async Task<string> A_EncryptAccessTokenAsync([ActivityTrigger]string accessToken, ILogger log,
+            ExecutionContext context)
+        {
+            log.LogInformation($"{FunctionsNames.A_EncryptAccessToken} function processed a request.");
+            var configuration = await ApplicationConfiguration.GetSettingsAsync(context);
+
+            var keyVaultClient = KeyVaultClientFactory.Create();
+            var secret = await keyVaultClient.GetSecretAsync(configuration.ConnectionStrings.KeyVaultConnectionString, KeyVaultSecretNames.StravaTokensEncryptionKey)
+                .ConfigureAwait(false);
+            var accessTokenEncryptionKey = secret.Value;
+
+            var encryptedToken = Cryptography.EncryptString(accessToken, accessTokenEncryptionKey);
+            log.LogInformation("Access token has been encrypted.");
+            return encryptedToken;
+        }
+
         [FunctionName(FunctionsNames.A_AddAthleteToDatabase)]
         public static async Task A_AddAthleteToDatabaseAsync([ActivityTrigger]DurableActivityContext activityContext, ILogger log,
             ExecutionContext context)
         {
-            var (encryptedAccessToken, athlete) = activityContext.GetInput<(string, Athlete)>();
+            var athlete = activityContext.GetInput<Persistence.DatabaseSchema.Athlete>();
             var configuration = await ApplicationConfiguration.GetSettingsAsync(context);
 
             using (var conn = new SqlConnection(configuration.ConnectionStrings.SqlDbConnectionString))
             {
-                var affectedRows = await conn.ExecuteAsync("Strava_Athlete_Upsert",
-                        new Persistence.DatabaseSchema.Athlete
-                        {
-                            AthleteId = athlete.Id,
-                            FirstName = athlete.Firstname,
-                            LastName = athlete.Lastname,
-                            AccessToken = encryptedAccessToken,
-                            Active = false
-                        }, commandType: CommandType.StoredProcedure)
+                var affectedRows = await conn.ExecuteAsync("Strava_Athlete_Upsert", athlete, commandType: CommandType.StoredProcedure)
                     .ConfigureAwait(false);
 
                 if (affectedRows > 0)
                 {
-                    log.LogInformation($"Athlete: {athlete.Firstname} {athlete.Lastname} has been saved successfully");
+                    log.LogInformation($"Athlete: {athlete.FirstName} {athlete.LastName} has been saved successfully");
                 }
                 else
                 {
@@ -65,7 +75,7 @@ namespace BurnForMoney.Functions.Functions.Strava.AuthorizeNewAthlete
             ExecutionContext context, [SendGrid(ApiKey = "SendGrid.ApiKey")] IAsyncCollector<SendGridMessage> messageCollector,
             [Table("AthleteApprovals", "AzureWebJobsStorage")] IAsyncCollector<AthleteApproval> athleteApprovalCollector)
         {
-            var (athleteFirstName, athleteLastName) = activityContext.GetInput<(string, string)>();
+            var (firstName, lastName) = activityContext.GetInput<(string, string)>();
 
             var configuration = await ApplicationConfiguration.GetSettingsAsync(context);
 
@@ -84,58 +94,13 @@ namespace BurnForMoney.Functions.Functions.Strava.AuthorizeNewAthlete
             
             var protocol = "https";
             var approvalFunctionAddress = $"{protocol}://{configuration.HostName}/api/SubmitAthleteApproval/{approvalCode}";
-            message.HtmlContent = $"Please review a new authorization request. Athlete: {athleteFirstName} {athleteLastName}.<br>" +
+            message.HtmlContent = $"Please review a new authorization request. Athlete: {firstName} {lastName}.<br>" +
                 $"<a href=\"{approvalFunctionAddress}?result={AthleteApprovalResult.Approved.ToString()}\">Approve</a><br>" +
                 $"<a href=\"{approvalFunctionAddress}?result={AthleteApprovalResult.Rejected.ToString()}\">Reject</a>";
 
-            log.LogInformation($"Sending approval request for athlete {athleteFirstName} {athleteLastName} to: {configuration.Email.AthletesApprovalEmail}.");
+            log.LogInformation($"Sending approval request for athlete {firstName} {lastName} to: {configuration.Email.AthletesApprovalEmail}.");
             await athleteApprovalCollector.AddAsync(athleteApproval);
             await messageCollector.AddAsync(message);
-        }
-
-        [FunctionName(FunctionsNames.A_ActivateANewAthlete)]
-        public static async Task A_ActivateANewAthleteAsync([ActivityTrigger]DurableActivityContext activityContext, ILogger log,
-            ExecutionContext context)
-        {
-            var athleteId = activityContext.GetInput<int>();
-
-            var configuration = await ApplicationConfiguration.GetSettingsAsync(context);
-            using (var conn = new SqlConnection(configuration.ConnectionStrings.SqlDbConnectionString))
-            {
-                var affectedRows = await conn.ExecuteAsync(
-                    "UPDATE dbo.[Strava.Athletes] SET Active='1' WHERE AthleteId=@AthleteId",
-                    new { AthleteId = athleteId });
-                if (affectedRows != 1)
-                {
-                    throw new Exception($"Failed to activate athlete with id: {athleteId}");
-                }
-            }
-        }
-
-        [FunctionName(FunctionsNames.A_AnonymizeRejectedAthlete)]
-        public static async Task A_AnonymizeRejectedAthlete([ActivityTrigger]DurableActivityContext activityContext, ILogger log,
-            ExecutionContext context)
-        {
-            var athleteId = activityContext.GetInput<int>();
-
-            var configuration = await ApplicationConfiguration.GetSettingsAsync(context);
-            using (var conn = new SqlConnection(configuration.ConnectionStrings.SqlDbConnectionString))
-            {
-                var affectedRows = await conn.ExecuteAsync(
-                    "UPDATE dbo.[Strava.Athletes] SET FirstName=@FirstName, LastName=@LastName, AccessToken=@AccessToken, Active=@Active WHERE AthleteId=@AthleteId",
-                    new
-                    {
-                        AthleteId = athleteId,
-                        FirstName = "Rejected",
-                        LastName = "Rejected",
-                        AccessToken = "Rejected",
-                        Active = false
-                    });
-                if (affectedRows != 1)
-                {
-                    throw new Exception($"Failed to delete rejected athlete with id: {athleteId}");
-                }
-            }
         }
     }
 
