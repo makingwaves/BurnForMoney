@@ -73,3 +73,12 @@ Azure Resource Manager is used to automate environment creation. In order to cre
 * Documentation: https://docs.microsoft.com/en-us/azure/azure-resource-manager/
 * Snippets: https://github.com/Azure/azure-quickstart-templates
 
+
+
+
+
+### Diagrams
+
+#### User authorization - Strava
+
+![User authorization - Strava](https://raw.githubusercontent.com//makingwaves/BurnForMoney/master/docs/User authorization - Strava.png)
