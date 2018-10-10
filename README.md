@@ -81,4 +81,4 @@ Azure Resource Manager is used to automate environment creation. In order to cre
 
 #### User authorization - Strava
 
-![User authorization - Strava](https://raw.githubusercontent.com//makingwaves/BurnForMoney/master/docs/User authorization - Strava.png)
+![User authorization - Strava](https://raw.githubusercontent.com//makingwaves/BurnForMoney/master/docs/user-authorization-strava.png)
