@@ -6,13 +6,13 @@
 
         public const string CollectStravaActivitiesInEveryHour = "CollectStravaActivitiesInEveryHour";
         public const string O_CollectStravaActivities = "O_CollectStravaActivities";
+        public const string O_CollectSingleUserActivities = "O_CollectSingleUserActivities";
         public const string O_DecryptAllAccessTokens = "O_DecryptAllAccessTokens";
         public const string O_RetrieveAllStravaActivities = "O_RetrieveAllStravaActivities";
-        public const string A_GetAccessTokens = "A_GetAccessTokens";
+        public const string A_GetAthletesWithAccessTokens = "A_GetAthletesWithAccessTokens";
         public const string A_RetrieveSingleUserActivities = "A_RetrieveSingleUserActivities";
+        public const string A_UpdateLastUpdateDateOfTheUpdatedAthlete = "A_UpdateLastUpdateDateOfTheUpdatedAthlete";
         public const string A_ProcessSingleUserActivities = "A_ProcessSingleUserActivities";
-        public const string A_GetLastActivitiesUpdateDate = "A_GetLastActivitiesUpdateDate";
-        public const string A_SetLastActivitiesUpdateDate = "A_SetLastActivitiesUpdateDate";
         public const string A_EncryptAccessToken = "A_EncryptAccessToken";
         public const string A_DecryptAccessToken = "A_DecryptAccessToken";
         public const string Q_SubmitAthleteActivity = "Q_SubmitAthleteActivity";

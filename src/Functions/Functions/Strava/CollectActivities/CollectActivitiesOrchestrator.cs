@@ -1,6 +1,8 @@
-using System;
 using System.Threading.Tasks;
+using BurnForMoney.Functions.Configuration;
 using BurnForMoney.Functions.Helpers;
+using BurnForMoney.Functions.Persistence.DatabaseSchema;
+using Microsoft.Azure.KeyVault;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 
@@ -8,64 +10,67 @@ namespace BurnForMoney.Functions.Functions.Strava.CollectActivities
 {
     public static class CollectActivitiesOrchestrator
     {
-        private const string SystemName = "Strava";
-
         [FunctionName(FunctionsNames.O_CollectStravaActivities)]
-        public static async Task O_CollectStravaActivitiesAsync(ILogger log, [OrchestrationTrigger] DurableOrchestrationContext context, ExecutionContext executionContext)
+        public static async Task O_CollectStravaActivitiesAsync(ILogger log,
+            [OrchestrationTrigger] DurableOrchestrationContext context, ExecutionContext executionContext)
         {
             var optimize = context.GetInput<bool?>() ?? true;
 
             if (!context.IsReplaying)
             {
-                log.LogInformation($"Orchestration function `{FunctionsNames.O_CollectStravaActivities}` received a request. {{optimize}}: {optimize}.");
+                log.LogInformation(
+                    $"Orchestration function `{FunctionsNames.O_CollectStravaActivities}` received a request. {{optimize}}: {optimize}.");
             }
 
-            // 1. Get all active access tokens
-            var encryptedAccessTokens = await context.CallActivityAsync<string[]>(FunctionsNames.A_GetAccessTokens, ActivityInput.Empty);
-            if (encryptedAccessTokens.Length == 0)
+            // 1. Get active athletes
+            var athletes =
+                await context.CallActivityAsync<Athlete[]>(FunctionsNames.A_GetAthletesWithAccessTokens,
+                    ActivityInput.Empty);
+            if (athletes.Length == 0)
             {
-                log.LogInformation($"[{FunctionsNames.O_CollectStravaActivities}] cannot find any active access tokens.");
+                log.LogInformation($"[{FunctionsNames.O_CollectStravaActivities}] cannot find any active athletes.");
                 return;
             }
+
             if (!context.IsReplaying)
             {
-                log.LogInformation($"[{FunctionsNames.O_CollectStravaActivities}] Retrieved {encryptedAccessTokens.Length} encrypted access tokens.");
+                log.LogInformation(
+                    $"[{FunctionsNames.O_CollectStravaActivities}] Retrieved data of {athletes.Length} active athletes.");
             }
 
-            // 2. Decrypt all access tokens
-            var decryptedAccessTokens =
-                await context.CallSubOrchestratorAsync<string[]>(FunctionsNames.O_DecryptAllAccessTokens, encryptedAccessTokens);
-            if (!context.IsReplaying)
+            // 2. Collect activities of all athletes
+            var tasks = new Task[athletes.Length];
+            for (int i = 0; i < athletes.Length; i++)
             {
-                log.LogInformation($"[{FunctionsNames.O_CollectStravaActivities}] Decrypted {decryptedAccessTokens.Length} access tokens.");
+                tasks[i] = context.CallSubOrchestratorAsync("", (athletes[i], optimize));
             }
 
-            var getActivitiesFrom = DateTime.UtcNow.AddMonths(-3);
-            if (optimize)
-            {
-                // 3. Get time of the last update
-                var lastUpdate = await context.CallActivityAsync<DateTime?>(FunctionsNames.A_GetLastActivitiesUpdateDate, SystemName);
-                getActivitiesFrom = lastUpdate ?? getActivitiesFrom;
-                if (!context.IsReplaying)
-                {
-                    log.LogInformation($"[{FunctionsNames.O_CollectStravaActivities}] Retrieved time of the last update: {lastUpdate?.ToString() ?? "null"}.");
-                }
-            }
 
-            // 4. Receive and add to queue all new user activities
-            await context.CallSubOrchestratorAsync<string[]>(FunctionsNames.O_RetrieveAllStravaActivities, (decryptedAccessTokens, getActivitiesFrom));
-            if (!context.IsReplaying)
-            {
-                log.LogInformation($"[{FunctionsNames.O_RetrieveAllStravaActivities}] Received and queued all new activities for {encryptedAccessTokens.Length} users.");
-            }
-            
-            // 5. Set a new time of the last update
-            await context.CallActivityAsync(FunctionsNames.A_SetLastActivitiesUpdateDate,
-                (SystemName: SystemName, LastUpdate: context.CurrentUtcDateTime));
-            if (!context.IsReplaying)
-            {
-                log.LogInformation($"[{FunctionsNames.A_SetLastActivitiesUpdateDate}] Updated time of the last update [{context.CurrentUtcDateTime}].");
-            }
+            //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! CATCH EXCEPTIONS AND IGNORE THEM
+
+            await Task.WhenAll(tasks);
         }
     }
+
+    public static class CollectSingleUserActivitiesActivities
+    {
+        [FunctionName(FunctionsNames.A_DecryptAccessToken)]
+        public static async Task<string> A_DecryptAccessTokenAsync([ActivityTrigger]string encryptedAccessToken, ILogger log,
+            ExecutionContext context)
+        {
+            log.LogInformation($"{FunctionsNames.A_DecryptAccessToken} function processed a request.");
+
+            var configuration = await ApplicationConfiguration.GetSettingsAsync(context);
+
+            var keyVaultClient = KeyVaultClientFactory.Create();
+            var secret = await keyVaultClient.GetSecretAsync(configuration.ConnectionStrings.KeyVaultConnectionString, KeyVaultSecretNames.StravaTokensEncryptionKey)
+                .ConfigureAwait(false);
+            var accessTokenEncryptionKey = secret.Value;
+
+            var decryptedToken = Cryptography.DecryptString(encryptedAccessToken, accessTokenEncryptionKey);
+            log.LogInformation("Access token has been decrypted.");
+            return decryptedToken;
+        }
+    }
+
 }

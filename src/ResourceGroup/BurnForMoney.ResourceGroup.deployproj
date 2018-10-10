@@ -31,6 +31,7 @@
     <None Include="SqlScripts\Script0006- Alter Category and Points to Activities table.sql" />
     <None Include="SqlScripts\Script0007- Modify Strava_Activity_Insert procedure.sql" />
     <None Include="SqlScripts\Script0008- Create Strava.AthleteMonthlyResults table.sql" />
+    <None Include="SqlScripts\Script0010- Drop Systems.UpdateHistory table .sql" />
     <None Include="SqlScripts\Script0009- Alter Strava_Strava.AthleteMonthlyResults_Upsert procedure .sql" />
     <None Include="Upgrade-Database.ps1" />
     <None Include="Deploy-Credentials.ps1" />
