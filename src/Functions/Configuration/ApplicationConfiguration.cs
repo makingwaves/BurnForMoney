@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Threading.Tasks;
+using Microsoft.Azure.KeyVault;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Configuration;
 
@@ -7,8 +9,9 @@ namespace BurnForMoney.Functions.Configuration
     public class ApplicationConfiguration
     {
         private static ConfigurationRoot _settings;
+        private static IKeyVaultClient _keyVaultClient = KeyVaultClientFactory.Create();
 
-        public static ConfigurationRoot GetSettings(ExecutionContext context)
+        public static async Task<ConfigurationRoot> GetSettingsAsync(ExecutionContext context)
         {
             if (_settings == null)
             {
@@ -17,7 +20,7 @@ namespace BurnForMoney.Functions.Configuration
                 _settings = new ConfigurationRoot
                 {
                     Strava = GetStravaConfiguration(config),
-                    ConnectionStrings = GetConnectionStrings(config),
+                    ConnectionStrings = await GetConnectionStringsAsync(config),
                     Email = GetEmailConfiguration(config),
                     IsLocalEnvironment = string.IsNullOrEmpty(GetEnvironmentVariable(EnvironmentSettingNames.AzureWebsiteInstanceId)),
                     HostName = Environment.GetEnvironmentVariable(EnvironmentSettingNames.AzureWebsiteHostName)
@@ -42,12 +45,16 @@ namespace BurnForMoney.Functions.Configuration
             };
         }
 
-        private static ConnectionStringsSection GetConnectionStrings(IConfigurationRoot config)
+        private static async Task<ConnectionStringsSection> GetConnectionStringsAsync(IConfigurationRoot config)
         {
+            var keyVaultConnectionString = config.GetConnectionString("KeyVault.ConnectionString");
+            var sqlDbConnectionString =
+                await GetSecretFromKeyVaultAsync(keyVaultConnectionString, KeyVaultSecretNames.SQLConnectionString);
+
             return new ConnectionStringsSection
             {
-                SqlDbConnectionString = config.GetConnectionString("SQL.ConnectionString"),
-                KeyVaultConnectionString = config.GetConnectionString("KeyVault.ConnectionString"),
+                KeyVaultConnectionString = keyVaultConnectionString,
+                SqlDbConnectionString = sqlDbConnectionString
             };
         }
 
@@ -78,5 +85,12 @@ namespace BurnForMoney.Functions.Configuration
 
             return settingValue;
         }
-}
+
+        private static async Task<string> GetSecretFromKeyVaultAsync(string keyVaultConnectionString, string secretName)
+        {
+            var secret = await _keyVaultClient.GetSecretAsync(keyVaultConnectionString, secretName)
+                .ConfigureAwait(false);
+            return secret.Value;
+        }
+    }
 }

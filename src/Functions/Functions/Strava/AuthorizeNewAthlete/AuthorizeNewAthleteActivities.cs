@@ -16,11 +16,11 @@ namespace BurnForMoney.Functions.Functions.Strava.AuthorizeNewAthlete
     public static class AuthorizeNewAthleteActivities
     {
         [FunctionName(FunctionsNames.A_GenerateAccessToken)]
-        public static object A_GenerateAccessToken([ActivityTrigger]string authorizationCode, ILogger log,
+        public static async Task<(string, Athlete)> A_GenerateAccessToken([ActivityTrigger]string authorizationCode, ILogger log,
             ExecutionContext context)
         {
             log.LogInformation($"{FunctionsNames.A_GenerateAccessToken} function processed a request.");
-            var configuration = ApplicationConfiguration.GetSettings(context);
+            var configuration = await ApplicationConfiguration.GetSettingsAsync(context);
 
             log.LogInformation($"Requesting for access token using clientId: {configuration.Strava.ClientId}.");
 
@@ -34,7 +34,7 @@ namespace BurnForMoney.Functions.Functions.Strava.AuthorizeNewAthlete
             ExecutionContext context)
         {
             var (encryptedAccessToken, athlete) = activityContext.GetInput<(string, Athlete)>();
-            var configuration = ApplicationConfiguration.GetSettings(context);
+            var configuration = await ApplicationConfiguration.GetSettingsAsync(context);
 
             using (var conn = new SqlConnection(configuration.ConnectionStrings.SqlDbConnectionString))
             {
@@ -67,7 +67,7 @@ namespace BurnForMoney.Functions.Functions.Strava.AuthorizeNewAthlete
         {
             var (athleteFirstName, athleteLastName) = activityContext.GetInput<(string, string)>();
 
-            var configuration = ApplicationConfiguration.GetSettings(context);
+            var configuration = await ApplicationConfiguration.GetSettingsAsync(context);
 
             var approvalCode = Guid.NewGuid().ToString("N");
             var athleteApproval = new AthleteApproval
@@ -99,7 +99,7 @@ namespace BurnForMoney.Functions.Functions.Strava.AuthorizeNewAthlete
         {
             var athleteId = activityContext.GetInput<int>();
 
-            var configuration = ApplicationConfiguration.GetSettings(context);
+            var configuration = await ApplicationConfiguration.GetSettingsAsync(context);
             using (var conn = new SqlConnection(configuration.ConnectionStrings.SqlDbConnectionString))
             {
                 var affectedRows = await conn.ExecuteAsync(
@@ -118,7 +118,7 @@ namespace BurnForMoney.Functions.Functions.Strava.AuthorizeNewAthlete
         {
             var athleteId = activityContext.GetInput<int>();
 
-            var configuration = ApplicationConfiguration.GetSettings(context);
+            var configuration = await ApplicationConfiguration.GetSettingsAsync(context);
             using (var conn = new SqlConnection(configuration.ConnectionStrings.SqlDbConnectionString))
             {
                 var affectedRows = await conn.ExecuteAsync(

@@ -23,7 +23,7 @@ namespace BurnForMoney.Functions.Functions.Support
                 return new BadRequestObjectResult("Text is required.");
             }
 
-            var configuration = ApplicationConfiguration.GetSettings(context);
+            var configuration = await ApplicationConfiguration.GetSettingsAsync(context);
             var keyVaultConnectionString = configuration.ConnectionStrings.KeyVaultConnectionString;
             var encryptionKey = await GetEncryptionKeyAsync(keyVaultConnectionString).ConfigureAwait(false);
             var encryptedText = Cryptography.EncryptString(text, encryptionKey);
@@ -44,7 +44,7 @@ namespace BurnForMoney.Functions.Functions.Support
 
             text = FillMissingSpecialCharacters(text);
 
-            var configuration = ApplicationConfiguration.GetSettings(context);
+            var configuration = await ApplicationConfiguration.GetSettingsAsync(context);
             var keyVaultConnectionString = configuration.ConnectionStrings.KeyVaultConnectionString;
             var encryptionKey = await GetEncryptionKeyAsync(keyVaultConnectionString).ConfigureAwait(false);
             var encryptedText = Cryptography.DecryptString(text, encryptionKey);

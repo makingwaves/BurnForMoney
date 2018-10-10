@@ -255,10 +255,6 @@
             "[concat('Microsoft.Sql/servers/', variables('sqlServerName'))]"
           ],
           "properties": {
-            "SQL.ConnectionString": {
-              "value": "[concat('Data Source=tcp:', reference(concat('Microsoft.Sql/servers/', variables('sqlserverName'))).fullyQualifiedDomainName, ',1433;InitialCatalog=', variables('sqlDbName'), ';User Id=', parameters('sqlServerLogin'), ';Password=', parameters('sqlServerPassword'), ';')]",
-              "type": "SQLServer"
-            },
             "KeyVault.ConnectionString": {
               "type": "Custom",
               "value": "[concat('https://', variables('keyVaultName'), '.vault.azure.net/')]"

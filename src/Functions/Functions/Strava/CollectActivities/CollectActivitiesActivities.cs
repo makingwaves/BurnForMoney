@@ -22,7 +22,7 @@ namespace BurnForMoney.Functions.Functions.Strava.CollectActivities
         {
             log.LogInformation($"{FunctionsNames.A_GetAccessTokens} function processed a request. Instance id: `{activityContext.InstanceId}`");
 
-            var configuration = ApplicationConfiguration.GetSettings(executionContext);
+            var configuration = await ApplicationConfiguration.GetSettingsAsync(executionContext);
             var accessTokens = await GetAllActiveAccessTokensAsync(log, executionContext, configuration.ConnectionStrings.SqlDbConnectionString);
             log.LogInformation($"Received information about {accessTokens.Count} active access tokens.");
 
@@ -47,7 +47,7 @@ namespace BurnForMoney.Functions.Functions.Strava.CollectActivities
 
             var (accessToken, from) = context.GetInput<ValueTuple<string, DateTime>>();
 
-            var configuration = ApplicationConfiguration.GetSettings(executionContext);
+            var configuration = await ApplicationConfiguration.GetSettingsAsync(executionContext);
             var stravaService = new StravaService();
             var activities = stravaService.GetActivities(accessToken, from);
 

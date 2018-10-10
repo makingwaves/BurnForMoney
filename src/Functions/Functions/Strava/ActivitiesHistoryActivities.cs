@@ -14,7 +14,7 @@ namespace BurnForMoney.Functions.Functions.Strava
         [FunctionName(FunctionsNames.A_GetLastActivitiesUpdateDate)]
         public static async Task<DateTime?> GetLastActivitiesUpdateDate([ActivityTrigger]string systemName, ILogger log, ExecutionContext context)
         {
-            var configuration = ApplicationConfiguration.GetSettings(context);
+            var configuration = await ApplicationConfiguration.GetSettingsAsync(context);
             using (var conn = new SqlConnection(configuration.ConnectionStrings.SqlDbConnectionString))
             {
                 var result = await conn.QueryFirstOrDefaultAsync<DateTime?>("SELECT LastUpdate FROM dbo.[Systems.UpdateHistory] WHERE System=@System", new
@@ -31,7 +31,7 @@ namespace BurnForMoney.Functions.Functions.Strava
         {
             var (systemName, lastUpdateDate) = context.GetInput<ValueTuple<string, DateTime?>>();
 
-            var configuration = ApplicationConfiguration.GetSettings(executionContext);
+            var configuration = await ApplicationConfiguration.GetSettingsAsync(executionContext);
             using (var conn = new SqlConnection(configuration.ConnectionStrings.SqlDbConnectionString))
             {
                 var affectedRows = await conn.ExecuteAsync("UPDATE dbo.[Systems.UpdateHistory] SET LastUpdate=@LastUpdate WHERE System=@System", new

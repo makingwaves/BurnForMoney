@@ -37,7 +37,7 @@ namespace BurnForMoney.Functions.Functions.Strava
 
         private static async Task LoadSettingsAsync(ExecutionContext context)
         {
-            var configuration = ApplicationConfiguration.GetSettings(context);
+            var configuration = await ApplicationConfiguration.GetSettingsAsync(context);
 
             if (string.IsNullOrEmpty(_accessTokenEncryptionKey))
             {

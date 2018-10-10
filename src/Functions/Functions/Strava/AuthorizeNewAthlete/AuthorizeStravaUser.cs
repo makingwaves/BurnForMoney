@@ -26,7 +26,7 @@ namespace BurnForMoney.Functions.Functions.Strava.AuthorizeNewAthlete
         {
             _log = log;
             _log.LogInformation($"{FunctionsNames.AuthenticateStravaUser} function processed a request.");
-            var configuration = ApplicationConfiguration.GetSettings(context);
+            var configuration = await ApplicationConfiguration.GetSettingsAsync(context);
 
             var referer = req.Headers["Referer"].FirstOrDefault() ?? "null";
             log.LogInformation($"Request referer: [{referer}].");
