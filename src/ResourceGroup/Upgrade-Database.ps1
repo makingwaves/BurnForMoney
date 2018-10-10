@@ -6,11 +6,15 @@ function Upgrade-Database {
 		[string] [Parameter(Mandatory=$true)] $ScriptsPath
 	)
 
-	$dbUpLocation = Get-DbUp
+	$dbUpLocation = "$PSScriptRoot/packages/dbup"
+    $dbUpDllLocation = "$dbUpLocation/dll"
 
-    Write-Host "Found location of DbUp library: $dbUpLocation"
+	Recreate-DbUp-Directories -DbUpLocation $dbUpLocation -DbUpDllLocation $dbUpDllLocation
+	$dbUpCoreLocation = Get-DbUp -PackageName "dbup-core" -DbUpLocation $dbUpLocation -DbUpDllLocation $dbUpDllLocation
+	$dbUpSqlServerLocation = Get-DbUp -PackageName "dbup-sqlserver" -DbUpLocation $dbUpLocation -DbUpDllLocation $dbUpDllLocation
 
-	Add-Type -Path $dbUpLocation
+	Add-Type -Path $dbUpCoreLocation
+	Add-Type -Path $dbUpSqlServerLocation
 
 	$dbUp = [DbUp.DeployChanges]::To
 	$dbUp = [SqlServerExtensions]::SqlDatabase($dbUp, $ConnectionString)
@@ -23,40 +27,62 @@ function Upgrade-Database {
 	Write-Succeed
 }
 
+function Create-Directory-If-Does-Not-Exists {
+	Param(
+		[string] [Parameter(Mandatory=$true)] $DirectoryPath
+	)
+	If(!(Test-Path $DirectoryPath))
+	{
+		New-Item -ItemType Directory -Force -Path $DirectoryPath
+	}
+}
+
+function Recreate-DbUp-Directories {
+	Param(
+		[string] [Parameter(Mandatory=$true)] $DbUpLocation,
+		[string] [Parameter(Mandatory=$true)] $DbUpDllLocation
+	)
+	Write-Status "Deleting old packages... "
+    Remove-Item $DbUpLocation -Force -Recurse -ErrorAction SilentlyContinue
+    Write-Succeed
+
+	Write-Status "Creating a new directory structure... "
+	Create-Directory-If-Does-Not-Exists -DirectoryPath $DbUpLocation
+	Create-Directory-If-Does-Not-Exists -DirectoryPath $DbUpDllLocation
+    Write-Succeed
+}
+
+
 function Get-DbUp {
     [CmdletBinding()]
-    param
-    (
-        $Url="https://www.nuget.org/api/v2/package/dbup-core/"
+    Param(
+		[string] [Parameter(Mandatory=$true)] $PackageName,
+		[string] [Parameter(Mandatory=$true)] $DbUpLocation,
+		[string] [Parameter(Mandatory=$true)] $DbUpDllLocation,
+        $NugetUrl = "https://www.nuget.org/api/v2/package/"
     )
 
-    $dbUpTempPath ="$PSScriptRoot\dll\dbup"
-    $dbUpZipLocation = "$PSScriptRoot\dll\DbUp.zip"
-
     try{
-        Write-Status "Deleting old packages... "
-        Remove-Item $dbUpZipLocation -Force -ErrorAction SilentlyContinue
-        Remove-Item $dbUpTempPath -Force -Recurse -ErrorAction SilentlyContinue
-        Write-Succeed
-
         Write-Status "Downloading package... "
-        Invoke-WebRequest $url -OutFile $dbUpZipLocation
+        Invoke-WebRequest "$NugetUrl/$PackageName" -OutFile "$DbUpLocation/$PackageName.zip"
         Write-Succeed
         
         Write-Status "Expand archive... " 
-        Expand-Archive $dbUpZipLocation -DestinationPath $dbUpTempPath -Force
+        Expand-Archive "$DbUpLocation/$PackageName.zip" -DestinationPath $DbUpDllLocation -Force
         Write-Succeed
 
-        Write-Status "Locating DbUp... "
-        $dbupPath = Get-ChildItem -Path $dbUpTempPath -Filter "dbup-core.dll" -Recurse -ErrorAction SilentlyContinue -Force |
-                    Select-Object -First 1  | 
-                    ForEach-Object { $_.FullName }
-        if (!$dbupPath) {
-            throw [System.IO.FileNotFoundException] "DbUp.dll location cannot be found"
+        Write-Status "Locating package... "
+        $packagePath = Get-ChildItem -Path $DbUpDllLocation -Filter "$PackageName.dll" -Recurse -ErrorAction SilentlyContinue -Force |
+                    Select-Object -First 1 | 
+                    ForEach-Object { $_.FullName } |
+					Select-Object -Last 1
+        if (!$packagePath) {
+            throw [System.IO.FileNotFoundException] "$PackageName location cannot be found"
         }
         Write-Succeed
         
-        return $dbupPath;
+		Write-Host "Found $PackageName location: $packagePath"
+        return $packagePath;
     }
     Catch {
         Write-Fail
