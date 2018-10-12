@@ -57,8 +57,8 @@ namespace BurnForMoney.Functions.Functions.Public
 
                 var result = new
                 {
-                    Distance = UnitsConverter.ConvertMetersToKilometers(totalDistance, 0),
-                    Time = UnitsConverter.ConvertMinutesToHours(totalTime, 0),
+                    Distance = (int)UnitsConverter.ConvertMetersToKilometers(totalDistance, 0),
+                    Time = (int)UnitsConverter.ConvertMinutesToHours(totalTime, 0),
                     Money = totalPoints * 100 / 500,
                     ThisMonth = new
                     {
