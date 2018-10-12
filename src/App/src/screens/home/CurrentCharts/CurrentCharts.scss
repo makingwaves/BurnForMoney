@@ -1,0 +1,90 @@
+@import "style/variables.scss";
+
+.CurrentCharts{
+  padding-top: 50px;
+  background-color: $secondary-color;
+
+  &__stats{
+    width:100%;
+    font-size: 16px;
+    line-height: 1;
+    font-weight: bold;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-column-gap: 10px;
+
+    &-overall{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      grid-column-gap: 2px;
+      grid-row-gap: 2px;
+      grid-template-areas:
+        "trainings engagement"
+        "money money";
+      width:100%;
+    }
+    &-specific{
+      display:grid;
+      grid-template-columns: 32px 1fr;
+      grid-column-gap: 2px;
+      grid-row-gap: 2px;
+      width:100%;
+    }
+
+    &-block{
+      padding: 17px 15px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      &__value{
+        font-size: 50px;
+      }
+    }
+    &-trainings{
+      background-color: #fff;
+      grid-area: trainings;
+    }
+    &-engagement{
+      background-color: #fff;
+      grid-area: engagement;
+    }
+    &-money{
+      background-color: #fff;
+      grid-area: money;
+    }
+
+    &-category{
+      &__icon{
+        width: 100%;
+        height: 32px;
+        background-color: #fff;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      &__progress{
+        width: 100%;
+        height: 32px;
+        background-color: #fff;
+        position: relative;
+        overflow: hidden;
+
+        &-bar{
+          height: 32px;
+          background-color: $primary-color;
+          position: absolute;
+          top:0;
+          left:0;
+          z-index: 1;
+        }
+        &-value{
+          line-height: 32px;
+          position: relative;
+          margin-left: 10px;
+          z-index: 2;
+        }
+      }
+    }
+
+  }
+}

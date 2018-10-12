@@ -1,13 +1,13 @@
 import React, { Component } from 'react';
-import VideoHeader from './VideoHeader.js';
-import TotalNumbers from './TotalNumbers.js';
-import CurrentCharts from './CurrentCharts.js';
-import CharitySlider from './CharitySlider.js';
-import TeamGoals from './TeamGoals.js';
-import HowItWorks from './HowItWorks.js';
-import InstaGallery from './InstaGallery.js';
-import AboutEngagement from './AboutEngagement.js';
-import Footer from 'components/Footer.js';
+import VideoHeader from './VideoHeader/VideoHeader.js';
+import TotalNumbers from './TotalNumbers/TotalNumbers.js';
+import CurrentCharts from './CurrentCharts/CurrentCharts.js';
+import CharitySlider from './CharitySlider/CharitySlider.js';
+import TeamGoals from './TeamGoals/TeamGoals.js';
+import HowItWorks from './HowItWorks/HowItWorks.js';
+import InstaGallery from './InstaGallery/InstaGallery.js';
+import AboutEngagement from './AboutEngagement/AboutEngagement.js';
+import Footer from 'components/Footer/Footer.js';
 
 class Home extends Component {
   render() {
