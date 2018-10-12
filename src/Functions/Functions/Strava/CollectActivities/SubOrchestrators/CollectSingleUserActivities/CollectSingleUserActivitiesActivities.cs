@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using BurnForMoney.Functions.Configuration;
 using BurnForMoney.Functions.External.Strava.Api;
 using BurnForMoney.Functions.Helpers;
+using BurnForMoney.Functions.Queues;
 using Dapper;
 using Microsoft.Azure.KeyVault;
 using Microsoft.Azure.WebJobs;
@@ -39,14 +40,24 @@ namespace BurnForMoney.Functions.Functions.Strava.CollectActivities.SubOrchestra
         {
             log.LogInformation($"{FunctionsNames.A_CollectSingleUserActivities} function processed a request.");
 
-            var (accessToken, from) = context.GetInput<ValueTuple<string, DateTime>>();
+            var (accessToken, fromDate) = context.GetInput<ValueTuple<string, DateTime>>();
 
             var stravaService = new StravaService();
-            var activities = stravaService.GetActivities(accessToken, from);
+            var activities = stravaService.GetActivities(accessToken, fromDate);
 
             foreach (var stravaActivity in activities)
             {
-                var json = JsonConvert.SerializeObject(stravaActivity);
+                var pendingActivity = new PendingActivity
+                {
+                    ActivityId = stravaActivity.Id,
+                    AthleteId = stravaActivity.Athlete.Id,
+                    ActivityType = stravaActivity.Type.ToString(),
+                    StartDate = stravaActivity.StartDate,
+                    DistanceInMeters = stravaActivity.Distance,
+                    MovingTimeInMinutes = UnitsConverter.ConvertSecondsToMinutes(stravaActivity.MovingTime)
+                };
+
+                var json = JsonConvert.SerializeObject(pendingActivity);
                 var message = new CloudQueueMessage(json);
                 await pendingActivitiesQueue.AddMessageAsync(message);
             }
@@ -71,7 +82,6 @@ namespace BurnForMoney.Functions.Functions.Strava.CollectActivities.SubOrchestra
                     Active = true
                 });
             }
-
         }
     }
 }

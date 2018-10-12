@@ -1,4 +1,4 @@
-﻿namespace BurnForMoney.Functions.Helpers
+﻿namespace BurnForMoney.Functions.Queues
 {
     public static class QueueNames
     {

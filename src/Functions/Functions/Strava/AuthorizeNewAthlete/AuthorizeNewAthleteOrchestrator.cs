@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using BurnForMoney.Functions.External.Strava.Api.Model;
 using BurnForMoney.Functions.Helpers;
+using BurnForMoney.Functions.Queues;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 using Microsoft.WindowsAzure.Storage.Queue;

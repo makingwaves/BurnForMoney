@@ -5,50 +5,50 @@ namespace BurnForMoney.Functions.Functions.Strava.CollectActivities
 {
     public static class StravaActivityMapper
     {
-        public static ActivityCategory MapToActivityCategory(StravaActivityType activityType)
+        public static ActivityCategory MapToActivityCategory(string activityType)
         {
             switch (activityType)
             {
-                case StravaActivityType.Snowboard:
-                case StravaActivityType.AlpineSki:
-                case StravaActivityType.BackcountrySki:
-                case StravaActivityType.IceSkate:
-                case StravaActivityType.NordicSki:
+                case "Snowboard":
+                case "AlpineSki":
+                case "BackcountrySki":
+                case "IceSkate":
+                case "NordicSki":
                     return ActivityCategory.WinterSports;
-                case StravaActivityType.Canoeing:
-                case StravaActivityType.Kayaking:
-                case StravaActivityType.Kitesurf:
-                case StravaActivityType.Rowing:
-                case StravaActivityType.StandUpPaddling:
-                case StravaActivityType.Surfing:
-                case StravaActivityType.Swim:
-                case StravaActivityType.Windsurf:
+                case "Canoeing":
+                case "Kayaking":
+                case "Kitesurf":
+                case "Rowing":
+                case "StandUpPaddling":
+                case "Surfing":
+                case "Swim":
+                case "Windsurf":
                     return ActivityCategory.WaterSports;
-                case StravaActivityType.Crossfit:
-                case StravaActivityType.WeightTraining:
+                case "Crossfit":
+                case "WeightTraining":
                     return ActivityCategory.Gym;
-                case StravaActivityType.Ride:
-                case StravaActivityType.EBikeRide:
-                case StravaActivityType.Handcycle:
-                case StravaActivityType.VirtualRide:
+                case "Ride":
+                case "EBikeRide":
+                case "Handcycle":
+                case "VirtualRide":
                     return ActivityCategory.Ride;
-                case StravaActivityType.Run:
-                case StravaActivityType.Elliptical:
-                case StravaActivityType.VirtualRun:
+                case "Run":
+                case "Elliptical":
+                case "VirtualRun":
                     return ActivityCategory.Run;
-                case StravaActivityType.Hike:
-                case StravaActivityType.RockClimbing:
-                case StravaActivityType.Snowshoe:
+                case "Hike":
+                case "RockClimbing":
+                case "Snowshoe":
                     return ActivityCategory.Hike;
-                case StravaActivityType.InlineSkate:
-                case StravaActivityType.RollerSki:
-                case StravaActivityType.StairStepper:
-                case StravaActivityType.Wheelchair:
+                case "InlineSkate":
+                case "RollerSki":
+                case "StairStepper":
+                case "Wheelchair":
                     return ActivityCategory.Other;
-                case StravaActivityType.Walk:
+                case "Walk":
                     return ActivityCategory.Walk;
-                case StravaActivityType.Workout:
-                case StravaActivityType.Yoga:
+                case "Workout":
+                case "Yoga":
                     return ActivityCategory.Fitness;
                 default:
                     return ActivityCategory.Other;

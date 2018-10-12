@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using BurnForMoney.Functions.External.Strava.Api.Model;
 using BurnForMoney.Functions.Helpers;
+using BurnForMoney.Functions.Queues;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
@@ -52,16 +53,20 @@ namespace BurnForMoney.Functions.Functions.Support
             return new OkObjectResult(payload);
         }
 
-        [FunctionName(FunctionsNames.Support_Strava_Activities_Add)]
-        public static async Task<IActionResult> Support_Strava_Activities_Add([HttpTrigger(AuthorizationLevel.Admin, "post", Route = "support/strava/activities/add")]HttpRequest req, ILogger log,
-            ExecutionContext executionContext, [QueueTrigger(QueueNames.PendingActivities)] CloudQueue queue)
+        [FunctionName(FunctionsNames.Support_Activities_Add)]
+        public static async Task<IActionResult> Support_Activities_Add([HttpTrigger(AuthorizationLevel.Admin, "post", Route = "support/strava/activities/add")]HttpRequest req, ILogger log,
+            ExecutionContext executionContext, [Queue(QueueNames.PendingActivities)] CloudQueue queue)
         {
-            log.LogInformation($"{FunctionsNames.Support_Strava_Activities_Add} function processed a request.");
+            log.LogInformation($"{FunctionsNames.Support_Activities_Add} function processed a request.");
             
             var data = await req.ReadAsStringAsync();
             try
             {
-                JsonConvert.DeserializeObject<StravaActivity>(data); // validate structure
+                JsonConvert.DeserializeObject<PendingActivity>(data, 
+                    new JsonSerializerSettings
+                    {
+                        MissingMemberHandling = MissingMemberHandling.Error
+                    }); // validate structure
             }
             catch (Exception ex)
             {

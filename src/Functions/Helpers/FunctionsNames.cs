@@ -19,7 +19,7 @@
         public const string Support_DecryptString = "Support_DecryptString";
         public const string Support_Strava_Activities_Collect = "Support_Strava_Activities_Collect";
         public const string Support_Strava_Activities_CollectMonthlyStatistics = "Support_Strava_Activities_CollectMonthlyStatistics";
-        public const string Support_Strava_Activities_Add = "Support_Strava_Activities_Add";
+        public const string Support_Activities_Add = "Support_Activities_Add";
         public const string Support_Strava_Athlete_Deactivate = "Support_Strava_Athlete_Deactivate";
         public const string Support_Strava_Athlete_Activate = "Support_Strava_Athlete_Activate";
         
