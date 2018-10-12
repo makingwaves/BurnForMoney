@@ -89,6 +89,9 @@
     },
     "email.athletesApprovalEmail": {
       "type": "string"
+    },
+    "cors.allowedOrigins": {
+      "type": "array"
     }
   },
   "variables": {
@@ -264,6 +267,21 @@
       ]
     },
     {
+      "comments": "Function App - Properties (CORS, etc)",
+      "type": "Microsoft.Web/sites/config",
+      "name": "[concat(variables('functionAppName'), '/web')]",
+      "apiVersion": "2016-08-01",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "cors": {
+          "allowedOrigins": "[parameters('cors.allowedOrigins')]"
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/sites', variables('functionAppName'))]"
+      ]
+    },
+    {
       "name": "[variables('sqlserverName')]",
       "type": "Microsoft.Sql/servers",
       "location": "[resourceGroup().location]",
@@ -364,7 +382,7 @@
         "value": "[concat('Data Source=tcp:', reference(concat('Microsoft.Sql/servers/', variables('sqlserverName'))).fullyQualifiedDomainName, ',1433;Initial Catalog=', variables('sqlDbName'), ';User Id=', parameters('sqlServerLogin'), ';Password=', parameters('sqlServerPassword'), ';')]"
       },
       "dependsOn": [
-        "[resourceId('Microsoft.Sql/servers', variables('sqlserverName'))]",
+        "[resourceId('Microsoft.Sql/servers', variables('sqlserverName'))]"
       ]
     }
   ]

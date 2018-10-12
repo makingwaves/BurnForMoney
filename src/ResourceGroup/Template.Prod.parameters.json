@@ -11,6 +11,9 @@
     "email.athletesApprovalEmail": {
       "value": "miroslawa.zimon@makingwaves.com"
     },
+    "cors.allowedOrigins": {
+      "value": [ "https://burnformoney-prod.azurewebsites.net/", "http://bfm.makingwaves.pl" ]
+    },
     "sqlServerPassword": {
       "reference": {
         "keyVault": {
