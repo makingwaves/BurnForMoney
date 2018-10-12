@@ -4,13 +4,14 @@ using System.Data.SqlClient;
 using System.Threading.Tasks;
 using BurnForMoney.Functions.Configuration;
 using BurnForMoney.Functions.External.Strava.Api.Model;
+using BurnForMoney.Functions.Functions.Strava.CollectActivities;
 using BurnForMoney.Functions.Helpers;
 using BurnForMoney.Functions.Persistence.DatabaseSchema;
 using Dapper;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 
-namespace BurnForMoney.Functions.Functions.Strava.CollectActivities
+namespace BurnForMoney.Functions.Functions.Strava
 {
     public static class SubmitAthleteActivity
     {
@@ -42,11 +43,11 @@ namespace BurnForMoney.Functions.Functions.Strava.CollectActivities
 
                 if (affectedRows > 0)
                 {
-                    log.LogInformation($"Activity with id: {activity.Id} has been added.");
+                    log.LogInformation($"Activity with id: {model.ActivityId} has been added.");
                 }
                 else
                 {
-                    log.LogWarning($"Failed to save activity with id: {activity.Id}.");
+                    log.LogWarning($"Failed to save activity with id: {model.ActivityId}.");
                 }
             }
         }

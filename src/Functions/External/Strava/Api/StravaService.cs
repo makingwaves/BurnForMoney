@@ -5,6 +5,7 @@ using System.Net;
 using BurnForMoney.Functions.Configuration;
 using BurnForMoney.Functions.External.Strava.Api.Auth;
 using BurnForMoney.Functions.External.Strava.Api.Model;
+using BurnForMoney.Functions.Helpers;
 using Newtonsoft.Json;
 using RestSharp;
 
@@ -47,7 +48,7 @@ namespace BurnForMoney.Functions.External.Strava.Api
             if (from != null)
             {
                 var fixedDate = from.Value.AddHours(-2); // Start dates in Strava are not accurate https://groups.google.com/forum/#!topic/strava-api/s1OH5mcmCo8
-                request.AddQueryParameter("after", ToEpoch(fixedDate).ToString());
+                request.AddQueryParameter("after", UnitsConverter.ConvertDateTimeToEpoch(fixedDate).ToString());
             }
             request.AddQueryParameter("per_page", ActivitiesPerPage.ToString());
             request.AddQueryParameter("page", page.ToString());
@@ -80,7 +81,5 @@ namespace BurnForMoney.Functions.External.Strava.Api
                 throw new Exception($"Strava API returned an unsuccessfull status code. Status code: {response.StatusCode}. Content: {response.Content}. Error message: {response.ErrorMessage ?? "null"}");
             }
         }
-
-        private static long ToEpoch(DateTime dateTime) => (long)(dateTime - new DateTime(1970, 1, 1)).TotalSeconds;
     }
 }

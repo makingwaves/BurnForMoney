@@ -53,7 +53,7 @@ namespace BurnForMoney.Functions.Functions.Strava.CalculateMonthlyAthleteResults
                     Time = allSingleAthleteActivities.Sum(activity => activity.MovingTime),
                     Points = Convert.ToInt32(allSingleAthleteActivities.Sum(activity => activity.Points)),
                     NumberOfTrainings = allSingleAthleteActivities.Count,
-                    Activities = allSingleAthleteActivities.GroupBy(k => k.ActivityType, el => el, (k, a) =>
+                    Activities = allSingleAthleteActivities.GroupBy(k => k.Category, el => el, (k, a) =>
                     {
                         var categoryActivities = a.ToList();
                         return new AthleteMonthlyResultActivity

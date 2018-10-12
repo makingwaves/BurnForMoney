@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
 using BurnForMoney.Functions.Configuration;
+using BurnForMoney.Functions.Helpers;
 using BurnForMoney.Functions.Persistence.DatabaseSchema;
 using Dapper;
 using Microsoft.AspNetCore.Http;
@@ -55,8 +57,8 @@ namespace BurnForMoney.Functions.Functions.Public
 
                 var result = new
                 {
-                    Distance = totalDistance,
-                    Time = totalTime,
+                    Distance = UnitsConverter.ConvertMetersToKilometers(totalDistance, 0),
+                    Time = UnitsConverter.ConvertMinutesToHours(totalTime, 0),
                     Money = totalPoints * 100 / 500,
                     ThisMonth = new
                     {
