@@ -24,14 +24,14 @@ namespace BurnForMoney.Functions.Functions.Strava.CollectActivities.SubOrchestra
 
             var getActivitiesFrom = input.Optimize ? input.Athlete.LastUpdate ?? DateTime.UtcNow.AddMonths(-3) : DateTime.UtcNow.AddMonths(-3);
 
-            // 4. Receive and add to queue all new user activities
+            // 2. Receive and add to queue all new user activities
             await context.CallActivityAsync(FunctionsNames.A_RetrieveSingleUserActivities, (decryptedAccessToken, getActivitiesFrom));
             if (!context.IsReplaying)
             {
                 log.LogInformation($"[{FunctionsNames.O_RetrieveAllStravaActivities}] Received and queued all new activities created by: {input.Athlete.FirstName} {input.Athlete.LastName}");
             }
 
-            // 5. Set a new time of the last update
+            // 3. Set a new time of the last update
             await context.CallActivityAsync(FunctionsNames.A_UpdateLastUpdateDateOfTheUpdatedAthlete,
                 (AthleteId: input.Athlete.AthleteId, LastUpdate: context.CurrentUtcDateTime));
             if (!context.IsReplaying)

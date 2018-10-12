@@ -46,7 +46,7 @@ namespace BurnForMoney.Functions.Functions.Strava.CollectActivities
                 }
                 else
                 {
-                    throw new Exception($"Failed to save activity with id: {activity.Id}.");
+                    log.LogWarning($"Failed to save activity with id: {activity.Id}.");
                 }
             }
         }

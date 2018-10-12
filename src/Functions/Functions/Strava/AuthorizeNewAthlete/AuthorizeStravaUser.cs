@@ -18,7 +18,6 @@ namespace BurnForMoney.Functions.Functions.Strava.AuthorizeNewAthlete
         private const string StravaAuthorizationUrl = "https://www.strava.com/oauth/authorize";
         private const string AzureHostUrl = "https://functions.azure.com";
 
-        // Authorize application to get athlete's data
         [FunctionName(FunctionsNames.AuthenticateStravaUser)]
         public static async Task<IActionResult> RunAuthorizeStravaUser([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "strava/authenticate")]
             HttpRequest req, ILogger log, [Queue(QueueNames.AuthorizationCodes)] CloudQueue authorizationCodesQueue,

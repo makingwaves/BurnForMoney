@@ -8,6 +8,7 @@ namespace BurnForMoney.Functions.Configuration
 {
     public class ApplicationConfiguration
     {
+        private const string LocalHostName = "0.0.0.0";
         private static ConfigurationRoot _settings;
         private static readonly IKeyVaultClient _keyVaultClient = KeyVaultClientFactory.Create();
 
@@ -24,7 +25,7 @@ namespace BurnForMoney.Functions.Configuration
                     ConnectionStrings = await GetConnectionStringsAsync(config, isLocal),
                     Strava = GetStravaConfiguration(config),
                     Email = GetEmailConfiguration(config),
-                    HostName = Environment.GetEnvironmentVariable(EnvironmentSettingNames.AzureWebsiteHostName)
+                    HostName = GetHostName()
                 };
 
                 if (!_settings.IsValid())
@@ -34,6 +35,23 @@ namespace BurnForMoney.Functions.Configuration
             }
 
             return _settings;
+        }
+
+        private static string GetHostName()
+        {
+            var hostName = Environment.GetEnvironmentVariable(EnvironmentSettingNames.AzureWebsiteHostName);
+
+            if (hostName == null)
+            {
+                throw new ArgumentNullException(EnvironmentSettingNames.AzureWebsiteHostName);
+            }
+
+            if (hostName.StartsWith(LocalHostName))
+            {
+                hostName = hostName.Replace(LocalHostName, "localhost");
+            }
+
+            return hostName;
         }
 
         private static EmailSection GetEmailConfiguration(IConfigurationRoot config)

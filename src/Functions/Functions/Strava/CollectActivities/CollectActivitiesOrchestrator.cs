@@ -38,39 +38,14 @@ namespace BurnForMoney.Functions.Functions.Strava.CollectActivities
                     $"[{FunctionsNames.O_CollectStravaActivities}] Retrieved data of {athletes.Length} active athletes.");
             }
 
-            // 2. Collect activities of all athletes
+            // 2. Collect activities of the all athletes
             var tasks = new Task[athletes.Length];
             for (int i = 0; i < athletes.Length; i++)
             {
-                tasks[i] = context.CallSubOrchestratorAsync("", (athletes[i], optimize));
+                tasks[i] = context.CallSubOrchestratorAsync(FunctionsNames.O_CollectSingleUserActivities, (athletes[i], optimize));
             }
-
-
-            //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! CATCH EXCEPTIONS AND IGNORE THEM
 
             await Task.WhenAll(tasks);
         }
     }
-
-    public static class CollectSingleUserActivitiesActivities
-    {
-        [FunctionName(FunctionsNames.A_DecryptAccessToken)]
-        public static async Task<string> A_DecryptAccessTokenAsync([ActivityTrigger]string encryptedAccessToken, ILogger log,
-            ExecutionContext context)
-        {
-            log.LogInformation($"{FunctionsNames.A_DecryptAccessToken} function processed a request.");
-
-            var configuration = await ApplicationConfiguration.GetSettingsAsync(context);
-
-            var keyVaultClient = KeyVaultClientFactory.Create();
-            var secret = await keyVaultClient.GetSecretAsync(configuration.ConnectionStrings.KeyVaultConnectionString, KeyVaultSecretNames.StravaTokensEncryptionKey)
-                .ConfigureAwait(false);
-            var accessTokenEncryptionKey = secret.Value;
-
-            var decryptedToken = Cryptography.DecryptString(encryptedAccessToken, accessTokenEncryptionKey);
-            log.LogInformation("Access token has been decrypted.");
-            return decryptedToken;
-        }
-    }
-
 }
