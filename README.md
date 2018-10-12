@@ -24,6 +24,7 @@ https://makingwaves.sharepoint.com/sites/BurnforMoney
 ### Requirements
 
 * [Azure Developer Tools](https://azure.microsoft.com/en-us/tools/)
+* [.NET Core SDK](https://www.microsoft.com/net/download)
 * [Azure Storage Emulator](https://go.microsoft.com/fwlink/?LinkId=717179&clcid=0x409)
 * [PowerShell](https://www.microsoft.com/web/handlers/webpi.ashx/getinstaller/WindowsAzurePowershellGet.3f.3f.3fnew.appids)
 * [Azure Functions and Web Jobs Tools](https://marketplace.visualstudio.com/items?itemName=VisualStudioWebandAzureTools.AzureFunctionsandWebJobsTools) - Visual Studio only
