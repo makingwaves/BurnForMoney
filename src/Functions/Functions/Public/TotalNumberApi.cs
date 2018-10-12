@@ -57,12 +57,12 @@ namespace BurnForMoney.Functions.Functions.Public
                 {
                     Distance = totalDistance,
                     Time = totalTime,
-                    Points = totalPoints,
                     Money = totalPoints * 100 / 500,
                     ThisMonth = new
                     {
                         NumberOfTrainings = jsons.Sum(j => j.Results.Sum(r => r.NumberOfTrainings)),
                         PercentOfEngagedEmployees = 37,
+                        Points = totalPointsThisMonth,
                         Money = totalPointsThisMonth * 100 / 500,
                         MostFrequentActivities = mostFrequentActivities
                     }
