@@ -4,7 +4,6 @@ using System.Data.SqlClient;
 using System.Threading.Tasks;
 using BurnForMoney.Functions.Configuration;
 using BurnForMoney.Functions.External.Strava.Api;
-using BurnForMoney.Functions.Helpers;
 using Dapper;
 using Microsoft.Azure.KeyVault;
 using Microsoft.Azure.WebJobs;
@@ -16,6 +15,8 @@ namespace BurnForMoney.Functions.Functions.Strava.AuthorizeNewAthlete
 {
     public static class AuthorizeNewAthleteActivities
     {
+        private static readonly StravaService StravaService = new StravaService();
+
         [FunctionName(FunctionsNames.A_GenerateAccessToken)]
         public static async Task<(string, Athlete)> A_GenerateAccessToken([ActivityTrigger]string authorizationCode, ILogger log,
             ExecutionContext context)
@@ -25,8 +26,7 @@ namespace BurnForMoney.Functions.Functions.Strava.AuthorizeNewAthlete
 
             log.LogInformation($"Requesting for access token using clientId: {configuration.Strava.ClientId}.");
 
-            var stravaService = new StravaService();
-            var response = stravaService.ExchangeToken(configuration.Strava.ClientId, configuration.Strava.ClientSecret, authorizationCode);
+            var response = StravaService.ExchangeToken(configuration.Strava.ClientId, configuration.Strava.ClientSecret, authorizationCode);
             return (response.AccessToken, response.Athlete);
         }
 

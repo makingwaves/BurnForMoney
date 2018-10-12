@@ -1,6 +1,5 @@
 using System;
 using System.Threading.Tasks;
-using BurnForMoney.Functions.Helpers;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 using Athlete = BurnForMoney.Functions.Persistence.DatabaseSchema.Athlete;

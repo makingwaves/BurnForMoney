@@ -16,6 +16,8 @@ namespace BurnForMoney.Functions.Functions.Strava.CollectActivities.SubOrchestra
 {
     public static class CollectSingleUserActivitiesActivities
     {
+        private static readonly StravaService StravaService = new StravaService();
+
         [FunctionName(FunctionsNames.A_DecryptAccessToken)]
         public static async Task<string> A_DecryptAccessTokenAsync([ActivityTrigger]string encryptedAccessToken, ILogger log,
             ExecutionContext context)
@@ -42,8 +44,7 @@ namespace BurnForMoney.Functions.Functions.Strava.CollectActivities.SubOrchestra
 
             var (accessToken, fromDate) = context.GetInput<ValueTuple<string, DateTime>>();
 
-            var stravaService = new StravaService();
-            var activities = stravaService.GetActivities(accessToken, fromDate);
+            var activities = StravaService.GetActivities(accessToken, fromDate);
 
             foreach (var stravaActivity in activities)
             {
