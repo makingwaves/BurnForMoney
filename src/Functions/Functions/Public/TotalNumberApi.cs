@@ -57,6 +57,7 @@ namespace BurnForMoney.Functions.Functions.Public
                 {
                     Distance = totalDistance,
                     Time = totalTime,
+                    Points = totalPoints,
                     Money = totalPoints * 100 / 500,
                     ThisMonth = new
                     {
