@@ -80,3 +80,7 @@ Azure Resource Manager is used to automate environment creation. In order to cre
 #### User authorization - Strava
 
 ![User authorization - Strava](../master/docs/user-authorization-strava.png)
+
+#### Collecting activities
+
+![Collecting activities](../master/docs/collecting-activities.png)

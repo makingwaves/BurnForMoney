@@ -33,11 +33,11 @@ namespace BurnForMoney.Functions.Functions.Strava.CollectActivities.SubOrchestra
             return decryptedToken;
         }
 
-        [FunctionName(FunctionsNames.A_RetrieveSingleUserActivities)]
-        public static async Task A_RetrieveSingleUserActivitiesAsync([ActivityTrigger]DurableActivityContext context, ILogger log, ExecutionContext executionContext,
+        [FunctionName(FunctionsNames.A_CollectSingleUserActivities)]
+        public static async Task A_CollectSingleUserActivitiesAsync([ActivityTrigger]DurableActivityContext context, ILogger log, ExecutionContext executionContext,
             [Queue(QueueNames.PendingActivities)] CloudQueue pendingActivitiesQueue)
         {
-            log.LogInformation($"{FunctionsNames.A_RetrieveSingleUserActivities} function processed a request.");
+            log.LogInformation($"{FunctionsNames.A_CollectSingleUserActivities} function processed a request.");
 
             var (accessToken, from) = context.GetInput<ValueTuple<string, DateTime>>();
 

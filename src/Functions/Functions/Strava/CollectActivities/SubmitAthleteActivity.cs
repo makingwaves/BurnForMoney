@@ -17,7 +17,7 @@ namespace BurnForMoney.Functions.Functions.Strava.CollectActivities
         [FunctionName(FunctionsNames.Q_SubmitAthleteActivity)]
         public static async Task Q_SubmitAthleteActivityAsync(ILogger log, ExecutionContext executionContext, [QueueTrigger(QueueNames.PendingActivities)] StravaActivity activity)
         {
-            log.LogInformation($"{FunctionsNames.A_RetrieveSingleUserActivities} function processed a request.");
+            log.LogInformation($"{FunctionsNames.Q_SubmitAthleteActivity} function processed a request.");
 
             var configuration = await ApplicationConfiguration.GetSettingsAsync(executionContext);
 
