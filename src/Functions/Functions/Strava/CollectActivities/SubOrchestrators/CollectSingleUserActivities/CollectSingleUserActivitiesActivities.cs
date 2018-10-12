@@ -36,7 +36,7 @@ namespace BurnForMoney.Functions.Functions.Strava.CollectActivities.SubOrchestra
 
         [FunctionName(FunctionsNames.A_CollectSingleUserActivities)]
         public static async Task A_CollectSingleUserActivitiesAsync([ActivityTrigger]DurableActivityContext context, ILogger log, ExecutionContext executionContext,
-            [Queue(QueueNames.PendingActivities)] CloudQueue pendingActivitiesQueue)
+            [Queue(QueueNames.PendingRawActivities)] CloudQueue pendingRawActivitiesQueue)
         {
             log.LogInformation($"{FunctionsNames.A_CollectSingleUserActivities} function processed a request.");
 
@@ -47,7 +47,7 @@ namespace BurnForMoney.Functions.Functions.Strava.CollectActivities.SubOrchestra
 
             foreach (var stravaActivity in activities)
             {
-                var pendingActivity = new PendingActivity
+                var pendingActivity = new PendingRawActivity
                 {
                     ActivityId = stravaActivity.Id,
                     AthleteId = stravaActivity.Athlete.Id,
@@ -59,7 +59,7 @@ namespace BurnForMoney.Functions.Functions.Strava.CollectActivities.SubOrchestra
 
                 var json = JsonConvert.SerializeObject(pendingActivity);
                 var message = new CloudQueueMessage(json);
-                await pendingActivitiesQueue.AddMessageAsync(message);
+                await pendingRawActivitiesQueue.AddMessageAsync(message);
             }
         }
 

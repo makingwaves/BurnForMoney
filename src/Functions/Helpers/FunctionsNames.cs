@@ -1,5 +1,8 @@
-﻿namespace BurnForMoney.Functions.Helpers
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace BurnForMoney.Functions.Helpers
 {
+    [SuppressMessage("ReSharper", "InconsistentNaming")]
     public static class FunctionsNames
     {
         public const string AuthenticateStravaUser = "AuthenticateStravaUser";
@@ -13,7 +16,7 @@
         public const string A_EncryptAccessToken = "A_EncryptAccessToken";
         public const string A_DecryptAccessToken = "A_DecryptAccessToken";
         public const string Q_SubmitAthleteActivity = "Q_SubmitAthleteActivity";
-
+        public const string Q_ProcessRawActivity = "Q_ProcessRawActivity";
 
         public const string Support_EncryptString = "Support_EncryptString";
         public const string Support_DecryptString = "Support_DecryptString";

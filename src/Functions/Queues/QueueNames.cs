@@ -4,6 +4,7 @@
     {
         public const string AuthorizationCodes = "queue-authorization-codes";
         public const string AuthorizationCodesPoison = "queue-authorization-codes-poison";
+        public const string PendingRawActivities = "queue-pending-raw-activities";
         public const string PendingActivities = "queue-pending-activities";
     }
 }

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Threading.Tasks;
-using BurnForMoney.Functions.External.Strava.Api.Model;
 using BurnForMoney.Functions.Helpers;
 using BurnForMoney.Functions.Queues;
 using Microsoft.AspNetCore.Http;
@@ -55,14 +54,14 @@ namespace BurnForMoney.Functions.Functions.Support
 
         [FunctionName(FunctionsNames.Support_Activities_Add)]
         public static async Task<IActionResult> Support_Activities_Add([HttpTrigger(AuthorizationLevel.Admin, "post", Route = "support/strava/activities/add")]HttpRequest req, ILogger log,
-            ExecutionContext executionContext, [Queue(QueueNames.PendingActivities)] CloudQueue queue)
+            ExecutionContext executionContext, [Queue(QueueNames.PendingRawActivities)] CloudQueue queue)
         {
             log.LogInformation($"{FunctionsNames.Support_Activities_Add} function processed a request.");
             
             var data = await req.ReadAsStringAsync();
             try
             {
-                JsonConvert.DeserializeObject<PendingActivity>(data, 
+                JsonConvert.DeserializeObject<PendingRawActivity>(data, 
                     new JsonSerializerSettings
                     {
                         MissingMemberHandling = MissingMemberHandling.Error

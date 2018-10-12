@@ -11,25 +11,18 @@ using Dapper;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 
-namespace BurnForMoney.Functions.Functions.Strava
+namespace BurnForMoney.Functions.Functions
 {
     public static class SubmitAthleteActivity
     {
         [FunctionName(FunctionsNames.Q_SubmitAthleteActivity)]
         public static async Task Q_SubmitAthleteActivityAsync(ILogger log, ExecutionContext executionContext, [QueueTrigger(QueueNames.PendingActivities)] PendingActivity activity)
         {
-            if (activity.System != "Strava")
-            {
-                throw new NotSupportedException($"System: {activity.System} is not supported.");
-            }
-
             log.LogInformation($"{FunctionsNames.Q_SubmitAthleteActivity} function processed a request.");
 
             var configuration = await ApplicationConfiguration.GetSettingsAsync(executionContext);
             using (var conn = new SqlConnection(configuration.ConnectionStrings.SqlDbConnectionString))
             {
-                var activityCategory = StravaActivityMapper.MapToActivityCategory(activity.ActivityType);
-                var points = PointsCalculator.Calculate(activityCategory, activity.DistanceInMeters, activity.MovingTimeInMinutes);
                 var model = new Activity
                 {
                     AthleteId = activity.AthleteId,
@@ -38,8 +31,8 @@ namespace BurnForMoney.Functions.Functions.Strava
                     ActivityType = activity.ActivityType,
                     Distance = activity.DistanceInMeters,
                     MovingTime = activity.MovingTimeInMinutes,
-                    Category = activityCategory.ToString(),
-                    Points = points
+                    Category = activity.Category.ToString(),
+                    Points = activity.Points
                 };
 
                 var affectedRows = await conn.ExecuteAsync("Strava_Activity_Insert", model, commandType: CommandType.StoredProcedure)
