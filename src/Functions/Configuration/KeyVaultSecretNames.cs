@@ -3,6 +3,6 @@
     public static class KeyVaultSecretNames
     {
         public const string StravaTokensEncryptionKey = "stravaAccessTokensEncryptionKey";
-        public const string SQLConnectionString = "SQLConnectionString";
+        public const string SqlConnectionString = "SQLConnectionString";
     }
 }

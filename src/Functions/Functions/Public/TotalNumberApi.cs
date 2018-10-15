@@ -70,7 +70,7 @@ namespace BurnForMoney.Functions.Functions.Public
                 };
 
                 return new OkObjectResult(result);
-            };
+            }
         }
     }
 }

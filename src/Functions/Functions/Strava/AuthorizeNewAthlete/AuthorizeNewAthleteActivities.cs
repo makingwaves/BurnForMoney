@@ -87,8 +87,10 @@ namespace BurnForMoney.Functions.Functions.Strava.AuthorizeNewAthlete
                 OrchestrationId = activityContext.InstanceId
             };
 
-            var message = new SendGridMessage();
-            message.From = new EmailAddress(configuration.Email.SenderEmail, "Burn for Money");
+            var message = new SendGridMessage
+            {
+                From = new EmailAddress(configuration.Email.SenderEmail, "Burn for Money")
+            };
             message.AddTo(new EmailAddress(configuration.Email.AthletesApprovalEmail));
             message.Subject = "Athlete is awaiting approval";
             

@@ -10,7 +10,7 @@ namespace BurnForMoney.Functions.Configuration
     {
         private const string LocalHostName = "0.0.0.0";
         private static ConfigurationRoot _settings;
-        private static readonly IKeyVaultClient _keyVaultClient = KeyVaultClientFactory.Create();
+        private static readonly IKeyVaultClient KeyVaultClient = KeyVaultClientFactory.Create();
 
         public static async Task<ConfigurationRoot> GetSettingsAsync(ExecutionContext context)
         {
@@ -68,7 +68,7 @@ namespace BurnForMoney.Functions.Configuration
         {
             var keyVaultConnectionString = config.GetConnectionString("KeyVault.ConnectionString");
             var sqlDbConnectionString = isLocal ? "Data Source=(LocalDB)\\.;Initial Catalog=BurnForMoney;Integrated Security=True" :
-                await GetSecretFromKeyVaultAsync(keyVaultConnectionString, KeyVaultSecretNames.SQLConnectionString);
+                await GetSecretFromKeyVaultAsync(keyVaultConnectionString, KeyVaultSecretNames.SqlConnectionString);
 
             return new ConnectionStringsSection
             {
@@ -107,7 +107,7 @@ namespace BurnForMoney.Functions.Configuration
 
         private static async Task<string> GetSecretFromKeyVaultAsync(string keyVaultConnectionString, string secretName)
         {
-            var secret = await _keyVaultClient.GetSecretAsync(keyVaultConnectionString, secretName)
+            var secret = await KeyVaultClient.GetSecretAsync(keyVaultConnectionString, secretName)
                 .ConfigureAwait(false);
             return secret.Value;
         }
