@@ -47,19 +47,6 @@ Sharepoint: https://makingwaves.sharepoint.com/sites/BurnforMoney
   - Website: https://bfm.makingwaves.pl/
   - Api: https://burnformoneyfunc-prod.azurewebsites.net/
 
-
-### Diagrams
-
-#### User authorization - Strava
-
-![User authorization - Strava](../master/docs/user-authorization-strava.png)
-
-#### Collecting activities
-
-![Collecting activities](../master/docs/collecting-activities.png)
-
-
-
 ## Code of conduct
 
 MIT License
