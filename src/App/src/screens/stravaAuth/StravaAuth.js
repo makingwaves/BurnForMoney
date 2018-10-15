@@ -14,18 +14,7 @@ class StravaAuth extends Component {
     }
 
     componentWillMount() {
-      let stravaLink;
-      switch(process.env.NODE_ENV){
-        case 'development':
-          stravaLink = "http://localhost:7071/api/strava/authorize/";
-          break;
-        case 'test':
-          stravaLink = "https://burnformoneyfunc-test.azurewebsites.net/api/strava/authorize/";
-          break;
-        case 'production':
-          stravaLink = "https://burnformoneyfunc-prod.azurewebsites.net/api/strava/authorize/";
-          break;
-      }
+      let stravaLink = process.env.REACT_APP_STRAVA_AUTH_PAGE;
       this.setState({ stravaLink });
     }
 

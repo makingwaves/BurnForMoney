@@ -13,7 +13,7 @@ class TotalNumbers extends Component {
           <div className="TotalNumbers__equation">
             <div className="TotalNumbers__equation-circle">
               <div>
-                <span className="TotalNumbers__equation-value">1792 km</span><br/>
+                <span className="TotalNumbers__equation-value">{(this.props.data ? this.props.data.distance : 0)} km</span><br/>
                 On route
               </div>
             </div>
@@ -22,7 +22,7 @@ class TotalNumbers extends Component {
             </div>
             <div className="TotalNumbers__equation-circle">
               <div>
-                <span className="TotalNumbers__equation-value">264 h</span><br/>
+                <span className="TotalNumbers__equation-value">{(this.props.data ? this.props.data.time : 0)} h</span><br/>
                 Of training
               </div>
             </div>
@@ -31,7 +31,7 @@ class TotalNumbers extends Component {
             </div>
             <div className="TotalNumbers__equation-circle">
               <div>
-                <span className="TotalNumbers__equation-value">17300 PLN</span><br/>
+                <span className="TotalNumbers__equation-value">{(this.props.data ? this.props.data.money : 0)} PLN</span><br/>
                 Given to help
               </div>
             </div>

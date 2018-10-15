@@ -24,10 +24,6 @@
       width:100%;
     }
     &-specific{
-      display:grid;
-      grid-template-columns: 32px 1fr;
-      grid-column-gap: 2px;
-      grid-row-gap: 2px;
       width:100%;
     }
 
@@ -54,6 +50,12 @@
     }
 
     &-category{
+      display:grid;
+      grid-template-columns: 32px 1fr;
+      grid-column-gap: 2px;
+      width:100%;
+      margin-bottom: 2px;
+
       &__icon{
         width: 100%;
         height: 32px;
@@ -61,6 +63,10 @@
         display: flex;
         justify-content: center;
         align-items: center;
+        img{
+          display:block;
+          width:80%;
+        }
       }
       &__progress{
         width: 100%;

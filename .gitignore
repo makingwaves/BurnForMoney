@@ -269,3 +269,6 @@ __pycache__/
 # ignore all CSS files from the source control, as we have SASS (.scss files)
 src/**/*.css
 /src/ResourceGroup/dll/*
+
+# ignore environment variables
+src/App/.env

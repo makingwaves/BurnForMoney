@@ -18,6 +18,7 @@ const customStyles = {
     transform             : 'translate(-52%, -50%)'
   }
 };
+let videoInModal;
 
 function updateVideoDimensions(video){
   let videoRatio = video.videoWidth / video.videoHeight,
@@ -28,6 +29,7 @@ function updateVideoDimensions(video){
     video.width = window.innerWidth - 100;
   }
 }
+
 
 // setAppElement() - hide application from screenreaders and other assistive technologies while the modal is open
 Modal.setAppElement('#root');
@@ -40,30 +42,31 @@ class VideoHeader extends Component {
       modalIsOpen: false
     };
   }
-
+  handleResize() {
+    updateVideoDimensions(videoInModal);
+  }
   openModal = () => {
     this.setState({modalIsOpen: true});
   }
 
   afterOpenModal = () => {
-    let videoModal = document.querySelector('.VideoHeader__video');
-    videoModal.addEventListener( "loadedmetadata", function (e) {
-      updateVideoDimensions(videoModal);
-    }, false );
-    window.addEventListener("resize", function (e) {
-      updateVideoDimensions(videoModal);
-    }, false);
+    videoInModal = document.querySelector('.VideoHeader__video');
+    videoInModal.addEventListener( "loadedmetadata", function handleLoadmetadata() {
+      updateVideoDimensions(videoInModal);
+      videoInModal.removeEventListener( "loadedmetadata", handleLoadmetadata);
+    });
+    window.addEventListener("resize", this.handleResize)
   }
 
   closeModal = () => {
     this.setState({modalIsOpen: false});
+    window.removeEventListener( "resize", this.handleResize);
   }
   goDown() {
     window.scroll({
       top: window.innerHeight,
       behavior: 'smooth'
     });
-
   }
 
   render() {
