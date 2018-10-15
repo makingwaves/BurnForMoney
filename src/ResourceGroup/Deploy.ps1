@@ -2,7 +2,8 @@
 
 Param(
     [switch] $ValidateOnly,
-	[string] [Parameter(Mandatory=$true)] $Environment
+	[string] [Parameter(Mandatory=$true)] $Environment,
+	[string] [Parameter(Mandatory=$true)] $SubscriptionName
 )
 
 . "$PSScriptRoot\Deploy-Credentials.ps1"
@@ -24,7 +25,6 @@ function Format-ValidationOutput {
 
 $OptionalParameters = New-Object -TypeName Hashtable
 
-$SubscriptionName = "Making Waves - Search and Collaboration O365";
 $ResourceGroupName = "BurnForMoney-$Environment";
 $ResourceGroupLocation= 'West Europe';
 $TemplateFile = [System.IO.Path]::GetFullPath([System.IO.Path]::Combine($PSScriptRoot, "Template.json"))
