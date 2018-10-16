@@ -27,7 +27,7 @@ function Set-WebAppIPRestrictions {
 			$IpSecurityRestrictions = @()
 		}
 
-		$IPAddress = Read-Host -Prompt "Input IP address of the $ReactAppName app service, e.g.: 51.144.182.8/32"
+		$IPAddress = Read-Host -Prompt "Input IP address of the $ReactAppName app service in the CIDR format, e.g.: 51.144.182.8/32"
 
 		$ips = $WebAppConfig.Properties.ipSecurityRestrictions
 		$ips += @([PSCustomObject] @{ name = $ReactAppName; ipAddress = [string]$IPAddress; subnetMask = $null; priority = 100 })
@@ -36,6 +36,6 @@ function Set-WebAppIPRestrictions {
         Write-Status "Adding a new IP restriction... "
         $WebAppConfig | Set-AzureRmResource  -ApiVersion $APIVersion -Force | Out-Null
         Write-Succeed
-        Write-Host "New restricted IP address $IPAddress has been added to WebApp $ApiAppName"
+        Write-Host "New allowed IP address $IPAddress has been added to WebApp $ApiAppName"
     }
 }
