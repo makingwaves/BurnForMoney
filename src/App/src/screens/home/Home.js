@@ -36,8 +36,7 @@ class Home extends Component {
 
   componentDidMount(){
     let api_url = process.env.REACT_APP_API_URL;
-    let auth_code = process.env.REACT_APP_AUTH_CODE;
-    fetch(api_url+"api/totalnumbers?code="+auth_code)
+    fetch(api_url+"api/totalnumbers")
       .then(res => res.json())
       .then(
         (result) => {
