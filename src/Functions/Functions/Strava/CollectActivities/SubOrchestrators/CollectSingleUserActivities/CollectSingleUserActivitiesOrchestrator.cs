@@ -21,7 +21,7 @@ namespace BurnForMoney.Functions.Functions.Strava.CollectActivities.SubOrchestra
                 log.LogInformation($"[{FunctionsNames.O_CollectSingleUserActivities}] Decrypted access token.");
             }
 
-            var getActivitiesFrom = input.Optimize ? input.Athlete.LastUpdate ?? DateTime.UtcNow.AddMonths(-3) : DateTime.UtcNow.AddMonths(-3);
+            var getActivitiesFrom = input.Optimize ? input.Athlete.LastUpdate : GetFirstDayOfTheMonth(DateTime.UtcNow);
 
             // 2. Receive and add to queue all new user activities
             await context.CallActivityAsync(FunctionsNames.A_CollectSingleUserActivities, (decryptedAccessToken, getActivitiesFrom));
@@ -37,6 +37,11 @@ namespace BurnForMoney.Functions.Functions.Strava.CollectActivities.SubOrchestra
             {
                 log.LogInformation($"[{FunctionsNames.A_UpdateLastUpdateDateOfTheUpdatedAthlete}] Updated time of the last update [{context.CurrentUtcDateTime}].");
             }
+        }
+
+        private static DateTime GetFirstDayOfTheMonth(DateTime dateTime)
+        {
+            return new DateTime(dateTime.Year, dateTime.Month, 1, 0, 0, 0, dateTime.Kind);
         }
     }
 }
