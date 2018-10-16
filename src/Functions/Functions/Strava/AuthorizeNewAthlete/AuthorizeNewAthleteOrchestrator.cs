@@ -84,7 +84,7 @@ namespace BurnForMoney.Functions.Functions.Strava.AuthorizeNewAthlete
                         LastName = athleteInformation.Athlete.Lastname,
                         AccessToken = encryptedAccessToken,
                         Active = true,
-                        LastUpdate = context.CurrentUtcDateTime.AddMonths(-3)
+                        LastUpdate = GetFirstDayOfTheMonth(context.CurrentUtcDateTime)
                     };
                     await context.CallActivityWithRetryAsync(FunctionsNames.A_AddAthleteToDatabase,
                         new RetryOptions(TimeSpan.FromSeconds(10), 5), athlete);
@@ -99,6 +99,11 @@ namespace BurnForMoney.Functions.Functions.Strava.AuthorizeNewAthlete
                 log.LogError($"[{FunctionsNames.A_AddAthleteToDatabase}] failed to save a new athlete. {ex}");
                 await authorizationCodePoisionQueue.AddMessageAsync(new CloudQueueMessage(authorizationCode));
             }
+        }
+
+        private static DateTime GetFirstDayOfTheMonth(DateTime dateTime)
+        {
+            return new DateTime(dateTime.Year, dateTime.Month, 1, 0, 0, 0, dateTime.Kind);
         }
     }
 

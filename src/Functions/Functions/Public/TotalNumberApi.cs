@@ -18,7 +18,7 @@ namespace BurnForMoney.Functions.Functions.Public
     public static class TotalNumberApi
     {
         [FunctionName("TotalNumbers")]
-        public static async Task<IActionResult> TotalNumbers([HttpTrigger(AuthorizationLevel.Function, "get", Route = "totalnumbers")]HttpRequest req, ILogger log, ExecutionContext executionContext)
+        public static async Task<IActionResult> TotalNumbers([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "totalnumbers")]HttpRequest req, ILogger log, ExecutionContext executionContext)
         {
             var configuration = await ApplicationConfiguration.GetSettingsAsync(executionContext);
             using (var conn = new SqlConnection(configuration.ConnectionStrings.SqlDbConnectionString))

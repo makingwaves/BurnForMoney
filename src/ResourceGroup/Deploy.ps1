@@ -9,6 +9,7 @@ Param(
 . "$PSScriptRoot\Deploy-Credentials.ps1"
 . "$PSScriptRoot\Upgrade-Database.ps1"
 . "$PSScriptRoot\Utils.ps1"
+. "$PSScriptRoot\Set-WebApp-Ip-Restrictions.ps1"
 
 try {
     [Microsoft.Azure.Common.Authentication.AzureSession]::ClientFactory.AddUserAgent("VSAzureTools-$UI$($host.name)".replace(' ','_'), '3.0.0')
@@ -80,6 +81,8 @@ else {
     if (-Not $ErrorMessages) {
 		$connectionStringSecret = Get-AzureKeyVaultSecret -VaultName $KeyVaultName -Name "SQLConnectionString"
 		Upgrade-Database -ConnectionString $connectionStringSecret.SecretValueText -ScriptsPath "$PSScriptRoot\SqlScripts\"
+
+		Set-WebAppIPRestrictions -ApiAppName ('burnformoneyfunc-' + $Environment.ToLower()) -ReactAppName ('burnformoney-' + $Environment.ToLower()) -ResourceGroupName $ResourceGroupName
     }
 	else {
 		Write-Fail

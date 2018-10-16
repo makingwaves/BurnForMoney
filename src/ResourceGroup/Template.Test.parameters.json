@@ -9,7 +9,7 @@
       "value": "burnformoney@makingwaves.com"
     },
     "cors.allowedOrigins": {
-      "value": [ "http://localhost:3000", "https://burnformoney-test.azurewebsites.net/" ]
+      "value": [ "http://localhost:3000", "https://burnformoney-test.azurewebsites.net/", "https://burnformoney-test.azurewebsites.net" ]
     },
     "sqlServerPassword": {
       "reference": {

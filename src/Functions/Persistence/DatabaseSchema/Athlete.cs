@@ -9,6 +9,6 @@ namespace BurnForMoney.Functions.Persistence.DatabaseSchema
         public string LastName { get; set; }
         public string AccessToken { get; set; }
         public bool Active { get; set; }
-        public DateTime? LastUpdate { get; set; }
+        public DateTime LastUpdate { get; set; }
     }
 }

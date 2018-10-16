@@ -1,5 +1,9 @@
 # Burn for money
 
+[![burn-for-money-video](https://img.youtube.com/vi/8d6wT1Iu0-A/0.jpg)](https://www.youtube.com/watch?v=8d6wT1Iu0-A)
+
+
+
 ## Documentation
 
 GitHub wiki: https://github.com/makingwaves/BurnForMoney/wiki

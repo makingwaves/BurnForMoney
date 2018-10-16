@@ -23,6 +23,7 @@
   <Import Condition=" Exists('$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Deployment\1.1\DeploymentProject.targets') " Project="$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Deployment\1.1\DeploymentProject.targets" />
   <!-- vertag<:>end -->
   <ItemGroup>
+    <None Include="Set-WebApp-Ip-Restrictions.ps1" />
     <None Include="SqlScripts\Script0001 - Create tables.sql" />
     <None Include="SqlScripts\Script0011- Alter Strava_Athlete_Upsert procedure.sql" />
     <None Include="SqlScripts\Script0002- Alter Strava_Athlete_Upsert procedure.sql" />
