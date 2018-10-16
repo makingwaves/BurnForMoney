@@ -27,14 +27,26 @@
       font-weight: bold;
       font-size: 19px;
       line-height: 1;
+      @media (max-width: 1000px){
+        width: 24vw;
+        height: 24vw;
+        border-radius: 12vw;
+        font-size: 2vw;
+      }
     }
     &-value{
       font-size: 40px;
+      @media (max-width: 1000px){
+        font-size: 4vw;
+      }
     }
 
     &-operator{
       font-size: 60px;
       font-weight: bold;
+      @media (max-width: 1000px){
+        font-size: 6vw;
+      }
     }
   }
 }

@@ -84,7 +84,7 @@ class VideoHeader extends Component {
           <img src={logoBFMblue} alt="Burn for money" className="VideoHeader__logo" />
           <div className="VideoHeader__title">
             <span className="VideoHeader__title-line">Workout</span><br/>
-            <span className="VideoHeader__title-line">to support</span><br/>
+            <span className="VideoHeader__title-line">for support</span><br/>
             <span className="VideoHeader__title-line">charity</span>
           </div>
           <button className="VideoHeader__openVideo" onClick={this.openModal} >Watch in action</button>
@@ -101,7 +101,7 @@ class VideoHeader extends Component {
           <video loop controls autoPlay className="VideoHeader__video">
               <source src={bfmVideo} type="video/mp4"/>
           </video>
-          <button className="VideoHeader__close" onClick={this.closeModal}>close</button>
+          <button className="VideoHeader__close" onClick={this.closeModal}></button>
         </Modal>
       </div>
     );

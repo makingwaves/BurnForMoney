@@ -9,14 +9,9 @@ class TeamGoals extends Component {
       <div className="TeamGoals">
         <div className="TeamGoals__container container">
           <img src={team} alt="team" className="TeamGoals__image" />
-          <h3 className="TeamGoals__header Header">As a team</h3>
-          <p>Working together in the office and solving problems side by side</p>
-          <p><del>competing</del> cooperating to collect points for our sports activities</p>
-          <h3 className="TeamGoals__header Header">... we have two goals</h3>
-          <ol className="TeamGoals__list">
-            <li className="TeamGoals__list-item">to be active and healthy</li>
-            <li className="TeamGoals__list-item">to help others</li>
-          </ol>
+          <h3 className="TeamGoals__header Header">We are a team</h3>
+          <p>We work together in Making Waves solving problems side by side and creating technological solutions for our clients.</p>
+          <p>After work we <del>competing</del> cooperate and train to collect points for our sports activities and to support charity.</p>
         </div>
 
       </div>

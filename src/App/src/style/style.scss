@@ -39,10 +39,13 @@ button{
 }
 
 
-
 .container{
   margin: 0 auto;
   width:880px;
+  @media (max-width: 1000px){
+    width: calc(100% - 90px);
+    padding: 0px 40px;
+  }
 }
 
 h2{
@@ -61,7 +64,7 @@ h5{
 .flames{
   &:before{
     content:'';
-    background: url('../img/flames.svg') no-repeat;
+    background: url('~img/flames.svg') no-repeat;
     width: 26px;
     height: 31px;
     display: inline-block;
