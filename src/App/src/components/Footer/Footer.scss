@@ -1,18 +1,35 @@
 @import "style/variables.scss";
 
 .Footer{
-  padding: 50px 0 50px;
+  padding: 50px 0 20px;
   font-size: 16px;
-
+  @media (max-width: 800px) {
+    border-top: 10px solid #000;
+    padding-top: 0;
+    margin-top: 50px;
+  }
   &__container{
     border-top: 10px solid #000;
     padding: 20px 0 50px;
     display: grid;
     grid-template-columns: 100px 2fr 3fr 2fr;
     grid-column-gap: 20px;
+    grid-template-areas:
+      "logo links company membership";
+
+    @media (max-width: 800px) {
+      border-top: none;
+      grid-template-columns: 1fr 1fr;
+      grid-template-areas:
+        "logo links"
+        "company company"
+        "membership membership";
+      grid-row-gap: 30px;
+    }
   }
 
   &__logo{
+    grid-area: logo;
     &-image{
       display: block;
       width: 60px;
@@ -20,6 +37,7 @@
   }
 
   &__links{
+    grid-area: links;
     &-list{
       list-style: none;
       margin: 0;
@@ -37,6 +55,7 @@
     }
   }
   &__company{
+    grid-area: company;
     &-name{
       font-weight: 600;
     }
@@ -49,9 +68,14 @@
     }
   }
   &__membership{
+    grid-area: membership;
     &-logo{
       width: 100%;
       margin: -6px 0 0;
+      @media (max-width: 800px){
+        width: auto;
+        margin: 0 0 0 -5px;
+      }
     }
   }
 }

@@ -15,11 +15,26 @@
       margin-bottom: 20px;
       display: grid;
       grid-column-gap: 20px;
+      grid-row-gap: 10px;
 
       &:nth-child(2){
         grid-template-columns: 3fr 1fr 1fr;
         grid-template-areas:
-          "emloyee employer beneficiary";
+          "employee employer beneficiary";
+        @media (max-width: 900px) and (min-width: 551px){
+          grid-template-columns: 1fr 1fr;
+          grid-template-areas:
+            "employee employee"
+            "employer beneficiary";
+        }
+        @media (max-width: 550px){
+          grid-template-columns: 1fr;
+          grid-template-areas:
+            "employee"
+            "employer"
+            "beneficiary";
+          grid-row-gap: 30px;
+        }
       }
     }
 
@@ -30,11 +45,22 @@
       }
     }
     &-employees{
+      grid-area: employee;
       &__group{
         display: grid;
         grid-template-columns: 1fr 1fr 1fr;
         grid-column-gap: 10px;
+
+        @media (max-width: 550px){
+          grid-template-columns: 1fr;
+        }
       }
+    }
+    &-employer{
+      grid-area: employer;
+    }
+    &-beneficiary{
+      grid-area: beneficiary;
     }
 
     &-title{

@@ -20,7 +20,7 @@ class HowItWorks extends Component {
 
             <div className="HowItWorks__timeline-row">
               <div className="HowItWorks__timeline-employees">
-                <div className="HowItWorks__timeline-title">Employess</div>
+                <div className="HowItWorks__timeline-title">Employees</div>
                 <div className="HowItWorks__timeline-line HowItWorks__timeline-line__arrow-right"></div>
                 <div className="HowItWorks__timeline-employees__group">
                   <div className="HowItWorks__timeline-step">
