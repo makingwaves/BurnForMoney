@@ -6,6 +6,7 @@ using BurnForMoney.Functions.Queues;
 using Dapper;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
+using Microsoft.WindowsAzure.Storage.Queue;
 
 namespace BurnForMoney.Functions.Functions.Strava
 {
@@ -13,7 +14,8 @@ namespace BurnForMoney.Functions.Functions.Strava
     {
         [FunctionName(FunctionsNames.Strava_Q_ProcessNewAthlete)]
         public static async Task Q_ProcessNewAthleteAsync(ILogger log, ExecutionContext executionContext,
-            [QueueTrigger(QueueNames.NewStravaAthletesRequests)] NewStravaAthlete athlete)
+            [QueueTrigger(QueueNames.NewStravaAthletesRequests)] NewStravaAthlete athlete,
+            [Queue(QueueNames.RefreshStravaToken)] CloudQueue refreshTokenQueue)
         {
             log.LogInformation($"{FunctionsNames.Strava_Q_ProcessNewAthlete} function processed a request.");
 
@@ -22,6 +24,16 @@ namespace BurnForMoney.Functions.Functions.Strava
             using (var conn = new SqlConnection(configuration.ConnectionStrings.SqlDbConnectionString))
             {
                 conn.Open();
+
+                var id = await conn.QuerySingleOrDefaultAsync<int>("SELECT Id FROM dbo.Athletes WHERE ExternalId=@AthleteId", new {athlete.AthleteId});
+                if (id > 0)
+                {
+                    log.LogError($"Athlete with id: {athlete.AthleteId} already exists.");
+                    await refreshTokenQueue.AddMessageAsync(new CloudQueueMessage(id.ToString()));
+                    log.LogInformation($"Requested token refreshing for athlete with id: {id}.");
+                    return;
+                }
+
                 log.LogInformation("Beginning a new database transaction...");
                 using (var transaction = conn.BeginTransaction())
                 {
@@ -30,7 +42,7 @@ namespace BurnForMoney.Functions.Functions.Strava
                         var sql = @"INSERT INTO dbo.Athletes(ExternalId, FirstName, LastName, ProfilePictureUrl, Active, System)
                                     OUTPUT INSERTED.[Id]
                                     VALUES(@AthleteId, @FirstName, @LastName, @ProfilePictureUrl, @Active, @System)";
-                        var id = await conn.QuerySingleAsync<int>(sql, new
+                        var newAthleteId = await conn.QuerySingleAsync<int>(sql, new
                         {
                             athlete.AthleteId,
                             athlete.FirstName,
@@ -39,18 +51,17 @@ namespace BurnForMoney.Functions.Functions.Strava
                             Active = true,
                             System = "Strava"
                         }, transaction);
-                        if (id < 1)
+                        if (newAthleteId < 1)
                         {
                             throw new Exception("Failed to add a new athlete.");
                         }
-                        log.LogInformation($"Inserted athlete with id: {id}.");
+                        log.LogInformation($"Inserted athlete with id: {newAthleteId}.");
 
                         sql = @"INSERT INTO dbo.[Strava.AccessTokens](AthleteId, AuthorizationCode, AccessToken, RefreshToken, ExpiresAt)
-                                    OUTPUT INSERTED.[Id]
                                     VALUES(@AthleteId, @AuthorizationCode, @AccessToken, @RefreshToken, @ExpiresAt)";
                         var affectedRows = await conn.ExecuteAsync(sql, new
                         {
-                            AthleteId = id,
+                            AthleteId = newAthleteId,
                             AuthorizationCode = athlete.EncryptedAuthorizationCode,
                             AccessToken = athlete.EncryptedAccessToken,
                             RefreshToken = athlete.EncryptedRefreshToken,
@@ -60,7 +71,7 @@ namespace BurnForMoney.Functions.Functions.Strava
                         {
                             throw new Exception("Failed to insert access tokens.");
                         }
-                        log.LogInformation($"Inserted access tokens for athlete with id: {id}.");
+                        log.LogInformation($"Inserted access tokens for athlete with id: {newAthleteId}.");
 
                         transaction.Commit();
                         log.LogInformation("Commited database transaction.");
