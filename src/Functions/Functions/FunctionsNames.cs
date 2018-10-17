@@ -7,16 +7,28 @@ namespace BurnForMoney.Functions.Functions
     {
         public const string AuthenticateStravaUser = "AuthenticateStravaUser";
 
+        public const string Strava_AuthorizeNewAthleteStarter = "Strava_AuthorizeNewAthleteStarter";
+        public const string Strava_O_AuthorizeNewAthlete = "Strava_O_AuthorizeNewAthlete";
+        public const string Strava_A_ExchangeToken = "Strava_A_ExchangeToken";
+        public const string Strava_A_EncryptToken = "Strava_A_EncryptToken";
+        public const string Strava_A_SendAthleteApprovalRequest = "Strava_A_SendAthleteApprovalRequest";
+
+        public const string Strava_SubmitAthleteApproval = "Strava_SubmitAthleteApproval";
+
+        public const string Strava_Q_ProcessNewAthlete = "Strava_Q_ProcessNewAthlete";
+        public const string Q_ProcessRawActivity = "Q_ProcessRawActivity";
+
+
+
+
         public const string CollectStravaActivitiesInEveryHour = "CollectStravaActivitiesInEveryHour";
         public const string O_CollectStravaActivities = "O_CollectStravaActivities";
         public const string O_CollectSingleUserActivities = "O_CollectSingleUserActivities";
         public const string A_GetAthletesWithAccessTokens = "A_GetAthletesWithAccessTokens";
         public const string A_CollectSingleUserActivities = "A_CollectSingleUserActivities";
         public const string A_UpdateLastUpdateDateOfTheUpdatedAthlete = "A_UpdateLastUpdateDateOfTheUpdatedAthlete";
-        public const string A_EncryptAccessToken = "A_EncryptAccessToken";
         public const string A_DecryptAccessToken = "A_DecryptAccessToken";
         public const string Q_SubmitAthleteActivity = "Q_SubmitAthleteActivity";
-        public const string Q_ProcessRawActivity = "Q_ProcessRawActivity";
 
         public const string Support_EncryptString = "Support_EncryptString";
         public const string Support_DecryptString = "Support_DecryptString";
@@ -26,12 +38,7 @@ namespace BurnForMoney.Functions.Functions
         public const string Support_Strava_Athlete_Deactivate = "Support_Strava_Athlete_Deactivate";
         public const string Support_Strava_Athlete_Activate = "Support_Strava_Athlete_Activate";
         
-        public const string AuthorizeNewAthleteStarter = "AuthorizeNewAthleteStarter";
-        public const string O_AuthorizeNewAthlete = "O_AuthorizeNewAthlete";
-        public const string A_GenerateAccessToken = "A_GenerateAccessToken";
         public const string A_AddAthleteToDatabase = "A_AddAthleteToDatabase";
-        public const string A_SendAthleteApprovalRequest = "A_SendAthleteApprovalRequest";
-        public const string SubmitAthleteApproval = "SubmitAthleteApproval";
         
         public const string CalculateMonthlyAthleteResults = "CalculateMonthlyAthleteResults";
         public const string CalculateMonthlyAthleteResultsFromPreviousMonth = "CalculateMonthlyAthleteResultsFromPreviousMonth";

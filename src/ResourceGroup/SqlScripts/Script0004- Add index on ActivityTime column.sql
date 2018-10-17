@@ -1,1 +1,0 @@
-﻿CREATE INDEX ix_strava_activities_activityTime ON dbo.[Strava.Activities](ActivityTime)

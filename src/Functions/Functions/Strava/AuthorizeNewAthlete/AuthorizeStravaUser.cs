@@ -51,7 +51,7 @@ namespace BurnForMoney.Functions.Functions.Strava.AuthorizeNewAthlete
 
             if (code.Length != AuthorisationCodeLength)
             {
-                log.LogWarning($"The provided code is invalid. Authorisation code should be {AuthorisationCodeLength} chars long, but was {code.Length}.");
+                log.LogWarning($"The provided code is invalid. Authorization code should be {AuthorisationCodeLength} chars long, but was {code.Length}.");
                 return new BadRequestObjectResult("The provided code is invalid.");
             }
 
