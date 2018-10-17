@@ -11,7 +11,6 @@ namespace BurnForMoney.Functions.Queues
 
         public string EncryptedAccessToken { get; set; }
         public string EncryptedRefreshToken { get; set; }
-        public string EncryptedAuthorizationCode { get; set; }
         public DateTime TokenExpirationDate { get; set; }
     }
 }

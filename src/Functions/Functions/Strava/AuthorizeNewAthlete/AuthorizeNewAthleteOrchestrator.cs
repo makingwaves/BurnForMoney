@@ -84,12 +84,6 @@ namespace BurnForMoney.Functions.Functions.Strava.AuthorizeNewAthlete
                 {
                     log.LogInformation($"[{FunctionsNames.Strava_A_EncryptToken}] encrypted refresh token.");
                 }
-                var encryptedAuthorizationCode =
-                    await context.CallActivityAsync<string>(FunctionsNames.Strava_A_EncryptToken, authorizationCode);
-                if (!context.IsReplaying)
-                {
-                    log.LogInformation($"[{FunctionsNames.Strava_O_AuthorizeNewAthlete}] encrypted authorization code.");
-                }
 
                 // 5. Save a new athlete
                 var athlete = new NewStravaAthlete
@@ -100,7 +94,6 @@ namespace BurnForMoney.Functions.Functions.Strava.AuthorizeNewAthlete
                     ProfilePictureUrl = tokenExchangeResult.Athlete.Profile,
                     EncryptedAccessToken = encryptedAccessToken,
                     EncryptedRefreshToken = encryptedRefreshToken,
-                    EncryptedAuthorizationCode = encryptedAuthorizationCode,
                     TokenExpirationDate = tokenExchangeResult.ExpiresAt
                 };
 

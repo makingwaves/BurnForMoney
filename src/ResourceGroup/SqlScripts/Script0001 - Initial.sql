@@ -4,7 +4,7 @@ GO
 CREATE TABLE dbo.[Athletes.UpdatesHistory] (AthleteId int NOT NULL, LastUpdate datetime2, FOREIGN KEY (AthleteId) REFERENCES dbo.[Athletes](Id))
 GO
 
-CREATE TABLE dbo.[Strava.AccessTokens] (AthleteId int NOT NULL, AuthorizationCode nvarchar(100) NOT NULL, AccessToken nvarchar(100) NOT NULL, RefreshToken nvarchar(100) NOT NULL, ExpiresAt datetime2 NOT NULL, FOREIGN KEY (AthleteId) REFERENCES dbo.[Athletes](Id))
+CREATE TABLE dbo.[Strava.AccessTokens] (AthleteId int NOT NULL, AccessToken nvarchar(100) NOT NULL, RefreshToken nvarchar(100) NOT NULL, ExpiresAt datetime2 NOT NULL, FOREIGN KEY (AthleteId) REFERENCES dbo.[Athletes](Id))
 GO
 
 CREATE TABLE dbo.[Activities] (AthleteId int NOT NULL, ActivityId int NOT NULL UNIQUE, ActivityTime datetime2, ActivityType nvarchar(50), Distance int, MovingTime int, Category nvarchar(60), Points float DEFAULT 0 NOT NULL, Source nvarchar(30), FOREIGN KEY (AthleteId) REFERENCES dbo.Athletes(Id))

@@ -57,12 +57,11 @@ namespace BurnForMoney.Functions.Functions.Strava
                         }
                         log.LogInformation($"Inserted athlete with id: {newAthleteId}.");
 
-                        sql = @"INSERT INTO dbo.[Strava.AccessTokens](AthleteId, AuthorizationCode, AccessToken, RefreshToken, ExpiresAt)
-                                    VALUES(@AthleteId, @AuthorizationCode, @AccessToken, @RefreshToken, @ExpiresAt)";
+                        sql = @"INSERT INTO dbo.[Strava.AccessTokens](AthleteId, AccessToken, RefreshToken, ExpiresAt)
+                                    VALUES(@AthleteId, @AccessToken, @RefreshToken, @ExpiresAt)";
                         var affectedRows = await conn.ExecuteAsync(sql, new
                         {
                             AthleteId = newAthleteId,
-                            AuthorizationCode = athlete.EncryptedAuthorizationCode,
                             AccessToken = athlete.EncryptedAccessToken,
                             RefreshToken = athlete.EncryptedRefreshToken,
                             ExpiresAt = athlete.TokenExpirationDate
