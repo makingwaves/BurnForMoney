@@ -7,6 +7,7 @@ using Dapper;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 using Microsoft.WindowsAzure.Storage.Queue;
+using Newtonsoft.Json;
 
 namespace BurnForMoney.Functions.Functions.Strava
 {
@@ -15,7 +16,7 @@ namespace BurnForMoney.Functions.Functions.Strava
         [FunctionName(FunctionsNames.Strava_Q_ProcessNewAthlete)]
         public static async Task Q_ProcessNewAthleteAsync(ILogger log, ExecutionContext executionContext,
             [QueueTrigger(QueueNames.NewStravaAthletesRequests)] NewStravaAthlete athlete,
-            [Queue(QueueNames.RefreshStravaToken)] CloudQueue refreshTokenQueue)
+            [Queue(QueueNames.NewStravaAthletesRequestsPoison)] CloudQueue newAthletesRequestPoisionQueue)
         {
             log.LogInformation($"{FunctionsNames.Strava_Q_ProcessNewAthlete} function processed a request.");
 
@@ -25,12 +26,11 @@ namespace BurnForMoney.Functions.Functions.Strava
             {
                 conn.Open();
 
-                var id = await conn.QuerySingleOrDefaultAsync<int>("SELECT Id FROM dbo.Athletes WHERE ExternalId=@AthleteId", new {athlete.AthleteId});
+                var id = await conn.QuerySingleOrDefaultAsync<int>("SELECT Id FROM dbo.Athletes WHERE ExternalId=@AthleteId", new { athlete.AthleteId });
                 if (id > 0)
                 {
                     log.LogError($"Athlete with id: {athlete.AthleteId} already exists.");
-                    await refreshTokenQueue.AddMessageAsync(new CloudQueueMessage(id.ToString()));
-                    log.LogInformation($"Requested token refreshing for athlete with id: {id}.");
+                    await newAthletesRequestPoisionQueue.AddMessageAsync(new CloudQueueMessage(JsonConvert.SerializeObject(athlete)));
                     return;
                 }
 

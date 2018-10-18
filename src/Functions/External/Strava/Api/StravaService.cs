@@ -32,14 +32,32 @@ namespace BurnForMoney.Functions.External.Strava.Api
             {
                 ClientId = clientId,
                 ClientSecret = clientSecret,
-                Code = code,
-                GrantType = "authorization_code"
+                Code = code
             };
             request.AddParameter("application/json", payLoad.ToJson(), ParameterType.RequestBody);
             var response = _restClient.Execute(request);
             ThrowExceptionIfNotSuccessful(response);
 
             return TokenExchangeResult.FromJson(response.Content);
+        }
+
+        public TokenRefreshResult RefreshToken(int clientId, string clientSecret, string refreshToken)
+        {
+            var request = new RestRequest("/oauth/token", Method.POST)
+            {
+                RequestFormat = DataFormat.Json
+            };
+            var payLoad = new TokenRefreshRequest
+            {
+                ClientId = clientId,
+                ClientSecret = clientSecret,
+                RefreshToken = refreshToken
+            };
+            request.AddParameter("application/json", payLoad.ToJson(), ParameterType.RequestBody);
+            var response = _restClient.Execute(request);
+            ThrowExceptionIfNotSuccessful(response);
+
+            return TokenRefreshResult.FromJson(response.Content);
         }
 
         public IList<StravaActivity> GetActivities(string accessToken, DateTime? from = null, int page = 1)

@@ -20,7 +20,7 @@ namespace BurnForMoney.Functions.Functions
 
 
 
-        public const string Strava_CollectStravaActivitiesInEveryHour = "Strava_CollectStravaActivitiesInEveryHour";
+        public const string Strava_T_CollectStravaActivitiesInEveryHour = "Strava_T_CollectStravaActivitiesInEveryHour";
         public const string Strava_O_CollectStravaActivities = "Strava_O_CollectStravaActivities";
         public const string Strava_A_GetActiveAthletesWithAccessTokens = "Strava_A_GetActiveAthletesWithAccessTokens";
         public const string Strava_O_CollectSingleUserActivities = "Strava_O_CollectSingleUserActivities";
@@ -31,6 +31,13 @@ namespace BurnForMoney.Functions.Functions
 
         public const string Q_SubmitAthleteActivity = "Q_SubmitAthleteActivity";
 
+        public const string T_RefreshAccessTokens = "T_RefreshAccessTokens";
+        public const string Q_RefreshAccessTokens = "Q_RefreshAccessTokens";
+
+
+
+        public const string T_CalculateMonthlyAthleteResults = "T_CalculateMonthlyAthleteResults";
+        public const string T_CalculateMonthlyAthleteResultsFromPreviousMonth = "T_CalculateMonthlyAthleteResultsFromPreviousMonth";
         public const string O_CalculateMonthlyAthleteResults = "O_CalculateMonthlyAthleteResults";
         public const string A_GetActivitiesFromGivenMonth = "A_GetActivitiesFromGivenMonth";
         public const string A_SubmitAthleteMonthlyResults = "A_SubmitAthleteMonthlyResults";
@@ -47,7 +54,6 @@ namespace BurnForMoney.Functions.Functions
         public const string Support_Strava_Athlete_Activate = "Support_Strava_Athlete_Activate";
         
         
-        public const string CalculateMonthlyAthleteResults = "CalculateMonthlyAthleteResults";
-        public const string CalculateMonthlyAthleteResultsFromPreviousMonth = "CalculateMonthlyAthleteResultsFromPreviousMonth";
+
     }
 }

@@ -8,10 +8,10 @@ namespace BurnForMoney.Functions.Functions.CalculateMonthlyAthleteResults
     public static class CalculateMonthlyAthleteResultsStarter
     {
         // every hour
-        [FunctionName(FunctionsNames.CalculateMonthlyAthleteResults)]
+        [FunctionName(FunctionsNames.T_CalculateMonthlyAthleteResults)]
         public static async Task CalculateMonthlyAthleteResults([TimerTrigger("0 0 * * * *")]TimerInfo timer, [OrchestrationClient]DurableOrchestrationClient starter, ILogger log, ExecutionContext context)
         {
-            log.LogInformation($"{FunctionsNames.CalculateMonthlyAthleteResults} timer trigger processed a request at {DateTime.UtcNow}.");
+            log.LogInformation($"{FunctionsNames.T_CalculateMonthlyAthleteResults} timer trigger processed a request at {DateTime.UtcNow}.");
 
             var date = DateTime.UtcNow;
             var instanceId = await starter.StartNewAsync(FunctionsNames.O_CalculateMonthlyAthleteResults, (date.Month, date.Year));
@@ -19,10 +19,10 @@ namespace BurnForMoney.Functions.Functions.CalculateMonthlyAthleteResults
         }
 
         // first day of the month at 1:00
-        [FunctionName(FunctionsNames.CalculateMonthlyAthleteResultsFromPreviousMonth)]
+        [FunctionName(FunctionsNames.T_CalculateMonthlyAthleteResultsFromPreviousMonth)]
         public static async Task CalculateMonthlyAthleteResultsFromPreviousMonth([TimerTrigger("0 0 1 1 * *")]TimerInfo timer, [OrchestrationClient]DurableOrchestrationClient starter, ILogger log, ExecutionContext context)
         {
-            log.LogInformation($"{FunctionsNames.CalculateMonthlyAthleteResultsFromPreviousMonth} timer trigger processed a request at {DateTime.UtcNow}.");
+            log.LogInformation($"{FunctionsNames.T_CalculateMonthlyAthleteResultsFromPreviousMonth} timer trigger processed a request at {DateTime.UtcNow}.");
 
             var date = DateTime.UtcNow.AddMonths(-1);
             var instanceId = await starter.StartNewAsync(FunctionsNames.O_CalculateMonthlyAthleteResults, (date.Month, date.Year));
