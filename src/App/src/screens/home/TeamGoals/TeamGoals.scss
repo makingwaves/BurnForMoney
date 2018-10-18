@@ -1,38 +1,44 @@
 @import "style/variables.scss";
 
 .TeamGoals{
-  padding: 50px 0 50px;
+  padding: 50px 0 30px;
   background-color: #fff;
 
   &__container{
-    &:after{
-      content:'';
-      display: table;
-      clear: both;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-column-gap: 20px;
+    grid-row-gap: 20px;
+    @media (max-width: 700px){
+      grid-template-columns: 1fr;
+    }
+
+  }
+
+  &__team{
+    align-self:center;
+    @media (max-width: 700px){
+      justify-self:center;
+    }
+    &-image{
+      display: block;
+      max-width: 100%;
+      margin:0 0 10px;
     }
   }
-  &__header{
-    font-weight: bold;
-    margin:30px 0 0px;
-  }
 
-  &__image{
-    float:left;
-    margin-right: 30px;
-  }
-  p{
-    font-size:24px;
-    margin:10px 0;
-  }
-  &__list{
-    list-style-position: inside;
-    margin:10px 0;
-
-    &-item{
-      font-size:24px;
+  &__goals{
+    align-self:center;
+    &-header{
       font-weight: bold;
+      margin:0;
+    }
+
+    &-text{
+      font-size:24px;
       line-height: 28px;
-      margin:5px 0;
+      margin:10px 0;
     }
   }
+
 }

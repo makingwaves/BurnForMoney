@@ -47,13 +47,13 @@
     bottom:0;
     left: 0;
     right:0;
-    width: 540px;
+    width: 550px;
     height: 45%;
     margin: auto;
     z-index:1;
     text-align: left;
     @media (max-width: 1000px){
-      width:48%;
+      width:400px;
       height: 40%;
     }
   }
@@ -62,9 +62,8 @@
     margin-bottom: 15px;
     left:-30px;
     @media (max-width: 1000px){
-      width: 20vw;
-      margin-bottom: 1.5vw;
-      left: -3vw;
+      width: 150px;
+      left:-22px;
     }
   }
   &__title{
@@ -75,8 +74,8 @@
     text-transform: uppercase;
     margin-bottom: 20px;
     @media (max-width: 1000px){
-      font-size: 6vw;
-      line-height: 5vw;
+      font-size: 50px;
+      line-height: 40px;
     }
 
     &-line{
@@ -85,7 +84,7 @@
       padding: 10px 110px 0 10px;
       margin-bottom: 2px;
       @media (max-width: 1000px){
-        padding: 1vw 9vw 0 1vw;
+        padding-right: 75px;
       }
     }
   }
@@ -97,10 +96,7 @@
     font-size: 18px;
     padding: 10px 15px 10px 10px;
     cursor: pointer;
-    @media (max-width: 1000px){
-      font-size: 2vw;
-      padding: 1vw 1.5vw 1vw 1vw;
-    }
+
     &:before{
       content:'';
       background: url('../img/playBtn.svg');
@@ -110,10 +106,7 @@
       height:25px;
       vertical-align: bottom;
       margin-right: 10px;
-      @media (max-width: 1000px){
-        width: 2.5vw;
-        height: 2.5vw;
-      }
+
     }
   }
   &__goDown{
@@ -145,5 +138,7 @@
     position: absolute;
     top:40px;
     right:40px;
+    max-width:40%;
+
   }
 }

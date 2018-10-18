@@ -51,6 +51,10 @@ button{
 h2{
   font-size: 50px;
   line-height: 55px;
+  @media (max-width: 1000px){
+    font-size: 40px;
+    line-height: 44px;
+  }
 }
 h3{
   font-size: 40px;
@@ -65,11 +69,18 @@ h5{
   &:before{
     content:'';
     background: url('~img/flames.svg') no-repeat;
+    background-size: contain;
     width: 26px;
     height: 31px;
     display: inline-block;
     position: relative;
     margin-left: -31px;
     margin-right: 5px;
+    @media (max-width: 1000px){
+      width: 21px;
+      height: 25px;
+      margin-left: -24px;
+      margin-right: 3px;
+    }
   }
 }

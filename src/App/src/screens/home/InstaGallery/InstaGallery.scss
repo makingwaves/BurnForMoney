@@ -1,11 +1,18 @@
 @import "style/variables.scss";
 
 .InstaGallery{
-  padding: 40px 0 30px;
+  padding: 20px 0 30px;
 
   &__frame{
     display: flex;
     overflow: hidden;
+    @media (max-width: 800px) and (min-width: 551px) {
+      flex-wrap: wrap;
+    }
+    @media (max-width: 550px) {
+      flex-wrap: wrap;
+    }
+
   }
 
   &__image{
@@ -18,8 +25,14 @@
     @media (max-width: 1600px) and (min-width: 1281px) {
       width: calc(100%/5);
     }
-    @media (max-width: 1280px) and (min-width: 961px) {
+    @media (max-width: 1280px) and (min-width: 801px) {
       width: calc(100%/4);
+    }
+    @media (max-width: 800px) and (min-width: 551px) {
+      width: calc(100%/3);
+    }
+    @media (max-width: 550px) {
+      width: calc(100%/2);
     }
 
     img{

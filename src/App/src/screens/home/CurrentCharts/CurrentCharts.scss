@@ -12,7 +12,10 @@
     display: grid;
     grid-template-columns: 1fr 1fr;
     grid-column-gap: 10px;
-
+    @media (max-width: 850px){
+      grid-template-columns: 1fr;
+      grid-row-gap: 10px;
+    }
     &-overall{
       display:grid;
       grid-template-columns: 1fr 1fr;
@@ -22,6 +25,13 @@
         "trainings engagement"
         "money money";
       width:100%;
+      @media (max-width: 480px){
+        grid-template-columns: 1fr;
+        grid-template-areas:
+          "trainings"
+          "engagement"
+          "money";
+      }
     }
     &-specific{
       width:100%;
@@ -34,6 +44,14 @@
       justify-content: space-between;
       &__value{
         font-size: 50px;
+        @media (max-width: 480px){
+          width:calc(100% - 90px);
+        }
+      }
+      &__text{
+        @media (max-width: 480px){
+          width:90px;
+        }
       }
     }
     &-trainings{
