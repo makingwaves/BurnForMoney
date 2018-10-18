@@ -2,7 +2,6 @@
 using System.Data.SqlClient;
 using System.Threading.Tasks;
 using BurnForMoney.Functions.Configuration;
-using BurnForMoney.Functions.Persistence.DatabaseSchema;
 using BurnForMoney.Functions.Queues;
 using Dapper;
 using Microsoft.Azure.WebJobs;
@@ -20,19 +19,20 @@ namespace BurnForMoney.Functions.Functions
             var configuration = await ApplicationConfiguration.GetSettingsAsync(executionContext);
             using (var conn = new SqlConnection(configuration.ConnectionStrings.SqlDbConnectionString))
             {
-                var model = new Activity
+                var model = new
                 {
-                    AthleteId = activity.AthleteId,
-                    ActivityId = activity.ActivityId,
+                    activity.AthleteId,
+                    activity.ActivityId,
                     ActivityTime = activity.StartDate,
-                    ActivityType = activity.ActivityType,
+                    activity.ActivityType,
                     Distance = activity.DistanceInMeters,
                     MovingTime = activity.MovingTimeInMinutes,
                     Category = activity.Category.ToString(),
-                    Points = activity.Points
+                    activity.Points,
+                    activity.Source
                 };
 
-                var affectedRows = await conn.ExecuteAsync("Strava_Activity_Insert", model, commandType: CommandType.StoredProcedure)
+                var affectedRows = await conn.ExecuteAsync("Activity_Insert", model, commandType: CommandType.StoredProcedure)
                     .ConfigureAwait(false);
 
                 if (affectedRows > 0)

@@ -8,6 +8,7 @@ namespace BurnForMoney.Functions.Functions.Strava.CalculateMonthlyAthleteResults
     public static class CalculateMonthlyAthleteResultsStarter
     {
         // every hour
+        [Disable]
         [FunctionName(FunctionsNames.CalculateMonthlyAthleteResults)]
         public static async Task CalculateMonthlyAthleteResults([TimerTrigger("0 0 * * * *")]TimerInfo timer, [OrchestrationClient]DurableOrchestrationClient starter, ILogger log, ExecutionContext context)
         {
@@ -19,6 +20,7 @@ namespace BurnForMoney.Functions.Functions.Strava.CalculateMonthlyAthleteResults
         }
 
         // first day of the month at 1:00
+        [Disable]
         [FunctionName(FunctionsNames.CalculateMonthlyAthleteResultsFromPreviousMonth)]
         public static async Task CalculateMonthlyAthleteResultsFromPreviousMonth([TimerTrigger("0 0 1 1 * *")]TimerInfo timer, [OrchestrationClient]DurableOrchestrationClient starter, ILogger log, ExecutionContext context)
         {

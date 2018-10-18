@@ -1,7 +1,7 @@
 ﻿CREATE TABLE dbo.[Athletes] (Id int NOT NULL IDENTITY(1,1), ExternalId int UNIQUE, FirstName nvarchar(50), LastName nvarchar(50) NOT NULL, ProfilePictureUrl nvarchar(max), Active bit NOT NULL, System nvarchar(30), PRIMARY KEY (Id))
 GO
 
-CREATE TABLE dbo.[Athletes.UpdatesHistory] (AthleteId int NOT NULL, LastUpdate datetime2, FOREIGN KEY (AthleteId) REFERENCES dbo.[Athletes](Id))
+CREATE TABLE dbo.[Athletes.UpdateHistory] (AthleteId int NOT NULL, LastUpdate datetime2, FOREIGN KEY (AthleteId) REFERENCES dbo.[Athletes](Id))
 GO
 
 CREATE TABLE dbo.[Strava.AccessTokens] (AthleteId int NOT NULL, AccessToken nvarchar(100) NOT NULL, RefreshToken nvarchar(100) NOT NULL, ExpiresAt datetime2 NOT NULL, FOREIGN KEY (AthleteId) REFERENCES dbo.[Athletes](Id))

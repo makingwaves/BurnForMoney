@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Data;
-using System.Data.SqlClient;
 using System.Threading.Tasks;
 using BurnForMoney.Functions.Configuration;
 using BurnForMoney.Functions.External.Strava.Api;
 using BurnForMoney.Functions.External.Strava.Api.Auth;
-using Dapper;
 using Microsoft.Azure.KeyVault;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
@@ -81,45 +78,6 @@ namespace BurnForMoney.Functions.Functions.Strava.AuthorizeNewAthlete
             await athleteApprovalCollector.AddAsync(athleteApproval);
             await messageCollector.AddAsync(message);
         }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        [FunctionName(FunctionsNames.A_AddAthleteToDatabase)]
-        public static async Task A_AddAthleteToDatabaseAsync([ActivityTrigger]DurableActivityContext activityContext, ILogger log,
-            ExecutionContext context)
-        {
-            var athlete = activityContext.GetInput<Persistence.DatabaseSchema.Athlete>();
-            var configuration = await ApplicationConfiguration.GetSettingsAsync(context);
-
-            using (var conn = new SqlConnection(configuration.ConnectionStrings.SqlDbConnectionString))
-            {
-                var affectedRows = await conn.ExecuteAsync("Strava_Athlete_Upsert", athlete, commandType: CommandType.StoredProcedure)
-                    .ConfigureAwait(false);
-
-                if (affectedRows > 0)
-                {
-                    log.LogInformation($"Athlete: {athlete.FirstName} {athlete.LastName} has been saved successfully");
-                }
-                else
-                {
-                    throw new Exception("An error occurred while saving athlete data.");
-                }
-            }
-        }
-
-
     }
 
     internal enum AthleteApprovalResult

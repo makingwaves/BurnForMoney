@@ -66,7 +66,7 @@ namespace BurnForMoney.Functions.Functions.Strava.AuthorizeNewAthlete
                     }
                 }
 
-                if (!context.IsReplaying && (approvalResult == AthleteApprovalResult.Approved.ToString() || approvalResult == AthleteApprovalResult.Rejected.ToString()))
+                if (!context.IsReplaying)
                 {
                     log.LogInformation($"[{FunctionsNames.Strava_O_AuthorizeNewAthlete}] Athlete: {tokenExchangeResult.Athlete.Firstname} {tokenExchangeResult.Athlete.Lastname} has been {approvalResult}.");
                 }
@@ -85,7 +85,7 @@ namespace BurnForMoney.Functions.Functions.Strava.AuthorizeNewAthlete
                     log.LogInformation($"[{FunctionsNames.Strava_A_EncryptToken}] encrypted refresh token.");
                 }
 
-                // 5. Save a new athlete
+                // 5. Process a new athlete request
                 var athlete = new NewStravaAthlete
                 {
                     AthleteId = tokenExchangeResult.Athlete.Id,

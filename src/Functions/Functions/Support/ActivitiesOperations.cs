@@ -19,7 +19,7 @@ namespace BurnForMoney.Functions.Functions.Support
         {
             log.LogInformation($"{FunctionsNames.Support_Strava_Activities_Collect} function processed a request.");
             string optimize = req.Query["optimize"];
-            var instanceId = await starter.StartNewAsync(FunctionsNames.O_CollectStravaActivities, optimize);
+            var instanceId = await starter.StartNewAsync(FunctionsNames.Strava_O_CollectStravaActivities, optimize);
 
             var payload = starter.CreateHttpManagementPayload(instanceId);
             return new OkObjectResult(payload);

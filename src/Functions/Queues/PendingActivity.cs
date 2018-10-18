@@ -13,6 +13,6 @@ namespace BurnForMoney.Functions.Queues
         public double MovingTimeInMinutes { get; set; }
         public ActivityCategory Category { get; set; }
         public double Points { get; set; }
-        public string System { get; set; }
+        public string Source { get; set; }
     }
 }

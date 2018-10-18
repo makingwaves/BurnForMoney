@@ -16,9 +16,9 @@ namespace BurnForMoney.Functions.Functions
             [QueueTrigger(QueueNames.PendingRawActivities)] PendingRawActivity rawActivity,
             [Queue(QueueNames.PendingActivities)] CloudQueue pendingActivitiesQueue)
         {
-            if (rawActivity.System != "Strava")
+            if (rawActivity.Source != "Strava")
             {
-                throw new NotSupportedException($"System: {rawActivity.System} is not supported.");
+                throw new NotSupportedException($"System: {rawActivity.Source} is not supported.");
             }
 
             log.LogInformation($"{FunctionsNames.Q_ProcessRawActivity} function processed a request.");
@@ -35,7 +35,8 @@ namespace BurnForMoney.Functions.Functions
                 DistanceInMeters = rawActivity.DistanceInMeters,
                 MovingTimeInMinutes = rawActivity.MovingTimeInMinutes,
                 Category = activityCategory,
-                Points = points
+                Points = points,
+                Source = "Strava"
             };
 
             var json = JsonConvert.SerializeObject(activity);

@@ -3,7 +3,7 @@ AS
   SET TRANSACTION ISOLATION LEVEL SERIALIZABLE;
   BEGIN TRAN
  
-    IF NOT EXISTS ( SELECT * FROM dbo.[Strava.Activities] WITH (UPDLOCK) WHERE ActivityId = @ActivityId)
+    IF NOT EXISTS ( SELECT * FROM dbo.[Activities] WITH (UPDLOCK) WHERE ActivityId = @ActivityId)
 
       INSERT dbo.[Activities] ( AthleteId, ActivityId, ActivityTime, ActivityType, Distance, MovingTime, Category, Points, Source)
       VALUES ( @AthleteId, @ActivityId, @ActivityTime, @ActivityType, @Distance, @MovingTime, @Category, @Points, @Source);

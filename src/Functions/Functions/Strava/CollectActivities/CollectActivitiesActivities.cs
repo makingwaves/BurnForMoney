@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
@@ -6,27 +7,37 @@ using BurnForMoney.Functions.Configuration;
 using Dapper;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
-using Athlete = BurnForMoney.Functions.Persistence.DatabaseSchema.Athlete;
 
 namespace BurnForMoney.Functions.Functions.Strava.CollectActivities
 {
     public static class CollectActivitiesActivities
     {
-        [FunctionName(FunctionsNames.A_GetAthletesWithAccessTokens)]
-        public static async Task<Athlete[]> A_GetAthletesWithAccessTokensAsync([ActivityTrigger]DurableActivityContext activityContext, ILogger log, ExecutionContext executionContext)
+        [FunctionName(FunctionsNames.Strava_A_GetActiveAthletesWithAccessTokens)]
+        public static async Task<AthleteWithAccessToken[]> A_GetActiveAthletesWithAccessTokensAsync([ActivityTrigger]DurableActivityContext activityContext, ILogger log, ExecutionContext executionContext)
         {
-            log.LogInformation($"{FunctionsNames.A_GetAthletesWithAccessTokens} function processed a request. Instance id: `{activityContext.InstanceId}`");
+            log.LogInformation($"{FunctionsNames.Strava_A_GetActiveAthletesWithAccessTokens} function processed a request. Instance id: `{activityContext.InstanceId}`");
 
             var configuration = await ApplicationConfiguration.GetSettingsAsync(executionContext);
 
-            List<Athlete> athletes;
+            List<AthleteWithAccessToken> athletes;
             using (var conn = new SqlConnection(configuration.ConnectionStrings.SqlDbConnectionString))
             {
-                athletes = (await conn.QueryAsync<Athlete>("SELECT * FROM dbo.[Strava.Athletes] where Active = 1")).ToList();
+                athletes = (await conn.QueryAsync<AthleteWithAccessToken>(@"SELECT Athlete.Id, Tokens.AccessToken AS EncryptedAccessToken, History.LastUpdate
+FROM dbo.Athletes AS Athlete
+INNER JOIN dbo.[Strava.AccessTokens] AS Tokens ON (Athlete.Id = Tokens.AthleteId)
+LEFT JOIN dbo.[Athletes.UpdateHistory] AS History ON (Athlete.Id = History.AthleteId)
+WHERE Active = 1")).ToList();
             }
 
             log.LogInformation($"Received information about {athletes.Count} active athletes.");
             return athletes.ToArray();
         }
+    }
+
+    public class AthleteWithAccessToken
+    {
+        public int Id { get; set; }
+        public string EncryptedAccessToken { get; set; }
+        public DateTime? LastUpdate { get; set; }
     }
 }

@@ -18,11 +18,11 @@ namespace BurnForMoney.Functions.Functions.Strava.CollectActivities.SubOrchestra
     {
         private static readonly StravaService StravaService = new StravaService();
 
-        [FunctionName(FunctionsNames.A_DecryptAccessToken)]
+        [FunctionName(FunctionsNames.Strava_A_DecryptAccessToken)]
         public static async Task<string> A_DecryptAccessTokenAsync([ActivityTrigger]string encryptedAccessToken, ILogger log,
             ExecutionContext context)
         {
-            log.LogInformation($"{FunctionsNames.A_DecryptAccessToken} function processed a request.");
+            log.LogInformation($"{FunctionsNames.Strava_A_DecryptAccessToken} function processed a request.");
 
             var configuration = await ApplicationConfiguration.GetSettingsAsync(context);
 
@@ -36,13 +36,13 @@ namespace BurnForMoney.Functions.Functions.Strava.CollectActivities.SubOrchestra
             return decryptedToken;
         }
 
-        [FunctionName(FunctionsNames.A_CollectSingleUserActivities)]
+        [FunctionName(FunctionsNames.Strava_A_CollectSingleUserActivities)]
         public static async Task A_CollectSingleUserActivitiesAsync([ActivityTrigger]DurableActivityContext context, ILogger log, ExecutionContext executionContext,
             [Queue(QueueNames.PendingRawActivities)] CloudQueue pendingRawActivitiesQueue)
         {
-            log.LogInformation($"{FunctionsNames.A_CollectSingleUserActivities} function processed a request.");
+            log.LogInformation($"{FunctionsNames.Strava_A_CollectSingleUserActivities} function processed a request.");
 
-            var (accessToken, fromDate) = context.GetInput<ValueTuple<string, DateTime>>();
+            var (athleteId, accessToken, fromDate) = context.GetInput<ValueTuple<int, string, DateTime>>();
 
             var activities = StravaService.GetActivities(accessToken, fromDate);
 
@@ -51,11 +51,12 @@ namespace BurnForMoney.Functions.Functions.Strava.CollectActivities.SubOrchestra
                 var pendingActivity = new PendingRawActivity
                 {
                     ActivityId = stravaActivity.Id,
-                    AthleteId = stravaActivity.Athlete.Id,
+                    AthleteId = athleteId,
                     ActivityType = stravaActivity.Type.ToString(),
                     StartDate = stravaActivity.StartDate,
                     DistanceInMeters = stravaActivity.Distance,
-                    MovingTimeInMinutes = UnitsConverter.ConvertSecondsToMinutes(stravaActivity.MovingTime)
+                    MovingTimeInMinutes = UnitsConverter.ConvertSecondsToMinutes(stravaActivity.MovingTime),
+                    Source = "Strava"
                 };
 
                 var json = JsonConvert.SerializeObject(pendingActivity);
@@ -76,11 +77,15 @@ namespace BurnForMoney.Functions.Functions.Strava.CollectActivities.SubOrchestra
 
             using (var conn = new SqlConnection(configuration.ConnectionStrings.SqlDbConnectionString))
             {
-                await conn.ExecuteAsync("UPDATE dbo.[Strava.Athletes] SET LastUpdate=@LastUpdate WHERE AthleteId=@AthleteId AND Active=@Active", new
+                await conn.ExecuteAsync(@"
+IF NOT EXISTS (SELECT * FROM dbo.[Athletes.UpdateHistory] WITH (UPDLOCK) WHERE AthleteId = @AthleteId)
+    INSERT dbo.[Athletes.UpdateHistory] ( AthleteId, LastUpdate)
+    VALUES ( @AthleteId, @LastUpdate);
+ELSE
+UPDATE dbo.[Athletes.UpdateHistory] SET LastUpdate=@LastUpdate WHERE AthleteId=@AthleteId", new
                 {
                     AthleteId = athleteId,
-                    LastUpdate = lastUpdate,
-                    Active = true
+                    LastUpdate = lastUpdate
                 });
             }
         }

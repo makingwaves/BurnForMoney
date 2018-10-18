@@ -20,14 +20,17 @@ namespace BurnForMoney.Functions.Functions
 
 
 
-
-        public const string CollectStravaActivitiesInEveryHour = "CollectStravaActivitiesInEveryHour";
-        public const string O_CollectStravaActivities = "O_CollectStravaActivities";
-        public const string O_CollectSingleUserActivities = "O_CollectSingleUserActivities";
-        public const string A_GetAthletesWithAccessTokens = "A_GetAthletesWithAccessTokens";
-        public const string A_CollectSingleUserActivities = "A_CollectSingleUserActivities";
+        public const string Strava_CollectStravaActivitiesInEveryHour = "Strava_CollectStravaActivitiesInEveryHour";
+        public const string Strava_O_CollectStravaActivities = "Strava_O_CollectStravaActivities";
+        public const string Strava_A_GetActiveAthletesWithAccessTokens = "Strava_A_GetActiveAthletesWithAccessTokens";
+        public const string Strava_O_CollectSingleUserActivities = "Strava_O_CollectSingleUserActivities";
+        public const string Strava_A_CollectSingleUserActivities = "Strava_A_CollectSingleUserActivities";
+        public const string Strava_A_DecryptAccessToken = "Strava_A_DecryptAccessToken";
         public const string A_UpdateLastUpdateDateOfTheUpdatedAthlete = "A_UpdateLastUpdateDateOfTheUpdatedAthlete";
-        public const string A_DecryptAccessToken = "A_DecryptAccessToken";
+
+
+
+
         public const string Q_SubmitAthleteActivity = "Q_SubmitAthleteActivity";
 
         public const string Support_EncryptString = "Support_EncryptString";
@@ -38,7 +41,6 @@ namespace BurnForMoney.Functions.Functions
         public const string Support_Strava_Athlete_Deactivate = "Support_Strava_Athlete_Deactivate";
         public const string Support_Strava_Athlete_Activate = "Support_Strava_Athlete_Activate";
         
-        public const string A_AddAthleteToDatabase = "A_AddAthleteToDatabase";
         
         public const string CalculateMonthlyAthleteResults = "CalculateMonthlyAthleteResults";
         public const string CalculateMonthlyAthleteResultsFromPreviousMonth = "CalculateMonthlyAthleteResultsFromPreviousMonth";
