@@ -37,4 +37,7 @@
       <CopyToPublishDirectory>Never</CopyToPublishDirectory>
     </None>
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Functions\Strava\CalculateMonthlyAthleteResults\" />
+  </ItemGroup>
 </Project>

@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
-using BurnForMoney.Functions.Persistence.DatabaseSchema;
+using BurnForMoney.Functions.Model;
 using BurnForMoney.Functions.Queues;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;

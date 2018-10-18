@@ -1,4 +1,4 @@
-﻿namespace BurnForMoney.Functions.Persistence.DatabaseSchema
+﻿namespace BurnForMoney.Functions.Model
 {
     public enum ActivityCategory
     {

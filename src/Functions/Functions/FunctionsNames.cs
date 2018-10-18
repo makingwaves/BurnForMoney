@@ -29,9 +29,14 @@ namespace BurnForMoney.Functions.Functions
         public const string A_UpdateLastUpdateDateOfTheUpdatedAthlete = "A_UpdateLastUpdateDateOfTheUpdatedAthlete";
 
 
-
-
         public const string Q_SubmitAthleteActivity = "Q_SubmitAthleteActivity";
+
+        public const string O_CalculateMonthlyAthleteResults = "O_CalculateMonthlyAthleteResults";
+        public const string A_GetActivitiesFromGivenMonth = "A_GetActivitiesFromGivenMonth";
+        public const string A_SubmitAthleteMonthlyResults = "A_SubmitAthleteMonthlyResults";
+
+
+
 
         public const string Support_EncryptString = "Support_EncryptString";
         public const string Support_DecryptString = "Support_DecryptString";
@@ -44,9 +49,5 @@ namespace BurnForMoney.Functions.Functions
         
         public const string CalculateMonthlyAthleteResults = "CalculateMonthlyAthleteResults";
         public const string CalculateMonthlyAthleteResultsFromPreviousMonth = "CalculateMonthlyAthleteResultsFromPreviousMonth";
-        public const string O_CalculateMonthlyAthleteResults = "O_CalculateMonthlyAthleteResults";
-        public const string A_GetActivitiesFromGivenMonth = "A_GetActivitiesFromGivenMonth";
-        public const string A_GroupActivitiesByAthlete = "A_GroupActivitiesByAthlete";
-        public const string A_StoreAggregatedAthleteMonthlyResults = "A_StoreAggregatedAthleteMonthlyResults";
     }
 }

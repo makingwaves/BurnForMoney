@@ -1,5 +1,5 @@
 ﻿using System;
-using BurnForMoney.Functions.Persistence.DatabaseSchema;
+using BurnForMoney.Functions.Model;
 
 namespace BurnForMoney.Functions.Queues
 {

@@ -5,7 +5,7 @@ AS
  
     IF EXISTS ( SELECT * FROM dbo.[MonthlyResultsSnapshots] WITH (UPDLOCK) WHERE Date = @Date)
  
-      UPDATE dbo.[Strava.MonthlyResultsSnapshots]
+      UPDATE dbo.[MonthlyResultsSnapshots]
          SET Results = @Results
        WHERE Date = @Date;
  
