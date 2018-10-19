@@ -16,10 +16,10 @@ namespace BurnForMoney.Functions.Functions.Strava.RefreshTokens
 {
     public static class RefreshTokensFunc
     {
-        private static readonly StravaService _stravaService = new StravaService();
+        private static readonly StravaService StravaService = new StravaService();
 
         [FunctionName(FunctionsNames.T_RefreshAccessTokens)]
-        public static async Task T_RefreshAccessTokens([TimerTrigger("0 * * * * *")] TimerInfo timer, ILogger log, ExecutionContext executionContext,
+        public static async Task T_RefreshAccessTokens([TimerTrigger("0 */20 * * * *")] TimerInfo timer, ILogger log, ExecutionContext executionContext,
             [Queue(QueueNames.RefreshStravaToken)] CloudQueue refreshTokensQueue)
         {
             var configuration = await ApplicationConfiguration.GetSettingsAsync(executionContext);
@@ -59,7 +59,7 @@ namespace BurnForMoney.Functions.Functions.Strava.RefreshTokens
                 .ConfigureAwait(false);
             var refreshToken = Cryptography.DecryptString(request.EncryptedRefreshToken, secret.Value);
 
-            var response = _stravaService.RefreshToken(configuration.Strava.ClientId, configuration.Strava.ClientSecret,
+            var response = StravaService.RefreshToken(configuration.Strava.ClientId, configuration.Strava.ClientSecret,
                 refreshToken);
 
             using (var conn = new SqlConnection(configuration.ConnectionStrings.SqlDbConnectionString))

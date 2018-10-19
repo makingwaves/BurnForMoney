@@ -77,16 +77,20 @@ namespace BurnForMoney.Functions.Functions.Strava.CollectActivities.SubOrchestra
 
             using (var conn = new SqlConnection(configuration.ConnectionStrings.SqlDbConnectionString))
             {
-                await conn.ExecuteAsync(@"
+                var affectedRows = await conn.ExecuteAsync(@"
 IF NOT EXISTS (SELECT * FROM dbo.[Athletes.UpdateHistory] WITH (UPDLOCK) WHERE AthleteId = @AthleteId)
-    INSERT dbo.[Athletes.UpdateHistory] ( AthleteId, LastUpdate)
-    VALUES ( @AthleteId, @LastUpdate);
+    INSERT dbo.[Athletes.UpdateHistory] (AthleteId, LastUpdate)
+    VALUES (@AthleteId, @LastUpdate);
 ELSE
 UPDATE dbo.[Athletes.UpdateHistory] SET LastUpdate=@LastUpdate WHERE AthleteId=@AthleteId", new
                 {
                     AthleteId = athleteId,
                     LastUpdate = lastUpdate
                 });
+                if (affectedRows != 1)
+                {
+                    throw new Exception("Failed to update LastUpdate date.");
+                }
             }
         }
     }
