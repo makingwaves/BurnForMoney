@@ -27,7 +27,7 @@ namespace BurnForMoney.Functions.Functions.Strava.AuthorizeNewAthlete
             ILogger log, string code)
         {
             log.LogInformation($"{FunctionsNames.Strava_SubmitAthleteApproval} HTTP trigger processed a request.");
-
+            
             string result = req.Query["result"];
             if (string.IsNullOrWhiteSpace(result))
             {
