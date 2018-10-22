@@ -52,7 +52,7 @@ namespace BurnForMoney.Functions.Functions.Strava.CollectActivities.SubOrchestra
             catch (UnauthorizedTokenException ex)
             {
                 log.LogError(ex, ex.Message);
-                await unauthorizedAccessTokensQueue.AddMessageAsync(new CloudQueueMessage(accessToken));
+                await unauthorizedAccessTokensQueue.AddMessageAsync(new CloudQueueMessage(encryptedAccessToken));
             }
 
         }

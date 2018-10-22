@@ -31,6 +31,7 @@ namespace BurnForMoney.Functions.Functions
 
         public const string T_RefreshAccessTokens = "T_RefreshAccessTokens";
         public const string Q_RefreshAccessTokens = "Q_RefreshAccessTokens";
+        public const string Q_DeactivateExpiredAccessTokens = "Q_DeactivateExpiredAccessTokens";
 
 
 

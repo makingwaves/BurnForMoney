@@ -26,7 +26,7 @@ namespace BurnForMoney.Functions.Functions.Strava.CollectActivities
 FROM dbo.Athletes AS Athlete
 INNER JOIN dbo.[Strava.AccessTokens] AS Tokens ON (Athlete.Id = Tokens.AthleteId)
 LEFT JOIN dbo.[Athletes.UpdateHistory] AS History ON (Athlete.Id = History.AthleteId)
-WHERE Active = 1 AND Tokens.ExpiresAt > @DateTo", new { DateTo = DateTime.UtcNow.AddMinutes(1)} )).ToList();
+WHERE Active = 1 AND Tokens.ExpiresAt > @DateTo AND Tokens.IsValid=1", new { DateTo = DateTime.UtcNow.AddMinutes(1)} )).ToList();
             }
 
             log.LogInformation($"Received information about {athletes.Count} active athletes.");

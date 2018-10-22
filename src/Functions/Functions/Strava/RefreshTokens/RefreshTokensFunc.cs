@@ -6,7 +6,6 @@ using BurnForMoney.Functions.Configuration;
 using BurnForMoney.Functions.External.Strava.Api;
 using BurnForMoney.Functions.Queues;
 using Dapper;
-using Microsoft.Azure.KeyVault;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 using Microsoft.WindowsAzure.Storage.Queue;
