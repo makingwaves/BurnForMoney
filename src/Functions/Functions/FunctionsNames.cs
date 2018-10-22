@@ -53,6 +53,7 @@ namespace BurnForMoney.Functions.Functions
         public const string Support_Strava_Athlete_Activate = "Support_Strava_Athlete_Activate";
 
         public const string Support_ReprocessPoisonQueueMessages = "Support_ReprocessPoisonQueueMessages";
+        public const string Support_PurgeDurableHubHistory = "Support_PurgeDurableHubHistory";
 
 
 

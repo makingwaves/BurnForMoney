@@ -2,9 +2,9 @@
 
 function Set-WebAppIPRestrictions {
     Param(
-        [Parameter(Position = 0, Mandatory = $true, HelpMessage = "WebApp name", ValueFromPipeline = $false)] 
+        [Parameter(Position = 0, Mandatory = $true, HelpMessage = "Api App name", ValueFromPipeline = $false)] 
         $ApiAppName,
-		[Parameter(Position = 1, Mandatory = $true, HelpMessage = "WebApp name", ValueFromPipeline = $false)] 
+		[Parameter(Position = 1, Mandatory = $true, HelpMessage = "Web App name", ValueFromPipeline = $false)] 
         $ReactAppName,
         [Parameter(Position = 2, Mandatory = $true, HelpMessage = "Resource group name", ValueFromPipeline = $false)] 
         $ResourceGroupName

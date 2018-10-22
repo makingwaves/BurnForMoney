@@ -73,7 +73,8 @@ namespace BurnForMoney.Functions.Configuration
             return new ConnectionStringsSection
             {
                 KeyVaultConnectionString = keyVaultConnectionString,
-                SqlDbConnectionString = sqlDbConnectionString
+                SqlDbConnectionString = sqlDbConnectionString,
+                AzureWebJobsStorage = config["AzureWebJobsStorage"]
             };
         }
 
