@@ -19,7 +19,8 @@ namespace BurnForMoney.Functions.Functions.Strava.RefreshTokens
         private static readonly StravaService StravaService = new StravaService();
 
         [FunctionName(FunctionsNames.T_RefreshAccessTokens)]
-        public static async Task T_RefreshAccessTokens([TimerTrigger("0 */20 * * * *")] TimerInfo timer, ILogger log, ExecutionContext executionContext,
+        [Disable]
+        public static async Task T_RefreshAccessTokens([TimerTrigger("0 50 * * * *")] TimerInfo timer, ILogger log, ExecutionContext executionContext,
             [Queue(QueueNames.RefreshStravaToken)] CloudQueue refreshTokensQueue)
         {
             var configuration = await ApplicationConfiguration.GetSettingsAsync(executionContext);
@@ -54,10 +55,7 @@ namespace BurnForMoney.Functions.Functions.Strava.RefreshTokens
         {
             var configuration = await ApplicationConfiguration.GetSettingsAsync(executionContext);
 
-            var keyVaultClient = KeyVaultClientFactory.Create();
-            var secret = await keyVaultClient.GetSecretAsync(configuration.ConnectionStrings.KeyVaultConnectionString, KeyVaultSecretNames.StravaTokensEncryptionKey)
-                .ConfigureAwait(false);
-            var refreshToken = Cryptography.DecryptString(request.EncryptedRefreshToken, secret.Value);
+            var refreshToken = await AccessTokensEncryptionService.EncryptAsync(request.EncryptedRefreshToken, configuration.ConnectionStrings.KeyVaultConnectionString);
 
             var response = StravaService.RefreshToken(configuration.Strava.ClientId, configuration.Strava.ClientSecret,
                 refreshToken);
@@ -66,8 +64,8 @@ namespace BurnForMoney.Functions.Functions.Strava.RefreshTokens
             {
                 var affectedRows = await conn.ExecuteAsync("UPDATE dbo.[Strava.AccessTokens] SET AccessToken=@AccessToken, RefreshToken=@RefreshToken, ExpiresAt=@ExpiresAt WHERE AthleteId=@AthleteId", new
                 {
-                    AccessToken = Cryptography.EncryptString(response.AccessToken, secret.Value),
-                    RefreshToken = Cryptography.EncryptString(response.RefreshToken, secret.Value),
+                    AccessToken = await AccessTokensEncryptionService.EncryptAsync(response.AccessToken, configuration.ConnectionStrings.KeyVaultConnectionString),
+                    RefreshToken = await AccessTokensEncryptionService.EncryptAsync(response.RefreshToken, configuration.ConnectionStrings.KeyVaultConnectionString),
                     response.ExpiresAt,
                     request.AthleteId
                 });

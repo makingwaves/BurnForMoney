@@ -9,8 +9,7 @@ namespace BurnForMoney.Functions.Functions
 
         public const string Strava_AuthorizeNewAthleteStarter = "Strava_AuthorizeNewAthleteStarter";
         public const string Strava_O_AuthorizeNewAthlete = "Strava_O_AuthorizeNewAthlete";
-        public const string Strava_A_ExchangeToken = "Strava_A_ExchangeToken";
-        public const string Strava_A_EncryptToken = "Strava_A_EncryptToken";
+        public const string Strava_A_ExchangeTokenAndGetAthleteSummary = "Strava_A_ExchangeTokenAndGetAthleteSummary";
         public const string Strava_A_SendAthleteApprovalRequest = "Strava_A_SendAthleteApprovalRequest";
 
         public const string Strava_SubmitAthleteApproval = "Strava_SubmitAthleteApproval";
@@ -25,7 +24,6 @@ namespace BurnForMoney.Functions.Functions
         public const string Strava_A_GetActiveAthletesWithAccessTokens = "Strava_A_GetActiveAthletesWithAccessTokens";
         public const string Strava_O_CollectSingleUserActivities = "Strava_O_CollectSingleUserActivities";
         public const string Strava_A_CollectSingleUserActivities = "Strava_A_CollectSingleUserActivities";
-        public const string Strava_A_DecryptAccessToken = "Strava_A_DecryptAccessToken";
         public const string A_UpdateLastUpdateDateOfTheUpdatedAthlete = "A_UpdateLastUpdateDateOfTheUpdatedAthlete";
 
 

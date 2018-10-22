@@ -12,18 +12,10 @@ namespace BurnForMoney.Functions.Functions.Strava.CollectActivities.SubOrchestra
         {
             (AthleteWithAccessToken Athlete, bool Optimize) input = context.GetInput<(AthleteWithAccessToken, bool)>();
 
-            // 1. Decrypt access token
-            var decryptedAccessToken =
-                await context.CallActivityAsync<string>(FunctionsNames.Strava_A_DecryptAccessToken, input.Athlete.EncryptedAccessToken);
-            if (!context.IsReplaying)
-            {
-                log.LogInformation($"[{FunctionsNames.Strava_O_CollectSingleUserActivities}] Decrypted access token.");
-            }
-            
             var getActivitiesFrom = input.Optimize ? input.Athlete.LastUpdate ?? GetFirstDayOfTheMonth(DateTime.UtcNow) : GetFirstDayOfTheMonth(DateTime.UtcNow);
 
             // 2. Receive and add to queue all new user activities
-            await context.CallActivityAsync(FunctionsNames.Strava_A_CollectSingleUserActivities, (input.Athlete.Id, decryptedAccessToken, getActivitiesFrom));
+            await context.CallActivityAsync(FunctionsNames.Strava_A_CollectSingleUserActivities, (input.Athlete.Id, input.Athlete.EncryptedAccessToken, getActivitiesFrom));
             if (!context.IsReplaying)
             {
                 log.LogInformation($"[{FunctionsNames.Strava_A_CollectSingleUserActivities}] Received and queued all new activities created by athlete with id: {input.Athlete.Id}.");

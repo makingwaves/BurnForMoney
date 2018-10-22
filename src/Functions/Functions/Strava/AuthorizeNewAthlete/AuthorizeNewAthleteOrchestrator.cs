@@ -27,13 +27,13 @@ namespace BurnForMoney.Functions.Functions.Strava.AuthorizeNewAthlete
             
             try
             {
-                // 1. Exchange authorization code
-                var tokenExchangeResult = await context.CallActivityWithRetryAsync<TokenExchangeResult>(FunctionsNames.Strava_A_ExchangeToken,
+                // 1. Exchange and authorize athlete
+                var athlete = await context.CallActivityWithRetryAsync<NewStravaAthlete>(FunctionsNames.Strava_A_ExchangeTokenAndGetAthleteSummary,
                     new RetryOptions(TimeSpan.FromSeconds(5), 3), authorizationCode);
                 if (!context.IsReplaying)
                 {
-                    log.LogInformation($"[{FunctionsNames.Strava_O_AuthorizeNewAthlete}] exchanged token for user {tokenExchangeResult.Athlete.Firstname} " +
-                                       $"{tokenExchangeResult.Athlete.Lastname}.");
+                    log.LogInformation($"[{FunctionsNames.Strava_O_AuthorizeNewAthlete}] exchanged token for user {athlete.FirstName} " +
+                                       $"{athlete.LastName}.");
                 }
 
                 // 2. Send approval request
@@ -41,7 +41,7 @@ namespace BurnForMoney.Functions.Functions.Strava.AuthorizeNewAthlete
                 {
                     log.LogInformation($"[{FunctionsNames.Strava_O_AuthorizeNewAthlete}] sending approval email...");
                 }
-                await context.CallActivityAsync(FunctionsNames.Strava_A_SendAthleteApprovalRequest, (tokenExchangeResult.Athlete.Firstname, tokenExchangeResult.Athlete.Lastname));
+                await context.CallActivityAsync(FunctionsNames.Strava_A_SendAthleteApprovalRequest, (athlete.FirstName, athlete.LastName));
                 if (!context.IsReplaying)
                 {
                     log.LogInformation($"[{FunctionsNames.Strava_O_AuthorizeNewAthlete}] sent approval email.");
@@ -68,35 +68,10 @@ namespace BurnForMoney.Functions.Functions.Strava.AuthorizeNewAthlete
 
                 if (!context.IsReplaying)
                 {
-                    log.LogInformation($"[{FunctionsNames.Strava_O_AuthorizeNewAthlete}] Athlete: {tokenExchangeResult.Athlete.Firstname} {tokenExchangeResult.Athlete.Lastname} has been {approvalResult}.");
+                    log.LogInformation($"[{FunctionsNames.Strava_O_AuthorizeNewAthlete}] Athlete: {athlete.FirstName} {athlete.LastName} has been {approvalResult}.");
                 }
 
-                // 4. Encrypt tokens
-                var encryptedAccessToken =
-                    await context.CallActivityAsync<string>(FunctionsNames.Strava_A_EncryptToken, tokenExchangeResult.AccessToken);
-                if (!context.IsReplaying)
-                {
-                    log.LogInformation($"[{FunctionsNames.Strava_O_AuthorizeNewAthlete}] encrypted access token.");
-                }
-                var encryptedRefreshToken =
-                    await context.CallActivityAsync<string>(FunctionsNames.Strava_A_EncryptToken, tokenExchangeResult.RefreshToken);
-                if (!context.IsReplaying)
-                {
-                    log.LogInformation($"[{FunctionsNames.Strava_A_EncryptToken}] encrypted refresh token.");
-                }
-
-                // 5. Process a new athlete request
-                var athlete = new NewStravaAthlete
-                {
-                    AthleteId = tokenExchangeResult.Athlete.Id,
-                    FirstName = tokenExchangeResult.Athlete.Firstname,
-                    LastName = tokenExchangeResult.Athlete.Lastname,
-                    ProfilePictureUrl = tokenExchangeResult.Athlete.Profile,
-                    EncryptedAccessToken = encryptedAccessToken,
-                    EncryptedRefreshToken = encryptedRefreshToken,
-                    TokenExpirationDate = tokenExchangeResult.ExpiresAt
-                };
-
+                // 4. Process a new athlete request
                 var json = JsonConvert.SerializeObject(athlete);
                 await newAthletesRequestsQueue.AddMessageAsync(new CloudQueueMessage(json));
             }

@@ -2,8 +2,7 @@
 using System.Threading.Tasks;
 using BurnForMoney.Functions.Configuration;
 using BurnForMoney.Functions.External.Strava.Api;
-using BurnForMoney.Functions.External.Strava.Api.Auth;
-using Microsoft.Azure.KeyVault;
+using BurnForMoney.Functions.Queues;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 using SendGrid.Helpers.Mail;
@@ -14,36 +13,31 @@ namespace BurnForMoney.Functions.Functions.Strava.AuthorizeNewAthlete
     {
         private static readonly StravaService StravaService = new StravaService();
 
-        [FunctionName(FunctionsNames.Strava_A_ExchangeToken)]
-        public static async Task<TokenExchangeResult> A_ExchangeToken([ActivityTrigger]string authorizationCode, ILogger log,
+        [FunctionName(FunctionsNames.Strava_A_ExchangeTokenAndGetAthleteSummary)]
+        public static async Task<NewStravaAthlete> Strava_A_ExchangeTokenAndGetAthleteSummary([ActivityTrigger]string authorizationCode, ILogger log,
             ExecutionContext context)
         {
-            log.LogInformation($"{FunctionsNames.Strava_A_ExchangeToken} function processed a request.");
+            log.LogInformation($"{FunctionsNames.Strava_A_ExchangeTokenAndGetAthleteSummary} function processed a request.");
             var configuration = await ApplicationConfiguration.GetSettingsAsync(context);
 
             log.LogInformation($"Requesting for access token using clientId: {configuration.Strava.ClientId}.");
 
             var response = StravaService.ExchangeToken(configuration.Strava.ClientId, configuration.Strava.ClientSecret, authorizationCode);
-            return response;
+
+            return new NewStravaAthlete
+            {
+                AthleteId = response.Athlete.Id,
+                FirstName = response.Athlete.Firstname,
+                LastName = response.Athlete.Lastname,
+                ProfilePictureUrl = response.Athlete.Profile,
+                EncryptedAccessToken = await AccessTokensEncryptionService.EncryptAsync(response.AccessToken,
+                    configuration.ConnectionStrings.KeyVaultConnectionString),
+                EncryptedRefreshToken = await AccessTokensEncryptionService.EncryptAsync(response.RefreshToken,
+                    configuration.ConnectionStrings.KeyVaultConnectionString),
+                TokenExpirationDate = response.ExpiresAt
+            };
         }
-
-        [FunctionName(FunctionsNames.Strava_A_EncryptToken)]
-        public static async Task<string> A_EncryptTokenAsync([ActivityTrigger]string token, ILogger log,
-            ExecutionContext context)
-        {
-            log.LogInformation($"{FunctionsNames.Strava_A_EncryptToken} function processed a request.");
-            var configuration = await ApplicationConfiguration.GetSettingsAsync(context);
-
-            var keyVaultClient = KeyVaultClientFactory.Create();
-            var secret = await keyVaultClient.GetSecretAsync(configuration.ConnectionStrings.KeyVaultConnectionString, KeyVaultSecretNames.StravaTokensEncryptionKey)
-                .ConfigureAwait(false);
-            var accessTokenEncryptionKey = secret.Value;
-
-            var encryptedToken = Cryptography.EncryptString(token, accessTokenEncryptionKey);
-            log.LogInformation("Access token has been encrypted.");
-            return encryptedToken;
-        }
-
+        
         [FunctionName(FunctionsNames.Strava_A_SendAthleteApprovalRequest)]
         public static async Task A_SendAthleteApprovalRequest([ActivityTrigger]DurableActivityContext activityContext, ILogger log,
             ExecutionContext context, [SendGrid(ApiKey = "SendGrid.ApiKey")] IAsyncCollector<SendGridMessage> messageCollector,

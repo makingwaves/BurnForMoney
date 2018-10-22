@@ -6,7 +6,6 @@ using BurnForMoney.Functions.External.Strava.Api;
 using BurnForMoney.Functions.Helpers;
 using BurnForMoney.Functions.Queues;
 using Dapper;
-using Microsoft.Azure.KeyVault;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 using Microsoft.WindowsAzure.Storage.Queue;
@@ -18,32 +17,17 @@ namespace BurnForMoney.Functions.Functions.Strava.CollectActivities.SubOrchestra
     {
         private static readonly StravaService StravaService = new StravaService();
 
-        [FunctionName(FunctionsNames.Strava_A_DecryptAccessToken)]
-        public static async Task<string> A_DecryptAccessTokenAsync([ActivityTrigger]string encryptedAccessToken, ILogger log,
-            ExecutionContext context)
-        {
-            log.LogInformation($"{FunctionsNames.Strava_A_DecryptAccessToken} function processed a request.");
-
-            var configuration = await ApplicationConfiguration.GetSettingsAsync(context);
-
-            var keyVaultClient = KeyVaultClientFactory.Create();
-            var secret = await keyVaultClient.GetSecretAsync(configuration.ConnectionStrings.KeyVaultConnectionString, KeyVaultSecretNames.StravaTokensEncryptionKey)
-                .ConfigureAwait(false);
-            var accessTokenEncryptionKey = secret.Value;
-
-            var decryptedToken = Cryptography.DecryptString(encryptedAccessToken, accessTokenEncryptionKey);
-            log.LogInformation("Access token has been decrypted.");
-            return decryptedToken;
-        }
-
         [FunctionName(FunctionsNames.Strava_A_CollectSingleUserActivities)]
         public static async Task A_CollectSingleUserActivitiesAsync([ActivityTrigger]DurableActivityContext context, ILogger log, ExecutionContext executionContext,
             [Queue(QueueNames.PendingRawActivities)] CloudQueue pendingRawActivitiesQueue, [Queue(QueueNames.UnauthorizedAccessTokens)] CloudQueue unauthorizedAccessTokensQueue)
         {
             log.LogInformation($"{FunctionsNames.Strava_A_CollectSingleUserActivities} function processed a request.");
 
-            var (athleteId, accessToken, fromDate) = context.GetInput<ValueTuple<int, string, DateTime>>();
-
+            var (athleteId, encryptedAccessToken, fromDate) = context.GetInput<ValueTuple<int, string, DateTime>>();
+            var configuration = await ApplicationConfiguration.GetSettingsAsync(executionContext);
+            var accessToken = await AccessTokensEncryptionService.DecryptAsync(encryptedAccessToken,
+                configuration.ConnectionStrings.KeyVaultConnectionString);
+            log.LogInformation("Access token has been decrypted.");
             try
             {
                 var activities = StravaService.GetActivities(accessToken, fromDate);
