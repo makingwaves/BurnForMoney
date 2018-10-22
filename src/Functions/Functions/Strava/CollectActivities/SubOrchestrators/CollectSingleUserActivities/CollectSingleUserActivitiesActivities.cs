@@ -38,31 +38,39 @@ namespace BurnForMoney.Functions.Functions.Strava.CollectActivities.SubOrchestra
 
         [FunctionName(FunctionsNames.Strava_A_CollectSingleUserActivities)]
         public static async Task A_CollectSingleUserActivitiesAsync([ActivityTrigger]DurableActivityContext context, ILogger log, ExecutionContext executionContext,
-            [Queue(QueueNames.PendingRawActivities)] CloudQueue pendingRawActivitiesQueue)
+            [Queue(QueueNames.PendingRawActivities)] CloudQueue pendingRawActivitiesQueue, [Queue(QueueNames.UnauthorizedAccessTokens)] CloudQueue unauthorizedAccessTokensQueue)
         {
             log.LogInformation($"{FunctionsNames.Strava_A_CollectSingleUserActivities} function processed a request.");
 
             var (athleteId, accessToken, fromDate) = context.GetInput<ValueTuple<int, string, DateTime>>();
 
-            var activities = StravaService.GetActivities(accessToken, fromDate);
-
-            foreach (var stravaActivity in activities)
+            try
             {
-                var pendingActivity = new PendingRawActivity
+                var activities = StravaService.GetActivities(accessToken, fromDate);
+                foreach (var stravaActivity in activities)
                 {
-                    ActivityId = stravaActivity.Id,
-                    AthleteId = athleteId,
-                    ActivityType = stravaActivity.Type.ToString(),
-                    StartDate = stravaActivity.StartDate,
-                    DistanceInMeters = stravaActivity.Distance,
-                    MovingTimeInMinutes = UnitsConverter.ConvertSecondsToMinutes(stravaActivity.MovingTime),
-                    Source = "Strava"
-                };
+                    var pendingActivity = new PendingRawActivity
+                    {
+                        ActivityId = stravaActivity.Id,
+                        AthleteId = athleteId,
+                        ActivityType = stravaActivity.Type.ToString(),
+                        StartDate = stravaActivity.StartDate,
+                        DistanceInMeters = stravaActivity.Distance,
+                        MovingTimeInMinutes = UnitsConverter.ConvertSecondsToMinutes(stravaActivity.MovingTime),
+                        Source = "Strava"
+                    };
 
-                var json = JsonConvert.SerializeObject(pendingActivity);
-                var message = new CloudQueueMessage(json);
-                await pendingRawActivitiesQueue.AddMessageAsync(message);
+                    var json = JsonConvert.SerializeObject(pendingActivity);
+                    var message = new CloudQueueMessage(json);
+                    await pendingRawActivitiesQueue.AddMessageAsync(message);
+                }
             }
+            catch (UnauthorizedTokenException ex)
+            {
+                log.LogError(ex, ex.Message);
+                await unauthorizedAccessTokensQueue.AddMessageAsync(new CloudQueueMessage(accessToken));
+            }
+
         }
 
         [FunctionName(FunctionsNames.A_UpdateLastUpdateDateOfTheUpdatedAthlete)]

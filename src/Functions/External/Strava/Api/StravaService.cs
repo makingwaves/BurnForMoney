@@ -95,10 +95,24 @@ namespace BurnForMoney.Functions.External.Strava.Api
 
         private static void ThrowExceptionIfNotSuccessful(IRestResponse response)
         {
+            if (response.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                throw new UnauthorizedTokenException();
+            }
+
             if (response.StatusCode != HttpStatusCode.OK)
             {
                 throw new Exception($"Strava API returned an unsuccessfull status code. Status code: {response.StatusCode}. Content: {response.Content}. Error message: {response.ErrorMessage ?? "null"}");
             }
+        }
+    }
+
+    public class UnauthorizedTokenException : UnauthorizedAccessException
+    {
+        public UnauthorizedTokenException()
+            :base("Access token expired.")
+        {
+            
         }
     }
 }

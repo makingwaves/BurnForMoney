@@ -13,5 +13,7 @@
 
         public const string PendingRawActivities = "pending-raw-activities";
         public const string PendingActivities = "pending-activities";
+
+        public const string UnauthorizedAccessTokens = "unauthorized-access-tokens";
     }
 }

@@ -11,7 +11,7 @@ namespace BurnForMoney.Functions.Functions.Support
     public static class QueueOperations
     {
         [FunctionName(FunctionsNames.Support_ReprocessPoisonQueueMessages)]
-        public static async Task<IActionResult> Support_ReprocessPoisonQueueMessages([HttpTrigger(AuthorizationLevel.Admin, "post", Route = "support/reprocessQueueMessages/{queueName}")]HttpRequest req, ILogger log,
+        public static async Task<IActionResult> Support_ReprocessPoisonQueueMessages([HttpTrigger(AuthorizationLevel.Admin, "put", Route = "support/reprocessQueueMessages/{queueName}")]HttpRequest req, ILogger log,
             [Queue("{queueName}")] CloudQueue queue,
             [Queue("{queueName}-poison")] CloudQueue poisonQueue, string queueName)
         {
