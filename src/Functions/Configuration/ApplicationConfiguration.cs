@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Azure.KeyVault;
 using Microsoft.Azure.WebJobs;
@@ -29,7 +27,7 @@ namespace BurnForMoney.Functions.Configuration
                     {
                         KeyVaultConnectionString = keyVaultConnectionString,
                         SqlDbConnectionString = isLocal ? "Data Source=(LocalDB)\\.;Initial Catalog=BurnForMoney;Integrated Security=True" :
-                        await GetKeyVaultSecretAsync(keyVaultConnectionString, KeyVaultSecretNames.SqlConnectionString),
+                            await GetKeyVaultSecretAsync(keyVaultConnectionString, KeyVaultSecretNames.SqlConnectionString),
                         AzureWebJobsStorage = config["AzureWebJobsStorage"]
                     },
                     Strava = new StravaConfigurationSection
