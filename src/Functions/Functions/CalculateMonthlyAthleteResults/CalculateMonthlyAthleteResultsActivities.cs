@@ -24,7 +24,10 @@ namespace BurnForMoney.Functions.Functions.CalculateMonthlyAthleteResults
             var configuration = await ApplicationConfiguration.GetSettingsAsync(executionContext);
             using (var conn = new SqlConnection(configuration.ConnectionStrings.SqlDbConnectionString))
             {
-                var result = await conn.QueryAsync<Activity>("SELECT AthleteId, Distance, MovingTime, Category, Points FROM dbo.[Activities] WHERE MONTH(ActivityTime)=@Month AND YEAR(ActivityTime)=@Year", new
+                var result = await conn.QueryAsync<Activity>(@"SELECT AthleteId, Athletes.FirstName as AthleteFirstName, Athletes.LastName as AthleteLastName, Distance, MovingTime, Category, Points 
+FROM dbo.[Activities] AS Activities
+INNER JOIN dbo.[Athletes] AS Athletes ON (Activities.AthleteId = Athletes.Id)
+WHERE MONTH(ActivityTime)=@Month AND YEAR(ActivityTime)=@Year", new
                 {
                     Month = month,
                     Year = year
@@ -45,19 +48,14 @@ namespace BurnForMoney.Functions.Functions.CalculateMonthlyAthleteResults
             var configuration = await ApplicationConfiguration.GetSettingsAsync(executionContext);
             using (var conn = new SqlConnection(configuration.ConnectionStrings.SqlDbConnectionString))
             {
-                foreach (var result in aggregatedActivities)
+                var json = JsonConvert.SerializeObject(aggregatedActivities);
+
+                await conn.ExecuteAsync("MonthlyResultsSnapshots_Upsert", new
                 {
-                    var json = JsonConvert.SerializeObject(result);
-
-                    await conn.ExecuteAsync("MonthlyResultsSnapshots_Upsert", new
-                    {
-                        Date = $"{year}/{month}",
-                        Results = json
-                    }, commandType: CommandType.StoredProcedure)
-                    .ConfigureAwait(false);
-
-                    log.LogInformation($"Aggregated statistics for athlete with id: {result.AthleteId}. {json}");
-                }
+                    Date = $"{year}/{month}",
+                    Results = json
+                }, commandType: CommandType.StoredProcedure)
+                .ConfigureAwait(false);
             }
         }
 
@@ -70,6 +68,7 @@ namespace BurnForMoney.Functions.Functions.CalculateMonthlyAthleteResults
                 return new AthleteMonthlyResult
                 {
                     AthleteId = key,
+                    AthleteName = $"{allSingleAthleteActivities[0].AthleteFirstName} {allSingleAthleteActivities[0].AthleteLastName}",
                     Distance = allSingleAthleteActivities.Sum(activity => activity.Distance),
                     Time = allSingleAthleteActivities.Sum(activity => activity.MovingTime),
                     Points = Convert.ToInt32(allSingleAthleteActivities.Sum(activity => activity.Points)),
@@ -96,6 +95,8 @@ namespace BurnForMoney.Functions.Functions.CalculateMonthlyAthleteResults
     public class Activity
     {
         public int AthleteId { get; set; }
+        public string AthleteFirstName { get; set; }
+        public string AthleteLastName { get; set; }
         public int Distance { get; set; }
         public int MovingTime { get; set; }
         public string Category { get; set; }
@@ -105,6 +106,7 @@ namespace BurnForMoney.Functions.Functions.CalculateMonthlyAthleteResults
     public class AthleteMonthlyResult
     {
         public int AthleteId { get; set; }
+        public string AthleteName { get; set; }
         public double Distance { get; set; }
         public double Time { get; set; }
         public int Points { get; set; }
