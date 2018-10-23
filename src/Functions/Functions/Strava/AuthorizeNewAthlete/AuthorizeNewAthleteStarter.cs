@@ -12,11 +12,11 @@ namespace BurnForMoney.Functions.Functions.Strava.AuthorizeNewAthlete
     public static class AuthorizeNewAthleteStarter
     {
         [FunctionName(FunctionsNames.Strava_AuthorizeNewAthleteStarter)]
-        public static async Task Start([QueueTrigger(QueueNames.AuthorizationCodes)]string myQueueItem, [OrchestrationClient]DurableOrchestrationClient starter, ILogger log, ExecutionContext executionContext)
+        public static async Task Start([QueueTrigger(QueueNames.AuthorizationCodes)]string authorizationCode, [OrchestrationClient]DurableOrchestrationClient starter, ILogger log, ExecutionContext executionContext)
         {
             log.LogInformation($"{FunctionsNames.Strava_AuthorizeNewAthleteStarter} queue trigger processed a request at {DateTime.UtcNow}.");
 
-            var instanceId = await starter.StartNewAsync(FunctionsNames.Strava_O_AuthorizeNewAthlete, myQueueItem);
+            var instanceId = await starter.StartNewAsync(FunctionsNames.Strava_O_AuthorizeNewAthlete, authorizationCode);
             log.LogInformation($"Started orchestration function: `{FunctionsNames.Strava_O_AuthorizeNewAthlete}` with ID = `{instanceId}`.");
         }
 

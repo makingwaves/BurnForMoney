@@ -32,11 +32,5 @@ namespace BurnForMoney.Functions.Configuration
     {
         public int ClientId { get; set; }
         public string ClientSecret { get; set; }
-
-        public StravaConfigurationSection(int clientId, string clientSecret)
-        {
-            ClientId = clientId;
-            ClientSecret = clientSecret;
-        }
     }
 }
