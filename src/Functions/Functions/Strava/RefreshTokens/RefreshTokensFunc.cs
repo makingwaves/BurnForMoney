@@ -53,7 +53,7 @@ namespace BurnForMoney.Functions.Functions.Strava.RefreshTokens
         {
             var configuration = await ApplicationConfiguration.GetSettingsAsync(executionContext);
 
-            var refreshToken = await AccessTokensEncryptionService.EncryptAsync(request.EncryptedRefreshToken, configuration.ConnectionStrings.KeyVaultConnectionString);
+            var refreshToken = await AccessTokensEncryptionService.DecryptAsync(request.EncryptedRefreshToken, configuration.ConnectionStrings.KeyVaultConnectionString);
 
             var response = StravaService.RefreshToken(configuration.Strava.ClientId, configuration.Strava.ClientSecret,
                 refreshToken);
