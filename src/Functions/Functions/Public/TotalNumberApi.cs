@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
@@ -10,6 +11,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
@@ -17,8 +19,29 @@ namespace BurnForMoney.Functions.Functions.Public
 {
     public static class TotalNumberApi
     {
+        private const string CacheKey = "api.totalnumbers";
+        private static readonly IMemoryCache Cache = new MemoryCache(new MemoryDistributedCacheOptions());
+
         [FunctionName("TotalNumbers")]
         public static async Task<IActionResult> TotalNumbers([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "totalnumbers")]HttpRequest req, ILogger log, ExecutionContext executionContext)
+        {
+            if (!Cache.TryGetValue(CacheKey, out var totalNumbers))
+            {
+                totalNumbers = await GetTotalNumbersAsync(executionContext);
+
+                var cacheEntryOptions = new MemoryCacheEntryOptions
+                {
+                    Size = 1,
+                    AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5)
+                };
+
+                Cache.Set(CacheKey, totalNumbers, cacheEntryOptions);
+            }
+
+            return new OkObjectResult(totalNumbers);
+        }
+
+        private static async Task<object> GetTotalNumbersAsync(ExecutionContext executionContext)
         {
             var configuration = await ApplicationConfiguration.GetSettingsAsync(executionContext);
             using (var conn = new SqlConnection(configuration.ConnectionStrings.SqlDbConnectionString))
@@ -69,7 +92,7 @@ namespace BurnForMoney.Functions.Functions.Public
                     }
                 };
 
-                return new OkObjectResult(result);
+                return result;
             }
         }
     }
