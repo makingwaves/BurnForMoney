@@ -17,7 +17,8 @@ try {
     [Microsoft.Azure.Common.Authentication.AzureSession]::ClientFactory.AddUserAgent("VSAzureTools-$UI$($host.name)".replace(' ','_'), '3.0.0')
 } catch { }
 
-
+$ErrorActionPreference = 'Stop'
+Set-StrictMode -Version 3
 $OptionalParameters = New-Object -TypeName Hashtable
 
 Write-Status "Selecting Azure subscription... "
