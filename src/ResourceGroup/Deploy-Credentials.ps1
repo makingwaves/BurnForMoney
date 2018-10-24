@@ -91,7 +91,7 @@ function DeployCredentials {
 		Set-AzureRmKeyVaultAccessPolicy -VaultName $KeyVaultName -EmailAddress $accountId -PermissionsToKeys decrypt,sign,get,unwrapKey -PermissionsToSecrets Get, Set, List, Delete
 		Write-Succeed
 
-		$accounts = "accounts--gmail", "accounts--sendgrid", "accounts--strava", "accounts--contentfulmakingwaveskrakow@gmail.com[#HE4KNdr#R"
+		$accounts = "accounts--gmail", "accounts--sendgrid", "accounts--strava", "accounts--contentful"
 		for ($i=0; $i -lt $accounts.length; $i++) {
 			AddNewAccountSecret -SecretName $accounts[$i] `
 				-KeyVaultName $KeyVaultName
