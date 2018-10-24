@@ -37,9 +37,7 @@ namespace BurnForMoney.Functions.Functions
 
         public const string T_CalculateMonthlyAthleteResults = "T_CalculateMonthlyAthleteResults";
         public const string T_CalculateMonthlyAthleteResultsFromPreviousMonth = "T_CalculateMonthlyAthleteResultsFromPreviousMonth";
-        public const string O_CalculateMonthlyAthleteResults = "O_CalculateMonthlyAthleteResults";
-        public const string A_GetActivitiesFromGivenMonth = "A_GetActivitiesFromGivenMonth";
-        public const string A_SubmitAthleteMonthlyResults = "A_SubmitAthleteMonthlyResults";
+        public const string Q_CalculateMonthlyAthleteResults = "Q_CalculateMonthlyAthleteResults";
 
 
 

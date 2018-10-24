@@ -5,6 +5,7 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
 using BurnForMoney.Functions.Configuration;
+using BurnForMoney.Functions.Queues;
 using Dapper;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
@@ -12,50 +13,47 @@ using Newtonsoft.Json;
 
 namespace BurnForMoney.Functions.Functions.CalculateMonthlyAthleteResults
 {
-    public static class CalculateMonthlyAthleteResultsActivities
+    public static class CalculateMonthlyAthleteResultsFunc
     {
-        [FunctionName(FunctionsNames.A_GetActivitiesFromGivenMonth)]
-        public static async Task<List<Activity>> A_GetActivitiesFromGivenMonth([ActivityTrigger] DurableActivityContext context, ILogger log, ExecutionContext executionContext)
+        [FunctionName(FunctionsNames.Q_CalculateMonthlyAthleteResults)]
+        public static async Task Q_CalculateMonthlyAthleteResults([QueueTrigger(QueueNames.CalculateMonthlyResults)] CalculateMonthlyResultsRequest request, ILogger log, ExecutionContext executionContext)
         {
-            log.LogInformation($"{FunctionsNames.A_GetActivitiesFromGivenMonth} function processed a request. Instance id: `{context.InstanceId}`");
-
-            var (month, year) = context.GetInput<(int, int)>();
+            log.LogInformation($"{FunctionsNames.Q_CalculateMonthlyAthleteResults} function processed a request.");
 
             var configuration = await ApplicationConfiguration.GetSettingsAsync(executionContext);
             using (var conn = new SqlConnection(configuration.ConnectionStrings.SqlDbConnectionString))
             {
-                var result = await conn.QueryAsync<Activity>(@"SELECT AthleteId, Athletes.FirstName as AthleteFirstName, Athletes.LastName as AthleteLastName, Distance, MovingTime, Category, Points 
+                var activities = (await conn.QueryAsync<Activity>(
+                        @"SELECT AthleteId, Athletes.FirstName as AthleteFirstName, Athletes.LastName as AthleteLastName, Distance, MovingTime, Category, Points 
 FROM dbo.[Activities] AS Activities
 INNER JOIN dbo.[Athletes] AS Athletes ON (Activities.AthleteId = Athletes.Id)
 WHERE MONTH(ActivityTime)=@Month AND YEAR(ActivityTime)=@Year", new
+                        {
+                            request.Month,
+                            request.Year
+                        })
+                    .ConfigureAwait(false)).ToList();
+
+                if (!activities.Any())
                 {
-                    Month = month,
-                    Year = year
-                })
-                .ConfigureAwait(false);
-                return result.ToList();
-            }
-        }
-        
-        [FunctionName(FunctionsNames.A_SubmitAthleteMonthlyResults)]
-        public static async Task A_SubmitAthleteMonthlyResults([ActivityTrigger] DurableActivityContext context, ILogger log, ExecutionContext executionContext)
-        {
-            log.LogInformation($"{FunctionsNames.A_SubmitAthleteMonthlyResults} function processed a request. Instance id: `{context.InstanceId}`");
+                    log.LogWarning($"[{FunctionsNames.Q_CalculateMonthlyAthleteResults}] cannot find any activities from given date: {request.Month}/{request.Year}.");
+                    return;
+                }
 
-            var (activities, (month, year)) = context.GetInput<ValueTuple<List<Activity>, (int, int)>>();
-            var aggregatedActivities = GroupActivitiesByAthlete(activities);
+                var aggregatedActivities = GroupActivitiesByAthlete(activities);
 
-            var configuration = await ApplicationConfiguration.GetSettingsAsync(executionContext);
-            using (var conn = new SqlConnection(configuration.ConnectionStrings.SqlDbConnectionString))
-            {
                 var json = JsonConvert.SerializeObject(aggregatedActivities);
 
-                await conn.ExecuteAsync("MonthlyResultsSnapshots_Upsert", new
+                var affectedRows = await conn.ExecuteAsync("MonthlyResultsSnapshots_Upsert", new
+                    {
+                        Date = $"{request.Year}/{request.Month}",
+                        Results = json
+                    }, commandType: CommandType.StoredProcedure)
+                    .ConfigureAwait(false);
+                if (affectedRows == 1)
                 {
-                    Date = $"{year}/{month}",
-                    Results = json
-                }, commandType: CommandType.StoredProcedure)
-                .ConfigureAwait(false);
+                    log.LogInformation($"[{FunctionsNames.Q_CalculateMonthlyAthleteResults}] Updated snapshot.");
+                }
             }
         }
 

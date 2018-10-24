@@ -15,5 +15,6 @@
         public const string PendingActivities = "pending-activities";
 
         public const string UnauthorizedAccessTokens = "unauthorized-access-tokens";
+        public const string CalculateMonthlyResults = "calculate-monthly-results";
     }
 }
