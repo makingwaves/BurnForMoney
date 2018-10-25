@@ -26,11 +26,11 @@ namespace BurnForMoney.Functions.Functions.Support
             return new OkObjectResult(payload);
         }
 
-        [FunctionName(FunctionsNames.Support_Strava_Activities_CollectMonthlyStatistics)]
-        public static async Task<IActionResult> Support_Strava_Activities_MonthlyStatisticsCollect([HttpTrigger(AuthorizationLevel.Admin, "get", Route = "support/strava/activities/collectmonthlystatistics/{year}/{month}")]HttpRequest req, ILogger log,
+        [FunctionName(FunctionsNames.Support_Activities_CollectMonthlyStatistics)]
+        public static async Task<IActionResult> Support_Strava_Activities_MonthlyStatisticsCollect([HttpTrigger(AuthorizationLevel.Admin, "get", Route = "support/activities/collectmonthlystatistics/{year}/{month}")]HttpRequest req, ILogger log,
             [Queue(QueueNames.CalculateMonthlyResults)] CloudQueue outputQueue, int year, int month)
         {
-            log.LogInformation($"{FunctionsNames.Support_Strava_Activities_CollectMonthlyStatistics} function processed a request.");
+            log.LogInformation($"{FunctionsNames.Support_Activities_CollectMonthlyStatistics} function processed a request.");
 
             if (month < 1 || month > 12)
             {
