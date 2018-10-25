@@ -47,6 +47,8 @@ if ($DeployCredentials)
 		-KeyVaultName $KeyVaultName
 }
 
+$ErrorMessages = $null
+
 if ($DeployArm)
 {
 	Write-Status "Processing a new group deployment... "
@@ -68,7 +70,7 @@ if ($DeployArm)
 		Write-Succeed
 	}
 
-	Set-WebAppIPRestrictions -ApiAppName ('burnformoneyfunc-' + $Environment.ToLower()) -ReactAppName ('burnformoney-' + $Environment.ToLower()) -ResourceGroupName $ResourceGroupName
+	Set-WebAppIPRestrictions -ApiAppName ('burnformoneyfunc-' + $Environment.ToLower()) -Environment $Environment -ResourceGroupName $ResourceGroupName
 }
 
 if ($UpgradeDatabase -And (-Not $ErrorMessages))

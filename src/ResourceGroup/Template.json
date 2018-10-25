@@ -277,13 +277,6 @@
       "apiVersion": "2018-02-01",
       "location": "[resourceGroup().location]",
       "properties": {
-        "ipSecurityRestrictions": [
-          {
-            "ipAddress": "89.174.102.0/26",
-            "priority": 110,
-            "name": "Allow Making Waves"
-          }
-        ],
         "cors": {
           "allowedOrigins": "[parameters('cors.allowedOrigins')]"
         }
