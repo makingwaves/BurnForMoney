@@ -63,8 +63,7 @@ namespace BurnForMoney.Functions.Functions.Strava.AuthorizeNewAthlete
             message.AddTo(new EmailAddress(configuration.Email.AthletesApprovalEmail));
             message.Subject = "Athlete is awaiting approval";
 
-            var protocol = configuration.IsLocalEnvironment ? "http" : "https";
-            var approvalFunctionAddress = $"{protocol}://{configuration.HostName}/api/SubmitAthleteApproval/{approvalCode}";
+            var approvalFunctionAddress = $"{configuration.HostName}/api/SubmitAthleteApproval/{approvalCode}";
             message.HtmlContent = $"Please review a new authorization request. Athlete: {firstName} {lastName}.<br>" +
                 $"<a href=\"{approvalFunctionAddress}?result={AthleteApprovalResult.Approved.ToString()}\">Approve</a><br>" +
                 $"<a href=\"{approvalFunctionAddress}?result={AthleteApprovalResult.Rejected.ToString()}\">Reject</a>";

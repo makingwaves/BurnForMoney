@@ -9,7 +9,6 @@ namespace BurnForMoney.Functions.Configuration
 {
     public class ApplicationConfiguration
     {
-        private const string LocalHostName = "0.0.0.0";
         private static ConfigurationRoot _settings;
         private static readonly IKeyVaultClient KeyVaultClient = KeyVaultClientFactory.Create();
 
