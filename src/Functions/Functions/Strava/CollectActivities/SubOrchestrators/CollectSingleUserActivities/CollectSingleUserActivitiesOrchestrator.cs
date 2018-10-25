@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using BurnForMoney.Functions.Shared.Functions;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 

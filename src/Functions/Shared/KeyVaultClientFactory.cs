@@ -1,7 +1,7 @@
 ﻿using Microsoft.Azure.KeyVault;
 using Microsoft.Azure.Services.AppAuthentication;
 
-namespace BurnForMoney.Functions
+namespace BurnForMoney.Functions.Shared
 {
     public class KeyVaultClientFactory
     {

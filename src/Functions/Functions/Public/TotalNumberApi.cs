@@ -5,7 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using BurnForMoney.Functions.Configuration;
 using BurnForMoney.Functions.Functions.CalculateMonthlyAthleteResults;
-using BurnForMoney.Functions.Helpers;
+using BurnForMoney.Functions.Shared.Helpers;
 using Dapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

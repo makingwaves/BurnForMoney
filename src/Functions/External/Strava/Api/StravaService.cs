@@ -5,7 +5,7 @@ using System.Net;
 using BurnForMoney.Functions.Configuration;
 using BurnForMoney.Functions.External.Strava.Api.Auth;
 using BurnForMoney.Functions.External.Strava.Api.Model;
-using BurnForMoney.Functions.Helpers;
+using BurnForMoney.Functions.Shared.Helpers;
 using Newtonsoft.Json;
 using RestSharp;
 

@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using BurnForMoney.Functions.Configuration;
+using BurnForMoney.Functions.Shared;
 using Microsoft.Azure.KeyVault;
 
 namespace BurnForMoney.Functions.Functions.Strava

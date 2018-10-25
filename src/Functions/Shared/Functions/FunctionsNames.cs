@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 
-namespace BurnForMoney.Functions.Functions
+namespace BurnForMoney.Functions.Shared.Functions
 {
     [SuppressMessage("ReSharper", "InconsistentNaming")]
     public static class FunctionsNames
@@ -11,13 +11,10 @@ namespace BurnForMoney.Functions.Functions
         public const string Strava_O_AuthorizeNewAthlete = "Strava_O_AuthorizeNewAthlete";
         public const string Strava_A_ExchangeTokenAndGetAthleteSummary = "Strava_A_ExchangeTokenAndGetAthleteSummary";
         public const string Strava_A_SendAthleteApprovalRequest = "Strava_A_SendAthleteApprovalRequest";
-
         public const string Strava_SubmitAthleteApproval = "Strava_SubmitAthleteApproval";
-
         public const string Strava_Q_ProcessNewAthlete = "Strava_Q_ProcessNewAthlete";
+
         public const string Q_ProcessRawActivity = "Q_ProcessRawActivity";
-
-
 
         public const string Strava_T_CollectStravaActivitiesInEveryHour = "Strava_T_CollectStravaActivitiesInEveryHour";
         public const string Strava_O_CollectStravaActivities = "Strava_O_CollectStravaActivities";
@@ -33,14 +30,9 @@ namespace BurnForMoney.Functions.Functions
         public const string Q_RefreshAccessTokens = "Q_RefreshAccessTokens";
         public const string Q_DeactivateExpiredAccessTokens = "Q_DeactivateExpiredAccessTokens";
 
-
-
         public const string T_CalculateMonthlyAthleteResults = "T_CalculateMonthlyAthleteResults";
         public const string T_CalculateMonthlyAthleteResultsFromPreviousMonth = "T_CalculateMonthlyAthleteResultsFromPreviousMonth";
         public const string Q_CalculateMonthlyAthleteResults = "Q_CalculateMonthlyAthleteResults";
-
-
-
 
         public const string Support_EncryptString = "Support_EncryptString";
         public const string Support_DecryptString = "Support_DecryptString";
@@ -52,8 +44,5 @@ namespace BurnForMoney.Functions.Functions
 
         public const string Support_ReprocessPoisonQueueMessages = "Support_ReprocessPoisonQueueMessages";
         public const string Support_PurgeDurableHubHistory = "Support_PurgeDurableHubHistory";
-
-
-
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace BurnForMoney.Functions.Model
+﻿namespace BurnForMoney.Functions.Shared
 {
     public enum ActivityCategory
     {

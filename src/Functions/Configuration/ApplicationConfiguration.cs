@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using BurnForMoney.Functions.Shared;
 using Microsoft.Azure.KeyVault;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Configuration;

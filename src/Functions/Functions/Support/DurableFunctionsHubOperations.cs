@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using BurnForMoney.Functions.Configuration;
+using BurnForMoney.Functions.Shared.Functions;
 using DurableTask.AzureStorage;
 using DurableTask.Core;
 using Microsoft.AspNetCore.Http;

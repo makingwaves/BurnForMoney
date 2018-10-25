@@ -3,7 +3,7 @@ using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace BurnForMoney.Functions
+namespace BurnForMoney.Functions.Shared
 {
     public class Cryptography
     {

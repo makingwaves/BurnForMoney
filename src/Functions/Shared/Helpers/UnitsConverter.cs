@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace BurnForMoney.Functions.Helpers
+namespace BurnForMoney.Functions.Shared.Helpers
 {
     public static class UnitsConverter
     {

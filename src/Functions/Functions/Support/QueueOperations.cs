@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using BurnForMoney.Functions.Shared.Functions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;

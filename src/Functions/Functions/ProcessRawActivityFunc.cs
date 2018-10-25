@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
-using BurnForMoney.Functions.Model;
-using BurnForMoney.Functions.Queues;
+using BurnForMoney.Functions.Shared;
+using BurnForMoney.Functions.Shared.Functions;
+using BurnForMoney.Functions.Shared.Queues;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 using Microsoft.WindowsAzure.Storage.Queue;

@@ -1,4 +1,4 @@
-﻿namespace BurnForMoney.Functions.Functions
+﻿namespace BurnForMoney.Functions.Shared.Functions
 {
     public sealed class ActivityInput
     {
