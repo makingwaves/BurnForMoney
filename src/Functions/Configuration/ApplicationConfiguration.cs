@@ -42,7 +42,7 @@ namespace BurnForMoney.Functions.Configuration
                         AthletesApprovalEmail = config["Email.AthletesApprovalEmail"],
                         SenderEmail = "burnformoney@makingwaves.com"
                     },
-                    HostName = GetHostName()
+                    HostName = config["WEB_HOST"]
                 };
 
                 if (!_settings.IsValid())
@@ -74,23 +74,6 @@ namespace BurnForMoney.Functions.Configuration
             }
 
             return settingValue;
-        }
-
-        private static string GetHostName()
-        {
-            var hostName = Environment.GetEnvironmentVariable(EnvironmentSettingNames.AzureWebsiteHostName);
-
-            if (hostName == null)
-            {
-                throw new ArgumentNullException(EnvironmentSettingNames.AzureWebsiteHostName);
-            }
-
-            if (hostName.StartsWith(LocalHostName))
-            {
-                hostName = hostName.Replace(LocalHostName, "localhost");
-            }
-
-            return hostName;
         }
 
         private static async Task<string> GetKeyVaultSecretAsync(string keyVaultConnectionString, string secretName)

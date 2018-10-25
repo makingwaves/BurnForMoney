@@ -243,6 +243,10 @@
             {
               "name": "Email.AthletesApprovalEmail",
               "value": "[parameters('email.athletesApprovalEmail')]"
+            },
+            {
+              "name": "WEB_HOST",
+              "value": "[concat('https://', variables('functionAppName'), '.azurewebsites.net')]"
             }
           ]
         }
