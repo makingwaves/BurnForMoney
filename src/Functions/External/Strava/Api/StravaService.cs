@@ -93,6 +93,19 @@ namespace BurnForMoney.Functions.External.Strava.Api
             ThrowExceptionIfNotSuccessful(response);
         }
 
+        public SubscriptionValidation CreateSubscription(int clientId, string clientSecret, string callbackUrl, string callbackToken)
+        {
+            var request = new RestRequest("api/v3/push_subscriptions", Method.POST);
+            request.AddQueryParameter("client_id", clientId.ToString());
+            request.AddQueryParameter("client_secret", clientSecret);
+            request.AddQueryParameter("callback_url", callbackUrl);
+            request.AddQueryParameter("verify_token", callbackToken);
+            var response = _restClient.Execute(request);
+
+            ThrowExceptionIfNotSuccessful(response);
+            return JsonConvert.DeserializeObject<SubscriptionValidation>(response.Content);
+        }
+
         private static void ThrowExceptionIfNotSuccessful(IRestResponse response)
         {
             if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == HttpStatusCode.Forbidden)
@@ -114,5 +127,15 @@ namespace BurnForMoney.Functions.External.Strava.Api
         {
             
         }
+    }
+
+    public class SubscriptionValidation
+    {
+        [JsonProperty("hub.mode")]
+        public string Mode { get; set; }
+        [JsonProperty("hub.verify_token")]
+        public string VerifyToken { get; set; }
+        [JsonProperty("hub.challenge")]
+        public string Challenge { get; set; }
     }
 }

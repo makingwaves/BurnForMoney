@@ -23,6 +23,10 @@ namespace BurnForMoney.Functions.Shared.Functions
         public const string Strava_A_CollectSingleUserActivities = "Strava_A_CollectSingleUserActivities";
         public const string A_UpdateLastUpdateDateOfTheUpdatedAthlete = "A_UpdateLastUpdateDateOfTheUpdatedAthlete";
 
+        public const string Strava_CreateWebookSubscription = "Strava_CreateWebooksSubscription";
+        public const string Strava_WebhooksCallbackValidation = "Strava_WebhooksCallbackValidation";
+        public const string Strava_PushEvents = "Strava_PushEvents";
+
 
         public const string Q_SubmitAthleteActivity = "Q_SubmitAthleteActivity";
 
