@@ -36,7 +36,7 @@ namespace BurnForMoney.Functions.External.Strava.Api
             };
             request.AddParameter("application/json", payLoad.ToJson(), ParameterType.RequestBody);
             var response = _restClient.Execute(request);
-            ThrowExceptionIfNotSuccessful(response);
+            response.ThrowExceptionIfNotSuccessful();
 
             return TokenExchangeResult.FromJson(response.Content);
         }
@@ -55,7 +55,7 @@ namespace BurnForMoney.Functions.External.Strava.Api
             };
             request.AddParameter("application/json", payLoad.ToJson(), ParameterType.RequestBody);
             var response = _restClient.Execute(request);
-            ThrowExceptionIfNotSuccessful(response);
+            response.ThrowExceptionIfNotSuccessful();
 
             return TokenRefreshResult.FromJson(response.Content);
         }
@@ -73,7 +73,7 @@ namespace BurnForMoney.Functions.External.Strava.Api
             request.AddQueryParameter("page", page.ToString());
 
             var response = _restClient.Execute(request);
-            ThrowExceptionIfNotSuccessful(response);
+            response.ThrowExceptionIfNotSuccessful();
 
             var activities = JsonConvert.DeserializeObject<List<StravaActivity>>(response.Content, new JsonSettings());
             if (activities.Count == ActivitiesPerPage)
@@ -90,52 +90,16 @@ namespace BurnForMoney.Functions.External.Strava.Api
             var request = new RestRequest("/oauth/deauthorize", Method.POST);
             request.AddQueryParameter("access_token", accessToken);
             var response = _restClient.Execute(request);
-            ThrowExceptionIfNotSuccessful(response);
-        }
-
-        public SubscriptionValidation CreateSubscription(int clientId, string clientSecret, string callbackUrl, string callbackToken)
-        {
-            var request = new RestRequest("api/v3/push_subscriptions", Method.POST);
-            request.AddQueryParameter("client_id", clientId.ToString());
-            request.AddQueryParameter("client_secret", clientSecret);
-            request.AddQueryParameter("callback_url", callbackUrl);
-            request.AddQueryParameter("verify_token", callbackToken);
-            var response = _restClient.Execute(request);
-
-            ThrowExceptionIfNotSuccessful(response);
-            return JsonConvert.DeserializeObject<SubscriptionValidation>(response.Content);
-        }
-
-        private static void ThrowExceptionIfNotSuccessful(IRestResponse response)
-        {
-            if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == HttpStatusCode.Forbidden)
-            {
-                throw new UnauthorizedTokenException();
-            }
-
-            if (response.StatusCode != HttpStatusCode.OK)
-            {
-                throw new Exception($"Strava API returned an unsuccessfull status code. Status code: {response.StatusCode}. Content: {response.Content}. Error message: {response.ErrorMessage ?? "null"}");
-            }
+            response.ThrowExceptionIfNotSuccessful();
         }
     }
 
-    public class UnauthorizedTokenException : UnauthorizedAccessException
+    public class UnauthorizedRequestException : UnauthorizedAccessException
     {
-        public UnauthorizedTokenException()
-            :base("Access token is not authorized to athlete athlete's data (expired / deauthorized / unauthorized to collect activities).")
+        public UnauthorizedRequestException()
+            :base("Application is not authorized to get athlete's data (expired / deauthorized / unauthorized).")
         {
             
         }
-    }
-
-    public class SubscriptionValidation
-    {
-        [JsonProperty("hub.mode")]
-        public string Mode { get; set; }
-        [JsonProperty("hub.verify_token")]
-        public string VerifyToken { get; set; }
-        [JsonProperty("hub.challenge")]
-        public string Challenge { get; set; }
     }
 }

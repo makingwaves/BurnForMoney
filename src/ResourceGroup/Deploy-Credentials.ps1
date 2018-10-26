@@ -103,6 +103,15 @@ function DeployCredentials {
 				-KeyVaultName $KeyVaultName
 		}
 
+		if ($Environment -eq "Dev")
+		{
+			AddNewAccountSecret -SecretName "accounts--ngrok" `
+				-KeyVaultName $KeyVaultName
+
+			AddNewSecret -SecretName "ngrok--authtoken"`
+				-KeyVaultName $KeyVaultName
+		}
+
 		AddNewSecret -SecretName "sqlServerPassword" `
 			-KeyVaultName $KeyVaultName `
 			-Password (ConvertTo-SecureString –String ([System.Web.Security.Membership]::GeneratePassword(20,5)) –AsPlainText -Force)
