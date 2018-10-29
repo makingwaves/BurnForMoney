@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data.SqlClient;
 using System.Threading.Tasks;
 using BurnForMoney.Functions.Shared;
 using BurnForMoney.Functions.Shared.Functions;
@@ -15,7 +16,8 @@ namespace BurnForMoney.Functions.Functions
         [FunctionName(FunctionsNames.Q_ProcessRawActivity)]
         public static async Task Q_ProcessRawActivityAsync(ILogger log, ExecutionContext executionContext, 
             [QueueTrigger(QueueNames.PendingRawActivities)] PendingRawActivity rawActivity,
-            [Queue(QueueNames.PendingActivities)] CloudQueue pendingActivitiesQueue)
+            [Queue(QueueNames.PendingActivities)] CloudQueue pendingActivitiesQueue,
+            [Queue(QueueNames.PendingActivitiesUpdates)] CloudQueue pendingActivityUpdatesQueue)
         {
             if (rawActivity.Source != "Strava")
             {
@@ -26,22 +28,30 @@ namespace BurnForMoney.Functions.Functions
 
             var activityCategory = StravaActivityMapper.MapToActivityCategory(rawActivity.ActivityType);
             var points = PointsCalculator.Calculate(activityCategory, rawActivity.DistanceInMeters, rawActivity.MovingTimeInMinutes);
-
+            
             var activity = new PendingActivity
             {
-                AthleteId = rawActivity.AthleteId,
-                ActivityId = rawActivity.ActivityId,
+                SourceAthleteId = rawActivity.SourceAthleteId,
+                SourceActivityId = rawActivity.SourceActivityId,
                 StartDate = rawActivity.StartDate,
                 ActivityType = rawActivity.ActivityType,
                 DistanceInMeters = rawActivity.DistanceInMeters,
                 MovingTimeInMinutes = rawActivity.MovingTimeInMinutes,
                 Category = activityCategory,
                 Points = points,
-                Source = "Strava"
+                Source = rawActivity.Source
             };
 
             var json = JsonConvert.SerializeObject(activity);
-            await pendingActivitiesQueue.AddMessageAsync(new CloudQueueMessage(json));
+
+            if (rawActivity.ActivityOperation == ActivityOperation.Create)
+            {
+                await pendingActivitiesQueue.AddMessageAsync(new CloudQueueMessage(json));
+            }
+            else
+            {
+                await pendingActivityUpdatesQueue.AddMessageAsync(new CloudQueueMessage(json));
+            }
         }
     }
 

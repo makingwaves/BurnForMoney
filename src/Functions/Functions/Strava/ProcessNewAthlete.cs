@@ -17,7 +17,8 @@ namespace BurnForMoney.Functions.Functions.Strava
         [FunctionName(FunctionsNames.Strava_Q_ProcessNewAthlete)]
         public static async Task Q_ProcessNewAthleteAsync(ILogger log, ExecutionContext executionContext,
             [QueueTrigger(QueueNames.NewStravaAthletesRequests)] NewStravaAthlete athlete,
-            [Queue(QueueNames.NewStravaAthletesRequestsPoison)] CloudQueue newAthletesRequestPoisionQueue)
+            [Queue(QueueNames.NewStravaAthletesRequestsPoison)] CloudQueue newAthletesRequestPoisonQueue,
+            [Queue(QueueNames.CollectAthleteActivities)] CloudQueue collectActivitiesQueues)
         {
             log.LogInformation($"{FunctionsNames.Strava_Q_ProcessNewAthlete} function processed a request.");
 
@@ -31,10 +32,11 @@ namespace BurnForMoney.Functions.Functions.Strava
                 if (id > 0)
                 {
                     log.LogError($"Athlete with id: {athlete.AthleteId} already exists.");
-                    await newAthletesRequestPoisionQueue.AddMessageAsync(new CloudQueueMessage(JsonConvert.SerializeObject(athlete)));
+                    await newAthletesRequestPoisonQueue.AddMessageAsync(new CloudQueueMessage(JsonConvert.SerializeObject(athlete)));
                     return;
                 }
 
+                int athleteId;
                 log.LogInformation("Beginning a new database transaction...");
                 using (var transaction = conn.BeginTransaction())
                 {
@@ -43,7 +45,7 @@ namespace BurnForMoney.Functions.Functions.Strava
                         var sql = @"INSERT INTO dbo.Athletes(ExternalId, FirstName, LastName, ProfilePictureUrl, Active, System)
                                     OUTPUT INSERTED.[Id]
                                     VALUES(@AthleteId, @FirstName, @LastName, @ProfilePictureUrl, @Active, @System)";
-                        var newAthleteId = await conn.QuerySingleAsync<int>(sql, new
+                        athleteId = await conn.QuerySingleAsync<int>(sql, new
                         {
                             athlete.AthleteId,
                             athlete.FirstName,
@@ -52,17 +54,17 @@ namespace BurnForMoney.Functions.Functions.Strava
                             Active = true,
                             System = "Strava"
                         }, transaction);
-                        if (newAthleteId < 1)
+                        if (athleteId < 1)
                         {
                             throw new Exception("Failed to add a new athlete.");
                         }
-                        log.LogInformation($"Inserted athlete with id: {newAthleteId}.");
+                        log.LogInformation($"Inserted athlete with id: {athleteId}.");
 
                         sql = @"INSERT INTO dbo.[Strava.AccessTokens](AthleteId, AccessToken, RefreshToken, ExpiresAt)
                                     VALUES(@AthleteId, @AccessToken, @RefreshToken, @ExpiresAt)";
                         var affectedRows = await conn.ExecuteAsync(sql, new
                         {
-                            AthleteId = newAthleteId,
+                            AthleteId = athleteId,
                             AccessToken = athlete.EncryptedAccessToken,
                             RefreshToken = athlete.EncryptedRefreshToken,
                             ExpiresAt = athlete.TokenExpirationDate
@@ -71,7 +73,7 @@ namespace BurnForMoney.Functions.Functions.Strava
                         {
                             throw new Exception("Failed to insert access tokens.");
                         }
-                        log.LogInformation($"Inserted access tokens for athlete with id: {newAthleteId}.");
+                        log.LogInformation($"Inserted access tokens for athlete with id: {athleteId}.");
 
                         transaction.Commit();
                         log.LogInformation("Commited database transaction.");
@@ -83,6 +85,8 @@ namespace BurnForMoney.Functions.Functions.Strava
                         throw ex;
                     }
                 }
+
+                await collectActivitiesQueues.AddMessageAsync(new CloudQueueMessage(athleteId.ToString()));
             }
         }
     }

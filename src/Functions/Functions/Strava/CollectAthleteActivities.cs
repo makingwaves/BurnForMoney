@@ -1,0 +1,81 @@
+﻿using System;
+using System.Data.SqlClient;
+using System.Threading.Tasks;
+using BurnForMoney.Functions.Configuration;
+using BurnForMoney.Functions.External.Strava.Api;
+using BurnForMoney.Functions.Shared.Functions;
+using BurnForMoney.Functions.Shared.Helpers;
+using BurnForMoney.Functions.Shared.Queues;
+using Dapper;
+using Microsoft.Azure.WebJobs;
+using Microsoft.Extensions.Logging;
+using Microsoft.WindowsAzure.Storage.Queue;
+using Newtonsoft.Json;
+
+namespace BurnForMoney.Functions.Functions.Strava
+{
+    public static class CollectAthleteActivities
+    {
+        private static readonly StravaService StravaService = new StravaService();
+
+        [FunctionName(FunctionsNames.Strava_CollectAthleteActivities)]
+        public static async Task Strava_CollectAthleteActivities([QueueTrigger(QueueNames.CollectAthleteActivities)]int athleteId,
+            [Queue(QueueNames.PendingRawActivities)] CloudQueue pendingRawActivitiesQueue, 
+            [Queue(QueueNames.UnauthorizedAccessTokens)] CloudQueue unauthorizedAccessTokensQueue,
+            ILogger log, ExecutionContext executionContext)
+        {
+            log.LogInformation($"{FunctionsNames.Strava_CollectAthleteActivities} function processed a request.");
+
+            var configuration = await ApplicationConfiguration.GetSettingsAsync(executionContext);
+
+            string encryptedAccessToken;
+            string accessToken;
+            using (var conn = new SqlConnection(configuration.ConnectionStrings.SqlDbConnectionString))
+            {
+                encryptedAccessToken = await conn.QuerySingleAsync<string>(@"SELECT AccessToken
+FROM dbo.[Strava.AccessTokens]
+WHERE AthleteId = @AthleteId AND IsValid=1", new { AthleteId = athleteId });
+
+                accessToken = await AccessTokensEncryptionService.DecryptAsync(encryptedAccessToken,
+                    configuration.ConnectionStrings.KeyVaultConnectionString);
+
+                if (string.IsNullOrWhiteSpace(accessToken))
+                {
+                    throw new Exception($"Cannot find valid access token for athlete: {athleteId}.");
+                }
+            }
+
+            try
+            {
+                var activities = StravaService.GetActivities(accessToken, GetFirstDayOfTheMonth(DateTime.UtcNow));
+                foreach (var stravaActivity in activities)
+                {
+                    var pendingActivity = new PendingRawActivity
+                    {
+                        SourceActivityId = stravaActivity.Id,
+                        SourceAthleteId = stravaActivity.Athlete.Id,
+                        ActivityType = stravaActivity.Type.ToString(),
+                        StartDate = stravaActivity.StartDate,
+                        DistanceInMeters = stravaActivity.Distance,
+                        MovingTimeInMinutes = UnitsConverter.ConvertSecondsToMinutes(stravaActivity.MovingTime),
+                        Source = "Strava"
+                    };
+
+                    var json = JsonConvert.SerializeObject(pendingActivity);
+                    var message = new CloudQueueMessage(json);
+                    await pendingRawActivitiesQueue.AddMessageAsync(message);
+                }
+            }
+            catch (UnauthorizedRequestException ex)
+            {
+                log.LogError(ex, ex.Message);
+                await unauthorizedAccessTokensQueue.AddMessageAsync(new CloudQueueMessage(encryptedAccessToken));
+            }
+        }
+
+        private static DateTime GetFirstDayOfTheMonth(DateTime dateTime)
+        {
+            return new DateTime(dateTime.Year, dateTime.Month, 1, 0, 0, 0, dateTime.Kind);
+        }
+    }
+}

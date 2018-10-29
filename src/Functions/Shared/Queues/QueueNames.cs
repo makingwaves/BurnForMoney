@@ -11,10 +11,19 @@
         public const string NewStravaAthletesRequestsPoison = NewStravaAthletesRequests + PoisonQueueSuffix;
         public const string RefreshStravaToken = "refresh-strava-token";
 
+        public const string UnauthorizedAccessTokens = "unauthorized-access-tokens";
+
+
+        public const string CollectAthleteActivities = "collect-athlete-activities";
+        public const string CalculateMonthlyResults = "calculate-monthly-results";
+
         public const string PendingRawActivities = "pending-raw-activities";
         public const string PendingActivities = "pending-activities";
+        public const string PendingActivitiesUpdates = "pending-activities-updates";
 
-        public const string UnauthorizedAccessTokens = "unauthorized-access-tokens";
-        public const string CalculateMonthlyResults = "calculate-monthly-results";
+        public const string StravaEvents = "strava-events";
+        public const string StravaEventsActivityAdd = "strava-events-activity-add";
+        public const string StravaEventsActivityUpdate = "strava-events-activity-update";
+        public const string StravaEventsActivityDelete = "strava-events-activity-delete";
     }
 }

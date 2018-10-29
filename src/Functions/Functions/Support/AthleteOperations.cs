@@ -115,11 +115,6 @@ namespace BurnForMoney.Functions.Functions.Support
                             new { AthleteId = athleteId }, transaction);
                         log.LogInformation("Removed access token.");
 
-                        await conn.ExecuteAsync(
-                            "DELETE FROM dbo.[Athletes.UpdateHistory] WHERE AthleteId=@AthleteId",
-                            new { AthleteId = athleteId }, transaction);
-                        log.LogInformation("Removed updates history.");
-
                         var removedActivities = await conn.ExecuteAsync(
                             "DELETE FROM dbo.[Activities] WHERE AthleteId=@AthleteId",
                             new { AthleteId = athleteId }, transaction);

@@ -3,20 +3,40 @@ using System.Threading.Tasks;
 using BurnForMoney.Functions.Configuration;
 using BurnForMoney.Functions.External.Strava.Api;
 using BurnForMoney.Functions.Shared.Functions;
+using BurnForMoney.Functions.Shared.Queues;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
+using Microsoft.WindowsAzure.Storage.Queue;
 using Newtonsoft.Json;
+using System.Linq;
 
-namespace BurnForMoney.Functions.Functions.Strava
+namespace BurnForMoney.Functions.Functions.Strava.EventsHub
 {
-    public static class CreateWebhooksSubscription
+    public static class WebhooksSubscription
     {
         private static readonly StravaWebhooksService StravaWebhooksService = new StravaWebhooksService();
         private static readonly IMemoryCache Cache = new MemoryCache(new MemoryCacheOptions());
+
+        [FunctionName(FunctionsNames.Strava_EventsHub)]
+        public static async Task<IActionResult> EventsHub([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "strava/events/hub")] HttpRequest req,
+            ILogger log, ExecutionContext executionContext,
+            [Queue(QueueNames.StravaEvents)] CloudQueue outputQueue)
+        {
+            log.LogInformation($"{FunctionsNames.Strava_EventsHub} function processed a request.");
+
+            var referer = req.Headers["Referer"].FirstOrDefault() ?? "null";
+            log.LogInformation($"Request referer: [{referer}].");
+
+            var eventData = await req.ReadAsStringAsync();
+
+            await outputQueue.AddMessageAsync(new CloudQueueMessage(eventData));
+
+            return new OkResult();
+        }
 
         [FunctionName(FunctionsNames.Strava_CreateWebhookSubscription)]
         public static async Task<IActionResult> Strava_CreateWebhookSubscription([HttpTrigger(AuthorizationLevel.Admin, "post", Route = "strava/subscription/create")] HttpRequest req, 
@@ -69,20 +89,19 @@ namespace BurnForMoney.Functions.Functions.Strava
                 return new BadRequestResult();
             }
 
-            log.LogInformation($"{FunctionsNames.Strava_WebhooksCallbackValidation} Rquest validated.");
-            return new OkObjectResult($"{{\"hub.challenge\":\"{challenge}\"}}");
+            log.LogInformation($"{FunctionsNames.Strava_WebhooksCallbackValidation} Request validated.");
+            var json = JsonConvert.SerializeObject(new ChallengeObject {Challenge = challenge});
+            return new OkObjectResult(json);
         }
 
-        [FunctionName(FunctionsNames.Strava_EventsHub)]
-        public static async Task PushEvents([HttpTrigger(AuthorizationLevel.Function, "post", Route = "strava/events/hub")] HttpRequest req,
-            ILogger log, ExecutionContext executionContext)
+        private class ChallengeObject
         {
-            log.LogInformation($"{FunctionsNames.Strava_EventsHub} function processed a request.");
-
+            [JsonProperty("hub.challenge")]
+            public string Challenge { get; set; }
         }
 
         [FunctionName(FunctionsNames.Strava_ViewWebhookSubscription)]
-        public static async Task<IActionResult> Strava_ViewWebhookSubscription([HttpTrigger(AuthorizationLevel.Admin, "get", Route = "strava/subscription/view")] HttpRequest req,
+        public static async Task<IActionResult> Strava_ViewWebhookSubscription([HttpTrigger(AuthorizationLevel.Admin, "get", Route = "strava/subscription")] HttpRequest req,
             ILogger log, ExecutionContext executionContext)
         {
             log.LogInformation($"{FunctionsNames.Strava_ViewWebhookSubscription} function processed a request.");
@@ -92,6 +111,31 @@ namespace BurnForMoney.Functions.Functions.Strava
             {
                 var subscription = StravaWebhooksService.ViewSubscription(configuration.Strava.ClientId,
                     configuration.Strava.ClientSecret);
+                return new OkObjectResult(subscription);
+            }
+            catch (Exception ex)
+            {
+                log.LogError(ex.Message, ex);
+                return new BadRequestObjectResult(ex.Message);
+            }
+        }
+
+        [FunctionName(FunctionsNames.Strava_DeleteWebhookSubscription)]
+        public static async Task<IActionResult> Strava_DeleteWebhookSubscription([HttpTrigger(AuthorizationLevel.Admin, "delete", Route = "strava/subscription/{id}")] HttpRequest req,
+            ILogger log, ExecutionContext executionContext, int id)
+        {
+            log.LogInformation($"{FunctionsNames.Strava_ViewWebhookSubscription} function processed a request.");
+
+            if (id <= 0)
+            {
+                return new BadRequestObjectResult("Subscription id required.");
+            }
+
+            var configuration = await ApplicationConfiguration.GetSettingsAsync(executionContext);
+            try
+            {
+                var subscription = StravaWebhooksService.DeleteSubscription(configuration.Strava.ClientId,
+                    configuration.Strava.ClientSecret, id);
                 return new OkObjectResult(subscription);
             }
             catch (Exception ex)

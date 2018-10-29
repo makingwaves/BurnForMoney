@@ -28,7 +28,18 @@ namespace BurnForMoney.Functions.External.Strava.Api
 
         public string ViewSubscription(int clientId, string clientSecret)
         {
-            var request = new RestRequest("api/v3/push_subscriptions", Method.GET);
+            var request = new RestRequest("api/v3/push_subscriptions");
+            request.AddQueryParameter("client_id", clientId.ToString());
+            request.AddQueryParameter("client_secret", clientSecret);
+            var response = _restClient.Execute(request);
+
+            response.ThrowExceptionIfNotSuccessful();
+            return response.Content;
+        }
+
+        public string DeleteSubscription(int clientId, string clientSecret, int subscriptionId)
+        {
+            var request = new RestRequest($"api/v3/push_subscriptions/{subscriptionId}", Method.DELETE);
             request.AddQueryParameter("client_id", clientId.ToString());
             request.AddQueryParameter("client_secret", clientSecret);
             var response = _restClient.Execute(request);

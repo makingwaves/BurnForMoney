@@ -15,15 +15,12 @@ namespace BurnForMoney.Functions.Functions.Support
     public static class ActivitiesOperations
     {
         [FunctionName(FunctionsNames.Support_Strava_Activities_Collect)]
-        public static async Task<IActionResult> Support_Strava_CollectActivities([HttpTrigger(AuthorizationLevel.Admin, "get", Route = "support/strava/activities/collect")]HttpRequest req, ILogger log, 
-            [OrchestrationClient]DurableOrchestrationClient starter)
+        public static async Task<IActionResult> Support_Strava_CollectActivities([HttpTrigger(AuthorizationLevel.Admin, "post", Route = "support/strava/athlete/{athleteId}/activities/collect")]HttpRequest req, ILogger log,
+            [Queue(QueueNames.CollectAthleteActivities)] CloudQueue collectActivitiesQueues, int athleteId)
         {
             log.LogInformation($"{FunctionsNames.Support_Strava_Activities_Collect} function processed a request.");
-            string optimize = req.Query["optimize"];
-            var instanceId = await starter.StartNewAsync(FunctionsNames.Strava_O_CollectStravaActivities, optimize);
-
-            var payload = starter.CreateHttpManagementPayload(instanceId);
-            return new OkObjectResult(payload);
+            await collectActivitiesQueues.AddMessageAsync(new CloudQueueMessage(athleteId.ToString()));
+            return new OkResult();
         }
 
         [FunctionName(FunctionsNames.Support_Activities_CollectMonthlyStatistics)]
@@ -64,11 +61,11 @@ namespace BurnForMoney.Functions.Functions.Support
             ExecutionContext executionContext, [Queue(QueueNames.PendingRawActivities)] CloudQueue queue)
         {
             log.LogInformation($"{FunctionsNames.Support_Activities_Add} function processed a request.");
-            
+
             var data = await req.ReadAsStringAsync();
             try
             {
-                JsonConvert.DeserializeObject<PendingRawActivity>(data, 
+                JsonConvert.DeserializeObject<PendingRawActivity>(data,
                     new JsonSerializerSettings
                     {
                         MissingMemberHandling = MissingMemberHandling.Error

@@ -1,4 +1,5 @@
-﻿using System.Data;
+﻿using System.Collections.Concurrent;
+using System.Data;
 using System.Data.SqlClient;
 using System.Threading.Tasks;
 using BurnForMoney.Functions.Configuration;
@@ -12,6 +13,8 @@ namespace BurnForMoney.Functions.Functions
 {
     public static class SubmitAthleteActivity
     {
+        private static readonly ConcurrentDictionary<int, int> AthleteIdsMappings = new ConcurrentDictionary<int, int>();
+
         [FunctionName(FunctionsNames.Q_SubmitAthleteActivity)]
         public static async Task Q_SubmitAthleteActivityAsync(ILogger log, ExecutionContext executionContext, [QueueTrigger(QueueNames.PendingActivities)] PendingActivity activity)
         {
@@ -20,10 +23,13 @@ namespace BurnForMoney.Functions.Functions
             var configuration = await ApplicationConfiguration.GetSettingsAsync(executionContext);
             using (var conn = new SqlConnection(configuration.ConnectionStrings.SqlDbConnectionString))
             {
+                var athleteId = AthleteIdsMappings.GetOrAdd(activity.SourceAthleteId,
+                    await conn.QuerySingleAsync<int>("SELECT Id FROM dbo.Athletes WHERE ExternalId=@SourceAthleteId", new {activity.SourceAthleteId}));
+
                 var model = new
                 {
-                    activity.AthleteId,
-                    activity.ActivityId,
+                    AthleteId = athleteId,
+                    ActivityId = activity.SourceActivityId,
                     ActivityTime = activity.StartDate,
                     activity.ActivityType,
                     Distance = activity.DistanceInMeters,

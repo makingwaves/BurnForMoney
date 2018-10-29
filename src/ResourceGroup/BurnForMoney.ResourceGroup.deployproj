@@ -26,8 +26,9 @@
     <None Include="Set-WebApp-Ip-Restrictions.ps1" />
     <None Include="SqlScripts\Script0001 - Initial.sql" />
     <None Include="SqlScripts\Script0002- Create Activity_Insert procedure.sql" />
-    <None Include="SqlScripts\Script0004- Add IsValid column to StravaAccessTokens table.sql" />
     <None Include="SqlScripts\Script0003- Create MonthlyResultsSnapshots_Upsert procedure .sql" />
+    <None Include="SqlScripts\Script0004- Add IsValid column to StravaAccessTokens table.sql" />
+    <None Include="SqlScripts\Script0005- Remove Athletes.UpdateHistory table.sql" />
     <None Include="Upgrade-Database.ps1" />
     <None Include="Deploy-Credentials.ps1" />
     <None Include="_Deploy.Dev.ps1" />

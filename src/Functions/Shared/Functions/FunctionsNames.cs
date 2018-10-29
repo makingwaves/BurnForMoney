@@ -16,17 +16,17 @@ namespace BurnForMoney.Functions.Shared.Functions
 
         public const string Q_ProcessRawActivity = "Q_ProcessRawActivity";
 
-        public const string Strava_T_CollectStravaActivitiesInEveryHour = "Strava_T_CollectStravaActivitiesInEveryHour";
-        public const string Strava_O_CollectStravaActivities = "Strava_O_CollectStravaActivities";
-        public const string Strava_A_GetActiveAthletesWithAccessTokens = "Strava_A_GetActiveAthletesWithAccessTokens";
-        public const string Strava_O_CollectSingleUserActivities = "Strava_O_CollectSingleUserActivities";
-        public const string Strava_A_CollectSingleUserActivities = "Strava_A_CollectSingleUserActivities";
-        public const string A_UpdateLastUpdateDateOfTheUpdatedAthlete = "A_UpdateLastUpdateDateOfTheUpdatedAthlete";
+        public const string Strava_CollectAthleteActivities = "Strava_CollectAthleteActivities";
 
         public const string Strava_CreateWebhookSubscription = "Strava_CreateWebhooksSubscription";
         public const string Strava_WebhooksCallbackValidation = "Strava_WebhooksCallbackValidation";
         public const string Strava_ViewWebhookSubscription = "Strava_ViewWebhookSubscription";
+        public const string Strava_DeleteWebhookSubscription = "Strava_DeleteWebhookSubscription";
         public const string Strava_EventsHub = "Strava_EventsHub";
+        public const string Strava_EventsRouter = "Strava_EventsRouter";
+        public const string Strava_Events_NewActivity = "Strava_Events_NewActivity";
+        public const string Strava_Events_UpdateActivity = "Strava_Events_UpdateActivity";
+        public const string Strava_Events_DeleteActivity = "Strava_Events_DeleteActivity";
 
 
         public const string Q_SubmitAthleteActivity = "Q_SubmitAthleteActivity";
