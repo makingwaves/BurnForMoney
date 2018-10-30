@@ -26,7 +26,7 @@ namespace BurnForMoney.Functions.Functions.Support
                 return new BadRequestObjectResult("AthleteId is required.");
             }
 
-            var connectionString = (await ApplicationConfiguration.GetSettingsAsync(executionContext)).ConnectionStrings
+            var connectionString = (ApplicationConfiguration.GetSettings(executionContext)).ConnectionStrings
                 .SqlDbConnectionString;
 
             var deactivationResult = await DeactivateAthleteAsync(athleteId, connectionString);
@@ -50,7 +50,7 @@ namespace BurnForMoney.Functions.Functions.Support
                 return new BadRequestObjectResult("AthleteId is required.");
             }
 
-            var connectionString = (await ApplicationConfiguration.GetSettingsAsync(executionContext)).ConnectionStrings
+            var connectionString = (ApplicationConfiguration.GetSettings(executionContext)).ConnectionStrings
                 .SqlDbConnectionString;
 
             var activationResult = await ActivateAthleteAsync(athleteId, connectionString);
@@ -74,7 +74,7 @@ namespace BurnForMoney.Functions.Functions.Support
                 return new BadRequestObjectResult("AthleteId is required.");
             }
 
-            var connectionString = (await ApplicationConfiguration.GetSettingsAsync(executionContext)).ConnectionStrings
+            var connectionString = (ApplicationConfiguration.GetSettings(executionContext)).ConnectionStrings
                 .SqlDbConnectionString;
 
             try

@@ -21,7 +21,7 @@ namespace BurnForMoney.Functions.Functions.CalculateMonthlyAthleteResults
         {
             log.LogInformation($"{FunctionsNames.Q_CalculateMonthlyAthleteResults} function processed a request.");
 
-            var configuration = await ApplicationConfiguration.GetSettingsAsync(executionContext);
+            var configuration = ApplicationConfiguration.GetSettings(executionContext);
             using (var conn = new SqlConnection(configuration.ConnectionStrings.SqlDbConnectionString))
             {
                 var activities = (await conn.QueryAsync<Activity>(

@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Threading.Tasks;
-using BurnForMoney.Functions.Shared;
-using Microsoft.Azure.KeyVault;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Configuration;
 
@@ -10,14 +7,12 @@ namespace BurnForMoney.Functions.Configuration
     public class ApplicationConfiguration
     {
         private static ConfigurationRoot _settings;
-        private static readonly IKeyVaultClient KeyVaultClient = KeyVaultClientFactory.Create();
 
-        public static async Task<ConfigurationRoot> GetSettingsAsync(ExecutionContext context)
+        public static ConfigurationRoot GetSettings(ExecutionContext context)
         {
             if (_settings == null)
             {
                 var config = GetApplicationConfiguration(context.FunctionAppDirectory);
-                var keyVaultConnectionString = config.GetConnectionString("KeyVault.ConnectionString");
 
                 var isLocal = string.IsNullOrEmpty(GetEnvironmentVariable(EnvironmentSettingNames.AzureWebsiteInstanceId));
                 _settings = new ConfigurationRoot
@@ -25,20 +20,18 @@ namespace BurnForMoney.Functions.Configuration
                     IsLocalEnvironment = isLocal,
                     ConnectionStrings = new ConnectionStringsSection
                     {
-                        KeyVaultConnectionString = keyVaultConnectionString,
-                        SqlDbConnectionString = isLocal ? "Data Source=(LocalDB)\\.;Initial Catalog=BurnForMoney;Integrated Security=True" :
-                            await GetKeyVaultSecretAsync(keyVaultConnectionString, KeyVaultSecretNames.SqlConnectionString),
+                        SqlDbConnectionString = config["SQLConnectionString"],
                         AzureWebJobsStorage = config["AzureWebJobsStorage"]
                     },
                     Strava = new StravaConfigurationSection
                     {
-                        ClientId = int.Parse(config["Strava.ClientId"]),
-                        ClientSecret = config["Strava.ClientSecret"]
+                        ClientId = int.Parse(config["Strava:ClientId"]),
+                        ClientSecret = config["Strava:ClientSecret"],
+                        AccessTokensEncryptionKey = config["strava:AccessTokensEncryptionKey"]
                     },
                     Email = new EmailSection
                     {
-                        SendGridApiKey = config["SendGrid.ApiKey"],
-                        AthletesApprovalEmail = config["Email.AthletesApprovalEmail"],
+                        AthletesApprovalEmail = config["Email:AthletesApprovalEmail"],
                         SenderEmail = "burnformoney@makingwaves.com"
                     },
                     HostName = config["WEB_HOST"]
@@ -58,10 +51,12 @@ namespace BurnForMoney.Functions.Configuration
             var config = new ConfigurationBuilder()
                 .SetBasePath(functionAppDirectory)
                 .AddJsonFile("local.settings.json", optional: true, reloadOnChange: true)
-                .AddEnvironmentVariables()
-                .Build();
+                .AddEnvironmentVariables();
 
-            return config;
+            var builtConfig = config.Build();
+            config.AddAzureKeyVault($"https://{builtConfig["keyvaultName"]}.vault.azure.net/");
+
+            return config.Build();
         }
 
         public static string GetEnvironmentVariable(string settingKey)
@@ -73,13 +68,6 @@ namespace BurnForMoney.Functions.Configuration
             }
 
             return settingValue;
-        }
-
-        private static async Task<string> GetKeyVaultSecretAsync(string keyVaultConnectionString, string secretName)
-        {
-            var secret = await KeyVaultClient.GetSecretAsync(keyVaultConnectionString, secretName)
-                .ConfigureAwait(false);
-            return secret.Value;
         }
     }
 }

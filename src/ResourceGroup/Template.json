@@ -247,28 +247,14 @@
             {
               "name": "WEB_HOST",
               "value": "[concat('https://', variables('functionAppName'), '.azurewebsites.net')]"
+            },
+            {
+              "name": "keyvaultName",
+              "value": "[variables('keyVaultName')]"
             }
           ]
         }
-      },
-      "resources": [
-        {
-          "apiVersion": "2015-08-01",
-          "type": "config",
-          "name": "connectionstrings",
-          "dependsOn": [
-            "[concat('Microsoft.Web/Sites/', variables('functionAppName'))]",
-            "[concat('Microsoft.Storage/storageAccounts/', variables('functionStorageAccountName'))]",
-            "[concat('Microsoft.Sql/servers/', variables('sqlServerName'))]"
-          ],
-          "properties": {
-            "KeyVault.ConnectionString": {
-              "type": "Custom",
-              "value": "[concat('https://', variables('keyVaultName'), '.vault.azure.net/')]"
-            }
-          }
-        }
-      ]
+      }
     },
     {
       "comments": "Function App - Properties (CORS, etc)",

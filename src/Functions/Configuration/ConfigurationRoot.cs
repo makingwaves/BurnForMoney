@@ -16,7 +16,6 @@ namespace BurnForMoney.Functions.Configuration
 
     public class EmailSection
     {
-        public string SendGridApiKey { get; set; }
         public string SenderEmail { get; set; }
         public string AthletesApprovalEmail { get; set; }
     }
@@ -24,7 +23,6 @@ namespace BurnForMoney.Functions.Configuration
     public class ConnectionStringsSection
     {
         public string SqlDbConnectionString { get; set; }
-        public string KeyVaultConnectionString { get; set; }
         public string AzureWebJobsStorage { get; set; }
     }
 
@@ -32,5 +30,6 @@ namespace BurnForMoney.Functions.Configuration
     {
         public int ClientId { get; set; }
         public string ClientSecret { get; set; }
+        public string AccessTokensEncryptionKey { get; set; }
     }
 }

@@ -22,7 +22,7 @@ namespace BurnForMoney.Functions.Functions.Strava
         {
             log.LogInformation($"{FunctionsNames.Strava_Q_ProcessNewAthlete} function processed a request.");
 
-            var configuration = await ApplicationConfiguration.GetSettingsAsync(executionContext);
+            var configuration = ApplicationConfiguration.GetSettings(executionContext);
 
             using (var conn = new SqlConnection(configuration.ConnectionStrings.SqlDbConnectionString))
             {

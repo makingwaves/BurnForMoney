@@ -26,7 +26,7 @@ namespace BurnForMoney.Functions.Functions.Strava
         {
             log.LogInformation($"{FunctionsNames.Strava_CollectAthleteActivities} function processed a request.");
 
-            var configuration = await ApplicationConfiguration.GetSettingsAsync(executionContext);
+            var configuration = ApplicationConfiguration.GetSettings(executionContext);
 
             string encryptedAccessToken;
             string accessToken;
@@ -36,8 +36,8 @@ namespace BurnForMoney.Functions.Functions.Strava
 FROM dbo.[Strava.AccessTokens]
 WHERE AthleteId = @AthleteId AND IsValid=1", new { AthleteId = athleteId });
 
-                accessToken = await AccessTokensEncryptionService.DecryptAsync(encryptedAccessToken,
-                    configuration.ConnectionStrings.KeyVaultConnectionString);
+                accessToken = AccessTokensEncryptionService.Decrypt(encryptedAccessToken,
+                    configuration.Strava.AccessTokensEncryptionKey);
 
                 if (string.IsNullOrWhiteSpace(accessToken))
                 {
