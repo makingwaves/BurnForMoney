@@ -343,8 +343,8 @@
             "tenantId": "[reference(concat('Microsoft.Web/sites/', variables('functionAppName')), '2015-08-01', 'Full').identity.tenantId]",
             "objectId": "[reference(concat('Microsoft.Web/sites/', variables('functionAppName')), '2015-08-01', 'Full').identity.principalId]",
             "permissions": {
-              "keys": [ "get" ],
-              "secrets": [ "get" ]
+              "keys": [ "get", "list" ],
+              "secrets": [ "get", "list" ]
             }
           }
         ]
