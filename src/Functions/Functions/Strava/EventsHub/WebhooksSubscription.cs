@@ -3,13 +3,11 @@ using System.Threading.Tasks;
 using BurnForMoney.Functions.Configuration;
 using BurnForMoney.Functions.External.Strava.Api;
 using BurnForMoney.Functions.Shared.Functions;
-using BurnForMoney.Functions.Shared.Queues;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
-using Microsoft.WindowsAzure.Storage.Queue;
 using Newtonsoft.Json;
 using System.Net.Http;
 
@@ -20,21 +18,6 @@ namespace BurnForMoney.Functions.Functions.Strava.EventsHub
         private static readonly StravaWebhooksService StravaWebhooksService = new StravaWebhooksService();
         private static readonly HttpClient HttpClient = new HttpClient();
         private const string CallbackToken = "013a818de91f490695f8f642c9b511c3";
-
-        [FunctionName(FunctionsNames.Strava_EventsHub)]
-        public static async Task<IActionResult> EventsHub([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "strava/events/hub")] HttpRequest req,
-            ILogger log, ExecutionContext executionContext,
-            [Queue(QueueNames.StravaEvents)] CloudQueue outputQueue)
-        {
-            log.LogInformation($"{FunctionsNames.Strava_EventsHub} function processed a request.");
-
-            var eventData = await req.ReadAsStringAsync();
-
-            await outputQueue.AddMessageAsync(new CloudQueueMessage(eventData));
-            log.LogInformation($"{FunctionsNames.Strava_EventsHub} added a message to queue: {QueueNames.StravaEvents}.");
-
-            return new OkResult();
-        }
 
         [FunctionName(FunctionsNames.Strava_CreateWebhookSubscription)]
         public static async Task<IActionResult> Strava_CreateWebhookSubscription([HttpTrigger(AuthorizationLevel.Admin, "post", Route = "strava/subscription/create")] HttpRequest req,
