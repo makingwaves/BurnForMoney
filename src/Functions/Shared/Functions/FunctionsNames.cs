@@ -5,7 +5,7 @@ namespace BurnForMoney.Functions.Shared.Functions
     [SuppressMessage("ReSharper", "InconsistentNaming")]
     public static class FunctionsNames
     {
-        public const string AuthenticateStravaUser = "AuthenticateStravaUser";
+        public const string AuthenticateStravaUser = "Strava_AuthenticateUser";
 
         public const string Strava_AuthorizeNewAthleteStarter = "Strava_AuthorizeNewAthleteStarter";
         public const string Strava_O_AuthorizeNewAthlete = "Strava_O_AuthorizeNewAthlete";
@@ -32,9 +32,9 @@ namespace BurnForMoney.Functions.Shared.Functions
 
         public const string Q_SubmitAthleteActivity = "Q_SubmitAthleteActivity";
 
-        public const string T_RefreshAccessTokens = "T_RefreshAccessTokens";
-        public const string Q_RefreshAccessTokens = "Q_RefreshAccessTokens";
-        public const string Q_DeactivateExpiredAccessTokens = "Q_DeactivateExpiredAccessTokens";
+        public const string Strava_T_RefreshAccessTokens = "Strava_T_RefreshAccessTokens";
+        public const string Strava_Q_RefreshAccessTokens = "Strava_Q_RefreshAccessTokens";
+        public const string Strava_Q_DeactivateExpiredAccessTokens = "Strava_Q_DeactivateExpiredAccessTokens";
 
         public const string T_CalculateMonthlyAthleteResults = "T_CalculateMonthlyAthleteResults";
         public const string T_CalculateMonthlyAthleteResultsFromPreviousMonth = "T_CalculateMonthlyAthleteResultsFromPreviousMonth";

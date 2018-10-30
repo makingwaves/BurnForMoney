@@ -15,7 +15,6 @@ namespace BurnForMoney.Functions.Functions.Strava.AuthorizeNewAthlete
     public static class AuthorizeStravaUser
     {
         private const int AuthorisationCodeLength = 40;
-        private static ILogger _log;
         private const string StravaAuthorizationUrl = "https://www.strava.com/oauth/authorize";
         private const string AzureHostUrl = "https://functions.azure.com";
 
@@ -24,8 +23,7 @@ namespace BurnForMoney.Functions.Functions.Strava.AuthorizeNewAthlete
             HttpRequest req, ILogger log, [Queue(QueueNames.AuthorizationCodes)] CloudQueue authorizationCodesQueue,
             ExecutionContext context)
         {
-            _log = log;
-            _log.LogInformation($"{FunctionsNames.AuthenticateStravaUser} function processed a request.");
+            log.LogInformation($"{FunctionsNames.AuthenticateStravaUser} function processed a request.");
             var configuration = ApplicationConfiguration.GetSettings(context);
 
             var referer = req.Headers["Referer"].FirstOrDefault() ?? "null";
@@ -56,16 +54,16 @@ namespace BurnForMoney.Functions.Functions.Strava.AuthorizeNewAthlete
                 return new BadRequestObjectResult("The provided code is invalid.");
             }
 
-            await InsertCodeToAuthorizationQueueAsync(code, authorizationCodesQueue).ConfigureAwait(false);
+            await InsertCodeToAuthorizationQueueAsync(code, authorizationCodesQueue, log).ConfigureAwait(false);
 
             return new OkObjectResult("Authorization completed.");
         }
         
-        private static async Task InsertCodeToAuthorizationQueueAsync(string code, CloudQueue queue)
+        private static async Task InsertCodeToAuthorizationQueueAsync(string code, CloudQueue queue, ILogger log)
         {
             var message = new CloudQueueMessage(code);
             await queue.AddMessageAsync(message).ConfigureAwait(false);
-            _log.LogInformation($"Inserted authorization code to {QueueNames.AuthorizationCodes} queue.");
+            log.LogInformation($"Inserted authorization code to {QueueNames.AuthorizationCodes} queue.");
         }
 
         private static bool IsRequestRefererValid(string referer) => !string.IsNullOrEmpty(referer) && (referer.StartsWith(StravaAuthorizationUrl) || referer.StartsWith(AzureHostUrl));
