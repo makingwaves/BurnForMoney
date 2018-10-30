@@ -7,7 +7,7 @@
     "WEB_HOST": "http://localhost:7071",
     "Strava:ClientId": 28597,
     "Email:AthletesApprovalEmail": "pawel.maga@makingwaves.com",
-    "keyVaultName": "burnformoneykvdev",
-    "SQLConnectionString": "Data Source=(LocalDB)\\.;Initial Catalog=BurnForMoney;Integrated Security=True"
+    "KeyVaultName": "burnformoneykvdev",
+    "ConnectionStrings:Sql": "Data Source=(LocalDB)\\.;Initial Catalog=BurnForMoney;Integrated Security=True"
   }
 }

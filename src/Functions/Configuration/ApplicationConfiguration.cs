@@ -20,7 +20,7 @@ namespace BurnForMoney.Functions.Configuration
                     IsLocalEnvironment = isLocal,
                     ConnectionStrings = new ConnectionStringsSection
                     {
-                        SqlDbConnectionString = config["SQLConnectionString"],
+                        SqlDbConnectionString = config["ConnectionStrings:Sql"],
                         AzureWebJobsStorage = config["AzureWebJobsStorage"]
                     },
                     Strava = new StravaConfigurationSection
@@ -54,7 +54,7 @@ namespace BurnForMoney.Functions.Configuration
                 .AddEnvironmentVariables();
 
             var builtConfig = config.Build();
-            config.AddAzureKeyVault($"https://{builtConfig["keyvaultName"]}.vault.azure.net/");
+            config.AddAzureKeyVault($"https://{builtConfig["KeyVaultName"]}.vault.azure.net/");
 
             return config.Build();
         }

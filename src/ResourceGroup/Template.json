@@ -352,7 +352,7 @@
     },
     {
       "type": "Microsoft.KeyVault/vaults/secrets",
-      "name": "[concat(variables('keyVaultName'), '/', 'SQLConnectionString')]",
+      "name": "[concat(variables('keyVaultName'), '/', 'ConnectionStrings:Sql')]",
       "apiVersion": "2015-06-01",
       "properties": {
         "value": "[concat('Data Source=tcp:', reference(concat('Microsoft.Sql/servers/', variables('sqlserverName'))).fullyQualifiedDomainName, ',1433;Initial Catalog=', variables('sqlDbName'), ';User Id=', parameters('sqlServerLogin'), ';Password=', parameters('sqlServerPassword'), ';')]"

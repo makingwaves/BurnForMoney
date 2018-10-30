@@ -14,7 +14,7 @@ namespace BurnForMoney.Functions
             var serviceConfig = builder.Services.FirstOrDefault(s => s.ServiceType == typeof(IConfiguration));
             var rootConfig = (IConfiguration)serviceConfig.ImplementationInstance;
 
-            var keyvaultName = rootConfig["keyVaultName"];
+            var keyvaultName = rootConfig["KeyVaultName"];
             var config = new ConfigurationBuilder()
                 .AddConfiguration(rootConfig).AddAzureKeyVault($"https://{keyvaultName}.vault.azure.net/").Build();
 
