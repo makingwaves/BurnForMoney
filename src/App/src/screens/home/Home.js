@@ -40,7 +40,6 @@ class Home extends Component {
       .then(res => res.json())
       .then(
         (result) => {
-          console.log('bfmStats JSON:',result);
           this.setState({
             bfmStats: result
           });
@@ -53,35 +52,6 @@ class Home extends Component {
         }
       )
   }
-    /*
-    const json = {
-      "distance": 453232,
-      "time": 1397,
-      "money": 95,
-      "thisMonth": {
-          "numberOfTrainings": 36,
-          "percentOfEngagedEmployees": 37,
-          "money": 95,
-          "mostFrequentActivities": [
-              {
-                  "category": "Ride",
-                  "numberOfTrainings": 32,
-                  "points": 438
-              },
-              {
-                  "category": "Run",
-                  "numberOfTrainings": 3,
-                  "points": 31
-              },
-              {
-                  "category": "Gym",
-                  "numberOfTrainings": 1,
-                  "points": 6
-              }
-          ]
-      }
-    }
-    */
 }
 
 export default Home;

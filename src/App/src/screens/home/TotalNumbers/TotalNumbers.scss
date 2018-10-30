@@ -4,6 +4,9 @@
   margin-top: 100vh;
   padding: 50px 0 50px;
   background-color: #fff;
+  @media (max-width: 650px){
+      padding-top:20px;
+  }
 
   &__header{
     font-weight: normal;
