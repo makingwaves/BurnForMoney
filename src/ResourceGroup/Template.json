@@ -223,11 +223,11 @@
               "value": "[reference(concat('microsoft.insights/components/', variables('appInsightsName'))).InstrumentationKey]"
             },
             {
-              "name": "Strava.ClientId",
+              "name": "Strava:ClientId",
               "value": "[parameters('strava.clientId')]"
             },
             {
-              "name": "Email.AthletesApprovalEmail",
+              "name": "Email:AthletesApprovalEmail",
               "value": "[parameters('email.athletesApprovalEmail')]"
             },
             {
@@ -235,7 +235,7 @@
               "value": "[concat('https://', variables('functionAppName'), '.azurewebsites.net')]"
             },
             {
-              "name": "keyvaultName",
+              "name": "KeyVaultName",
               "value": "[variables('keyVaultName')]"
             }
           ]
