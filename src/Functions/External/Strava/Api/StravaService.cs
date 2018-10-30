@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using BurnForMoney.Functions.Configuration;
 using BurnForMoney.Functions.External.Strava.Api.Auth;
 using BurnForMoney.Functions.External.Strava.Api.Model;

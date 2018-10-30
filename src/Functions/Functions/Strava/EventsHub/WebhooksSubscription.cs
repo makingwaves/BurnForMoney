@@ -8,18 +8,18 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Microsoft.WindowsAzure.Storage.Queue;
 using Newtonsoft.Json;
-using System.Linq;
+using System.Net.Http;
 
 namespace BurnForMoney.Functions.Functions.Strava.EventsHub
 {
     public static class WebhooksSubscription
     {
         private static readonly StravaWebhooksService StravaWebhooksService = new StravaWebhooksService();
-        private static readonly IMemoryCache Cache = new MemoryCache(new MemoryCacheOptions());
+        private static readonly HttpClient HttpClient = new HttpClient();
+        private const string CallbackToken = "013a818de91f490695f8f642c9b511c3";
 
         [FunctionName(FunctionsNames.Strava_EventsHub)]
         public static async Task<IActionResult> EventsHub([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "strava/events/hub")] HttpRequest req,
@@ -27,9 +27,6 @@ namespace BurnForMoney.Functions.Functions.Strava.EventsHub
             [Queue(QueueNames.StravaEvents)] CloudQueue outputQueue)
         {
             log.LogInformation($"{FunctionsNames.Strava_EventsHub} function processed a request.");
-
-            var referer = req.Headers["Referer"].FirstOrDefault() ?? "null";
-            log.LogInformation($"Request referer: [{referer}].");
 
             var eventData = await req.ReadAsStringAsync();
 
@@ -39,15 +36,16 @@ namespace BurnForMoney.Functions.Functions.Strava.EventsHub
         }
 
         [FunctionName(FunctionsNames.Strava_CreateWebhookSubscription)]
-        public static async Task<IActionResult> Strava_CreateWebhookSubscription([HttpTrigger(AuthorizationLevel.Admin, "post", Route = "strava/subscription/create")] HttpRequest req, 
+        public static async Task<IActionResult> Strava_CreateWebhookSubscription([HttpTrigger(AuthorizationLevel.Admin, "post", Route = "strava/subscription/create")] HttpRequest req,
             ILogger log, ExecutionContext executionContext)
         {
             log.LogInformation($"{FunctionsNames.Strava_CreateWebhookSubscription} function processed a request.");
+
             var configuration = await ApplicationConfiguration.GetSettingsAsync(executionContext);
 
             var data = await req.ReadAsStringAsync();
             log.LogInformation($"{FunctionsNames.Strava_CreateWebhookSubscription} function executed with the following data: <{data}>.");
-            
+
             var hostname = configuration.HostName;
             if (!string.IsNullOrWhiteSpace(data))
             {
@@ -56,15 +54,28 @@ namespace BurnForMoney.Functions.Functions.Strava.EventsHub
             }
 
             var callbackUrl = $"{hostname}/api/strava/events/hub";
-            var callbackToken = Guid.NewGuid().ToString("N");
-            Cache.Set("callbackToken", callbackToken, TimeSpan.FromSeconds(10));
-            log.LogInformation($"{FunctionsNames.Strava_CreateWebhookSubscription} Generated callback token: {callbackToken}.");
-
+            await WarmUpValidationFunction(callbackUrl, log);
+            
             log.LogInformation($"{FunctionsNames.Strava_CreateWebhookSubscription} Creating subscription for a client: <{configuration.Strava.ClientId}> and callback url: {callbackUrl}.");
             StravaWebhooksService.CreateSubscription(configuration.Strava.ClientId, configuration.Strava.ClientSecret,
-                callbackUrl, callbackToken);
+                callbackUrl, CallbackToken);
 
             return new OkResult();
+        }
+
+        private static async Task<HttpResponseMessage> WarmUpValidationFunction(string url, ILogger log)
+        {
+            HttpResponseMessage response = await HttpClient.GetAsync(url + "?warmUp=true");
+            if (response.IsSuccessStatusCode)
+            {
+                log.LogInformation($"Successfully warmed up callback function: '{url}'");
+            }
+            else
+            {
+                log.LogError($"Failed to warm up callback function: '{url}'. Response: {(int)response.StatusCode + " : " + response.ReasonPhrase}");
+            }
+
+            return response;
         }
 
         private class CreateSubscriptionPostData
@@ -78,19 +89,23 @@ namespace BurnForMoney.Functions.Functions.Strava.EventsHub
         {
             log.LogInformation($"{FunctionsNames.Strava_WebhooksCallbackValidation} function processed a request.");
 
-            string mode = req.Query["hub.mode"];
+            if (bool.TryParse(req.Query["warmUp"], out var _))
+            {
+                log.LogInformation($"{FunctionsNames.Strava_WebhooksCallbackValidation} processing warm up execution.");
+                return new OkResult();
+            }
+
             string verifyToken = req.Query["hub.verify_token"];
             string challenge = req.Query["hub.challenge"];
 
-            var callbackToken = Cache.Get("callbackToken");
-
-            if (mode != "subscribe" || !verifyToken.Equals(callbackToken))
+            if (!verifyToken.Equals(CallbackToken))
             {
+                log.LogError($"{FunctionsNames.Strava_WebhooksCallbackValidation} Received callback token: {verifyToken} is not valid with token: {CallbackToken}.");
                 return new BadRequestResult();
             }
 
             log.LogInformation($"{FunctionsNames.Strava_WebhooksCallbackValidation} Request validated.");
-            var json = JsonConvert.SerializeObject(new ChallengeObject {Challenge = challenge});
+            var json = JsonConvert.SerializeObject(new ChallengeObject { Challenge = challenge });
             return new OkObjectResult(json);
         }
 
