@@ -81,12 +81,6 @@
     "strava.clientId": {
       "type": "securestring"
     },
-    "strava.clientSecret": {
-      "type": "securestring"
-    },
-    "sendGrid.apiKey": {
-      "type": "securestring"
-    },
     "email.athletesApprovalEmail": {
       "type": "string"
     },
@@ -231,14 +225,6 @@
             {
               "name": "Strava.ClientId",
               "value": "[parameters('strava.clientId')]"
-            },
-            {
-              "name": "Strava.ClientSecret",
-              "value": "[parameters('strava.clientSecret')]"
-            },
-            {
-              "name": "SendGrid.ApiKey",
-              "value": "[parameters('sendGrid.apiKey')]"
             },
             {
               "name": "Email.AthletesApprovalEmail",

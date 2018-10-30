@@ -26,22 +26,6 @@
         },
         "secretName": "strava--ClientId"
       }
-    },
-    "strava.clientSecret": {
-      "reference": {
-        "keyVault": {
-          "id": "/subscriptions/4920733c-19cb-4434-819c-176ee48f6453/resourceGroups/BurnForMoney-Test/providers/Microsoft.KeyVault/vaults/burnformoneykvtest"
-        },
-        "secretName": "strava--ClientSecret"
-      }
-    },
-    "sendGrid.apiKey": {
-      "reference": {
-        "keyVault": {
-          "id": "/subscriptions/4920733c-19cb-4434-819c-176ee48f6453/resourceGroups/BurnForMoney-Test/providers/Microsoft.KeyVault/vaults/burnformoneykvtest"
-        },
-        "secretName": "sendGrid--ApiKey"
-      }
     }
   }
 }
