@@ -1,15 +1,17 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
 using BurnForMoney.Functions.Configuration;
-using BurnForMoney.Functions.Helpers;
-using BurnForMoney.Functions.Persistence.DatabaseSchema;
+using BurnForMoney.Functions.Functions.CalculateMonthlyAthleteResults;
+using BurnForMoney.Functions.Shared.Helpers;
 using Dapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
@@ -17,16 +19,37 @@ namespace BurnForMoney.Functions.Functions.Public
 {
     public static class TotalNumberApi
     {
+        private const string CacheKey = "api.totalnumbers";
+        private static readonly IMemoryCache Cache = new MemoryCache(new MemoryDistributedCacheOptions());
+
         [FunctionName("TotalNumbers")]
         public static async Task<IActionResult> TotalNumbers([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "totalnumbers")]HttpRequest req, ILogger log, ExecutionContext executionContext)
+        {
+            if (!Cache.TryGetValue(CacheKey, out var totalNumbers))
+            {
+                totalNumbers = await GetTotalNumbersAsync(executionContext);
+
+                var cacheEntryOptions = new MemoryCacheEntryOptions
+                {
+                    Size = 1,
+                    AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5)
+                };
+
+                Cache.Set(CacheKey, totalNumbers, cacheEntryOptions);
+            }
+
+            return new OkObjectResult(totalNumbers);
+        }
+
+        private static async Task<object> GetTotalNumbersAsync(ExecutionContext executionContext)
         {
             var configuration = await ApplicationConfiguration.GetSettingsAsync(executionContext);
             using (var conn = new SqlConnection(configuration.ConnectionStrings.SqlDbConnectionString))
             {
-                var jsonResults = await conn.QueryAsync<(string date, string json)>("SELECT Date, Results FROM dbo.[Strava.AthleteMonthlyResults]")
+                var jsonResults = await conn.QueryAsync<(string date, string json)>("SELECT Date, Results FROM dbo.[MonthlyResultsSnapshots]")
                     .ConfigureAwait(false);
 
-                var jsons = jsonResults.Select(record =>
+                var months = jsonResults.Select(record =>
                     new
                     {
                         Date = record.date,
@@ -34,11 +57,11 @@ namespace BurnForMoney.Functions.Functions.Public
                     })
                     .ToList();
 
-                var totalDistance = jsons.Sum(j => j.Results.Sum(r => r.Distance));
-                var totalTime = jsons.Sum(j => j.Results.Sum(r => r.Time));
-                var totalPoints = jsons.Sum(j => j.Results.Sum(r => r.Points));
+                var totalDistance = months.Sum(j => j.Results.Sum(r => r.Distance));
+                var totalTime = months.Sum(j => j.Results.Sum(r => r.Time));
+                var totalPoints = months.Sum(j => j.Results.Sum(r => r.Points));
 
-                var thisMonth = jsons.Last();
+                var thisMonth = months.Last();
                 var totalPointsThisMonth = thisMonth.Results.Sum(r => r.Points);
                 var mostFrequentActivities = thisMonth.Results.SelectMany(r => r.Activities)
                     .GroupBy(key => key.Category, el => el, (category, activities) =>
@@ -53,24 +76,38 @@ namespace BurnForMoney.Functions.Functions.Public
                     }).OrderByDescending(o => o.NumberOfTrainings)
                     .Take(5);
 
+                var uniqueAthletes = thisMonth.Results.Count;
 
                 var result = new
                 {
                     Distance = (int)UnitsConverter.ConvertMetersToKilometers(totalDistance, 0),
                     Time = (int)UnitsConverter.ConvertMinutesToHours(totalTime, 0),
-                    Money = totalPoints * 100 / 500,
+                    Money = PointsToMoneyConverter.Convert(totalPoints),
                     ThisMonth = new
                     {
-                        NumberOfTrainings = jsons.Sum(j => j.Results.Sum(r => r.NumberOfTrainings)),
-                        PercentOfEngagedEmployees = 37,
+                        NumberOfTrainings = months.Sum(j => j.Results.Sum(r => r.NumberOfTrainings)),
+                        PercentOfEngagedEmployees = EmployeesEngagementCalculator.GetPercentOfEngagedEmployees(uniqueAthletes),
                         Points = totalPointsThisMonth,
-                        Money = totalPointsThisMonth * 100 / 500,
+                        Money = PointsToMoneyConverter.Convert(totalPointsThisMonth),
                         MostFrequentActivities = mostFrequentActivities
                     }
                 };
 
-                return new OkObjectResult(result);
+                return result;
             }
+        }
+
+        public class EmployeesEngagementCalculator
+        {
+            public const int NumberOfEmployees = 97;
+
+            public static int GetPercentOfEngagedEmployees(int numberOfTheUniqueAthletes) =>
+                (numberOfTheUniqueAthletes * 100) / NumberOfEmployees;
+        }
+
+        public class PointsToMoneyConverter
+        {
+            public static int Convert(int points) => points * 100 / 500;
         }
     }
 }

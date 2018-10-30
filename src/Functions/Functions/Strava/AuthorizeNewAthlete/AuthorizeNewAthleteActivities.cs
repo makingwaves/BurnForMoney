@@ -1,15 +1,12 @@
 ﻿using System;
-using System.Data;
-using System.Data.SqlClient;
 using System.Threading.Tasks;
 using BurnForMoney.Functions.Configuration;
 using BurnForMoney.Functions.External.Strava.Api;
-using Dapper;
-using Microsoft.Azure.KeyVault;
+using BurnForMoney.Functions.Shared.Functions;
+using BurnForMoney.Functions.Shared.Queues;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 using SendGrid.Helpers.Mail;
-using Athlete = BurnForMoney.Functions.External.Strava.Api.Model.Athlete;
 
 namespace BurnForMoney.Functions.Functions.Strava.AuthorizeNewAthlete
 {
@@ -17,60 +14,32 @@ namespace BurnForMoney.Functions.Functions.Strava.AuthorizeNewAthlete
     {
         private static readonly StravaService StravaService = new StravaService();
 
-        [FunctionName(FunctionsNames.A_GenerateAccessToken)]
-        public static async Task<(string, Athlete)> A_GenerateAccessToken([ActivityTrigger]string authorizationCode, ILogger log,
+        [FunctionName(FunctionsNames.Strava_A_ExchangeTokenAndGetAthleteSummary)]
+        public static async Task<NewStravaAthlete> Strava_A_ExchangeTokenAndGetAthleteSummary([ActivityTrigger]string authorizationCode, ILogger log,
             ExecutionContext context)
         {
-            log.LogInformation($"{FunctionsNames.A_GenerateAccessToken} function processed a request.");
+            log.LogInformation($"{FunctionsNames.Strava_A_ExchangeTokenAndGetAthleteSummary} function processed a request.");
             var configuration = await ApplicationConfiguration.GetSettingsAsync(context);
 
             log.LogInformation($"Requesting for access token using clientId: {configuration.Strava.ClientId}.");
 
             var response = StravaService.ExchangeToken(configuration.Strava.ClientId, configuration.Strava.ClientSecret, authorizationCode);
-            return (response.AccessToken, response.Athlete);
-        }
 
-        [FunctionName(FunctionsNames.A_EncryptAccessToken)]
-        public static async Task<string> A_EncryptAccessTokenAsync([ActivityTrigger]string accessToken, ILogger log,
-            ExecutionContext context)
-        {
-            log.LogInformation($"{FunctionsNames.A_EncryptAccessToken} function processed a request.");
-            var configuration = await ApplicationConfiguration.GetSettingsAsync(context);
-
-            var keyVaultClient = KeyVaultClientFactory.Create();
-            var secret = await keyVaultClient.GetSecretAsync(configuration.ConnectionStrings.KeyVaultConnectionString, KeyVaultSecretNames.StravaTokensEncryptionKey)
-                .ConfigureAwait(false);
-            var accessTokenEncryptionKey = secret.Value;
-
-            var encryptedToken = Cryptography.EncryptString(accessToken, accessTokenEncryptionKey);
-            log.LogInformation("Access token has been encrypted.");
-            return encryptedToken;
-        }
-
-        [FunctionName(FunctionsNames.A_AddAthleteToDatabase)]
-        public static async Task A_AddAthleteToDatabaseAsync([ActivityTrigger]DurableActivityContext activityContext, ILogger log,
-            ExecutionContext context)
-        {
-            var athlete = activityContext.GetInput<Persistence.DatabaseSchema.Athlete>();
-            var configuration = await ApplicationConfiguration.GetSettingsAsync(context);
-
-            using (var conn = new SqlConnection(configuration.ConnectionStrings.SqlDbConnectionString))
+            return new NewStravaAthlete
             {
-                var affectedRows = await conn.ExecuteAsync("Strava_Athlete_Upsert", athlete, commandType: CommandType.StoredProcedure)
-                    .ConfigureAwait(false);
-
-                if (affectedRows > 0)
-                {
-                    log.LogInformation($"Athlete: {athlete.FirstName} {athlete.LastName} has been saved successfully");
-                }
-                else
-                {
-                    throw new Exception("An error occurred while saving athlete data.");
-                }
-            }
+                AthleteId = response.Athlete.Id,
+                FirstName = response.Athlete.Firstname,
+                LastName = response.Athlete.Lastname,
+                ProfilePictureUrl = response.Athlete.Profile,
+                EncryptedAccessToken = await AccessTokensEncryptionService.EncryptAsync(response.AccessToken,
+                    configuration.ConnectionStrings.KeyVaultConnectionString),
+                EncryptedRefreshToken = await AccessTokensEncryptionService.EncryptAsync(response.RefreshToken,
+                    configuration.ConnectionStrings.KeyVaultConnectionString),
+                TokenExpirationDate = response.ExpiresAt
+            };
         }
-
-        [FunctionName(FunctionsNames.A_SendAthleteApprovalRequest)]
+        
+        [FunctionName(FunctionsNames.Strava_A_SendAthleteApprovalRequest)]
         public static async Task A_SendAthleteApprovalRequest([ActivityTrigger]DurableActivityContext activityContext, ILogger log,
             ExecutionContext context, [SendGrid(ApiKey = "SendGrid.ApiKey")] IAsyncCollector<SendGridMessage> messageCollector,
             [Table("AthleteApprovals", "AzureWebJobsStorage")] IAsyncCollector<AthleteApproval> athleteApprovalCollector)
@@ -93,9 +62,8 @@ namespace BurnForMoney.Functions.Functions.Strava.AuthorizeNewAthlete
             };
             message.AddTo(new EmailAddress(configuration.Email.AthletesApprovalEmail));
             message.Subject = "Athlete is awaiting approval";
-            
-            var protocol = configuration.IsLocalEnvironment ? "http" : "https";
-            var approvalFunctionAddress = $"{protocol}://{configuration.HostName}/api/SubmitAthleteApproval/{approvalCode}";
+
+            var approvalFunctionAddress = $"{configuration.HostName}/api/SubmitAthleteApproval/{approvalCode}";
             message.HtmlContent = $"Please review a new authorization request. Athlete: {firstName} {lastName}.<br>" +
                 $"<a href=\"{approvalFunctionAddress}?result={AthleteApprovalResult.Approved.ToString()}\">Approve</a><br>" +
                 $"<a href=\"{approvalFunctionAddress}?result={AthleteApprovalResult.Rejected.ToString()}\">Reject</a>";
@@ -104,6 +72,12 @@ namespace BurnForMoney.Functions.Functions.Strava.AuthorizeNewAthlete
             await athleteApprovalCollector.AddAsync(athleteApproval);
             await messageCollector.AddAsync(message);
         }
+    }
+
+    internal enum AthleteApprovalResult
+    {
+        Approved,
+        Rejected
     }
 
     public class AthleteApproval

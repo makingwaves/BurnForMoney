@@ -1,11 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using BurnForMoney.Functions.Configuration;
 using BurnForMoney.Functions.External.Strava.Api.Auth;
 using BurnForMoney.Functions.External.Strava.Api.Model;
-using BurnForMoney.Functions.Helpers;
+using BurnForMoney.Functions.Shared.Helpers;
 using Newtonsoft.Json;
 using RestSharp;
 
@@ -22,7 +21,7 @@ namespace BurnForMoney.Functions.External.Strava.Api
             _restClient = new RestClient(StravaBaseUrl);
         }
 
-        public TokenExchangeResponse ExchangeToken(int clientId, string clientSecret,  string code)
+        public TokenExchangeResult ExchangeToken(int clientId, string clientSecret,  string code)
         {
             var request = new RestRequest("/oauth/token", Method.POST)
             {
@@ -36,9 +35,40 @@ namespace BurnForMoney.Functions.External.Strava.Api
             };
             request.AddParameter("application/json", payLoad.ToJson(), ParameterType.RequestBody);
             var response = _restClient.Execute(request);
-            ThrowExceptionIfNotSuccessful(response);
+            response.ThrowExceptionIfNotSuccessful();
 
-            return TokenExchangeResponse.FromJson(response.Content);
+            return TokenExchangeResult.FromJson(response.Content);
+        }
+
+        public TokenRefreshResult RefreshToken(int clientId, string clientSecret, string refreshToken)
+        {
+            var request = new RestRequest("/oauth/token", Method.POST)
+            {
+                RequestFormat = DataFormat.Json
+            };
+            var payLoad = new TokenRefreshRequest
+            {
+                ClientId = clientId,
+                ClientSecret = clientSecret,
+                RefreshToken = refreshToken
+            };
+            request.AddParameter("application/json", payLoad.ToJson(), ParameterType.RequestBody);
+            var response = _restClient.Execute(request);
+            response.ThrowExceptionIfNotSuccessful();
+
+            return TokenRefreshResult.FromJson(response.Content);
+        }
+        
+        public StravaActivity GetActivity(string accessToken, long id)
+        {
+            var request = new RestRequest($"api/v3/activities/{id}");
+            request.AddQueryParameter("access_token", accessToken);
+
+            var response = _restClient.Execute(request);
+            response.ThrowExceptionIfNotSuccessful();
+
+            var activity = JsonConvert.DeserializeObject<StravaActivity>(response.Content, new JsonSettings());
+            return activity;
         }
 
         public IList<StravaActivity> GetActivities(string accessToken, DateTime? from = null, int page = 1)
@@ -47,14 +77,14 @@ namespace BurnForMoney.Functions.External.Strava.Api
             request.AddQueryParameter("access_token", accessToken);
             if (from != null)
             {
-                var fixedDate = from.Value.AddHours(-2); // Start dates in Strava are not accurate https://groups.google.com/forum/#!topic/strava-api/s1OH5mcmCo8
+                var fixedDate = from.Value.AddHours(-6); // Start dates in Strava are not accurate https://groups.google.com/forum/#!topic/strava-api/s1OH5mcmCo8
                 request.AddQueryParameter("after", UnitsConverter.ConvertDateTimeToEpoch(fixedDate).ToString());
             }
             request.AddQueryParameter("per_page", ActivitiesPerPage.ToString());
             request.AddQueryParameter("page", page.ToString());
 
             var response = _restClient.Execute(request);
-            ThrowExceptionIfNotSuccessful(response);
+            response.ThrowExceptionIfNotSuccessful();
 
             var activities = JsonConvert.DeserializeObject<List<StravaActivity>>(response.Content, new JsonSettings());
             if (activities.Count == ActivitiesPerPage)
@@ -71,15 +101,16 @@ namespace BurnForMoney.Functions.External.Strava.Api
             var request = new RestRequest("/oauth/deauthorize", Method.POST);
             request.AddQueryParameter("access_token", accessToken);
             var response = _restClient.Execute(request);
-            ThrowExceptionIfNotSuccessful(response);
+            response.ThrowExceptionIfNotSuccessful();
         }
+    }
 
-        private static void ThrowExceptionIfNotSuccessful(IRestResponse response)
+    public class UnauthorizedRequestException : UnauthorizedAccessException
+    {
+        public UnauthorizedRequestException()
+            :base("Application is not authorized to get athlete's data (expired / deauthorized / unauthorized).")
         {
-            if (response.StatusCode != HttpStatusCode.OK)
-            {
-                throw new Exception($"Strava API returned an unsuccessfull status code. Status code: {response.StatusCode}. Content: {response.Content}. Error message: {response.ErrorMessage ?? "null"}");
-            }
+            
         }
     }
 }

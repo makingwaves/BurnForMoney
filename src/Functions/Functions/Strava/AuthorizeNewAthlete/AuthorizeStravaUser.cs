@@ -1,7 +1,8 @@
 using System.Linq;
 using System.Threading.Tasks;
 using BurnForMoney.Functions.Configuration;
-using BurnForMoney.Functions.Queues;
+using BurnForMoney.Functions.Shared.Functions;
+using BurnForMoney.Functions.Shared.Queues;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
@@ -51,7 +52,7 @@ namespace BurnForMoney.Functions.Functions.Strava.AuthorizeNewAthlete
 
             if (code.Length != AuthorisationCodeLength)
             {
-                log.LogWarning($"The provided code is invalid. Authorisation code should be {AuthorisationCodeLength} chars long, but was {code.Length}.");
+                log.LogWarning($"The provided code is invalid. Authorization code should be {AuthorisationCodeLength} chars long, but was {code.Length}.");
                 return new BadRequestObjectResult("The provided code is invalid.");
             }
 

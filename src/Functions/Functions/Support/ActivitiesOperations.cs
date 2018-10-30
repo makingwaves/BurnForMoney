@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
-using BurnForMoney.Functions.Queues;
+using BurnForMoney.Functions.Shared.Functions;
+using BurnForMoney.Functions.Shared.Queues;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
@@ -14,41 +15,45 @@ namespace BurnForMoney.Functions.Functions.Support
     public static class ActivitiesOperations
     {
         [FunctionName(FunctionsNames.Support_Strava_Activities_Collect)]
-        public static async Task<IActionResult> Support_Strava_CollectActivities([HttpTrigger(AuthorizationLevel.Admin, "get", Route = "support/strava/activities/collect")]HttpRequest req, ILogger log, 
-            [OrchestrationClient]DurableOrchestrationClient starter)
+        public static async Task<IActionResult> Support_Strava_CollectActivities([HttpTrigger(AuthorizationLevel.Admin, "post", Route = "support/strava/athlete/{athleteId}/activities/collect")]HttpRequest req, ILogger log,
+            [Queue(QueueNames.CollectAthleteActivities)] CloudQueue collectActivitiesQueues, int athleteId)
         {
             log.LogInformation($"{FunctionsNames.Support_Strava_Activities_Collect} function processed a request.");
-            string optimize = req.Query["optimize"];
-            var instanceId = await starter.StartNewAsync(FunctionsNames.O_CollectStravaActivities, optimize);
-
-            var payload = starter.CreateHttpManagementPayload(instanceId);
-            return new OkObjectResult(payload);
+            await collectActivitiesQueues.AddMessageAsync(new CloudQueueMessage(athleteId.ToString()));
+            return new OkResult();
         }
 
-        [FunctionName(FunctionsNames.Support_Strava_Activities_CollectMonthlyStatistics)]
-        public static async Task<IActionResult> Support_Strava_Activities_MonthlyStatisticsCollect([HttpTrigger(AuthorizationLevel.Admin, "get", Route = "support/strava/activities/collectmonthlystatistics/{year}/{month}")]HttpRequest req, ILogger log,
-            [OrchestrationClient]DurableOrchestrationClient starter, string year, string month)
+        [FunctionName(FunctionsNames.Support_Activities_CollectMonthlyStatistics)]
+        public static async Task<IActionResult> Support_Strava_Activities_MonthlyStatisticsCollect([HttpTrigger(AuthorizationLevel.Admin, "get", Route = "support/activities/collectmonthlystatistics/{year}/{month}")]HttpRequest req, ILogger log,
+            [Queue(QueueNames.CalculateMonthlyResults)] CloudQueue outputQueue, int year, int month)
         {
-            log.LogInformation($"{FunctionsNames.Support_Strava_Activities_CollectMonthlyStatistics} function processed a request.");
+            log.LogInformation($"{FunctionsNames.Support_Activities_CollectMonthlyStatistics} function processed a request.");
 
-            if (string.IsNullOrWhiteSpace(month))
+            if (month < 1 || month > 12)
             {
-                var errorMessage = "Function invoked with incorrect parameters. [month] is null or empty.";
+                const string errorMessage = "Function invoked with incorrect parameters. [month] must be in the range [1, 12].";
                 log.LogWarning(errorMessage);
                 return new BadRequestObjectResult(errorMessage);
             }
 
-            if (string.IsNullOrWhiteSpace(year))
+            if (year < 2018)
             {
-                var errorMessage = "Function invoked with incorrect parameters. [year] is null or empty.";
+                const string errorMessage = "Function invoked with incorrect parameters. [year] msut be greater or equal to 2018.";
                 log.LogWarning(errorMessage);
                 return new BadRequestObjectResult(errorMessage);
             }
 
-            var instanceId = await starter.StartNewAsync(FunctionsNames.O_CalculateMonthlyAthleteResults, (int.Parse(month), int.Parse(year)));
+            var request = new CalculateMonthlyResultsRequest
+            {
+                Month = month,
+                Year = year
+            };
 
-            var payload = starter.CreateHttpManagementPayload(instanceId);
-            return new OkObjectResult(payload);
+            var json = JsonConvert.SerializeObject(request);
+            await outputQueue.AddMessageAsync(new CloudQueueMessage(json));
+            log.LogInformation($"{FunctionsNames.T_CalculateMonthlyAthleteResultsFromPreviousMonth} Put a message to the queue `{request.Month / request.Year}`.");
+
+            return new OkResult();
         }
 
         [FunctionName(FunctionsNames.Support_Activities_Add)]
@@ -56,11 +61,11 @@ namespace BurnForMoney.Functions.Functions.Support
             ExecutionContext executionContext, [Queue(QueueNames.PendingRawActivities)] CloudQueue queue)
         {
             log.LogInformation($"{FunctionsNames.Support_Activities_Add} function processed a request.");
-            
+
             var data = await req.ReadAsStringAsync();
             try
             {
-                JsonConvert.DeserializeObject<PendingRawActivity>(data, 
+                JsonConvert.DeserializeObject<PendingRawActivity>(data,
                     new JsonSerializerSettings
                     {
                         MissingMemberHandling = MissingMemberHandling.Error

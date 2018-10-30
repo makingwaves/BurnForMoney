@@ -1,0 +1,1 @@
+﻿DROP TABLE dbo.[Athletes.UpdateHistory]

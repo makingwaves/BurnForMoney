@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
-using BurnForMoney.Functions.Helpers;
-using BurnForMoney.Functions.Queues;
+using BurnForMoney.Functions.Shared.Functions;
+using BurnForMoney.Functions.Shared.Queues;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
@@ -12,23 +12,23 @@ namespace BurnForMoney.Functions.Functions.Strava.AuthorizeNewAthlete
 {
     public static class AuthorizeNewAthleteStarter
     {
-        [FunctionName(FunctionsNames.AuthorizeNewAthleteStarter)]
-        public static async Task Start([QueueTrigger(QueueNames.AuthorizationCodes)]string myQueueItem, [OrchestrationClient]DurableOrchestrationClient starter, ILogger log, ExecutionContext executionContext)
+        [FunctionName(FunctionsNames.Strava_AuthorizeNewAthleteStarter)]
+        public static async Task Start([QueueTrigger(QueueNames.AuthorizationCodes)]string authorizationCode, [OrchestrationClient]DurableOrchestrationClient starter, ILogger log, ExecutionContext executionContext)
         {
-            log.LogInformation($"{FunctionsNames.AuthorizeNewAthleteStarter} queue trigger processed a request at {DateTime.UtcNow}.");
+            log.LogInformation($"{FunctionsNames.Strava_AuthorizeNewAthleteStarter} queue trigger processed a request at {DateTime.UtcNow}.");
 
-            var instanceId = await starter.StartNewAsync(FunctionsNames.O_AuthorizeNewAthlete, myQueueItem);
-            log.LogInformation($"Started orchestration function: `{FunctionsNames.O_AuthorizeNewAthlete}` with ID = `{instanceId}`.");
+            var instanceId = await starter.StartNewAsync(FunctionsNames.Strava_O_AuthorizeNewAthlete, authorizationCode);
+            log.LogInformation($"Started orchestration function: `{FunctionsNames.Strava_O_AuthorizeNewAthlete}` with ID = `{instanceId}`.");
         }
 
-        [FunctionName(FunctionsNames.SubmitAthleteApproval)]
+        [FunctionName(FunctionsNames.Strava_SubmitAthleteApproval)]
         public static async Task<IActionResult> SubmitAthleteApprovalAsync([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "SubmitAthleteApproval/{code}")] HttpRequest req,
             [OrchestrationClient] DurableOrchestrationClient client, 
             [Table("AthleteApprovals", "AthleteApproval", "{code}", Connection = "AzureWebJobsStorage")] AthleteApproval approval,
             ILogger log, string code)
         {
-            log.LogInformation($"{FunctionsNames.SubmitAthleteApproval} HTTP trigger processed a request.");
-
+            log.LogInformation($"{FunctionsNames.Strava_SubmitAthleteApproval} HTTP trigger processed a request.");
+            
             string result = req.Query["result"];
             if (string.IsNullOrWhiteSpace(result))
             {
@@ -48,8 +48,8 @@ namespace BurnForMoney.Functions.Functions.Strava.AuthorizeNewAthlete
             }
 
             log.LogInformation($"Sending athlete approval result to {approval.OrchestrationId} of {result}.");
-            await client.RaiseEventAsync(approval.OrchestrationId, EventNames.AthleteApproval, result);
-
+            await client.RaiseEventAsync(approval.OrchestrationId, "AthleteApproval", result);
+            
             return new OkObjectResult($"Thank you! Athlete has been {result.ToLowerInvariant()}.");
         }
     }

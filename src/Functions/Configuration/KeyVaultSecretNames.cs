@@ -2,7 +2,7 @@
 {
     public static class KeyVaultSecretNames
     {
-        public const string StravaTokensEncryptionKey = "stravaAccessTokensEncryptionKey";
+        public const string StravaTokensEncryptionKey = "strava--AccessTokensEncryptionKey";
         public const string SqlConnectionString = "SQLConnectionString";
     }
 }

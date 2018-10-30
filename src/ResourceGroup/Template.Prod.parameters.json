@@ -12,7 +12,7 @@
       "value": "miroslawa.zimon@makingwaves.com"
     },
     "cors.allowedOrigins": {
-      "value": [ "https://burnformoney-prod.azurewebsites.net/", "https://burnformoney-prod.azurewebsites.net", "http://bfm.makingwaves.pl" ]
+      "value": [ "https://burnformoney-prod.azurewebsites.net/", "https://burnformoney-prod.azurewebsites.net", "http://bfm.makingwaves.pl", "http://bfm.makingwaves.com", "https://bfm.makingwaves.com" ]
     },
     "sqlServerPassword": {
       "reference": {
@@ -27,7 +27,7 @@
         "keyVault": {
           "id": "/subscriptions/4920733c-19cb-4434-819c-176ee48f6453/resourceGroups/BurnForMoney-Prod/providers/Microsoft.KeyVault/vaults/burnformoneykvprod"
         },
-        "secretName": "stravaClientId"
+        "secretName": "strava--ClientId"
       }
     },
     "strava.clientSecret": {
@@ -35,7 +35,7 @@
         "keyVault": {
           "id": "/subscriptions/4920733c-19cb-4434-819c-176ee48f6453/resourceGroups/BurnForMoney-Prod/providers/Microsoft.KeyVault/vaults/burnformoneykvprod"
         },
-        "secretName": "stravaClientSecret"
+        "secretName": "strava--ClientSecret"
       }
     },
     "sendGrid.apiKey": {
@@ -43,7 +43,7 @@
         "keyVault": {
           "id": "/subscriptions/4920733c-19cb-4434-819c-176ee48f6453/resourceGroups/BurnForMoney-Prod/providers/Microsoft.KeyVault/vaults/burnformoneykvprod"
         },
-        "secretName": "sendGridApiKey"
+        "secretName": "sendGrid--ApiKey"
       }
     }
   }

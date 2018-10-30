@@ -2,13 +2,9 @@
 
 [![burn-for-money-video](https://img.youtube.com/vi/8d6wT1Iu0-A/0.jpg)](https://www.youtube.com/watch?v=8d6wT1Iu0-A)
 
-
-
 ## Documentation
 
 GitHub wiki: https://github.com/makingwaves/BurnForMoney/wiki
-
-Sharepoint: https://makingwaves.sharepoint.com/sites/BurnforMoney
 
 ## Supported systems
 
@@ -31,7 +27,7 @@ Sharepoint: https://makingwaves.sharepoint.com/sites/BurnforMoney
   - Website: https://burnformoney-test.azurewebsites.net/
   - Api: https://burnformoneyfunc-test.azurewebsites.net/
 - **Production:**
-  - Website: https://bfm.makingwaves.pl/
+  - Website: https://bfm.makingwaves.com/
   - Api: https://burnformoneyfunc-prod.azurewebsites.net/
 
 ## Code of conduct

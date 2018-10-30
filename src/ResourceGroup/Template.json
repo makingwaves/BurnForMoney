@@ -243,6 +243,10 @@
             {
               "name": "Email.AthletesApprovalEmail",
               "value": "[parameters('email.athletesApprovalEmail')]"
+            },
+            {
+              "name": "WEB_HOST",
+              "value": "[concat('https://', variables('functionAppName'), '.azurewebsites.net')]"
             }
           ]
         }
@@ -273,13 +277,6 @@
       "apiVersion": "2018-02-01",
       "location": "[resourceGroup().location]",
       "properties": {
-        "ipSecurityRestrictions": [
-          {
-            "ipAddress": "89.174.102.0/26",
-            "priority": 110,
-            "name": "Allow Making Waves"
-          }
-        ],
         "cors": {
           "allowedOrigins": "[parameters('cors.allowedOrigins')]"
         }
