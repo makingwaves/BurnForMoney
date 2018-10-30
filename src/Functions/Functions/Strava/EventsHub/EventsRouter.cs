@@ -23,18 +23,20 @@ namespace BurnForMoney.Functions.Functions.Strava.EventsHub
             ILogger log, ExecutionContext executionContext,
             [Queue(QueueNames.StravaEventsActivityAdd)] CloudQueue addActivityQueue,
             [Queue(QueueNames.StravaEventsActivityUpdate)] CloudQueue updateActivityQueue,
-            [Queue(QueueNames.StravaEventsActivityDelete)] CloudQueue deleteActivityQueue)
+            [Queue(QueueNames.StravaEventsActivityDelete)] CloudQueue deleteActivityQueue,
+            [Queue(QueueNames.StravaEventsAthleteDeauthorized)] CloudQueue deauthorizationQueue)
         {
             log.LogInformation($"{FunctionsNames.Strava_EventsRouter} function processed a request.");
 
+            var message = new ActivityData
+            {
+                AthleteId = @event.OwnerId,
+                ActivityId = @event.ObjectId
+            };
+            var json = JsonConvert.SerializeObject(message);
+
             if (@event.ObjectType == ObjectType.Activity)
             {
-                var message = new ActivityData
-                {
-                    AthleteId = @event.OwnerId,
-                    ActivityId = @event.ObjectId
-                };
-                var json = JsonConvert.SerializeObject(message);
 
                 switch (@event.AspectType)
                 {
@@ -57,7 +59,27 @@ namespace BurnForMoney.Functions.Functions.Strava.EventsHub
             }
             else
             {
-                throw new NotImplementedException();
+                log.LogInformation($"{FunctionsNames.Strava_EventsRouter} adding message to {QueueNames.StravaEventsAthleteDeauthorized} queue.");
+                await deauthorizationQueue.AddMessageAsync(new CloudQueueMessage(json));
+            }
+        }
+
+        [FunctionName(FunctionsNames.Strava_Events_DeauthorizedAthlete)]
+        public static async Task Strava_Events_DeauthorizedAthlete([QueueTrigger(QueueNames.StravaEventsAthleteDeauthorized)] ActivityData @event,
+            ILogger log, ExecutionContext executionContext)
+        {
+            log.LogInformation($"{FunctionsNames.Strava_Events_NewActivity} function processed a request.");
+
+            var configuration = ApplicationConfiguration.GetSettings(executionContext);
+
+            using (var conn = new SqlConnection(configuration.ConnectionStrings.SqlDbConnectionString))
+            {
+                var affectedRows = await conn.ExecuteAsync(@"UPDATE dbo.Athletes SET Active=0 WHERE ExternalId=@AthleteId", new { @event.AthleteId });
+
+                if (affectedRows == 1)
+                {
+                    log.LogInformation($"{FunctionsNames.Strava_Events_NewActivity} successfully deauthorized athlete with id: {@event.AthleteId}.");
+                }
             }
         }
 

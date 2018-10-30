@@ -1,4 +1,7 @@
-﻿using Newtonsoft.Json;
+﻿using System;
+using System.Collections.Generic;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace BurnForMoney.Functions.Functions.Strava.EventsHub
 {
@@ -16,6 +19,9 @@ namespace BurnForMoney.Functions.Functions.Strava.EventsHub
         public int OwnerId { get; set; }
         [JsonProperty("subscription_id")]
         public int SubscriptionId { get; set; }
+        [JsonProperty("updates")]
+        [JsonConverter(typeof(SingleOrArrayConverter<Update>))]
+        public List<Update> Updates { get; set; }
     }
 
     public enum AspectType
@@ -29,5 +35,50 @@ namespace BurnForMoney.Functions.Functions.Strava.EventsHub
     {
         Activity,
         Athlete
+    }
+
+    public class Update
+    {
+        [JsonProperty("title")]
+        public string Title { get; set; }
+        [JsonProperty("type")]
+        public string Type { get; set; }
+        [JsonProperty("private")]
+        public bool Private { get; set; }
+        [JsonProperty("authorized")]
+        public bool Authorized { get; set; }
+    }
+
+    public class SingleOrArrayConverter<T> : JsonConverter
+    {
+        public override bool CanConvert(Type objectType)
+        {
+            return (objectType == typeof(List<T>));
+        }
+
+        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+        {
+            var token = JToken.Load(reader);
+            if (token.Type == JTokenType.Array)
+            {
+                return token.ToObject<List<T>>();
+            }
+
+            var test = token.ToObject<T>();
+
+            return new List<T> { token.ToObject<T>() };
+        }
+
+        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+        {
+            List<T> list = (List<T>)value;
+            if (list.Count == 1)
+            {
+                value = list[0];
+            }
+            serializer.Serialize(writer, value);
+        }
+
+        public override bool CanWrite => true;
     }
 }
