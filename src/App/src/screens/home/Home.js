@@ -7,7 +7,7 @@ import CharitySlider from './CharitySlider/CharitySlider.js';
 import TeamGoals from './TeamGoals/TeamGoals.js';
 import HowItWorks from './HowItWorks/HowItWorks.js';
 import InstaGallery from './InstaGallery/InstaGallery.js';
-import AboutEngagement from './AboutEngagement/AboutEngagement.js';
+import OtherInitiatives from './OtherInitiatives/OtherInitiatives.js';
 import Footer from 'components/Footer/Footer.js';
 
 class Home extends Component {
@@ -30,7 +30,7 @@ class Home extends Component {
         <TeamGoals/>
         <HowItWorks/>
         <InstaGallery/>
-        <AboutEngagement/>
+        <OtherInitiatives/>
         <Footer/>
       </div>
     );
