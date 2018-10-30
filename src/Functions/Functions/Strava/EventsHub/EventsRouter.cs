@@ -68,7 +68,7 @@ namespace BurnForMoney.Functions.Functions.Strava.EventsHub
         {
             log.LogInformation($"{FunctionsNames.Strava_Events_NewActivity} function processed a request.");
 
-            var configuration = await ApplicationConfiguration.GetSettingsAsync(executionContext);
+            var configuration = ApplicationConfiguration.GetSettings(executionContext);
             var accessToken = await GetAccessToken(@event.AthleteId, configuration);
 
             var activity = StravaService.GetActivity(accessToken, @event.ActivityId);
@@ -96,7 +96,7 @@ namespace BurnForMoney.Functions.Functions.Strava.EventsHub
         {
             log.LogInformation($"{FunctionsNames.Strava_Events_UpdateActivity} function processed a request.");
 
-            var configuration = await ApplicationConfiguration.GetSettingsAsync(executionContext);
+            var configuration = ApplicationConfiguration.GetSettings(executionContext);
             var accessToken = await GetAccessToken(@event.AthleteId, configuration);
 
             var activity = StravaService.GetActivity(accessToken, @event.ActivityId);
@@ -133,8 +133,8 @@ WHERE Athletes.ExternalId=@AthleteId", new { AthleteId = athleteId });
                 }
             }
 
-            accessToken = await AccessTokensEncryptionService.DecryptAsync(accessToken,
-                configuration.ConnectionStrings.KeyVaultConnectionString);
+            accessToken = AccessTokensEncryptionService.Decrypt(accessToken,
+                configuration.Strava.AccessTokensEncryptionKey);
 
             return accessToken;
         }
@@ -145,7 +145,7 @@ WHERE Athletes.ExternalId=@AthleteId", new { AthleteId = athleteId });
         {
             log.LogInformation($"{FunctionsNames.Strava_Events_NewActivity} function processed a request.");
 
-            var configuration = await ApplicationConfiguration.GetSettingsAsync(executionContext);
+            var configuration = ApplicationConfiguration.GetSettings(executionContext);
             using (var conn = new SqlConnection(configuration.ConnectionStrings.SqlDbConnectionString))
             {
                 var affectedRows = await conn.ExecuteAsync(@"DELETE FROM dbo.Activities WHERE ActivityId=@ActivityId", new { @event.ActivityId });

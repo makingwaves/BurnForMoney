@@ -43,7 +43,7 @@ namespace BurnForMoney.Functions.Functions.Public
 
         private static async Task<object> GetTotalNumbersAsync(ExecutionContext executionContext)
         {
-            var configuration = await ApplicationConfiguration.GetSettingsAsync(executionContext);
+            var configuration = ApplicationConfiguration.GetSettings(executionContext);
             using (var conn = new SqlConnection(configuration.ConnectionStrings.SqlDbConnectionString))
             {
                 var jsonResults = await conn.QueryAsync<(string date, string json)>("SELECT Date, Results FROM dbo.[MonthlyResultsSnapshots]")

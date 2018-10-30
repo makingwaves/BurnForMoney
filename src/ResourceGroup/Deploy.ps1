@@ -75,7 +75,7 @@ if ($DeployArm)
 
 if ($UpgradeDatabase -And (-Not $ErrorMessages))
 {
-	$connectionStringSecret = Get-AzureKeyVaultSecret -VaultName $KeyVaultName -Name "SQLConnectionString"
+	$connectionStringSecret = Get-AzureKeyVaultSecret -VaultName $KeyVaultName -Name "ConnectionStrings--Sql"
 	Upgrade-Database -ConnectionString $connectionStringSecret.SecretValueText -ScriptsPath "$PSScriptRoot\SqlScripts\"
 }
 

@@ -81,12 +81,6 @@
     "strava.clientId": {
       "type": "securestring"
     },
-    "strava.clientSecret": {
-      "type": "securestring"
-    },
-    "sendGrid.apiKey": {
-      "type": "securestring"
-    },
     "email.athletesApprovalEmail": {
       "type": "string"
     },
@@ -229,46 +223,24 @@
               "value": "[reference(concat('microsoft.insights/components/', variables('appInsightsName'))).InstrumentationKey]"
             },
             {
-              "name": "Strava.ClientId",
+              "name": "Strava:ClientId",
               "value": "[parameters('strava.clientId')]"
             },
             {
-              "name": "Strava.ClientSecret",
-              "value": "[parameters('strava.clientSecret')]"
-            },
-            {
-              "name": "SendGrid.ApiKey",
-              "value": "[parameters('sendGrid.apiKey')]"
-            },
-            {
-              "name": "Email.AthletesApprovalEmail",
+              "name": "Email:AthletesApprovalEmail",
               "value": "[parameters('email.athletesApprovalEmail')]"
             },
             {
               "name": "WEB_HOST",
               "value": "[concat('https://', variables('functionAppName'), '.azurewebsites.net')]"
+            },
+            {
+              "name": "KeyVaultName",
+              "value": "[variables('keyVaultName')]"
             }
           ]
         }
-      },
-      "resources": [
-        {
-          "apiVersion": "2015-08-01",
-          "type": "config",
-          "name": "connectionstrings",
-          "dependsOn": [
-            "[concat('Microsoft.Web/Sites/', variables('functionAppName'))]",
-            "[concat('Microsoft.Storage/storageAccounts/', variables('functionStorageAccountName'))]",
-            "[concat('Microsoft.Sql/servers/', variables('sqlServerName'))]"
-          ],
-          "properties": {
-            "KeyVault.ConnectionString": {
-              "type": "Custom",
-              "value": "[concat('https://', variables('keyVaultName'), '.vault.azure.net/')]"
-            }
-          }
-        }
-      ]
+      }
     },
     {
       "comments": "Function App - Properties (CORS, etc)",
@@ -371,8 +343,8 @@
             "tenantId": "[reference(concat('Microsoft.Web/sites/', variables('functionAppName')), '2015-08-01', 'Full').identity.tenantId]",
             "objectId": "[reference(concat('Microsoft.Web/sites/', variables('functionAppName')), '2015-08-01', 'Full').identity.principalId]",
             "permissions": {
-              "keys": [ "get" ],
-              "secrets": [ "get" ]
+              "keys": [ "get", "list" ],
+              "secrets": [ "get", "list" ]
             }
           }
         ]
@@ -380,7 +352,7 @@
     },
     {
       "type": "Microsoft.KeyVault/vaults/secrets",
-      "name": "[concat(variables('keyVaultName'), '/', 'SQLConnectionString')]",
+      "name": "[concat(variables('keyVaultName'), '/', 'ConnectionStrings--Sql')]",
       "apiVersion": "2015-06-01",
       "properties": {
         "value": "[concat('Data Source=tcp:', reference(concat('Microsoft.Sql/servers/', variables('sqlserverName'))).fullyQualifiedDomainName, ',1433;Initial Catalog=', variables('sqlDbName'), ';User Id=', parameters('sqlServerLogin'), ';Password=', parameters('sqlServerPassword'), ';')]"

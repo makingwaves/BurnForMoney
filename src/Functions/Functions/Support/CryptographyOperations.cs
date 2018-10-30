@@ -14,7 +14,7 @@ namespace BurnForMoney.Functions.Functions.Support
     public static class CryptographyOperations
     {
         [FunctionName(FunctionsNames.Support_EncryptString)]
-        public static async Task<IActionResult> RunEncryptString([HttpTrigger(AuthorizationLevel.Admin, "get", Route = "support/encryptstring/{text}")]HttpRequest req, ILogger log, ExecutionContext context, string text)
+        public static IActionResult RunEncryptString([HttpTrigger(AuthorizationLevel.Admin, "get", Route = "support/encryptstring/{text}")]HttpRequest req, ILogger log, ExecutionContext context, string text)
         {
             log.LogInformation($"{FunctionsNames.Support_EncryptString} function processed a request.");
 
@@ -24,16 +24,14 @@ namespace BurnForMoney.Functions.Functions.Support
                 return new BadRequestObjectResult("Text is required.");
             }
 
-            var configuration = await ApplicationConfiguration.GetSettingsAsync(context);
-            var keyVaultConnectionString = configuration.ConnectionStrings.KeyVaultConnectionString;
-            var encryptionKey = await GetEncryptionKeyAsync(keyVaultConnectionString).ConfigureAwait(false);
-            var encryptedText = Cryptography.EncryptString(text, encryptionKey);
+            var configuration = ApplicationConfiguration.GetSettings(context);
+            var encryptedText = Cryptography.EncryptString(text, configuration.Strava.AccessTokensEncryptionKey);
 
             return new OkObjectResult(encryptedText);
         }
 
         [FunctionName(FunctionsNames.Support_DecryptString)]
-        public static async Task<IActionResult> RunDecryptString([HttpTrigger(AuthorizationLevel.Admin, "get", Route = "support/decryptstring/{text}")]HttpRequest req, ILogger log, ExecutionContext context, string text)
+        public static IActionResult RunDecryptString([HttpTrigger(AuthorizationLevel.Admin, "get", Route = "support/decryptstring/{text}")]HttpRequest req, ILogger log, ExecutionContext context, string text)
         {
             log.LogInformation($"{FunctionsNames.Support_DecryptString} function processed a request.");
 
@@ -45,23 +43,12 @@ namespace BurnForMoney.Functions.Functions.Support
 
             text = FillMissingSpecialCharacters(text);
 
-            var configuration = await ApplicationConfiguration.GetSettingsAsync(context);
-            var keyVaultConnectionString = configuration.ConnectionStrings.KeyVaultConnectionString;
-            var encryptionKey = await GetEncryptionKeyAsync(keyVaultConnectionString).ConfigureAwait(false);
-            var encryptedText = Cryptography.DecryptString(text, encryptionKey);
+            var configuration = ApplicationConfiguration.GetSettings(context);
+            var encryptedText = Cryptography.DecryptString(text, configuration.Strava.AccessTokensEncryptionKey);
 
             return new OkObjectResult(encryptedText);
         }
 
         private static string FillMissingSpecialCharacters(string text) => text.Replace(" ", "+");
-
-        private static async Task<string> GetEncryptionKeyAsync(string keyVaultConnectionString)
-        {
-            var keyVaultClient = KeyVaultClientFactory.Create();
-
-            var secret = await keyVaultClient.GetSecretAsync(keyVaultConnectionString, KeyVaultSecretNames.StravaTokensEncryptionKey)
-                .ConfigureAwait(false);
-            return secret.Value;
-        }
     }
 }

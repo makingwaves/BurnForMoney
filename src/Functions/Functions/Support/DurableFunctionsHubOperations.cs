@@ -21,7 +21,7 @@ namespace BurnForMoney.Functions.Functions.Support
             ILogger log, ExecutionContext context)
         {
             log.LogInformation($"{FunctionsNames.Support_PurgeDurableHubHistory} function processed a request.");
-            var configuration = await ApplicationConfiguration.GetSettingsAsync(context);
+            var configuration = ApplicationConfiguration.GetSettings(context);
 
             var settings = new AzureStorageOrchestrationServiceSettings
             {

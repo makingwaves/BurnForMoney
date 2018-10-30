@@ -20,7 +20,7 @@ namespace BurnForMoney.Functions.Functions
         {
             log.LogInformation($"{FunctionsNames.Q_SubmitAthleteActivity} function processed a request.");
 
-            var configuration = await ApplicationConfiguration.GetSettingsAsync(executionContext);
+            var configuration = ApplicationConfiguration.GetSettings(executionContext);
             using (var conn = new SqlConnection(configuration.ConnectionStrings.SqlDbConnectionString))
             {
                 var athleteId = AthleteIdsMappings.GetOrAdd(activity.SourceAthleteId,

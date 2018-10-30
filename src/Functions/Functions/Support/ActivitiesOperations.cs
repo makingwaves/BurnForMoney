@@ -38,7 +38,7 @@ namespace BurnForMoney.Functions.Functions.Support
 
             if (year < 2018)
             {
-                const string errorMessage = "Function invoked with incorrect parameters. [year] msut be greater or equal to 2018.";
+                const string errorMessage = "Function invoked with incorrect parameters. [year] must be greater or equal to 2018.";
                 log.LogWarning(errorMessage);
                 return new BadRequestObjectResult(errorMessage);
             }
