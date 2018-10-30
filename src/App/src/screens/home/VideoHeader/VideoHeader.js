@@ -30,7 +30,6 @@ function updateVideoDimensions(video){
   }
 }
 
-
 // setAppElement() - hide application from screenreaders and other assistive technologies while the modal is open
 Modal.setAppElement('#root');
 
