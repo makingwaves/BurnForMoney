@@ -59,9 +59,6 @@ class CurrentCharts extends Component {
     if(this.props.data){
       let mostFrequentActivities = this.props.data.thisMonth.mostFrequentActivities;
       let thisMonthPoints = this.props.data.thisMonth.points;
-      console.log(iconRide);
-      console.log('1', mostFrequentActivities);
-
 
       frequentActivitiesList = mostFrequentActivities.map( i =>
 

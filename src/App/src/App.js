@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
 import {
   BrowserRouter as Router,
-  Route,
-  Link
+  Route
 } from 'react-router-dom';
 
 import Home from './screens/home/Home';
@@ -14,16 +13,6 @@ class App extends Component {
     return (
       <Router>
         <div className="App">
-          {/*
-          <ul>
-            <li>
-              <Link to="/">Home</Link>
-            </li>
-            <li>
-              <Link to="/strava">Strava Authorization</Link>
-            </li>
-          </ul>
-          */}
           <Route exact path="/" component={Home} />
           <Route path="/strava" component={StravaAuth} />
         </div>
