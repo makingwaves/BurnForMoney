@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data;
 using System.Data.SqlClient;
 using System.Threading.Tasks;
 using BurnForMoney.Functions.Configuration;
@@ -27,49 +28,22 @@ namespace BurnForMoney.Functions.Functions.Strava
             using (var conn = new SqlConnection(configuration.ConnectionStrings.SqlDbConnectionString))
             {
                 conn.Open();
-
-                var id = await conn.QuerySingleOrDefaultAsync<int>("SELECT Id FROM dbo.Athletes WHERE ExternalId=@AthleteId", new { athlete.AthleteId });
-                if (id > 0)
-                {
-                    log.LogError($"Athlete with id: {athlete.AthleteId} already exists.");
-                    await newAthletesRequestPoisonQueue.AddMessageAsync(new CloudQueueMessage(JsonConvert.SerializeObject(athlete)));
-                    return;
-                }
-
+                
                 int athleteId;
                 log.LogInformation("Beginning a new database transaction...");
                 using (var transaction = conn.BeginTransaction())
                 {
                     try
                     {
-                        var sql = @"INSERT INTO dbo.Athletes(ExternalId, FirstName, LastName, ProfilePictureUrl, Active, System)
-                                    OUTPUT INSERTED.[Id]
-                                    VALUES(@AthleteId, @FirstName, @LastName, @ProfilePictureUrl, @Active, @System)";
-                        athleteId = await conn.QuerySingleAsync<int>(sql, new
-                        {
-                            athlete.AthleteId,
-                            athlete.FirstName,
-                            athlete.LastName,
-                            athlete.ProfilePictureUrl,
-                            Active = true,
-                            System = "Strava"
-                        }, transaction);
+                        athleteId = await UpsertAthlete(athlete, conn, transaction);
                         if (athleteId < 1)
                         {
                             throw new Exception("Failed to add a new athlete.");
                         }
                         log.LogInformation($"Inserted athlete with id: {athleteId}.");
 
-                        sql = @"INSERT INTO dbo.[Strava.AccessTokens](AthleteId, AccessToken, RefreshToken, ExpiresAt)
-                                    VALUES(@AthleteId, @AccessToken, @RefreshToken, @ExpiresAt)";
-                        var affectedRows = await conn.ExecuteAsync(sql, new
-                        {
-                            AthleteId = athleteId,
-                            AccessToken = athlete.EncryptedAccessToken,
-                            RefreshToken = athlete.EncryptedRefreshToken,
-                            ExpiresAt = athlete.TokenExpirationDate
-                        }, transaction);
-                        if (affectedRows != 1)
+                        var result = await UpsertAccessToken(athleteId, athlete, conn, transaction);
+                        if (!result)
                         {
                             throw new Exception("Failed to insert access tokens.");
                         }
@@ -86,8 +60,52 @@ namespace BurnForMoney.Functions.Functions.Strava
                     }
                 }
 
+                await Task.Delay(1000);
                 await collectActivitiesQueues.AddMessageAsync(new CloudQueueMessage(athleteId.ToString()));
             }
+        }
+
+        private static async Task<int> UpsertAthlete(NewStravaAthlete athlete, IDbConnection conn, IDbTransaction transaction)
+        {
+            const string sql = @"
+    IF EXISTS (SELECT * FROM dbo.Athletes WITH (UPDLOCK) WHERE ExternalId=@AthleteId)
+      UPDATE dbo.Athletes
+         SET FirstName = @FirstName, LastName = @LastName, ProfilePictureUrl = @ProfilePictureUrl, Active = @Active, System = @System
+         OUTPUT INSERTED.[Id]
+       WHERE ExternalId = @AthleteId;
+    ELSE 
+      INSERT INTO dbo.Athletes(ExternalId, FirstName, LastName, ProfilePictureUrl, Active, System)
+                                    OUTPUT INSERTED.[Id]
+                                    VALUES(@AthleteId, @FirstName, @LastName, @ProfilePictureUrl, @Active, @System)";
+            return await conn.QuerySingleAsync<int>(sql, new
+            {
+                athlete.AthleteId,
+                athlete.FirstName,
+                athlete.LastName,
+                athlete.ProfilePictureUrl,
+                Active = true,
+                System = "Strava"
+            }, transaction);
+        }
+
+        private static async Task<bool> UpsertAccessToken(int athleteId, NewStravaAthlete athlete, IDbConnection conn, IDbTransaction transaction)
+        {
+            const string sql = @"
+    IF EXISTS (SELECT * FROM dbo.[Strava.AccessTokens] WITH (UPDLOCK) WHERE AthleteId=@AthleteId)
+      UPDATE dbo.[Strava.AccessTokens]
+         SET AccessToken = @AccessToken, RefreshToken = @RefreshToken, ExpiresAt = @ExpiresAt
+       WHERE AthleteId = @AthleteId;
+    ELSE 
+      INSERT INTO dbo.[Strava.AccessTokens](AthleteId, AccessToken, RefreshToken, ExpiresAt)
+                                    VALUES(@AthleteId, @AccessToken, @RefreshToken, @ExpiresAt)";
+            var affectedRows = await conn.ExecuteAsync(sql, new
+            {
+                AthleteId = athleteId,
+                AccessToken = athlete.EncryptedAccessToken,
+                RefreshToken = athlete.EncryptedRefreshToken,
+                ExpiresAt = athlete.TokenExpirationDate
+            }, transaction);
+            return affectedRows == 1;
         }
     }
 }

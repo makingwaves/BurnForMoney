@@ -28,7 +28,10 @@ namespace BurnForMoney.Functions.Functions.Strava.RefreshTokens
             IEnumerable<(int AthleteId, string EncryptedRefreshToken)> expiringTokens;
             using (var conn = new SqlConnection(configuration.ConnectionStrings.SqlDbConnectionString))
             {
-                expiringTokens = await conn.QueryAsync<(int, string)>("SELECT AthleteId, RefreshToken as EncryptedRefreshToken FROM dbo.[Strava.AccessTokens] WHERE ExpiresAt < @DateTo",
+                expiringTokens = await conn.QueryAsync<(int, string)>(@"SELECT AthleteId, RefreshToken as EncryptedRefreshToken
+FROM dbo.[Strava.AccessTokens] AS Tokens
+INNER JOIN dbo.Athletes AS Athletes ON (Athletes.Id = Tokens.AthleteId)
+WHERE Tokens.ExpiresAt < @DateTo AND Athletes.Active=1",
                     new
                     {
                         DateTo = DateTime.UtcNow.AddHours(1)
