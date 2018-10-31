@@ -49,7 +49,7 @@ namespace BurnForMoney.Functions.Functions.Strava.EventsHub
 
         private static async Task<HttpResponseMessage> WarmUpValidationFunction(string url, ILogger log)
         {
-            HttpResponseMessage response = await HttpClient.GetAsync(url + "?warmUp=true");
+            var response = await HttpClient.GetAsync(url + "?warmUp=true");
             if (response.IsSuccessStatusCode)
             {
                 log.LogInformation($"Successfully warmed up callback function: '{url}'");

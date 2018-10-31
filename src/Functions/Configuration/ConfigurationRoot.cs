@@ -7,6 +7,7 @@ namespace BurnForMoney.Functions.Configuration
         public ConnectionStringsSection ConnectionStrings { get; set; }
         public bool IsLocalEnvironment { get; set; }
         public string HostName { get; set; }
+        public string ApplicationInsightsInstrumentationKey { get; set; }
 
         public bool IsValid()
         {
