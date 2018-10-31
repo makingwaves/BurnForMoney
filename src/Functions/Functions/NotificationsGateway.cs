@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using BurnForMoney.Functions.Configuration;
@@ -12,6 +14,8 @@ namespace BurnForMoney.Functions.Functions
 {
     public static class NotificationsGateway
     {
+        private static string EmailTemplate;
+
         [FunctionName(FunctionsNames.NotificationsGateway)]
         public static async Task SendEmail([QueueTrigger(QueueNames.NotificationsToSend)] Notification notification, ILogger log, ExecutionContext context,
             [SendGrid(ApiKey = "SendGrid:ApiKey")] IAsyncCollector<SendGridMessage> messageCollector)
@@ -25,10 +29,21 @@ namespace BurnForMoney.Functions.Functions
 
             message.AddTos(notification.Recipients.Select(email => new EmailAddress(email)).ToList());   
             message.Subject = notification.Subject;
-            message.HtmlContent = notification.HtmlContent;
+            message.HtmlContent = ApplyTemplate(notification.HtmlContent, context);
 
             log.LogInformation($"Sending message to: [{string.Join(", ", notification.Recipients)}].");
             await messageCollector.AddAsync(message);
+        }
+
+        private static string ApplyTemplate(string content, ExecutionContext context)
+        {
+            if (string.IsNullOrWhiteSpace(EmailTemplate))
+            {
+                var path = Path.Combine(context.FunctionAppDirectory + "\\Resources\\", "email_template.txt");
+                EmailTemplate = File.ReadAllText(path);
+            }
+
+            return EmailTemplate.Replace("%%%content%%%", content);
         }
     }
 
