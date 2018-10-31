@@ -73,12 +73,11 @@ namespace BurnForMoney.Functions.External.Strava.Api
 
         public IList<StravaActivity> GetActivities(string accessToken, DateTime? from = null, int page = 1)
         {
-            var request = new RestRequest("api/v3/athlete/activities", Method.GET);
+            var request = new RestRequest("api/v3/athlete/activities");
             request.AddQueryParameter("access_token", accessToken);
             if (from != null)
             {
-                var fixedDate = from.Value.AddHours(-6); // Start dates in Strava are not accurate https://groups.google.com/forum/#!topic/strava-api/s1OH5mcmCo8
-                request.AddQueryParameter("after", UnitsConverter.ConvertDateTimeToEpoch(fixedDate).ToString());
+                request.AddQueryParameter("after", UnitsConverter.ConvertDateTimeToEpoch(from.Value).ToString());
             }
             request.AddQueryParameter("per_page", ActivitiesPerPage.ToString());
             request.AddQueryParameter("page", page.ToString());
