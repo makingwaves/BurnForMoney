@@ -51,5 +51,8 @@ namespace BurnForMoney.Functions.Shared.Functions
 
         public const string Support_ReprocessPoisonQueueMessages = "Support_ReprocessPoisonQueueMessages";
         public const string Support_PurgeDurableHubHistory = "Support_PurgeDurableHubHistory";
+
+
+        public const string NotificationsGateway = "NotificationsGateway";
     }
 }

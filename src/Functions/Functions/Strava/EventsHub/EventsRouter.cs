@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Threading.Tasks;
 using BurnForMoney.Functions.Configuration;
@@ -11,6 +12,7 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 using Microsoft.WindowsAzure.Storage.Queue;
 using Newtonsoft.Json;
+using SendGrid.Helpers.Mail;
 
 namespace BurnForMoney.Functions.Functions.Strava.EventsHub
 {
@@ -57,16 +59,21 @@ namespace BurnForMoney.Functions.Functions.Strava.EventsHub
                 }
                 log.LogInformation($"{FunctionsNames.Strava_EventsRouter} messages has been added.");
             }
-            else
+            else if (@event.ObjectType == ObjectType.Athlete)
             {
                 log.LogInformation($"{FunctionsNames.Strava_EventsRouter} adding message to {QueueNames.StravaEventsAthleteDeauthorized} queue.");
                 await deauthorizationQueue.AddMessageAsync(new CloudQueueMessage(json));
+            }
+            else
+            {
+                throw new Exception($"Unknown event type: {@event.ObjectType}");
             }
         }
 
         [FunctionName(FunctionsNames.Strava_Events_DeauthorizedAthlete)]
         public static async Task Strava_Events_DeauthorizedAthlete([QueueTrigger(QueueNames.StravaEventsAthleteDeauthorized)] ActivityData @event,
-            ILogger log, ExecutionContext executionContext)
+            ILogger log, ExecutionContext executionContext,
+            [Queue(QueueNames.NotificationsToSend)] CloudQueue notificationsQueue)
         {
             log.LogInformation($"{FunctionsNames.Strava_Events_NewActivity} function processed a request.");
 
@@ -79,6 +86,17 @@ namespace BurnForMoney.Functions.Functions.Strava.EventsHub
                 if (affectedRows == 1)
                 {
                     log.LogInformation($"{FunctionsNames.Strava_Events_NewActivity} successfully deauthorized athlete with id: {@event.AthleteId}.");
+
+                    (string FirstName, string LastName) athlete = await conn.QuerySingleAsync<ValueTuple<string, string>>(
+                        "SELECT FirstName, LastName from dbo.Athletes WHERE ExternalId=@AthleteId", new { @event.AthleteId });
+
+                    var notification = new Notification
+                    {
+                        Recipients = new List<string> { configuration.Email.DefaultRecipient },
+                        Subject = "Athlete revoked authorization",
+                        HtmlContent = $"Athlete: {athlete.FirstName} {athlete.LastName} [{@event.AthleteId}] revoked authorization."
+                    };
+                    await notificationsQueue.AddMessageAsync(new CloudQueueMessage(JsonConvert.SerializeObject(notification)));
                 }
             }
         }

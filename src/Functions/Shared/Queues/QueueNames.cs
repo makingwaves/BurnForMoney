@@ -26,5 +26,7 @@
         public const string StravaEventsActivityUpdate = "strava-events-activity-update";
         public const string StravaEventsActivityDelete = "strava-events-activity-delete";
         public const string StravaEventsAthleteDeauthorized = "strava-events-athlete-deauthorized";
+
+        public const string NotificationsToSend = "notifications-to-send";
     }
 }

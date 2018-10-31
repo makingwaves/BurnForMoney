@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using BurnForMoney.Functions.Configuration;
 using BurnForMoney.Functions.External.Strava.Api;
@@ -6,6 +7,8 @@ using BurnForMoney.Functions.Shared.Functions;
 using BurnForMoney.Functions.Shared.Queues;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
+using Microsoft.WindowsAzure.Storage.Queue;
+using Newtonsoft.Json;
 using SendGrid.Helpers.Mail;
 
 namespace BurnForMoney.Functions.Functions.Strava.AuthorizeNewAthlete
@@ -41,7 +44,7 @@ namespace BurnForMoney.Functions.Functions.Strava.AuthorizeNewAthlete
         
         [FunctionName(FunctionsNames.Strava_A_SendAthleteApprovalRequest)]
         public static async Task A_SendAthleteApprovalRequest([ActivityTrigger]DurableActivityContext activityContext, ILogger log,
-            ExecutionContext context, [SendGrid(ApiKey = "SendGrid:ApiKey")] IAsyncCollector<SendGridMessage> messageCollector,
+            ExecutionContext context, [Queue(QueueNames.NotificationsToSend)] CloudQueue notificationsQueue,
             [Table("AthleteApprovals", "AzureWebJobsStorage")] IAsyncCollector<AthleteApproval> athleteApprovalCollector)
         {
             var (firstName, lastName) = activityContext.GetInput<(string, string)>();
@@ -56,21 +59,19 @@ namespace BurnForMoney.Functions.Functions.Strava.AuthorizeNewAthlete
                 OrchestrationId = activityContext.InstanceId
             };
 
-            var message = new SendGridMessage
-            {
-                From = new EmailAddress(configuration.Email.SenderEmail, "Burn for Money")
-            };
-            message.AddTo(new EmailAddress(configuration.Email.AthletesApprovalEmail));
-            message.Subject = "Athlete is awaiting approval";
-
             var approvalFunctionAddress = $"{configuration.HostName}/api/SubmitAthleteApproval/{approvalCode}";
-            message.HtmlContent = $"Please review a new authorization request. Athlete: {firstName} {lastName}.<br>" +
-                $"<a href=\"{approvalFunctionAddress}?result={AthleteApprovalResult.Approved.ToString()}\">Approve</a><br>" +
-                $"<a href=\"{approvalFunctionAddress}?result={AthleteApprovalResult.Rejected.ToString()}\">Reject</a>";
+            var notification = new Notification
+            {
+                Recipients = new List<string> {configuration.Email.AthletesApprovalEmail},
+                Subject = "Athlete is awaiting approval",
+                HtmlContent = $"Please review a new authorization request. Athlete: {firstName} {lastName}.<br>" +
+                          $"<a href=\"{approvalFunctionAddress}?result={AthleteApprovalResult.Approved.ToString()}\">Approve</a><br>" +
+                          $"<a href=\"{approvalFunctionAddress}?result={AthleteApprovalResult.Rejected.ToString()}\">Reject</a>"
+            };
 
             log.LogInformation($"Sending approval request for athlete {firstName} {lastName} to: {configuration.Email.AthletesApprovalEmail}.");
             await athleteApprovalCollector.AddAsync(athleteApproval);
-            await messageCollector.AddAsync(message);
+            await notificationsQueue.AddMessageAsync(new CloudQueueMessage(JsonConvert.SerializeObject(notification)));
         }
     }
 

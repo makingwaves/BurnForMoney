@@ -18,6 +18,7 @@ namespace BurnForMoney.Functions.Configuration
     {
         public string SenderEmail { get; set; }
         public string AthletesApprovalEmail { get; set; }
+        public string DefaultRecipient { get; set; }
     }
 
     public class ConnectionStringsSection
