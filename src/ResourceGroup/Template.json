@@ -84,6 +84,9 @@
     "email.athletesApprovalEmail": {
       "type": "string"
     },
+    "email.defaultRecipient": {
+      "type": "string"
+    },
     "cors.allowedOrigins": {
       "type": "array"
     }
@@ -230,6 +233,10 @@
               "name": "Email:AthletesApprovalEmail",
               "value": "[parameters('email.athletesApprovalEmail')]"
             },
+            {
+              "name": "Email:DefaultRecipient",
+              "value": "[parameters('email.defaultRecipient')]"
+            }
             {
               "name": "WEB_HOST",
               "value": "[concat('https://', variables('functionAppName'), '.azurewebsites.net')]"

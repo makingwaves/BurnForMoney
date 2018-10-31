@@ -33,7 +33,7 @@ namespace BurnForMoney.Functions.Configuration
                     {
                         AthletesApprovalEmail = config["Email:AthletesApprovalEmail"],
                         SenderEmail = "burnformoney@makingwaves.com",
-                        DefaultRecipient = "burnformoney@makingwaves.com"
+                        DefaultRecipient = config["Email:DefaultRecipient"]
                     },
                     HostName = config["WEB_HOST"]
                 };

@@ -11,6 +11,9 @@
     "email.athletesApprovalEmail": {
       "value": "miroslawa.zimon@makingwaves.com"
     },
+    "email.defaultRecipient": {
+      "value": "burnformoney@makingwaves.com"
+    },
     "cors.allowedOrigins": {
       "value": [ "https://burnformoney-prod.azurewebsites.net/", "https://burnformoney-prod.azurewebsites.net", "http://bfm.makingwaves.pl", "http://bfm.makingwaves.com", "https://bfm.makingwaves.com" ]
     },
