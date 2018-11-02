@@ -5,8 +5,7 @@
     "AzureWebJobsStorage": "UseDevelopmentStorage=true",
     "AzureWebJobsDashboard": "UseDevelopmentStorage=true",
     "WEB_HOST": "http://localhost:7071",
-    "Strava:ClientId": 28597,
-    "Email:AthletesApprovalEmail": "pawel.maga@makingwaves.com",
+    "StravaAppHostName": "http://localhost:7072",
     "Email:DefaultRecipient": "pawel.maga@makingwaves.com",
     "KeyVaultName": "burnformoneykvdev",
     "ConnectionStrings:Sql": "Data Source=(LocalDB)\\.;Initial Catalog=BurnForMoney;Integrated Security=True"

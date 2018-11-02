@@ -2,16 +2,15 @@ namespace BurnForMoney.Functions.Configuration
 {
     public class ConfigurationRoot
     {
-        public StravaConfigurationSection Strava { get; set; }
         public EmailSection Email { get; set; }
         public ConnectionStringsSection ConnectionStrings { get; set; }
         public bool IsLocalEnvironment { get; set; }
-        public string HostName { get; set; }
+        public string StravaAppHostName { get; set; }
         public string ApplicationInsightsInstrumentationKey { get; set; }
 
         public bool IsValid()
         {
-            return Strava != null && ConnectionStrings != null;
+            return  ConnectionStrings != null;
         }
     }
 

@@ -14,15 +14,6 @@ namespace BurnForMoney.Functions.Functions.Support
 {
     public static class ActivitiesOperations
     {
-        [FunctionName(FunctionsNames.Support_Strava_Activities_Collect)]
-        public static async Task<IActionResult> Support_Strava_CollectActivities([HttpTrigger(AuthorizationLevel.Admin, "post", Route = "support/strava/athlete/{athleteId}/activities/collect")]HttpRequest req, ILogger log,
-            [Queue(QueueNames.CollectAthleteActivities)] CloudQueue collectActivitiesQueues, int athleteId)
-        {
-            log.LogInformation($"{FunctionsNames.Support_Strava_Activities_Collect} function processed a request.");
-            await collectActivitiesQueues.AddMessageAsync(new CloudQueueMessage(athleteId.ToString()));
-            return new OkResult();
-        }
-
         [FunctionName(FunctionsNames.Support_Activities_CollectMonthlyStatistics)]
         public static async Task<IActionResult> Support_Strava_Activities_MonthlyStatisticsCollect([HttpTrigger(AuthorizationLevel.Admin, "get", Route = "support/activities/collectmonthlystatistics/{year}/{month}")]HttpRequest req, ILogger log,
             [Queue(QueueNames.CalculateMonthlyResults)] CloudQueue outputQueue, int year, int month)

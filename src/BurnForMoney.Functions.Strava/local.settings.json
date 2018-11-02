@@ -1,7 +1,14 @@
 {
-    "IsEncrypted": false,
-    "Values": {
-        "AzureWebJobsStorage": "UseDevelopmentStorage=true",
-        "FUNCTIONS_WORKER_RUNTIME": "dotnet"
-    }
+  "IsEncrypted": false,
+  "Values": {
+    "FUNCTIONS_WORKER_RUNTIME": "dotnet",
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "AzureWebJobsDashboard": "UseDevelopmentStorage=true",
+    "WEB_HOST": "http://localhost:7071",
+    "Strava:ClientId": 28597,
+    "Email:AthletesApprovalEmail": "pawel.maga@makingwaves.com",
+    "Email:DefaultRecipient": "pawel.maga@makingwaves.com",
+    "KeyVaultName": "burnformoneykvdev",
+    "ConnectionStrings:Sql": "Data Source=(LocalDB)\\.;Initial Catalog=BurnForMoney;Integrated Security=True"
+  }
 }

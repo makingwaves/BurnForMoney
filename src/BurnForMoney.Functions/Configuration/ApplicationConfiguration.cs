@@ -23,19 +23,13 @@ namespace BurnForMoney.Functions.Configuration
                         SqlDbConnectionString = config["ConnectionStrings:Sql"],
                         AzureWebJobsStorage = config["AzureWebJobsStorage"]
                     },
-                    Strava = new StravaConfigurationSection
-                    {
-                        ClientId = int.Parse(config["Strava:ClientId"]),
-                        ClientSecret = config["Strava:ClientSecret"],
-                        AccessTokensEncryptionKey = config["strava:AccessTokensEncryptionKey"]
-                    },
                     Email = new EmailSection
                     {
                         AthletesApprovalEmail = config["Email:AthletesApprovalEmail"],
                         SenderEmail = "burnformoney@makingwaves.com",
                         DefaultRecipient = config["Email:DefaultRecipient"]
                     },
-                    HostName = config["WEB_HOST"],
+                    StravaAppHostName = config["StravaAppHostName"],
                     ApplicationInsightsInstrumentationKey = config["APPINSIGHTS_INSTRUMENTATIONKEY"]
                 };
 

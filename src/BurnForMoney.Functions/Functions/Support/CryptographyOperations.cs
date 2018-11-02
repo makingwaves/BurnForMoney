@@ -1,4 +1,3 @@
-using BurnForMoney.Functions.Configuration;
 using BurnForMoney.Functions.Shared;
 using BurnForMoney.Functions.Shared.Functions;
 using Microsoft.AspNetCore.Http;
@@ -12,7 +11,8 @@ namespace BurnForMoney.Functions.Functions.Support
     public static class CryptographyOperations
     {
         [FunctionName(FunctionsNames.Support_EncryptString)]
-        public static IActionResult RunEncryptString([HttpTrigger(AuthorizationLevel.Admin, "get", Route = "support/encryptstring/{text}")]HttpRequest req, ILogger log, ExecutionContext context, string text)
+        public static IActionResult RunEncryptString([HttpTrigger(AuthorizationLevel.Admin, "get", Route = "support/encryptstring/{text}/{encryptionKey}")]HttpRequest req, ILogger log, ExecutionContext context, string text,
+            string encryptionKey)
         {
             log.LogInformation($"{FunctionsNames.Support_EncryptString} function processed a request.");
 
@@ -22,14 +22,14 @@ namespace BurnForMoney.Functions.Functions.Support
                 return new BadRequestObjectResult("Text is required.");
             }
 
-            var configuration = ApplicationConfiguration.GetSettings(context);
-            var encryptedText = Cryptography.EncryptString(text, configuration.Strava.AccessTokensEncryptionKey);
+            var encryptedText = Cryptography.EncryptString(text, encryptionKey);
 
             return new OkObjectResult(encryptedText);
         }
 
         [FunctionName(FunctionsNames.Support_DecryptString)]
-        public static IActionResult RunDecryptString([HttpTrigger(AuthorizationLevel.Admin, "get", Route = "support/decryptstring/{text}")]HttpRequest req, ILogger log, ExecutionContext context, string text)
+        public static IActionResult RunDecryptString([HttpTrigger(AuthorizationLevel.Admin, "get", Route = "support/decryptstring/{text}/{encryptionKey}")]HttpRequest req, ILogger log, ExecutionContext context, string text,
+            string encryptionKey)
         {
             log.LogInformation($"{FunctionsNames.Support_DecryptString} function processed a request.");
 
@@ -41,8 +41,7 @@ namespace BurnForMoney.Functions.Functions.Support
 
             text = FillMissingSpecialCharacters(text);
 
-            var configuration = ApplicationConfiguration.GetSettings(context);
-            var encryptedText = Cryptography.DecryptString(text, configuration.Strava.AccessTokensEncryptionKey);
+            var encryptedText = Cryptography.DecryptString(text, encryptionKey);
 
             return new OkObjectResult(encryptedText);
         }

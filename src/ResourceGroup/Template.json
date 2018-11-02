@@ -48,11 +48,12 @@
   },
   "variables": {
     "applicationName": "burnformoney",
+    "applicationShortName": "bfm",
     "webSiteName": "[concat(variables('applicationName'), '-', parameters('environmentCode'))]",
     "websiteHostingPlanName": "[concat(variables('applicationName'), '-', parameters('environmentCode'))]",
-    "stravaFunctionAppName": "[concat(variables('applicationName'), 'func-strava-', parameters('environmentCode'))]",
-    "stravaFunctionHostingPlanName": "[concat(variables('applicationName'), 'func-strava-', parameters('environmentCode'))]",
-    "stravaFunctionStorageAccountName": "[concat(variables('applicationName'), 'funcstrava', parameters('environmentCode'))]",
+    "stravaFunctionAppName": "[concat(variables('applicationShortName'), 'func-strava-', parameters('environmentCode'))]",
+    "stravaFunctionHostingPlanName": "[concat(variables('applicationShortName'), 'func-strava-', parameters('environmentCode'))]",
+    "stravaFunctionStorageAccountName": "[concat(variables('applicationShortName'), 'funcstrava', parameters('environmentCode'))]",
     "stravaFunctionStorageAccountId": "[concat(resourceGroup().id,'/providers/','Microsoft.Storage/storageAccounts/', variables('stravaFunctionStorageAccountName'))]",
     "functionAppName": "[concat(variables('applicationName'), 'func-', parameters('environmentCode'))]",
     "functionHostingPlanName": "[concat(variables('applicationName'), 'func-', parameters('environmentCode'))]",
@@ -209,12 +210,12 @@
               "value": "[reference(concat('microsoft.insights/components/', variables('appInsightsName'))).InstrumentationKey]"
             },
             {
-              "name": "Strava:ClientId",
-              "value": "[parameters('strava.clientId')]"
-            },
-            {
               "name": "Email:DefaultRecipient",
               "value": "[parameters('email.defaultRecipient')]"
+            },
+            {
+              "name": "StravaAppHostName",
+              "value": "[concat('https://', variables('stravaFunctionAppName'), '.azurewebsites.net')]"
             },
             {
               "name": "KeyVaultName",

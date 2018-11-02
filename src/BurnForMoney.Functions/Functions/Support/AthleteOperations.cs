@@ -15,7 +15,7 @@ namespace BurnForMoney.Functions.Functions.Support
     public static class AthleteOperations
     {
         [FunctionName(FunctionsNames.Support_Athlete_Deactivate)]
-        public static async Task<IActionResult> Support_Strava_DeactivateAthlete([HttpTrigger(AuthorizationLevel.Admin, "post", Route = "support/athlete/{athleteId:int}/deactivate")]HttpRequest req, ILogger log,
+        public static async Task<IActionResult> Support_DeactivateAthlete([HttpTrigger(AuthorizationLevel.Admin, "post", Route = "support/athlete/{athleteId:int}/deactivate")]HttpRequest req, ILogger log,
             ExecutionContext executionContext, string athleteId)
         {
             log.LogInformation($"{FunctionsNames.Support_Athlete_Deactivate} function processed a request.");
@@ -39,7 +39,7 @@ namespace BurnForMoney.Functions.Functions.Support
         }
 
         [FunctionName(FunctionsNames.Support_Athlete_Activate)]
-        public static async Task<IActionResult> Support_Strava_ActivateAthlete([HttpTrigger(AuthorizationLevel.Admin, "post", Route = "support/athlete/{athleteId:int}/activate")]HttpRequest req, ILogger log,
+        public static async Task<IActionResult> Support_ActivateAthlete([HttpTrigger(AuthorizationLevel.Admin, "post", Route = "support/athlete/{athleteId:int}/activate")]HttpRequest req, ILogger log,
             ExecutionContext executionContext, string athleteId)
         {
             log.LogInformation($"{FunctionsNames.Support_Athlete_Activate} function processed a request.");
@@ -63,7 +63,7 @@ namespace BurnForMoney.Functions.Functions.Support
         }
 
         [FunctionName(FunctionsNames.Support_Athlete_Delete)]
-        public static async Task<IActionResult> Support_Strava_Athlete_Delete([HttpTrigger(AuthorizationLevel.Admin, "delete", Route = "support/athlete/{athleteId:int}/delete")]HttpRequest req, ILogger log,
+        public static async Task<IActionResult> Support_Athlete_Delete([HttpTrigger(AuthorizationLevel.Admin, "delete", Route = "support/athlete/{athleteId:int}/delete")]HttpRequest req, ILogger log,
             ExecutionContext executionContext, string athleteId)
         {
             log.LogInformation($"{FunctionsNames.Support_Athlete_Delete} function processed a request.");
