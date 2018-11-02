@@ -1,5 +1,3 @@
-using BurnForMoney.Functions.External.Strava.Api.Model;
-using Newtonsoft.Json;
 using RestSharp;
 
 namespace BurnForMoney.Functions.External.Strava.Api

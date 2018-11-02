@@ -1,10 +1,8 @@
-using System.Threading.Tasks;
 using BurnForMoney.Functions.Configuration;
 using BurnForMoney.Functions.Shared;
 using BurnForMoney.Functions.Shared.Functions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Azure.KeyVault;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;

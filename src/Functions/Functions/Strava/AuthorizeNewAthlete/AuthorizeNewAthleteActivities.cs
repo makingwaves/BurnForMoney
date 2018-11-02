@@ -9,7 +9,6 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 using Microsoft.WindowsAzure.Storage.Queue;
 using Newtonsoft.Json;
-using SendGrid.Helpers.Mail;
 
 namespace BurnForMoney.Functions.Functions.Strava.AuthorizeNewAthlete
 {

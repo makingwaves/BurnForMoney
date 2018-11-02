@@ -35,6 +35,9 @@
     <PackageReference Include="System.Data.SqlClient" Version="4.5.1" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\BurnForMoney.Functions.Shared\BurnForMoney.Functions.Shared.csproj" />
+  </ItemGroup>
+  <ItemGroup>
     <None Update="host.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
