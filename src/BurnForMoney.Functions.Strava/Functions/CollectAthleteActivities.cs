@@ -20,7 +20,7 @@ namespace BurnForMoney.Functions.Strava.Functions
 
         [FunctionName(FunctionsNames.Strava_CollectAthleteActivities)]
         public static async Task Strava_CollectAthleteActivities([QueueTrigger(QueueNames.CollectAthleteActivities)]int athleteId,
-            [Queue(QueueNames.PendingRawActivities)] CloudQueue pendingRawActivitiesQueue, 
+            [Queue(AppQueueNames.PendingRawActivities, Connection = "AppQueuesStorage")] CloudQueue pendingRawActivitiesQueue, 
             [Queue(QueueNames.UnauthorizedAccessTokens)] CloudQueue unauthorizedAccessTokensQueue,
             ILogger log, ExecutionContext executionContext)
         {

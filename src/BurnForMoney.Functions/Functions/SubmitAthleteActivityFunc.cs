@@ -16,7 +16,7 @@ namespace BurnForMoney.Functions.Functions
         private static readonly ConcurrentDictionary<int, int> AthleteIdsMappings = new ConcurrentDictionary<int, int>();
 
         [FunctionName(FunctionsNames.Q_SubmitAthleteActivity)]
-        public static async Task Q_SubmitAthleteActivityAsync(ILogger log, ExecutionContext executionContext, [QueueTrigger(QueueNames.PendingActivities)] PendingActivity activity)
+        public static async Task Q_SubmitAthleteActivityAsync(ILogger log, ExecutionContext executionContext, [QueueTrigger(AppQueueNames.PendingActivities)] PendingActivity activity)
         {
             log.LogInformation($"{FunctionsNames.Q_SubmitAthleteActivity} function processed a request.");
 

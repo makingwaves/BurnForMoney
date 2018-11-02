@@ -43,7 +43,7 @@ namespace BurnForMoney.Functions.Strava.Functions.AuthorizeNewAthlete
         
         [FunctionName(FunctionsNames.Strava_A_SendAthleteApprovalRequest)]
         public static async Task A_SendAthleteApprovalRequest([ActivityTrigger]DurableActivityContext activityContext, ILogger log,
-            ExecutionContext context, [Queue(QueueNames.NotificationsToSend)] CloudQueue notificationsQueue,
+            ExecutionContext context, [Queue(AppQueueNames.NotificationsToSend, Connection = "AppQueuesStorage")] CloudQueue notificationsQueue,
             [Table("AthleteApprovals", "AzureWebJobsStorage")] IAsyncCollector<AthleteApproval> athleteApprovalCollector)
         {
             var (firstName, lastName) = activityContext.GetInput<(string, string)>();

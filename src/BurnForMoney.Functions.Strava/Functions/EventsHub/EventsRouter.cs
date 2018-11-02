@@ -71,7 +71,7 @@ namespace BurnForMoney.Functions.Strava.Functions.EventsHub
         [FunctionName(FunctionsNames.Strava_Events_DeauthorizedAthlete)]
         public static async Task Strava_Events_DeauthorizedAthlete([QueueTrigger(QueueNames.StravaEventsAthleteDeauthorized)] ActivityData @event,
             ILogger log, ExecutionContext executionContext,
-            [Queue(QueueNames.NotificationsToSend)] CloudQueue notificationsQueue)
+            [Queue(AppQueueNames.NotificationsToSend, Connection = "AppQueuesStorage")] CloudQueue notificationsQueue)
         {
             log.LogInformation($"{FunctionsNames.Strava_Events_DeauthorizedAthlete} function processed a request.");
 
@@ -102,7 +102,7 @@ namespace BurnForMoney.Functions.Strava.Functions.EventsHub
         [FunctionName(FunctionsNames.Strava_Events_NewActivity)]
         public static async Task Strava_Events_NewActivity([QueueTrigger(QueueNames.StravaEventsActivityAdd)] ActivityData @event,
             ILogger log, ExecutionContext executionContext,
-            [Queue(QueueNames.PendingRawActivities)] CloudQueue pendingRawActivitiesQueue)
+            [Queue(AppQueueNames.PendingRawActivities, Connection = "AppQueuesStorage")] CloudQueue pendingRawActivitiesQueue)
         {
             log.LogInformation($"{FunctionsNames.Strava_Events_NewActivity} function processed a request.");
 
@@ -130,7 +130,7 @@ namespace BurnForMoney.Functions.Strava.Functions.EventsHub
         [FunctionName(FunctionsNames.Strava_Events_UpdateActivity)]
         public static async Task Strava_Events_UpdateActivity([QueueTrigger(QueueNames.StravaEventsActivityUpdate)] ActivityData @event,
             ILogger log, ExecutionContext executionContext,
-            [Queue(QueueNames.PendingRawActivities)] CloudQueue pendingRawActivitiesQueue)
+            [Queue(AppQueueNames.PendingRawActivities, Connection = "AppQueuesStorage")] CloudQueue pendingRawActivitiesQueue)
         {
             log.LogInformation($"{FunctionsNames.Strava_Events_UpdateActivity} function processed a request.");
 

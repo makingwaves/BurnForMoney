@@ -235,6 +235,7 @@
         "type": "SystemAssigned"
       },
       "dependsOn": [
+        "[resourceId('Microsoft.Web/sites', variables('functionAppName'))]",
         "[resourceId('Microsoft.Web/serverfarms', variables('stravaFunctionHostingPlanName'))]",
         "[resourceId('Microsoft.Storage/storageAccounts', variables('stravaFunctionStorageAccountName'))]",
         "[resourceId('microsoft.insights/components', variables('appInsightsName'))]"
@@ -294,6 +295,10 @@
             {
               "name": "KeyVaultName",
               "value": "[variables('keyVaultName')]"
+            },
+            {
+              "name": "AppQueuesStorage",
+              "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('functionStorageAccountName'), ';AccountKey=', listKeys(variables('functionStorageAccountid'),'2015-05-01-preview').key1)]"
             }
           ]
         }

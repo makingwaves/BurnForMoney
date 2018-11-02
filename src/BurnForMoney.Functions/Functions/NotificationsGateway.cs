@@ -15,7 +15,7 @@ namespace BurnForMoney.Functions.Functions
         private static string EmailTemplate;
 
         [FunctionName(FunctionsNames.NotificationsGateway)]
-        public static async Task SendEmail([QueueTrigger(QueueNames.NotificationsToSend)] Notification notification, ILogger log, ExecutionContext context,
+        public static async Task SendEmail([QueueTrigger(AppQueueNames.NotificationsToSend)] Notification notification, ILogger log, ExecutionContext context,
             [SendGrid(ApiKey = "SendGrid:ApiKey")] IAsyncCollector<SendGridMessage> messageCollector)
         {
             var configuration = ApplicationConfiguration.GetSettings(context);

@@ -14,9 +14,9 @@ namespace BurnForMoney.Functions.Functions
     {
         [FunctionName(FunctionsNames.Q_ProcessRawActivity)]
         public static async Task Q_ProcessRawActivityAsync(ILogger log, ExecutionContext executionContext, 
-            [QueueTrigger(QueueNames.PendingRawActivities)] PendingRawActivity rawActivity,
-            [Queue(QueueNames.PendingActivities)] CloudQueue pendingActivitiesQueue,
-            [Queue(QueueNames.PendingActivitiesUpdates)] CloudQueue pendingActivityUpdatesQueue)
+            [QueueTrigger(AppQueueNames.PendingRawActivities)] PendingRawActivity rawActivity,
+            [Queue(AppQueueNames.PendingActivities)] CloudQueue pendingActivitiesQueue,
+            [Queue(AppQueueNames.PendingActivitiesUpdates)] CloudQueue pendingActivityUpdatesQueue)
         {
             if (rawActivity.Source != "Strava")
             {
