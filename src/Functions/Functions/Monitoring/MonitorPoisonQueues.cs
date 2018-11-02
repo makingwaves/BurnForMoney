@@ -39,7 +39,7 @@ namespace BurnForMoney.Functions.Functions.Monitoring
             }
             while (continuationToken != null);
 
-            TelemetryConfiguration.Active.InstrumentationKey = configuration.ApplicationInsightsInstrumentationKey;
+            TelemetryConfiguration.Active.InstrumentationKey = configuration.ApplicationInsightsInstrumentationKey ?? string.Empty;
             foreach (var queue in queuesToMonitor)
             {
                 await queue.FetchAttributesAsync();

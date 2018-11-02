@@ -12,7 +12,6 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 using Microsoft.WindowsAzure.Storage.Queue;
 using Newtonsoft.Json;
-using SendGrid.Helpers.Mail;
 
 namespace BurnForMoney.Functions.Functions.Strava.EventsHub
 {
@@ -39,7 +38,6 @@ namespace BurnForMoney.Functions.Functions.Strava.EventsHub
 
             if (@event.ObjectType == ObjectType.Activity)
             {
-
                 switch (@event.AspectType)
                 {
                     case AspectType.Create:
@@ -75,7 +73,7 @@ namespace BurnForMoney.Functions.Functions.Strava.EventsHub
             ILogger log, ExecutionContext executionContext,
             [Queue(QueueNames.NotificationsToSend)] CloudQueue notificationsQueue)
         {
-            log.LogInformation($"{FunctionsNames.Strava_Events_NewActivity} function processed a request.");
+            log.LogInformation($"{FunctionsNames.Strava_Events_DeauthorizedAthlete} function processed a request.");
 
             var configuration = ApplicationConfiguration.GetSettings(executionContext);
 
@@ -85,7 +83,7 @@ namespace BurnForMoney.Functions.Functions.Strava.EventsHub
 
                 if (affectedRows == 1)
                 {
-                    log.LogInformation($"{FunctionsNames.Strava_Events_NewActivity} successfully deauthorized athlete with id: {@event.AthleteId}.");
+                    log.LogInformation($"{FunctionsNames.Strava_Events_DeauthorizedAthlete} successfully deauthorized athlete with id: {@event.AthleteId}.");
 
                     (string FirstName, string LastName) athlete = await conn.QuerySingleAsync<ValueTuple<string, string>>(
                         "SELECT FirstName, LastName from dbo.Athletes WHERE ExternalId=@AthleteId", new { @event.AthleteId });
@@ -162,14 +160,14 @@ namespace BurnForMoney.Functions.Functions.Strava.EventsHub
             string accessToken;
             using (var conn = new SqlConnection(configuration.ConnectionStrings.SqlDbConnectionString))
             {
-                accessToken = await conn.QuerySingleAsync<string>(@"SELECT AccessToken 
+                accessToken = await conn.QuerySingleOrDefaultAsync<string>(@"SELECT AccessToken 
 FROM dbo.[Strava.AccessTokens] AS Tokens
 INNER JOIN dbo.Athletes AS Athletes ON (Athletes.Id = Tokens.AthleteId)
 WHERE Athletes.ExternalId=@AthleteId", new { AthleteId = athleteId });
 
                 if (string.IsNullOrWhiteSpace(accessToken))
                 {
-                    throw new Exception($"Cannot find an access token fot athlete: {athleteId}");
+                    throw new Exception($"Cannot find an access token fot athlete: {athleteId}. Athlete might either be not verified or deleted.");
                 }
             }
 
