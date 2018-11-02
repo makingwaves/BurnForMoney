@@ -1,7 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <AzureFunctionsVersion>v2</AzureFunctionsVersion>
+    <Product>Burn for Money</Product>
+    <Company>Making Waves</Company>
+    <Authors>Making Waves</Authors>
+    <Copyright>Making Waves</Copyright>
+    <PackageProjectUrl>bfm.makingwaves.pl</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/makingwaves/BurnForMoney</RepositoryUrl>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Dapper" Version="1.50.5" />
