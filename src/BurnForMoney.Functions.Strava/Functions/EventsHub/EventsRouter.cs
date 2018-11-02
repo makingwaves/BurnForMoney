@@ -13,7 +13,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.WindowsAzure.Storage.Queue;
 using Newtonsoft.Json;
 
-namespace BurnForMoney.Functions.Strava.EventsHub
+namespace BurnForMoney.Functions.Strava.Functions.EventsHub
 {
     public static class EventsRouter
     {

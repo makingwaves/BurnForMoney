@@ -10,7 +10,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.WindowsAzure.Storage.Queue;
 using Newtonsoft.Json;
 
-namespace BurnForMoney.Functions.Functions.Support
+namespace BurnForMoney.Functions.Functions._Support
 {
     public static class ActivitiesOperations
     {

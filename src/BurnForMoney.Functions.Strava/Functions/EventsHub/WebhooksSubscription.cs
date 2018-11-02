@@ -11,7 +11,7 @@ using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
-namespace BurnForMoney.Functions.Strava.EventsHub
+namespace BurnForMoney.Functions.Strava.Functions.EventsHub
 {
     public static class WebhooksSubscription
     {

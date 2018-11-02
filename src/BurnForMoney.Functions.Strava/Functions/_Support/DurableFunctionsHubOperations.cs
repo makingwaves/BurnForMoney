@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
-using BurnForMoney.Functions.Configuration;
 using BurnForMoney.Functions.Shared.Functions;
+using BurnForMoney.Functions.Strava.Configuration;
 using DurableTask.AzureStorage;
 using DurableTask.Core;
 using Microsoft.AspNetCore.Http;
@@ -10,7 +10,7 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
 
-namespace BurnForMoney.Functions.Functions.Support
+namespace BurnForMoney.Functions.Strava.Functions._Support
 {
     public static class DurableFunctionsHubOperations
     {

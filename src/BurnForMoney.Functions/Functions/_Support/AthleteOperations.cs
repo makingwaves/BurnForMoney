@@ -10,7 +10,7 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
 
-namespace BurnForMoney.Functions.Functions.Support
+namespace BurnForMoney.Functions.Functions._Support
 {
     public static class AthleteOperations
     {

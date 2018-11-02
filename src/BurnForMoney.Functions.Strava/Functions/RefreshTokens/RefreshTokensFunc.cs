@@ -12,7 +12,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.WindowsAzure.Storage.Queue;
 using Newtonsoft.Json;
 
-namespace BurnForMoney.Functions.Strava.RefreshTokens
+namespace BurnForMoney.Functions.Strava.Functions.RefreshTokens
 {
     public static class RefreshTokensFunc
     {

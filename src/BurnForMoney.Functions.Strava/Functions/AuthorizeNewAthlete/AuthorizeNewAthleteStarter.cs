@@ -8,7 +8,7 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
 
-namespace BurnForMoney.Functions.Strava.AuthorizeNewAthlete
+namespace BurnForMoney.Functions.Strava.Functions.AuthorizeNewAthlete
 {
     public static class AuthorizeNewAthleteStarter
     {

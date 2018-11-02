@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace BurnForMoney.Functions.Strava.EventsHub
+namespace BurnForMoney.Functions.Strava.Functions.EventsHub
 {
     public class StravaWebhookEvent
     {

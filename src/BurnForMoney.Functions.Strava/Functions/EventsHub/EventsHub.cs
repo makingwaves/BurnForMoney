@@ -8,7 +8,7 @@ using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.WindowsAzure.Storage.Queue;
 
-namespace BurnForMoney.Functions.Strava.EventsHub
+namespace BurnForMoney.Functions.Strava.Functions.EventsHub
 {
     public static class EventsHub
     {

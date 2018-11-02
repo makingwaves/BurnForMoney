@@ -7,7 +7,7 @@ using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.WindowsAzure.Storage.Queue;
 
-namespace BurnForMoney.Functions.Functions.Support
+namespace BurnForMoney.Functions.Functions._Support
 {
     public static class QueueOperations
     {

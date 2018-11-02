@@ -9,7 +9,7 @@ using Microsoft.WindowsAzure.Storage.Queue;
 using Newtonsoft.Json;
 using ExecutionContext = Microsoft.Azure.WebJobs.ExecutionContext;
 
-namespace BurnForMoney.Functions.Strava.AuthorizeNewAthlete
+namespace BurnForMoney.Functions.Strava.Functions.AuthorizeNewAthlete
 {
     public static class AuthorizeNewAthleteOrchestrator
     {
