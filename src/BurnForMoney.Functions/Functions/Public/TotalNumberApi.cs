@@ -85,7 +85,7 @@ namespace BurnForMoney.Functions.Functions.Public
                     Money = PointsToMoneyConverter.Convert(totalPoints),
                     ThisMonth = new
                     {
-                        NumberOfTrainings = months.Sum(j => j.Results.Sum(r => r.NumberOfTrainings)),
+                        NumberOfTrainings = thisMonth.Results.Sum(r => r.NumberOfTrainings),
                         PercentOfEngagedEmployees = EmployeesEngagementCalculator.GetPercentOfEngagedEmployees(uniqueAthletes),
                         Points = totalPointsThisMonth,
                         Money = PointsToMoneyConverter.Convert(totalPointsThisMonth),
