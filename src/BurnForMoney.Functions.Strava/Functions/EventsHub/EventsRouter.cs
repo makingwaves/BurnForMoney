@@ -19,7 +19,7 @@ namespace BurnForMoney.Functions.Strava.Functions.EventsHub
     {
         private static readonly StravaService StravaService = new StravaService();
 
-        [FunctionName(FunctionsNames.Strava_EventsRouter)]
+        [FunctionName(FunctionsNames.EventsRouter)]
         public static async Task EventsHub([QueueTrigger(QueueNames.StravaEvents)] StravaWebhookEvent @event,
             ILogger log, ExecutionContext executionContext,
             [Queue(QueueNames.StravaEventsActivityAdd)] CloudQueue addActivityQueue,
@@ -27,7 +27,7 @@ namespace BurnForMoney.Functions.Strava.Functions.EventsHub
             [Queue(QueueNames.StravaEventsActivityDelete)] CloudQueue deleteActivityQueue,
             [Queue(QueueNames.StravaEventsAthleteDeauthorized)] CloudQueue deauthorizationQueue)
         {
-            log.LogInformation($"{FunctionsNames.Strava_EventsRouter} function processed a request.");
+            log.LogInformation($"{FunctionsNames.EventsRouter} function processed a request.");
 
             var message = new ActivityData
             {
@@ -41,25 +41,25 @@ namespace BurnForMoney.Functions.Strava.Functions.EventsHub
                 switch (@event.AspectType)
                 {
                     case AspectType.Create:
-                        log.LogInformation($"{FunctionsNames.Strava_EventsRouter} adding message to {QueueNames.StravaEventsActivityAdd} queue.");
+                        log.LogInformation($"{FunctionsNames.EventsRouter} adding message to {QueueNames.StravaEventsActivityAdd} queue.");
                         await addActivityQueue.AddMessageAsync(new CloudQueueMessage(json));
                         break;
                     case AspectType.Update:
-                        log.LogInformation($"{FunctionsNames.Strava_EventsRouter} adding message to {QueueNames.StravaEventsActivityUpdate} queue.");
+                        log.LogInformation($"{FunctionsNames.EventsRouter} adding message to {QueueNames.StravaEventsActivityUpdate} queue.");
                         await updateActivityQueue.AddMessageAsync(new CloudQueueMessage(json));
                         break;
                     case AspectType.Delete:
-                        log.LogInformation($"{FunctionsNames.Strava_EventsRouter} adding message to {QueueNames.StravaEventsActivityDelete} queue.");
+                        log.LogInformation($"{FunctionsNames.EventsRouter} adding message to {QueueNames.StravaEventsActivityDelete} queue.");
                         await deleteActivityQueue.AddMessageAsync(new CloudQueueMessage(json));
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
-                log.LogInformation($"{FunctionsNames.Strava_EventsRouter} messages has been added.");
+                log.LogInformation($"{FunctionsNames.EventsRouter} messages has been added.");
             }
             else if (@event.ObjectType == ObjectType.Athlete)
             {
-                log.LogInformation($"{FunctionsNames.Strava_EventsRouter} adding message to {QueueNames.StravaEventsAthleteDeauthorized} queue.");
+                log.LogInformation($"{FunctionsNames.EventsRouter} adding message to {QueueNames.StravaEventsAthleteDeauthorized} queue.");
                 await deauthorizationQueue.AddMessageAsync(new CloudQueueMessage(json));
             }
             else
@@ -68,12 +68,12 @@ namespace BurnForMoney.Functions.Strava.Functions.EventsHub
             }
         }
 
-        [FunctionName(FunctionsNames.Strava_Events_DeauthorizedAthlete)]
-        public static async Task Strava_Events_DeauthorizedAthlete([QueueTrigger(QueueNames.StravaEventsAthleteDeauthorized)] ActivityData @event,
+        [FunctionName(FunctionsNames.Events_DeauthorizedAthlete)]
+        public static async Task Events_DeauthorizedAthlete([QueueTrigger(QueueNames.StravaEventsAthleteDeauthorized)] ActivityData @event,
             ILogger log, ExecutionContext executionContext,
             [Queue(AppQueueNames.NotificationsToSend, Connection = "AppQueuesStorage")] CloudQueue notificationsQueue)
         {
-            log.LogInformation($"{FunctionsNames.Strava_Events_DeauthorizedAthlete} function processed a request.");
+            log.LogInformation($"{FunctionsNames.Events_DeauthorizedAthlete} function processed a request.");
 
             var configuration = ApplicationConfiguration.GetSettings(executionContext);
 
@@ -83,7 +83,7 @@ namespace BurnForMoney.Functions.Strava.Functions.EventsHub
 
                 if (affectedRows == 1)
                 {
-                    log.LogInformation($"{FunctionsNames.Strava_Events_DeauthorizedAthlete} successfully deauthorized athlete with id: {@event.AthleteId}.");
+                    log.LogInformation($"{FunctionsNames.Events_DeauthorizedAthlete} successfully deauthorized athlete with id: {@event.AthleteId}.");
 
                     (string FirstName, string LastName) athlete = await conn.QuerySingleAsync<ValueTuple<string, string>>(
                         "SELECT FirstName, LastName from dbo.Athletes WHERE ExternalId=@AthleteId", new { @event.AthleteId });
@@ -99,12 +99,12 @@ namespace BurnForMoney.Functions.Strava.Functions.EventsHub
             }
         }
 
-        [FunctionName(FunctionsNames.Strava_Events_NewActivity)]
-        public static async Task Strava_Events_NewActivity([QueueTrigger(QueueNames.StravaEventsActivityAdd)] ActivityData @event,
+        [FunctionName(FunctionsNames.Events_NewActivity)]
+        public static async Task Events_NewActivity([QueueTrigger(QueueNames.StravaEventsActivityAdd)] ActivityData @event,
             ILogger log, ExecutionContext executionContext,
             [Queue(AppQueueNames.PendingRawActivities, Connection = "AppQueuesStorage")] CloudQueue pendingRawActivitiesQueue)
         {
-            log.LogInformation($"{FunctionsNames.Strava_Events_NewActivity} function processed a request.");
+            log.LogInformation($"{FunctionsNames.Events_NewActivity} function processed a request.");
 
             var configuration = ApplicationConfiguration.GetSettings(executionContext);
             var accessToken = await GetAccessToken(@event.AthleteId, configuration);
@@ -127,12 +127,12 @@ namespace BurnForMoney.Functions.Strava.Functions.EventsHub
             await pendingRawActivitiesQueue.AddMessageAsync(message);
         }
 
-        [FunctionName(FunctionsNames.Strava_Events_UpdateActivity)]
-        public static async Task Strava_Events_UpdateActivity([QueueTrigger(QueueNames.StravaEventsActivityUpdate)] ActivityData @event,
+        [FunctionName(FunctionsNames.Events_UpdateActivity)]
+        public static async Task Events_UpdateActivity([QueueTrigger(QueueNames.StravaEventsActivityUpdate)] ActivityData @event,
             ILogger log, ExecutionContext executionContext,
             [Queue(AppQueueNames.PendingRawActivities, Connection = "AppQueuesStorage")] CloudQueue pendingRawActivitiesQueue)
         {
-            log.LogInformation($"{FunctionsNames.Strava_Events_UpdateActivity} function processed a request.");
+            log.LogInformation($"{FunctionsNames.Events_UpdateActivity} function processed a request.");
 
             var configuration = ApplicationConfiguration.GetSettings(executionContext);
             var accessToken = await GetAccessToken(@event.AthleteId, configuration);
@@ -177,11 +177,11 @@ WHERE Athletes.ExternalId=@AthleteId", new { AthleteId = athleteId });
             return accessToken;
         }
 
-        [FunctionName(FunctionsNames.Strava_Events_DeleteActivity)]
-        public static async Task Strava_Events_DeleteActivity([QueueTrigger(QueueNames.StravaEventsActivityDelete)] ActivityData @event,
+        [FunctionName(FunctionsNames.Events_DeleteActivity)]
+        public static async Task Events_DeleteActivity([QueueTrigger(QueueNames.StravaEventsActivityDelete)] ActivityData @event,
             ILogger log, ExecutionContext executionContext)
         {
-            log.LogInformation($"{FunctionsNames.Strava_Events_NewActivity} function processed a request.");
+            log.LogInformation($"{FunctionsNames.Events_NewActivity} function processed a request.");
 
             var configuration = ApplicationConfiguration.GetSettings(executionContext);
             using (var conn = new SqlConnection(configuration.ConnectionStrings.SqlDbConnectionString))

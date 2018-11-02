@@ -12,11 +12,11 @@ namespace BurnForMoney.Functions.Strava.Functions._Support
 {
     public static class ActivitiesOperations
     {
-        [FunctionName(FunctionsNames.Support_Strava_Activities_Collect)]
-        public static async Task<IActionResult> Support_Strava_CollectActivities([HttpTrigger(AuthorizationLevel.Admin, "post", Route = "support/strava/athlete/{athleteId}/activities/collect")]HttpRequest req, ILogger log,
+        [FunctionName(FunctionsNames.Support_Activities_Collect)]
+        public static async Task<IActionResult> Support_CollectActivities([HttpTrigger(AuthorizationLevel.Admin, "post", Route = "support/strava/athlete/{athleteId}/activities/collect")]HttpRequest req, ILogger log,
             [Queue(QueueNames.CollectAthleteActivities)] CloudQueue collectActivitiesQueues, int athleteId)
         {
-            log.LogInformation($"{FunctionsNames.Support_Strava_Activities_Collect} function processed a request.");
+            log.LogInformation($"{FunctionsNames.Support_Activities_Collect} function processed a request.");
             await collectActivitiesQueues.AddMessageAsync(new CloudQueueMessage(athleteId.ToString()));
             return new OkResult();
         }

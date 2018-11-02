@@ -19,16 +19,16 @@ namespace BurnForMoney.Functions.Strava.Functions.EventsHub
         private static readonly HttpClient HttpClient = new HttpClient();
         private const string CallbackToken = "013a818de91f490695f8f642c9b511c3";
 
-        [FunctionName(FunctionsNames.Strava_CreateWebhookSubscription)]
-        public static async Task<IActionResult> Strava_CreateWebhookSubscription([HttpTrigger(AuthorizationLevel.Admin, "post", Route = "strava/subscription/create")] HttpRequest req,
+        [FunctionName(FunctionsNames.CreateWebhookSubscription)]
+        public static async Task<IActionResult> CreateWebhookSubscription([HttpTrigger(AuthorizationLevel.Admin, "post", Route = "strava/subscription/create")] HttpRequest req,
             ILogger log, ExecutionContext executionContext)
         {
-            log.LogInformation($"{FunctionsNames.Strava_CreateWebhookSubscription} function processed a request.");
+            log.LogInformation($"{FunctionsNames.CreateWebhookSubscription} function processed a request.");
 
             var configuration = ApplicationConfiguration.GetSettings(executionContext);
 
             var data = await req.ReadAsStringAsync();
-            log.LogInformation($"{FunctionsNames.Strava_CreateWebhookSubscription} function executed with the following data: <{data}>.");
+            log.LogInformation($"{FunctionsNames.CreateWebhookSubscription} function executed with the following data: <{data}>.");
 
             var hostname = configuration.HostName;
             if (!string.IsNullOrWhiteSpace(data))
@@ -40,7 +40,7 @@ namespace BurnForMoney.Functions.Strava.Functions.EventsHub
             var callbackUrl = $"{hostname}/api/strava/events/hub";
             await WarmUpValidationFunction(callbackUrl, log);
             
-            log.LogInformation($"{FunctionsNames.Strava_CreateWebhookSubscription} Creating subscription for a client: <{configuration.Strava.ClientId}> and callback url: {callbackUrl}.");
+            log.LogInformation($"{FunctionsNames.CreateWebhookSubscription} Creating subscription for a client: <{configuration.Strava.ClientId}> and callback url: {callbackUrl}.");
             StravaWebhooksService.CreateSubscription(configuration.Strava.ClientId, configuration.Strava.ClientSecret,
                 callbackUrl, CallbackToken);
 
@@ -67,15 +67,15 @@ namespace BurnForMoney.Functions.Strava.Functions.EventsHub
             public string Hostname { get; set; }
         }
 
-        [FunctionName(FunctionsNames.Strava_WebhooksCallbackValidation)]
+        [FunctionName(FunctionsNames.WebhooksCallbackValidation)]
         public static IActionResult ValidateCallback([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "strava/events/hub")] HttpRequest req,
             ILogger log, ExecutionContext executionContext)
         {
-            log.LogInformation($"{FunctionsNames.Strava_WebhooksCallbackValidation} function processed a request.");
+            log.LogInformation($"{FunctionsNames.WebhooksCallbackValidation} function processed a request.");
 
             if (bool.TryParse(req.Query["warmUp"], out var _))
             {
-                log.LogInformation($"{FunctionsNames.Strava_WebhooksCallbackValidation} processing warm up execution.");
+                log.LogInformation($"{FunctionsNames.WebhooksCallbackValidation} processing warm up execution.");
                 return new OkResult();
             }
 
@@ -83,11 +83,11 @@ namespace BurnForMoney.Functions.Strava.Functions.EventsHub
             string challenge = req.Query["hub.challenge"];
             if (!verifyToken.Equals(CallbackToken))
             {
-                log.LogError($"{FunctionsNames.Strava_WebhooksCallbackValidation} Received callback token: {verifyToken} is not valid with token: {CallbackToken}.");
+                log.LogError($"{FunctionsNames.WebhooksCallbackValidation} Received callback token: {verifyToken} is not valid with token: {CallbackToken}.");
                 return new BadRequestResult();
             }
 
-            log.LogInformation($"{FunctionsNames.Strava_WebhooksCallbackValidation} Request validated.");
+            log.LogInformation($"{FunctionsNames.WebhooksCallbackValidation} Request validated.");
             var json = JsonConvert.SerializeObject(new ChallengeObject { Challenge = challenge });
             return new OkObjectResult(json);
         }
@@ -98,11 +98,11 @@ namespace BurnForMoney.Functions.Strava.Functions.EventsHub
             public string Challenge { get; set; }
         }
 
-        [FunctionName(FunctionsNames.Strava_ViewWebhookSubscription)]
-        public static IActionResult Strava_ViewWebhookSubscription([HttpTrigger(AuthorizationLevel.Admin, "get", Route = "strava/subscription")] HttpRequest req,
+        [FunctionName(FunctionsNames.ViewWebhookSubscription)]
+        public static IActionResult ViewWebhookSubscription([HttpTrigger(AuthorizationLevel.Admin, "get", Route = "strava/subscription")] HttpRequest req,
             ILogger log, ExecutionContext executionContext)
         {
-            log.LogInformation($"{FunctionsNames.Strava_ViewWebhookSubscription} function processed a request.");
+            log.LogInformation($"{FunctionsNames.ViewWebhookSubscription} function processed a request.");
             var configuration = ApplicationConfiguration.GetSettings(executionContext);
 
             try
@@ -118,11 +118,11 @@ namespace BurnForMoney.Functions.Strava.Functions.EventsHub
             }
         }
 
-        [FunctionName(FunctionsNames.Strava_DeleteWebhookSubscription)]
-        public static IActionResult Strava_DeleteWebhookSubscription([HttpTrigger(AuthorizationLevel.Admin, "delete", Route = "strava/subscription/{id}")] HttpRequest req,
+        [FunctionName(FunctionsNames.DeleteWebhookSubscription)]
+        public static IActionResult DeleteWebhookSubscription([HttpTrigger(AuthorizationLevel.Admin, "delete", Route = "strava/subscription/{id}")] HttpRequest req,
             ILogger log, ExecutionContext executionContext, int id)
         {
-            log.LogInformation($"{FunctionsNames.Strava_ViewWebhookSubscription} function processed a request.");
+            log.LogInformation($"{FunctionsNames.ViewWebhookSubscription} function processed a request.");
 
             if (id <= 0)
             {

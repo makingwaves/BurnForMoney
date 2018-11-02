@@ -12,17 +12,17 @@ namespace BurnForMoney.Functions.Strava.Functions.EventsHub
 {
     public static class EventsHub
     {
-        [FunctionName(FunctionsNames.Strava_EventsHub)]
+        [FunctionName(FunctionsNames.EventsHub)]
         public static async Task<IActionResult> EventsHubAsync([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "strava/events/hub")] HttpRequest req,
             ILogger log, ExecutionContext executionContext,
             [Queue(QueueNames.StravaEvents)] CloudQueue outputQueue)
         {
-            log.LogInformation($"{FunctionsNames.Strava_EventsHub} function processed a request.");
+            log.LogInformation($"{FunctionsNames.EventsHub} function processed a request.");
 
             var eventData = await req.ReadAsStringAsync();
 
             await outputQueue.AddMessageAsync(new CloudQueueMessage(eventData));
-            log.LogInformation($"{FunctionsNames.Strava_EventsHub} added a message to queue: {QueueNames.StravaEvents}.");
+            log.LogInformation($"{FunctionsNames.EventsHub} added a message to queue: {QueueNames.StravaEvents}.");
 
             return new OkResult();
         }

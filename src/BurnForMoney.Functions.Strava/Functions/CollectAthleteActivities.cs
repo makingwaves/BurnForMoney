@@ -18,13 +18,13 @@ namespace BurnForMoney.Functions.Strava.Functions
     {
         private static readonly StravaService StravaService = new StravaService();
 
-        [FunctionName(FunctionsNames.Strava_CollectAthleteActivities)]
-        public static async Task Strava_CollectAthleteActivities([QueueTrigger(QueueNames.CollectAthleteActivities)]int athleteId,
+        [FunctionName(FunctionsNames.CollectAthleteActivities)]
+        public static async Task Run([QueueTrigger(QueueNames.CollectAthleteActivities)]int athleteId,
             [Queue(AppQueueNames.PendingRawActivities, Connection = "AppQueuesStorage")] CloudQueue pendingRawActivitiesQueue, 
             [Queue(QueueNames.UnauthorizedAccessTokens)] CloudQueue unauthorizedAccessTokensQueue,
             ILogger log, ExecutionContext executionContext)
         {
-            log.LogInformation($"{FunctionsNames.Strava_CollectAthleteActivities} function processed a request.");
+            log.LogInformation($"{FunctionsNames.CollectAthleteActivities} function processed a request.");
 
             var configuration = ApplicationConfiguration.GetSettings(executionContext);
 

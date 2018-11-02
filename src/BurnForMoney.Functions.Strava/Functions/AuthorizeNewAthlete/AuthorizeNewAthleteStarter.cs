@@ -12,22 +12,22 @@ namespace BurnForMoney.Functions.Strava.Functions.AuthorizeNewAthlete
 {
     public static class AuthorizeNewAthleteStarter
     {
-        [FunctionName(FunctionsNames.Strava_AuthorizeNewAthleteStarter)]
+        [FunctionName(FunctionsNames.AuthorizeNewAthleteStarter)]
         public static async Task Start([QueueTrigger(QueueNames.AuthorizationCodes)]string authorizationCode, [OrchestrationClient]DurableOrchestrationClient starter, ILogger log, ExecutionContext executionContext)
         {
-            log.LogInformation($"{FunctionsNames.Strava_AuthorizeNewAthleteStarter} queue trigger processed a request at {DateTime.UtcNow}.");
+            log.LogInformation($"{FunctionsNames.AuthorizeNewAthleteStarter} queue trigger processed a request at {DateTime.UtcNow}.");
 
-            var instanceId = await starter.StartNewAsync(FunctionsNames.Strava_O_AuthorizeNewAthlete, authorizationCode);
-            log.LogInformation($"Started orchestration function: `{FunctionsNames.Strava_O_AuthorizeNewAthlete}` with ID = `{instanceId}`.");
+            var instanceId = await starter.StartNewAsync(FunctionsNames.O_AuthorizeNewAthlete, authorizationCode);
+            log.LogInformation($"Started orchestration function: `{FunctionsNames.O_AuthorizeNewAthlete}` with ID = `{instanceId}`.");
         }
 
-        [FunctionName(FunctionsNames.Strava_SubmitAthleteApproval)]
+        [FunctionName(FunctionsNames.SubmitAthleteApproval)]
         public static async Task<IActionResult> SubmitAthleteApprovalAsync([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "SubmitAthleteApproval/{code}")] HttpRequest req,
             [OrchestrationClient] DurableOrchestrationClient client, 
             [Table("AthleteApprovals", "AthleteApproval", "{code}", Connection = "AzureWebJobsStorage")] AthleteApproval approval,
             ILogger log, string code)
         {
-            log.LogInformation($"{FunctionsNames.Strava_SubmitAthleteApproval} HTTP trigger processed a request.");
+            log.LogInformation($"{FunctionsNames.SubmitAthleteApproval} HTTP trigger processed a request.");
             
             string result = req.Query["result"];
             if (string.IsNullOrWhiteSpace(result))

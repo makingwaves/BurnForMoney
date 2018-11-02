@@ -13,14 +13,14 @@ namespace BurnForMoney.Functions.Strava.Functions.AuthorizeNewAthlete
 {
     public static class AuthorizeNewAthleteOrchestrator
     {
-        [FunctionName(FunctionsNames.Strava_O_AuthorizeNewAthlete)]
+        [FunctionName(FunctionsNames.O_AuthorizeNewAthlete)]
         public static async Task O_AuthorizeNewAthlete(ILogger log, [OrchestrationTrigger] DurableOrchestrationContext context, ExecutionContext executionContext,
             [Queue(QueueNames.AuthorizationCodesPoison)] CloudQueue authorizationCodePoisionQueue,
             [Queue(QueueNames.NewStravaAthletesRequests)] CloudQueue newAthletesRequestsQueue)
         {
             if (!context.IsReplaying)
             {
-                log.LogInformation($"Orchestration function `{FunctionsNames.Strava_O_AuthorizeNewAthlete}` received a request.");
+                log.LogInformation($"Orchestration function `{FunctionsNames.O_AuthorizeNewAthlete}` received a request.");
             }
             
             var authorizationCode = context.GetInput<string>();
@@ -28,23 +28,23 @@ namespace BurnForMoney.Functions.Strava.Functions.AuthorizeNewAthlete
             try
             {
                 // 1. Exchange and authorize athlete
-                var athlete = await context.CallActivityWithRetryAsync<NewStravaAthlete>(FunctionsNames.Strava_A_ExchangeTokenAndGetAthleteSummary,
+                var athlete = await context.CallActivityWithRetryAsync<NewStravaAthlete>(FunctionsNames.A_ExchangeTokenAndGetAthleteSummary,
                     new RetryOptions(TimeSpan.FromSeconds(5), 3), authorizationCode);
                 if (!context.IsReplaying)
                 {
-                    log.LogInformation($"[{FunctionsNames.Strava_O_AuthorizeNewAthlete}] exchanged token for user {athlete.FirstName} " +
+                    log.LogInformation($"[{FunctionsNames.O_AuthorizeNewAthlete}] exchanged token for user {athlete.FirstName} " +
                                        $"{athlete.LastName}.");
                 }
 
                 // 2. Send approval request
                 if (!context.IsReplaying)
                 {
-                    log.LogInformation($"[{FunctionsNames.Strava_O_AuthorizeNewAthlete}] sending approval email...");
+                    log.LogInformation($"[{FunctionsNames.O_AuthorizeNewAthlete}] sending approval email...");
                 }
-                await context.CallActivityAsync(FunctionsNames.Strava_A_SendAthleteApprovalRequest, (athlete.FirstName, athlete.LastName));
+                await context.CallActivityAsync(FunctionsNames.A_SendAthleteApprovalRequest, (athlete.FirstName, athlete.LastName));
                 if (!context.IsReplaying)
                 {
-                    log.LogInformation($"[{FunctionsNames.Strava_O_AuthorizeNewAthlete}] sent approval email.");
+                    log.LogInformation($"[{FunctionsNames.O_AuthorizeNewAthlete}] sent approval email.");
                 }
 
                 // 3. Wait for approval
@@ -68,7 +68,7 @@ namespace BurnForMoney.Functions.Strava.Functions.AuthorizeNewAthlete
 
                 if (!context.IsReplaying)
                 {
-                    log.LogInformation($"[{FunctionsNames.Strava_O_AuthorizeNewAthlete}] Athlete: {athlete.FirstName} {athlete.LastName} has been {approvalResult}.");
+                    log.LogInformation($"[{FunctionsNames.O_AuthorizeNewAthlete}] Athlete: {athlete.FirstName} {athlete.LastName} has been {approvalResult}.");
                 }
 
                 // 4. Process a new athlete request
@@ -77,7 +77,7 @@ namespace BurnForMoney.Functions.Strava.Functions.AuthorizeNewAthlete
             }
             catch (Exception ex)
             {
-                log.LogError($"[{FunctionsNames.Strava_O_AuthorizeNewAthlete}] failed to authorize a new athlete in the system. {ex}");
+                log.LogError($"[{FunctionsNames.O_AuthorizeNewAthlete}] failed to authorize a new athlete in the system. {ex}");
                 await authorizationCodePoisionQueue.AddMessageAsync(new CloudQueueMessage(authorizationCode));
             }
         }

@@ -16,11 +16,11 @@ namespace BurnForMoney.Functions.Strava.Functions.AuthorizeNewAthlete
     {
         private static readonly StravaService StravaService = new StravaService();
 
-        [FunctionName(FunctionsNames.Strava_A_ExchangeTokenAndGetAthleteSummary)]
-        public static NewStravaAthlete Strava_A_ExchangeTokenAndGetAthleteSummary([ActivityTrigger]string authorizationCode, ILogger log,
+        [FunctionName(FunctionsNames.A_ExchangeTokenAndGetAthleteSummary)]
+        public static NewStravaAthlete A_ExchangeTokenAndGetAthleteSummary([ActivityTrigger]string authorizationCode, ILogger log,
             ExecutionContext context)
         {
-            log.LogInformation($"{FunctionsNames.Strava_A_ExchangeTokenAndGetAthleteSummary} function processed a request.");
+            log.LogInformation($"{FunctionsNames.A_ExchangeTokenAndGetAthleteSummary} function processed a request.");
             var configuration = ApplicationConfiguration.GetSettings(context);
 
             log.LogInformation($"Requesting for access token using clientId: {configuration.Strava.ClientId}.");
@@ -41,7 +41,7 @@ namespace BurnForMoney.Functions.Strava.Functions.AuthorizeNewAthlete
             };
         }
         
-        [FunctionName(FunctionsNames.Strava_A_SendAthleteApprovalRequest)]
+        [FunctionName(FunctionsNames.A_SendAthleteApprovalRequest)]
         public static async Task A_SendAthleteApprovalRequest([ActivityTrigger]DurableActivityContext activityContext, ILogger log,
             ExecutionContext context, [Queue(AppQueueNames.NotificationsToSend, Connection = "AppQueuesStorage")] CloudQueue notificationsQueue,
             [Table("AthleteApprovals", "AzureWebJobsStorage")] IAsyncCollector<AthleteApproval> athleteApprovalCollector)

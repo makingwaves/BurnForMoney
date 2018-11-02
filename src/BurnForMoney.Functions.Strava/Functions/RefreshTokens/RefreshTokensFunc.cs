@@ -18,11 +18,11 @@ namespace BurnForMoney.Functions.Strava.Functions.RefreshTokens
     {
         private static readonly StravaService StravaService = new StravaService();
 
-        [FunctionName(FunctionsNames.Strava_T_RefreshAccessTokens)]
+        [FunctionName(FunctionsNames.T_RefreshAccessTokens)]
         public static async Task T_RefreshAccessTokens([TimerTrigger("0 50 * * * *")] TimerInfo timer, ILogger log, ExecutionContext executionContext,
             [Queue(QueueNames.RefreshStravaToken)] CloudQueue refreshTokensQueue)
         {
-            log.LogInformation($"{FunctionsNames.Strava_T_RefreshAccessTokens} function processed a request.");
+            log.LogInformation($"{FunctionsNames.T_RefreshAccessTokens} function processed a request.");
             var configuration = ApplicationConfiguration.GetSettings(executionContext);
 
             IEnumerable<(int AthleteId, string EncryptedRefreshToken)> expiringTokens;
@@ -53,10 +53,10 @@ WHERE Tokens.ExpiresAt < @DateTo AND Athletes.Active=1",
             await Task.WhenAll(tasks);
         }
 
-        [FunctionName(FunctionsNames.Strava_Q_RefreshAccessTokens)]
+        [FunctionName(FunctionsNames.Q_RefreshAccessTokens)]
         public static async Task Q_RefreshAccessTokens([QueueTrigger(QueueNames.RefreshStravaToken)] TokenRefreshRequest request, ILogger log, ExecutionContext executionContext)
         {
-            log.LogInformation($"{FunctionsNames.Strava_Q_RefreshAccessTokens} function processed a request.");
+            log.LogInformation($"{FunctionsNames.Q_RefreshAccessTokens} function processed a request.");
             var configuration = ApplicationConfiguration.GetSettings(executionContext);
 
             var refreshToken = AccessTokensEncryptionService.Decrypt(request.EncryptedRefreshToken, configuration.Strava.AccessTokensEncryptionKey);
