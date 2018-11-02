@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27428.2002
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BurnForMoney.Functions", "Functions\BurnForMoney.Functions.csproj", "{B58D8685-89D8-4977-97C5-B54E8A42544A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BurnForMoney.Functions", "BurnForMoney.Functions\BurnForMoney.Functions.csproj", "{B58D8685-89D8-4977-97C5-B54E8A42544A}"
 EndProject
 Project("{151D2E53-A2C4-4D7D-83FE-D05416EBD58E}") = "BurnForMoney.ResourceGroup", "ResourceGroup\BurnForMoney.ResourceGroup.deployproj", "{8B63AEEF-BEB9-4E06-9B85-31B1F5AAB749}"
 EndProject

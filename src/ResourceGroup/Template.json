@@ -26,51 +26,6 @@
         "description": "Describes plan's pricing tier and capacity. Check details at https://azure.microsoft.com/en-us/pricing/details/app-service/"
       }
     },
-    "websiteSkuCapacity": {
-      "type": "int",
-      "defaultValue": 1,
-      "minValue": 1,
-      "maxValue": 1,
-      "metadata": {
-        "description": "Describes plan's instance count"
-      }
-    },
-    "functionStorageAccountType": {
-      "type": "string",
-      "defaultValue": "Standard_LRS",
-      "allowedValues": [
-        "Standard_LRS"
-      ],
-      "metadata": {
-        "description": "Storage Account type"
-      }
-    },
-    "burnformoneySqlDbCollation": {
-      "type": "string",
-      "minLength": 1,
-      "defaultValue": "SQL_Latin1_General_CP1_CI_AS"
-    },
-    "burnformoneySqlDbEdition": {
-      "type": "string",
-      "defaultValue": "Basic",
-      "allowedValues": [
-        "Basic",
-        "Standard"
-      ]
-    },
-    "burnformoneySqlDbRequestedServiceObjectiveName": {
-      "type": "string",
-      "defaultValue": "Basic",
-      "allowedValues": [
-        "Basic",
-        "S0",
-        "S1",
-        "S2"
-      ],
-      "metadata": {
-        "description": "Describes the performance level for Edition"
-      }
-    },
     "sqlServerLogin": {
       "type": "string",
       "defaultValue": "sqladmin"
@@ -95,6 +50,10 @@
     "applicationName": "burnformoney",
     "webSiteName": "[concat(variables('applicationName'), '-', parameters('environmentCode'))]",
     "websiteHostingPlanName": "[concat(variables('applicationName'), '-', parameters('environmentCode'))]",
+    "stravaFunctionAppName": "[concat(variables('applicationName'), 'func-strava-', parameters('environmentCode'))]",
+    "stravaFunctionHostingPlanName": "[concat(variables('applicationName'), 'func-strava-', parameters('environmentCode'))]",
+    "stravaFunctionStorageAccountName": "[concat(variables('applicationName'), 'funcstrava', parameters('environmentCode'))]",
+    "stravaFunctionStorageAccountId": "[concat(resourceGroup().id,'/providers/','Microsoft.Storage/storageAccounts/', variables('stravaFunctionStorageAccountName'))]",
     "functionAppName": "[concat(variables('applicationName'), 'func-', parameters('environmentCode'))]",
     "functionHostingPlanName": "[concat(variables('applicationName'), 'func-', parameters('environmentCode'))]",
     "functionStorageAccountName": "[concat(variables('applicationName'), 'func', parameters('environmentCode'))]",
@@ -115,7 +74,7 @@
       },
       "sku": {
         "name": "[parameters('websiteSkuName')]",
-        "capacity": "[parameters('websiteSkuCapacity')]"
+        "capacity": 1
       },
       "properties": {
         "name": "[variables('websiteHostingPlanName')]"
@@ -131,6 +90,20 @@
       },
       "properties": {
         "name": "[variables('functionHostingPlanName')]",
+        "computeMode": "Dynamic",
+        "sku": "Dynamic"
+      }
+    },
+    {
+      "apiVersion": "2015-04-01",
+      "name": "[variables('stravaFunctionHostingPlanName')]",
+      "type": "Microsoft.Web/serverfarms",
+      "location": "[resourceGroup().location]",
+      "tags": {
+        "displayName": "FunctionHostingPlan"
+      },
+      "properties": {
+        "name": "[variables('stravaFunctionHostingPlanName')]",
         "computeMode": "Dynamic",
         "sku": "Dynamic"
       }
@@ -159,7 +132,17 @@
       "location": "[resourceGroup().location]",
       "kind": "Storage",
       "sku": {
-        "name": "[parameters('functionStorageAccountType')]"
+        "name": "Standard_LRS"
+      }
+    },
+    {
+      "apiVersion": "2016-01-01",
+      "name": "[variables('stravaFunctionStorageAccountName')]",
+      "type": "Microsoft.Storage/storageAccounts",
+      "location": "[resourceGroup().location]",
+      "kind": "Storage",
+      "sku": {
+        "name": "Standard_LRS"
       }
     },
     {
@@ -230,6 +213,72 @@
               "value": "[parameters('strava.clientId')]"
             },
             {
+              "name": "Email:DefaultRecipient",
+              "value": "[parameters('email.defaultRecipient')]"
+            },
+            {
+              "name": "KeyVaultName",
+              "value": "[variables('keyVaultName')]"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "apiVersion": "2015-08-01",
+      "type": "Microsoft.Web/sites",
+      "name": "[variables('stravaFunctionAppName')]",
+      "location": "[resourceGroup().location]",
+      "kind": "functionapp",
+      "identity": {
+        "type": "SystemAssigned"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/serverfarms', variables('stravaFunctionHostingPlanName'))]",
+        "[resourceId('Microsoft.Storage/storageAccounts', variables('stravaFunctionStorageAccountName'))]",
+        "[resourceId('microsoft.insights/components', variables('appInsightsName'))]"
+      ],
+      "properties": {
+        "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('functionHostingPlanName'))]",
+        "siteConfig": {
+          "appSettings": [
+            {
+              "name": "AzureWebJobsDashboard",
+              "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('stravaFunctionStorageAccountName'), ';AccountKey=', listKeys(variables('stravaFunctionStorageAccountid'),'2015-05-01-preview').key1)]"
+            },
+            {
+              "name": "AzureWebJobsStorage",
+              "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('stravaFunctionStorageAccountName'), ';AccountKey=', listKeys(variables('stravaFunctionStorageAccountid'),'2015-05-01-preview').key1)]"
+            },
+            {
+              "name": "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING",
+              "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('stravaFunctionStorageAccountName'), ';AccountKey=', listKeys(variables('stravaFunctionStorageAccountid'),'2015-05-01-preview').key1)]"
+            },
+            {
+              "name": "WEBSITE_CONTENTSHARE",
+              "value": "[toLower(variables('stravaFunctionAppName'))]"
+            },
+            {
+              "name": "FUNCTIONS_EXTENSION_VERSION",
+              "value": "beta"
+            },
+            {
+              "name": "WEBSITE_NODE_DEFAULT_VERSION",
+              "value": "6.5.0"
+            },
+            {
+              "name": "MSDEPLOY_RENAME_LOCKED_FILES",
+              "value": "1"
+            },
+            {
+              "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
+              "value": "[reference(concat('microsoft.insights/components/', variables('appInsightsName'))).InstrumentationKey]"
+            },
+            {
+              "name": "Strava:ClientId",
+              "value": "[parameters('strava.clientId')]"
+            },
+            {
               "name": "Email:AthletesApprovalEmail",
               "value": "[parameters('email.athletesApprovalEmail')]"
             },
@@ -262,6 +311,21 @@
       },
       "dependsOn": [
         "[resourceId('Microsoft.Web/sites', variables('functionAppName'))]"
+      ]
+    },
+    {
+      "comments": "Strava Function App - Properties (CORS, etc)",
+      "type": "Microsoft.Web/sites/config",
+      "name": "[concat(variables('stravaFunctionAppName'), '/web')]",
+      "apiVersion": "2018-02-01",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "cors": {
+          "allowedOrigins": "[parameters('cors.allowedOrigins')]"
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/sites', variables('stravaFunctionAppName'))]"
       ]
     },
     {
@@ -329,10 +393,10 @@
             "displayName": "burnformoneySqlDb"
           },
           "properties": {
-            "collation": "[parameters('burnformoneySqlDbCollation')]",
-            "edition": "[parameters('burnformoneySqlDbEdition')]",
+            "collation": "SQL_Latin1_General_CP1_CI_AS",
+            "edition": "Basic",
             "maxSizeBytes": "1073741824",
-            "requestedServiceObjectiveName": "[parameters('burnformoneySqlDbRequestedServiceObjectiveName')]"
+            "requestedServiceObjectiveName": "Basic"
           }
         }
       ]
@@ -341,7 +405,8 @@
       "type": "Microsoft.KeyVault/vaults/accessPolicies",
       "name": "[concat(variables('keyVaultName'), '/add')]",
       "dependsOn": [
-        "[resourceId('Microsoft.Web/sites', variables('functionAppName'))]"
+        "[resourceId('Microsoft.Web/sites', variables('functionAppName'))]",
+        "[resourceId('Microsoft.Web/sites', variables('stravaFunctionAppName'))]"
       ],
       "apiVersion": "2016-10-01",
       "properties": {
@@ -349,6 +414,14 @@
           {
             "tenantId": "[reference(concat('Microsoft.Web/sites/', variables('functionAppName')), '2015-08-01', 'Full').identity.tenantId]",
             "objectId": "[reference(concat('Microsoft.Web/sites/', variables('functionAppName')), '2015-08-01', 'Full').identity.principalId]",
+            "permissions": {
+              "keys": [ "get", "list" ],
+              "secrets": [ "get", "list" ]
+            }
+          },
+          {
+            "tenantId": "[reference(concat('Microsoft.Web/sites/', variables('stravaFunctionAppName')), '2015-08-01', 'Full').identity.tenantId]",
+            "objectId": "[reference(concat('Microsoft.Web/sites/', variables('stravaFunctionAppName')), '2015-08-01', 'Full').identity.principalId]",
             "permissions": {
               "keys": [ "get", "list" ],
               "secrets": [ "get", "list" ]
