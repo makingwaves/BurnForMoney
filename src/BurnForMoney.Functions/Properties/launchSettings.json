@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "BurnForMoney.Functions": {
+      "commandName": "Project",
+      "commandLineArgs": "host start --pause-on-error"
+    }
+  }
+}

@@ -6,12 +6,11 @@
     <Company>Making Waves</Company>
     <Authors>Making Waves</Authors>
     <Copyright>Making Waves</Copyright>
-    <PackageProjectUrl>bfm.makingwaves.pl</PackageProjectUrl>
+    <PackageProjectUrl>bfm.makingwaves.com</PackageProjectUrl>
     <RepositoryUrl>https://github.com/makingwaves/BurnForMoney</RepositoryUrl>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="Functions\email_template.txt" />
-    <None Remove="umn.sql" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Resources\email_template.txt">
@@ -35,6 +34,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\BurnForMoney.Functions.Shared\BurnForMoney.Functions.Shared.csproj" />
+    <ProjectReference Include="..\BurnForMoney.Functions.Strava\BurnForMoney.Functions.Strava.csproj" />
   </ItemGroup>
   <ItemGroup>
     <None Update="host.json">

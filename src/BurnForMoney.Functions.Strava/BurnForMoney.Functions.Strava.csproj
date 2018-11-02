@@ -6,12 +6,11 @@
     <Company>Making Waves</Company>
     <Authors>Making Waves</Authors>
     <Copyright>Making Waves</Copyright>
-    <PackageProjectUrl>bfm.makingwaves.pl</PackageProjectUrl>
+    <PackageProjectUrl>bfm.makingwaves.com</PackageProjectUrl>
     <RepositoryUrl>https://github.com/makingwaves/BurnForMoney</RepositoryUrl>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Dapper" Version="1.50.5" />
-    <PackageReference Include="Microsoft.Azure.WebJobs" Version="3.0.1" />
     <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.DurableTask" Version="1.6.2" />
     <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.Storage" Version="3.0.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration.AzureKeyVault" Version="2.1.1" />
