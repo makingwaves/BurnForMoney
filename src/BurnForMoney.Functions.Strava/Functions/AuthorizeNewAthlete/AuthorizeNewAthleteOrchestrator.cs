@@ -51,7 +51,7 @@ namespace BurnForMoney.Functions.Strava.Functions.AuthorizeNewAthlete
                 string approvalResult;
                 using (var cts = new CancellationTokenSource())
                 {
-                    var timeoutTask = context.CreateTimer(context.CurrentUtcDateTime.AddDays(3), cts.Token);
+                    var timeoutTask = context.CreateTimer(context.CurrentUtcDateTime.AddDays(7), cts.Token);
                     var approvalTask = context.WaitForExternalEvent<string>("AthleteApproval");
 
                     var winner = await Task.WhenAny(timeoutTask, approvalTask);

@@ -55,9 +55,9 @@
     "stravaFunctionHostingPlanName": "[concat(variables('applicationShortName'), 'func-strava-', parameters('environmentCode'))]",
     "stravaFunctionStorageAccountName": "[concat(variables('applicationShortName'), 'funcstrava', parameters('environmentCode'))]",
     "stravaFunctionStorageAccountId": "[concat(resourceGroup().id,'/providers/','Microsoft.Storage/storageAccounts/', variables('stravaFunctionStorageAccountName'))]",
-    "functionAppName": "[concat(variables('applicationName'), 'func-', parameters('environmentCode'))]",
-    "functionHostingPlanName": "[concat(variables('applicationName'), 'func-', parameters('environmentCode'))]",
-    "functionStorageAccountName": "[concat(variables('applicationName'), 'func', parameters('environmentCode'))]",
+    "functionAppName": "[concat(variables('applicationShortName'), 'func-', parameters('environmentCode'))]",
+    "functionHostingPlanName": "[concat(variables('applicationShortName'), 'func-', parameters('environmentCode'))]",
+    "functionStorageAccountName": "[concat(variables('applicationShortName'), 'func', parameters('environmentCode'))]",
     "functionStorageAccountId": "[concat(resourceGroup().id,'/providers/','Microsoft.Storage/storageAccounts/', variables('functionStorageAccountName'))]",
     "sqlDbName": "[concat(variables('applicationName'), 'sqldb', parameters('environmentCode'))]",
     "sqlServerName": "[concat(variables('applicationName'), 'sqlserver', parameters('environmentCode'))]",
@@ -289,7 +289,7 @@
             },
             {
               "name": "WEB_HOST",
-              "value": "[concat('https://', variables('functionAppName'), '.azurewebsites.net')]"
+              "value": "[concat('https://', variables('stravaFunctionAppName'), '.azurewebsites.net')]"
             },
             {
               "name": "KeyVaultName",
