@@ -33,6 +33,7 @@ namespace BurnForMoney.Functions.Strava
         public const string Q_DeactivateExpiredAccessTokens = "Q_DeactivateExpiredAccessTokens";
 
         public const string Support_Activities_Collect = "Support_Activities_Collect";
+        public const string Support_Activities_All_Collect = "Support_Activities_All_Collect";
         public const string Support_ReprocessPoisonQueueMessages = "Support_ReprocessPoisonQueueMessages";
         public const string Support_PurgeDurableHubHistory = "Support_PurgeDurableHubHistory";
     }

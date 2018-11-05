@@ -48,7 +48,7 @@ namespace BurnForMoney.Functions.Functions._Support
         }
 
         [FunctionName(FunctionsNames.Support_Activities_Add)]
-        public static async Task<IActionResult> Support_Activities_Add([HttpTrigger(AuthorizationLevel.Admin, "post", Route = "support/strava/activities/add")]HttpRequest req, ILogger log,
+        public static async Task<IActionResult> Support_Activities_Add([HttpTrigger(AuthorizationLevel.Admin, "post", Route = "support/activities/add")]HttpRequest req, ILogger log,
             ExecutionContext executionContext, [Queue(AppQueueNames.PendingRawActivities)] CloudQueue queue)
         {
             log.LogInformation($"{FunctionsNames.Support_Activities_Add} function processed a request.");

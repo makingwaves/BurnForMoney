@@ -51,7 +51,7 @@ WHERE AthleteId = @AthleteId AND IsValid=1", new { input.AthleteId });
                 var getActivitiesFrom = input.From ?? GetFirstDayOfTheMonth(DateTime.UtcNow);
                 log.LogInformation($"{nameof(CollectAthleteActivitiesFunc)} Looking for a new activities starting form: {getActivitiesFrom.ToString(CultureInfo.InvariantCulture)}");
                 var activities = StravaService.GetActivities(accessToken, getActivitiesFrom);
-                log.LogInformation($"{nameof(CollectAthleteActivitiesFunc)} Found: {activities.Count} new activities.");
+                log.LogInformation($"{nameof(CollectAthleteActivitiesFunc)} Athlete: {input.AthleteId}. Found: {activities.Count} new activities.");
                 foreach (var stravaActivity in activities)
                 {
                     var pendingActivity = new PendingRawActivity
