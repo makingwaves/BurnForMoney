@@ -28,7 +28,7 @@ namespace BurnForMoney.Functions.Strava.Functions
                     });
                 if (affectedRows == 1)
                 {
-                    log.LogInformation("Deactivated inactive access token.");
+                    log.LogInformation($"{nameof(FunctionsNames.Q_DeactivateExpiredAccessTokens)} Deactivated inactive access token.");
                 }
             }
         }

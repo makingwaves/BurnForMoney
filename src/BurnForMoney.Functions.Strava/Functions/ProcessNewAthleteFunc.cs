@@ -7,6 +7,7 @@ using Dapper;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 using Microsoft.WindowsAzure.Storage.Queue;
+using Newtonsoft.Json;
 
 namespace BurnForMoney.Functions.Strava.Functions
 {
@@ -58,7 +59,13 @@ namespace BurnForMoney.Functions.Strava.Functions
                 }
 
                 await Task.Delay(1000);
-                await collectActivitiesQueues.AddMessageAsync(new CloudQueueMessage(athleteId.ToString()));
+
+                var input = new CollectAthleteActivitiesInput
+                {
+                    AthleteId = athleteId
+                };
+                var json = JsonConvert.SerializeObject(input);
+                await collectActivitiesQueues.AddMessageAsync(new CloudQueueMessage(json));
             }
         }
 

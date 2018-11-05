@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Data.SqlClient;
+using System.Globalization;
 using System.Threading.Tasks;
 using BurnForMoney.Functions.Shared.Helpers;
 using BurnForMoney.Functions.Shared.Queues;
@@ -18,8 +19,8 @@ namespace BurnForMoney.Functions.Strava.Functions
         private static readonly StravaService StravaService = new StravaService();
 
         [FunctionName(FunctionsNames.CollectAthleteActivities)]
-        public static async Task Run([QueueTrigger(QueueNames.CollectAthleteActivities)]int athleteId,
-            [Queue(AppQueueNames.PendingRawActivities, Connection = "AppQueuesStorage")] CloudQueue pendingRawActivitiesQueue, 
+        public static async Task Run([QueueTrigger(QueueNames.CollectAthleteActivities)] CollectAthleteActivitiesInput input,
+            [Queue(AppQueueNames.PendingRawActivities, Connection = "AppQueuesStorage")] CloudQueue pendingRawActivitiesQueue,
             [Queue(QueueNames.UnauthorizedAccessTokens)] CloudQueue unauthorizedAccessTokensQueue,
             ILogger log, ExecutionContext executionContext)
         {
@@ -33,20 +34,24 @@ namespace BurnForMoney.Functions.Strava.Functions
             {
                 encryptedAccessToken = await conn.QuerySingleOrDefaultAsync<string>(@"SELECT AccessToken
 FROM dbo.[Strava.AccessTokens]
-WHERE AthleteId = @AthleteId AND IsValid=1", new { AthleteId = athleteId });
+WHERE AthleteId = @AthleteId AND IsValid=1", new { input.AthleteId });
 
                 if (string.IsNullOrWhiteSpace(encryptedAccessToken))
                 {
-                    throw new Exception($"Cannot find valid access token for athlete: {athleteId}.");
+                    throw new Exception($"Cannot find valid access token for athlete: {input.AthleteId}.");
                 }
 
                 accessToken = AccessTokensEncryptionService.Decrypt(encryptedAccessToken,
                     configuration.Strava.AccessTokensEncryptionKey);
+                log.LogInformation($"{nameof(CollectAthleteActivitiesFunc)} Decrypted access token.");
             }
 
             try
             {
-                var activities = StravaService.GetActivities(accessToken, GetFirstDayOfTheMonth(DateTime.UtcNow));
+                var getActivitiesFrom = input.From ?? GetFirstDayOfTheMonth(DateTime.UtcNow);
+                log.LogInformation($"{nameof(CollectAthleteActivitiesFunc)} Looking for a new activities starting form: {getActivitiesFrom.ToString(CultureInfo.InvariantCulture)}");
+                var activities = StravaService.GetActivities(accessToken, getActivitiesFrom);
+                log.LogInformation($"{nameof(CollectAthleteActivitiesFunc)} Found: {activities.Count} new activities.");
                 foreach (var stravaActivity in activities)
                 {
                     var pendingActivity = new PendingRawActivity
