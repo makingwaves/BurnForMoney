@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Net.Http;
 using System.Threading.Tasks;
-using BurnForMoney.Functions.Shared.Functions;
 using BurnForMoney.Functions.Strava.Configuration;
 using BurnForMoney.Functions.Strava.External.Strava.Api;
 using Microsoft.AspNetCore.Http;

@@ -1,7 +1,6 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using BurnForMoney.Functions.Shared.Functions;
 using BurnForMoney.Functions.Shared.Queues;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
@@ -15,7 +14,7 @@ namespace BurnForMoney.Functions.Strava.Functions.AuthorizeNewAthlete
     {
         [FunctionName(FunctionsNames.O_AuthorizeNewAthlete)]
         public static async Task O_AuthorizeNewAthlete(ILogger log, [OrchestrationTrigger] DurableOrchestrationContext context, ExecutionContext executionContext,
-            [Queue(QueueNames.AuthorizationCodesPoison)] CloudQueue authorizationCodePoisionQueue,
+            [Queue(QueueNames.AuthorizationCodesPoison)] CloudQueue authorizationCodePoisonQueue,
             [Queue(QueueNames.NewStravaAthletesRequests)] CloudQueue newAthletesRequestsQueue)
         {
             if (!context.IsReplaying)
@@ -51,7 +50,7 @@ namespace BurnForMoney.Functions.Strava.Functions.AuthorizeNewAthlete
                 string approvalResult;
                 using (var cts = new CancellationTokenSource())
                 {
-                    var timeoutTask = context.CreateTimer(context.CurrentUtcDateTime.AddDays(7), cts.Token);
+                    var timeoutTask = context.CreateTimer(context.CurrentUtcDateTime.AddDays(6), cts.Token);
                     var approvalTask = context.WaitForExternalEvent<string>("AthleteApproval");
 
                     var winner = await Task.WhenAny(timeoutTask, approvalTask);
@@ -78,7 +77,7 @@ namespace BurnForMoney.Functions.Strava.Functions.AuthorizeNewAthlete
             catch (Exception ex)
             {
                 log.LogError($"[{FunctionsNames.O_AuthorizeNewAthlete}] failed to authorize a new athlete in the system. {ex}");
-                await authorizationCodePoisionQueue.AddMessageAsync(new CloudQueueMessage(authorizationCode));
+                await authorizationCodePoisonQueue.AddMessageAsync(new CloudQueueMessage(authorizationCode));
             }
         }
     }

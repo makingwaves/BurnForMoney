@@ -2,7 +2,6 @@
 using System.Data.SqlClient;
 using System.Threading.Tasks;
 using BurnForMoney.Functions.Configuration;
-using BurnForMoney.Functions.Shared.Functions;
 using Dapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

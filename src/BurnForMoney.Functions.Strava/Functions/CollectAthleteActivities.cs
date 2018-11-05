@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Data.SqlClient;
 using System.Threading.Tasks;
-using BurnForMoney.Functions.Shared.Functions;
 using BurnForMoney.Functions.Shared.Helpers;
 using BurnForMoney.Functions.Shared.Queues;
 using BurnForMoney.Functions.Strava.Configuration;

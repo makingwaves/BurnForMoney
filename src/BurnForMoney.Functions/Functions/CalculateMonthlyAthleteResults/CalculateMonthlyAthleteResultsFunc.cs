@@ -5,7 +5,6 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
 using BurnForMoney.Functions.Configuration;
-using BurnForMoney.Functions.Shared.Functions;
 using BurnForMoney.Functions.Shared.Queues;
 using Dapper;
 using Microsoft.Azure.WebJobs;

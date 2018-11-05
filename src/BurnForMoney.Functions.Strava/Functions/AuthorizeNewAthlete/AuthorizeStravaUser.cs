@@ -1,6 +1,5 @@
 using System.Linq;
 using System.Threading.Tasks;
-using BurnForMoney.Functions.Shared.Functions;
 using BurnForMoney.Functions.Strava.Configuration;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

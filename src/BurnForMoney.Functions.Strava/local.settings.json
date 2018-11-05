@@ -5,7 +5,7 @@
     "AzureWebJobsStorage": "UseDevelopmentStorage=true",
     "AppQueuesStorage": "UseDevelopmentStorage=true",
     "AzureWebJobsDashboard": "UseDevelopmentStorage=true",
-    "WEB_HOST": "http://localhost:7071",
+    "WEB_HOST": "http://localhost:7072",
     "Strava:ClientId": 28597,
     "Email:AthletesApprovalEmail": "pawel.maga@makingwaves.com",
     "Email:DefaultRecipient": "pawel.maga@makingwaves.com",

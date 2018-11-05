@@ -22,7 +22,7 @@
     <ProjectReference Include="..\BurnForMoney.Functions.Shared\BurnForMoney.Functions.Shared.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <None Update="host.json">
+    <None Update="host.json" CopyToPublishDirectory="Always">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="local.settings.json">

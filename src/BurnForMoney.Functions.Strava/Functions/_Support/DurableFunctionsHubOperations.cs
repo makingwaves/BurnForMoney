@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Threading.Tasks;
-using BurnForMoney.Functions.Shared.Functions;
 using BurnForMoney.Functions.Strava.Configuration;
 using DurableTask.AzureStorage;
 using DurableTask.Core;
