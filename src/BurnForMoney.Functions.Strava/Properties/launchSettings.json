@@ -2,7 +2,7 @@
   "profiles": {
     "BurnForMoney.Functions.Strava": {
       "commandName": "Project",
-      "commandLineArgs": "host start --pause-on-error"
+      "commandLineArgs": "host start -p 7072"
     }
   }
 }
