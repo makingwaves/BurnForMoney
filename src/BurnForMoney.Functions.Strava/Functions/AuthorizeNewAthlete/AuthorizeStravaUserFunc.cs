@@ -10,7 +10,7 @@ using Microsoft.WindowsAzure.Storage.Queue;
 
 namespace BurnForMoney.Functions.Strava.Functions.AuthorizeNewAthlete
 {
-    public static class AuthorizeStravaUser
+    public static class AuthorizeStravaUserFunc
     {
         private const int AuthorisationCodeLength = 40;
         private const string StravaAuthorizationUrl = "https://www.strava.com/oauth/authorize";

@@ -11,7 +11,7 @@ using Microsoft.Extensions.Logging;
 
 namespace BurnForMoney.Functions.Functions._Support
 {
-    public static class AthleteOperations
+    public static class AthleteOperationsFunc
     {
         [FunctionName(FunctionsNames.Support_Athlete_Deactivate)]
         public static async Task<IActionResult> Support_DeactivateAthlete([HttpTrigger(AuthorizationLevel.Admin, "post", Route = "support/athlete/{athleteId:int}/deactivate")]HttpRequest req, ILogger log,

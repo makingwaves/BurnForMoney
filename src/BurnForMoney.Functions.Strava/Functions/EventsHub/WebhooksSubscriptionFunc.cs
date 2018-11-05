@@ -12,7 +12,7 @@ using Newtonsoft.Json;
 
 namespace BurnForMoney.Functions.Strava.Functions.EventsHub
 {
-    public static class WebhooksSubscription
+    public static class WebhooksSubscriptionFunc
     {
         private static readonly StravaWebhooksService StravaWebhooksService = new StravaWebhooksService();
         private static readonly HttpClient HttpClient = new HttpClient();

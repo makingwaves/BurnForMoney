@@ -9,7 +9,7 @@ using Newtonsoft.Json;
 
 namespace BurnForMoney.Functions.Functions
 {
-    public static class ProcessRawActivity
+    public static class ProcessRawActivityFunc
     {
         [FunctionName(FunctionsNames.Q_ProcessRawActivity)]
         public static async Task Q_ProcessRawActivityAsync(ILogger log, ExecutionContext executionContext, 

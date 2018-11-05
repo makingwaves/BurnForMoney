@@ -9,7 +9,7 @@ using SendGrid.Helpers.Mail;
 
 namespace BurnForMoney.Functions.Functions
 {
-    public static class NotificationsGateway
+    public static class NotificationsGatewayFunc
     {
         private static string EmailTemplate;
 

@@ -11,7 +11,7 @@ using Microsoft.Extensions.Logging;
 
 namespace BurnForMoney.Functions.Strava.Functions._Support
 {
-    public static class DurableFunctionsHubOperations
+    public static class DurableFunctionsHubOperationsFunc
     {
         [FunctionName(FunctionsNames.Support_PurgeDurableHubHistory)]
         [Disable] //Not supported by Durable Task (https://github.com/Azure/durabletask/blob/2c2e9c27980473641b99a81e4c35fb6245670590/src/DurableTask.AzureStorage/Tracking/AzureTableTrackingStore.cs)

@@ -6,9 +6,9 @@ using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.WindowsAzure.Storage.Queue;
 
-namespace BurnForMoney.Functions.Functions._Support
+namespace BurnForMoney.Functions.Strava.Functions._Support
 {
-    public static class QueueOperations
+    public static class QueueOperationsFunc
     {
         [FunctionName(FunctionsNames.Support_ReprocessPoisonQueueMessages)]
         public static async Task<IActionResult> Support_ReprocessPoisonQueueMessages([HttpTrigger(AuthorizationLevel.Admin, "put", Route = "support/reprocessQueueMessages/{queueName}")]HttpRequest req, ILogger log,

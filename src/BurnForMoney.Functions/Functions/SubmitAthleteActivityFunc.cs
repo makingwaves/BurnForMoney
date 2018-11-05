@@ -10,7 +10,7 @@ using Microsoft.Extensions.Logging;
 
 namespace BurnForMoney.Functions.Functions
 {
-    public static class SubmitAthleteActivity
+    public static class SubmitAthleteActivityFunc
     {
         private static readonly ConcurrentDictionary<int, int> AthleteIdsMappings = new ConcurrentDictionary<int, int>();
 

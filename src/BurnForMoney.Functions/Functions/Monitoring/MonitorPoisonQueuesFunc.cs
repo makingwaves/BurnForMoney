@@ -12,7 +12,7 @@ using Microsoft.WindowsAzure.Storage.Queue;
 
 namespace BurnForMoney.Functions.Functions.Monitoring
 {
-    public static class MonitorPoisonQueues
+    public static class MonitorPoisonQueuesFunc
     {
         private static readonly TelemetryClient TelemetryClient = new TelemetryClient();
         

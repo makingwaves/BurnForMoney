@@ -2,7 +2,6 @@
 using System.Data;
 using System.Data.SqlClient;
 using System.Threading.Tasks;
-using BurnForMoney.Functions.Shared.Queues;
 using BurnForMoney.Functions.Strava.Configuration;
 using Dapper;
 using Microsoft.Azure.WebJobs;
@@ -11,7 +10,7 @@ using Microsoft.WindowsAzure.Storage.Queue;
 
 namespace BurnForMoney.Functions.Strava.Functions
 {
-    public static class ProcessNewAthlete
+    public static class ProcessNewAthleteFunc
     {
         [FunctionName(FunctionsNames.Q_ProcessNewAthlete)]
         public static async Task Q_ProcessNewAthleteAsync(ILogger log, ExecutionContext executionContext,

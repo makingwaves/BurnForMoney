@@ -8,7 +8,7 @@ using Microsoft.WindowsAzure.Storage.Queue;
 
 namespace BurnForMoney.Functions.Strava.Functions._Support
 {
-    public static class ActivitiesOperations
+    public static class ActivitiesOperationsFunc
     {
         [FunctionName(FunctionsNames.Support_Activities_Collect)]
         public static async Task<IActionResult> Support_CollectActivities([HttpTrigger(AuthorizationLevel.Admin, "post", Route = "support/strava/athlete/{athleteId}/activities/collect")]HttpRequest req, ILogger log,

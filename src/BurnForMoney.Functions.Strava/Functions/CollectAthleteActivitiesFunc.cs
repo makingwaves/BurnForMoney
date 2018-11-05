@@ -13,7 +13,7 @@ using Newtonsoft.Json;
 
 namespace BurnForMoney.Functions.Strava.Functions
 {
-    public static class CollectAthleteActivities
+    public static class CollectAthleteActivitiesFunc
     {
         private static readonly StravaService StravaService = new StravaService();
 

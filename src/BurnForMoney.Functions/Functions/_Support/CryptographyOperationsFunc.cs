@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging;
 
 namespace BurnForMoney.Functions.Functions._Support
 {
-    public static class CryptographyOperations
+    public static class CryptographyOperationsFunc
     {
         [FunctionName(FunctionsNames.Support_EncryptString)]
         public static IActionResult RunEncryptString([HttpTrigger(AuthorizationLevel.Admin, "get", Route = "support/encryptstring/{text}/{encryptionKey}")]HttpRequest req, ILogger log, ExecutionContext context, string text,
