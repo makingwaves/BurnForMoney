@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace BurnForMoney.Functions.Shared.Queues
+namespace BurnForMoney.Functions.Strava.Functions
 {
     public class NewStravaAthlete
     {

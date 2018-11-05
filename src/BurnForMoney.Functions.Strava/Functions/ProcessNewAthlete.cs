@@ -9,7 +9,7 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 using Microsoft.WindowsAzure.Storage.Queue;
 
-namespace BurnForMoney.Functions.Strava
+namespace BurnForMoney.Functions.Strava.Functions
 {
     public static class ProcessNewAthlete
     {

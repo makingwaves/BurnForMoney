@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using BurnForMoney.Functions.Functions.CalculateMonthlyAthleteResults;
 using BurnForMoney.Functions.Shared.Queues;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

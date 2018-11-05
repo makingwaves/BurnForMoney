@@ -1,6 +1,7 @@
 ﻿using System;
+using BurnForMoney.Functions.Shared;
 
-namespace BurnForMoney.Functions.Shared.Queues
+namespace BurnForMoney.Functions.Functions
 {
     public class PendingActivity
     {

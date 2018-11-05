@@ -1,4 +1,4 @@
-﻿namespace BurnForMoney.Functions.Shared.Queues
+﻿namespace BurnForMoney.Functions.Strava.Functions.EventsHub
 {
     public class ActivityData
     {

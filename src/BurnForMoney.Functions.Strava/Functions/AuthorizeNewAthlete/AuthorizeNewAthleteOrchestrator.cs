@@ -50,6 +50,7 @@ namespace BurnForMoney.Functions.Strava.Functions.AuthorizeNewAthlete
                 string approvalResult;
                 using (var cts = new CancellationTokenSource())
                 {
+                    // Durable timers cannot last longer than 7 days due to limitations in Azure Storage.
                     var timeoutTask = context.CreateTimer(context.CurrentUtcDateTime.AddDays(6), cts.Token);
                     var approvalTask = context.WaitForExternalEvent<string>("AthleteApproval");
 
