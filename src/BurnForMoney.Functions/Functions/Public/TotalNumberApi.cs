@@ -55,6 +55,7 @@ namespace BurnForMoney.Functions.Functions.Public
                         Date = record.date,
                         Results = JsonConvert.DeserializeObject<List<AthleteMonthlyResult>>(record.json)
                     })
+                    .OrderBy(month => month.Date, new DateComparer())
                     .ToList();
 
                 var totalDistance = months.Sum(j => j.Results.Sum(r => r.Distance));
@@ -108,6 +109,18 @@ namespace BurnForMoney.Functions.Functions.Public
         public class PointsToMoneyConverter
         {
             public static int Convert(int points) => points * 100 / 500;
+        }
+    }
+
+    public class DateComparer : IComparer<string>
+    {
+        public int Compare(string x, string y)
+        {
+            var xSplit = x.Split('/');
+            var xDate = new DateTime(int.Parse(xSplit[0]), int.Parse(xSplit[1]), 1, 0, 0, 0);
+            var ySplit = y.Split('/');
+            var yDate = new DateTime(int.Parse(ySplit[0]), int.Parse(ySplit[1]), 1, 0, 0, 0);
+            return xDate.CompareTo(yDate);
         }
     }
 }
