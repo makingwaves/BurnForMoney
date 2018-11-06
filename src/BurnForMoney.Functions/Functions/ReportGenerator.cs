@@ -6,12 +6,14 @@ using System.Text;
 using System.Threading.Tasks;
 using BurnForMoney.Functions.Configuration;
 using BurnForMoney.Functions.Functions.CalculateMonthlyAthleteResults;
+using BurnForMoney.Functions.Shared.Queues;
 using CsvHelper;
 using Dapper;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
+using Microsoft.WindowsAzure.Storage.Queue;
 using Newtonsoft.Json;
 
 namespace BurnForMoney.Functions.Functions
@@ -79,11 +81,47 @@ namespace BurnForMoney.Functions.Functions
         }
 
         [FunctionName(FunctionsNames.B_SendNotificationWithLinkToTheReport)]
-        public static async Task B_SendNotificationWithLinkToTheReport([BlobTrigger("reports")] ICloudBlob cloudBlob, 
+        public static async Task B_SendNotificationWithLinkToTheReport([BlobTrigger("reports")] CloudBlockBlob cloudBlob, 
             ILogger log,
-            ExecutionContext executionContext)
+            ExecutionContext executionContext,
+            [Queue(AppQueueNames.NotificationsToSend)] CloudQueue notificationsQueue)
         {
             log.LogInformation($"{FunctionsNames.B_SendNotificationWithLinkToTheReport} function processed a request.");
+
+            var configuration = ApplicationConfiguration.GetSettings(executionContext);
+
+            var blobSasToken = GetBlobSasToken(cloudBlob, SharedAccessBlobPermissions.Read);
+            log.LogInformation($"{FunctionsNames.B_SendNotificationWithLinkToTheReport} generated SAS token.");
+            var link = cloudBlob.Uri + blobSasToken;
+
+            var notification = new Notification
+            {
+                Recipients = new List<string> { configuration.Email.AthletesApprovalEmail },
+                Subject = "Burn for Money - Report",
+                HtmlContent = $@"
+Hey, <br>
+A new report summarizing the previous month has been generated. You can download it from <a href={link}>this</a> address (the link is valid for 7 days)."
+            };
+
+            log.LogInformation($"{FunctionsNames.B_SendNotificationWithLinkToTheReport} created notification message.");
+            var json = JsonConvert.SerializeObject(notification);
+            await notificationsQueue.AddMessageAsync(new CloudQueueMessage(json));
+        }
+
+        private static string GetBlobSasToken(CloudBlob blob, SharedAccessBlobPermissions permissions)
+        {
+            var adHocSas = CreateAdHocSasPolicy(permissions);
+            return blob.GetSharedAccessSignature(adHocSas);
+        }
+
+        private static SharedAccessBlobPolicy CreateAdHocSasPolicy(SharedAccessBlobPermissions permissions)
+        {
+            return new SharedAccessBlobPolicy
+            {
+                SharedAccessStartTime = DateTime.UtcNow.AddMinutes(-5),
+                SharedAccessExpiryTime = DateTime.UtcNow.AddDays(7),
+                Permissions = permissions
+            };
         }
     }
 }
