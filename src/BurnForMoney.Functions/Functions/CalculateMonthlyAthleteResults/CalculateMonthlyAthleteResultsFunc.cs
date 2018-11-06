@@ -5,7 +5,6 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
 using BurnForMoney.Functions.Configuration;
-using BurnForMoney.Functions.Shared.Queues;
 using Dapper;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
@@ -16,7 +15,7 @@ namespace BurnForMoney.Functions.Functions.CalculateMonthlyAthleteResults
     public static class CalculateMonthlyAthleteResultsFunc
     {
         [FunctionName(FunctionsNames.Q_CalculateMonthlyAthleteResults)]
-        public static async Task Q_CalculateMonthlyAthleteResults([QueueTrigger(AppQueueNames.CalculateMonthlyResults)] CalculateMonthlyResultsRequest request, ILogger log, ExecutionContext executionContext)
+        public static async Task Q_CalculateMonthlyAthleteResults([QueueTrigger(QueueNames.CalculateMonthlyResults)] CalculateMonthlyResultsRequest request, ILogger log, ExecutionContext executionContext)
         {
             log.LogInformation($"{FunctionsNames.Q_CalculateMonthlyAthleteResults} function processed a request.");
 

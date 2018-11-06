@@ -16,7 +16,7 @@ namespace BurnForMoney.Functions.Functions._Support
     {
         [FunctionName(FunctionsNames.Support_Activities_CollectMonthlyStatistics)]
         public static async Task<IActionResult> Support_Activities_CollectMonthlyStatistics([HttpTrigger(AuthorizationLevel.Admin, "get", Route = "support/activities/collectmonthlystatistics/{year}/{month}")]HttpRequest req, ILogger log,
-            [Queue(AppQueueNames.CalculateMonthlyResults)] CloudQueue outputQueue, int year, int month)
+            [Queue(QueueNames.CalculateMonthlyResults)] CloudQueue outputQueue, int year, int month)
         {
             log.LogInformation($"{FunctionsNames.Support_Activities_CollectMonthlyStatistics} function processed a request.");
 
@@ -49,7 +49,7 @@ namespace BurnForMoney.Functions.Functions._Support
 
         [FunctionName(FunctionsNames.Support_Activities_Add)]
         public static async Task<IActionResult> Support_Activities_Add([HttpTrigger(AuthorizationLevel.Admin, "post", Route = "support/activities/add")]HttpRequest req, ILogger log,
-            ExecutionContext executionContext, [Queue(AppQueueNames.PendingRawActivities)] CloudQueue queue)
+            ExecutionContext executionContext, [Queue(AppQueueNames.UpsertRawActivitiesRequests)] CloudQueue queue)
         {
             log.LogInformation($"{FunctionsNames.Support_Activities_Add} function processed a request.");
 

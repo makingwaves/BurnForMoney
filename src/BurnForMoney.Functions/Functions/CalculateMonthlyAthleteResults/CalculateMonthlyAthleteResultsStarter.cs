@@ -12,7 +12,7 @@ namespace BurnForMoney.Functions.Functions.CalculateMonthlyAthleteResults
     {
         // every hour
         [FunctionName(FunctionsNames.T_CalculateMonthlyAthleteResults)]
-        public static async Task CalculateMonthlyAthleteResults([TimerTrigger("0 0 * * * *")]TimerInfo timer, [Queue(AppQueueNames.CalculateMonthlyResults)] CloudQueue outputQueue, ILogger log, ExecutionContext context)
+        public static async Task CalculateMonthlyAthleteResults([TimerTrigger("0 0 * * * *")]TimerInfo timer, [Queue(QueueNames.CalculateMonthlyResults)] CloudQueue outputQueue, ILogger log, ExecutionContext context)
         {
             log.LogInformation($"{FunctionsNames.T_CalculateMonthlyAthleteResults} timer trigger processed a request at {DateTime.UtcNow}.");
 
@@ -29,7 +29,7 @@ namespace BurnForMoney.Functions.Functions.CalculateMonthlyAthleteResults
 
         // first day of the month at 1:00
         [FunctionName(FunctionsNames.T_CalculateMonthlyAthleteResultsFromPreviousMonth)]
-        public static async Task CalculateMonthlyAthleteResultsFromPreviousMonth([TimerTrigger("0 0 1 1 * *")]TimerInfo timer, [Queue(AppQueueNames.CalculateMonthlyResults)] CloudQueue outputQueue, ILogger log, ExecutionContext context)
+        public static async Task CalculateMonthlyAthleteResultsFromPreviousMonth([TimerTrigger("0 0 1 1 * *")]TimerInfo timer, [Queue(QueueNames.CalculateMonthlyResults)] CloudQueue outputQueue, ILogger log, ExecutionContext context)
         {
             log.LogInformation($"{FunctionsNames.T_CalculateMonthlyAthleteResultsFromPreviousMonth} timer trigger processed a request at {DateTime.UtcNow}.");
 

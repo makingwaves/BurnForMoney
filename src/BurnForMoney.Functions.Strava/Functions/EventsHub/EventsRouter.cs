@@ -101,7 +101,7 @@ namespace BurnForMoney.Functions.Strava.Functions.EventsHub
         [FunctionName(FunctionsNames.Events_NewActivity)]
         public static async Task Events_NewActivity([QueueTrigger(QueueNames.StravaEventsActivityAdd)] ActivityData @event,
             ILogger log, ExecutionContext executionContext,
-            [Queue(AppQueueNames.PendingRawActivities, Connection = "AppQueuesStorage")] CloudQueue pendingRawActivitiesQueue)
+            [Queue(AppQueueNames.UpsertRawActivitiesRequests, Connection = "AppQueuesStorage")] CloudQueue pendingRawActivitiesQueue)
         {
             log.LogInformation($"{FunctionsNames.Events_NewActivity} function processed a request.");
 
@@ -129,7 +129,7 @@ namespace BurnForMoney.Functions.Strava.Functions.EventsHub
         [FunctionName(FunctionsNames.Events_UpdateActivity)]
         public static async Task Events_UpdateActivity([QueueTrigger(QueueNames.StravaEventsActivityUpdate)] ActivityData @event,
             ILogger log, ExecutionContext executionContext,
-            [Queue(AppQueueNames.PendingRawActivities, Connection = "AppQueuesStorage")] CloudQueue pendingRawActivitiesQueue)
+            [Queue(AppQueueNames.UpsertRawActivitiesRequests, Connection = "AppQueuesStorage")] CloudQueue pendingRawActivitiesQueue)
         {
             log.LogInformation($"{FunctionsNames.Events_UpdateActivity} function processed a request.");
 
@@ -178,19 +178,13 @@ WHERE Athletes.ExternalId=@AthleteId", new { AthleteId = athleteId });
 
         [FunctionName(FunctionsNames.Events_DeleteActivity)]
         public static async Task Events_DeleteActivity([QueueTrigger(QueueNames.StravaEventsActivityDelete)] ActivityData @event,
-            ILogger log, ExecutionContext executionContext)
+            ILogger log, ExecutionContext executionContext,
+            [Queue(AppQueueNames.DeleteActivityRequests, Connection = "AppQueuesStorage")] CloudQueue deleteActivtiesQueue)
         {
-            log.LogInformation($"{FunctionsNames.Events_NewActivity} function processed a request.");
+            log.LogInformation($"{FunctionsNames.Events_DeleteActivity} function processed a request.");
 
-            var configuration = ApplicationConfiguration.GetSettings(executionContext);
-            using (var conn = new SqlConnection(configuration.ConnectionStrings.SqlDbConnectionString))
-            {
-                var affectedRows = await conn.ExecuteAsync(@"DELETE FROM dbo.Activities WHERE ActivityId=@ActivityId", new { @event.ActivityId });
-                if (affectedRows == 0)
-                {
-                    throw new Exception($"Failed to remove activity with id: {@event.ActivityId}");
-                }
-            }
+            var message = new CloudQueueMessage(@event.ActivityId.ToString());
+            await deleteActivtiesQueue.AddMessageAsync(message);
         }
     }
 }

@@ -12,10 +12,10 @@ namespace BurnForMoney.Functions.Functions
     public static class ProcessRawActivityFunc
     {
         [FunctionName(FunctionsNames.Q_ProcessRawActivity)]
-        public static async Task Q_ProcessRawActivityAsync(ILogger log, ExecutionContext executionContext, 
-            [QueueTrigger(AppQueueNames.PendingRawActivities)] PendingRawActivity rawActivity,
-            [Queue(AppQueueNames.PendingActivities)] CloudQueue pendingActivitiesQueue,
-            [Queue(AppQueueNames.PendingActivitiesUpdates)] CloudQueue pendingActivityUpdatesQueue)
+        public static async Task Q_ProcessRawActivityAsync(ILogger log, ExecutionContext executionContext,
+            [QueueTrigger(AppQueueNames.UpsertRawActivitiesRequests)] PendingRawActivity rawActivity,
+            [Queue(QueueNames.PendingActivities)] CloudQueue pendingActivitiesQueue,
+            [Queue(QueueNames.PendingActivitiesUpdates)] CloudQueue pendingActivityUpdatesQueue)
         {
             if (rawActivity.Source != "Strava")
             {
@@ -26,7 +26,7 @@ namespace BurnForMoney.Functions.Functions
 
             var activityCategory = StravaActivityMapper.MapToActivityCategory(rawActivity.ActivityType);
             var points = PointsCalculator.Calculate(activityCategory, rawActivity.DistanceInMeters, rawActivity.MovingTimeInMinutes);
-            
+
             var activity = new PendingActivity
             {
                 SourceAthleteId = rawActivity.SourceAthleteId,
