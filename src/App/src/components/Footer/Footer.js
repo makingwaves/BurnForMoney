@@ -15,7 +15,7 @@ class Footer extends Component {
           <div className="Footer__links">
             <ul className="Footer__links-list">
               <li className="Footer__links-listItem"><a href="http://makingwaves.com/">makingwaves.com</a></li>
-              <li className="Footer__links-listItem"><a href="http://makingwaves.com/">our initiatives</a></li>
+              <li className="Footer__links-listItem"><a href="http://praca.makingwaves.com/#initiatives">our initiatives</a></li>
               <li className="Footer__links-listItem"><a href="https://www.makingwaves.com/contact-us/">contact us</a></li>
             </ul>
           </div>

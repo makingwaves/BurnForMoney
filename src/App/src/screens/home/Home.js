@@ -51,19 +51,7 @@ class Home extends Component {
       this.setState({
         contentful: entries.items
       });
-      console.log('contentful', this.state.contentful)
-/*
-      entries.items.forEach(entry => {
-        if(entry.fields) {
-
-          console.log('contentful', this.state.contentful);
-        } else {
-          this.setState({
-            contentful: null
-          });
-        }
-      })
-*/
+      
     })
 
     fetch(api_url+"api/totalnumbers")
