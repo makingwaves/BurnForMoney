@@ -23,5 +23,6 @@ namespace BurnForMoney.Functions
         public const string Support_ReprocessPoisonQueueMessages = "Support_ReprocessPoisonQueueMessages";
         public const string NotificationsGateway = "NotificationsGateway";
         public const string T_GenerateReport = "T_GenerateReport";
+        public const string B_SendNotificationWithLinkToTheReport = "B_SendNotificationWithLinkToTheReport";
     }
 }

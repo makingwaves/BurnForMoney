@@ -10,6 +10,7 @@ using CsvHelper;
 using Dapper;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
+using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
 using Newtonsoft.Json;
 
@@ -18,9 +19,8 @@ namespace BurnForMoney.Functions.Functions
     public static class ReportGenerator
     {
         [FunctionName(FunctionsNames.T_GenerateReport)]
-        public static async Task Run([TimerTrigger("0 0 0 5 * *")] TimerInfo timer,
-            [Blob("reports/{DateTime:yyyy}/{DateTime:MM}/results.csv")]
-            ICloudBlob outputBlob,
+        public static async Task Run(
+            [TimerTrigger("0 0 0 5 * *")] TimerInfo timer,
             ILogger log,
             ExecutionContext executionContext)
         {
@@ -58,10 +58,32 @@ namespace BurnForMoney.Functions.Functions
                         csv.WriteRecords(results);
                         csv.Flush();
                         streamWriter.Flush();
+
+                        var outputBlob = await GetBlobReportAsync(configuration.ConnectionStrings.AzureWebJobsStorage);
                         await outputBlob.UploadFromByteArrayAsync(memoryStream.ToArray(), 0, (int)memoryStream.Length);
                     }
                 }
             }
+        }
+
+        private static async Task<CloudBlockBlob> GetBlobReportAsync(string storageConnectionString)
+        {
+            var lastMonth = DateTime.UtcNow.AddMonths(-1);
+            var storageAccount = CloudStorageAccount.Parse(storageConnectionString);
+            var blobClient = storageAccount.CreateCloudBlobClient();
+            var container = blobClient.GetContainerReference("reports");
+            await container.CreateIfNotExistsAsync();
+
+            var directory = container.GetDirectoryReference($"{lastMonth.Year}/{lastMonth.Month}/");
+            return directory.GetBlockBlobReference("reports.csv");
+        }
+
+        [FunctionName(FunctionsNames.B_SendNotificationWithLinkToTheReport)]
+        public static async Task B_SendNotificationWithLinkToTheReport([BlobTrigger("reports")] ICloudBlob cloudBlob, 
+            ILogger log,
+            ExecutionContext executionContext)
+        {
+            log.LogInformation($"{FunctionsNames.B_SendNotificationWithLinkToTheReport} function processed a request.");
         }
     }
 }
