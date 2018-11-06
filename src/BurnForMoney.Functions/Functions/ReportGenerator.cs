@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using BurnForMoney.Functions.Configuration;
@@ -46,7 +47,8 @@ namespace BurnForMoney.Functions.Functions
                 return;
             }
 
-            var results = JsonConvert.DeserializeObject<List<AthleteMonthlyResult>>(json);
+            var results = JsonConvert.DeserializeObject<List<AthleteMonthlyResult>>(json)
+                .OrderBy(r => r.AthleteId);
 
             using (var memoryStream = new MemoryStream())
             {
