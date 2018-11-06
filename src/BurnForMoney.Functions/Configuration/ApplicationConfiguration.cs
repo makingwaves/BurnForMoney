@@ -25,7 +25,7 @@ namespace BurnForMoney.Functions.Configuration
                     },
                     Email = new EmailSection
                     {
-                        AthletesApprovalEmail = config["Email:AthletesApprovalEmail"],
+                        ReportsReceiver = config["Email:ReportsReceiver"],
                         SenderEmail = "burnformoney@makingwaves.com",
                         DefaultRecipient = config["Email:DefaultRecipient"]
                     },

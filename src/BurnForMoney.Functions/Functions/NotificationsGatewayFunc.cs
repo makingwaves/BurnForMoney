@@ -11,7 +11,7 @@ namespace BurnForMoney.Functions.Functions
 {
     public static class NotificationsGatewayFunc
     {
-        private static string EmailTemplate;
+        private static string _emailTemplate;
 
         [FunctionName(FunctionsNames.NotificationsGateway)]
         public static async Task SendEmail([QueueTrigger(AppQueueNames.NotificationsToSend)] Notification notification, ILogger log, ExecutionContext context,
@@ -34,13 +34,13 @@ namespace BurnForMoney.Functions.Functions
 
         private static string ApplyTemplate(string content, ExecutionContext context)
         {
-            if (string.IsNullOrWhiteSpace(EmailTemplate))
+            if (string.IsNullOrWhiteSpace(_emailTemplate))
             {
                 var path = Path.Combine(context.FunctionAppDirectory + "\\Resources\\", "email_template.txt");
-                EmailTemplate = File.ReadAllText(path);
+                _emailTemplate = File.ReadAllText(path);
             }
 
-            return EmailTemplate.Replace("%%%content%%%", content);
+            return _emailTemplate.Replace("%%%content%%%", content);
         }
     }
 }

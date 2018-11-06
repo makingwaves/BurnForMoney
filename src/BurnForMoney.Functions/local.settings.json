@@ -4,8 +4,8 @@
     "FUNCTIONS_WORKER_RUNTIME": "dotnet",
     "AzureWebJobsStorage": "UseDevelopmentStorage=true",
     "AzureWebJobsDashboard": "UseDevelopmentStorage=true",
-    "WEB_HOST": "http://localhost:7071",
     "StravaAppHostName": "http://localhost:7072",
+    "Email:ReportsReceiver": "pawel.maga@makingwaves.com",
     "Email:DefaultRecipient": "pawel.maga@makingwaves.com",
     "KeyVaultName": "burnformoneykvdev",
     "ConnectionStrings:Sql": "Data Source=(LocalDB)\\.;Initial Catalog=BurnForMoney;Integrated Security=True"

@@ -39,6 +39,9 @@
     "email.athletesApprovalEmail": {
       "type": "string"
     },
+    "email.reportsReceiver": {
+      "type": "string"
+    },
     "email.defaultRecipient": {
       "type": "string"
     },
@@ -212,6 +215,10 @@
             {
               "name": "Email:DefaultRecipient",
               "value": "[parameters('email.defaultRecipient')]"
+            },
+            {
+              "name": "Email:ReportsReceiver",
+              "value": "[parameters('email.reportsReceiver')]"
             },
             {
               "name": "StravaAppHostName",

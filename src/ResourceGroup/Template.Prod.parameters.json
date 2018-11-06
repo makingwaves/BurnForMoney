@@ -11,6 +11,9 @@
     "email.athletesApprovalEmail": {
       "value": "miroslawa.zimon@makingwaves.com"
     },
+    "email.reportsReceiver": {
+      "value": "miroslawa.zimon@makingwaves.com"
+    },
     "email.defaultRecipient": {
       "value": "burnformoney@makingwaves.com"
     },

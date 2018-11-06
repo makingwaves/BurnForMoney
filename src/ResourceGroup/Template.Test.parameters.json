@@ -8,6 +8,9 @@
     "email.athletesApprovalEmail": {
       "value": "burnformoney@makingwaves.com"
     },
+    "email.reportsReceiver": {
+      "value": "burnformoney@makingwaves.com"
+    },
     "email.defaultRecipient": {
       "value": "burnformoney@makingwaves.com"
     },

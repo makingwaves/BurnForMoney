@@ -1,10 +1,11 @@
 ﻿using System.Linq;
+using BurnForMoney.Functions;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-[assembly: WebJobsStartup(typeof(BurnForMoney.Functions.WebJobsExtensionStartup), "Startup")]
+[assembly: WebJobsStartup(typeof(WebJobsExtensionStartup), "Startup")]
 namespace BurnForMoney.Functions
 {
     public class WebJobsExtensionStartup : IWebJobsStartup

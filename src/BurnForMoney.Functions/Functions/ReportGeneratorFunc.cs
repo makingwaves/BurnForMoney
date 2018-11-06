@@ -86,7 +86,7 @@ namespace BurnForMoney.Functions.Functions
             await container.CreateIfNotExistsAsync();
 
             var directory = container.GetDirectoryReference($"{lastMonth.Year}/{lastMonth.Month}/");
-            return directory.GetBlockBlobReference("reports.csv");
+            return directory.GetBlockBlobReference("report.csv");
         }
 
         [FunctionName(FunctionsNames.B_SendNotificationWithLinkToTheReport)]
@@ -105,7 +105,7 @@ namespace BurnForMoney.Functions.Functions
 
             var notification = new Notification
             {
-                Recipients = new List<string> { configuration.Email.AthletesApprovalEmail },
+                Recipients = new List<string> { configuration.Email.ReportsReceiver },
                 Subject = "Burn for Money - Report",
                 HtmlContent = $@"
 Hey, <br>
