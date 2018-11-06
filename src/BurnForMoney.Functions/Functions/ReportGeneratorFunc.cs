@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using BurnForMoney.Functions.Configuration;
 using BurnForMoney.Functions.Functions.CalculateMonthlyAthleteResults;
+using BurnForMoney.Functions.Shared.Helpers;
 using BurnForMoney.Functions.Shared.Queues;
 using CsvHelper;
 using Dapper;
@@ -19,7 +20,7 @@ using Newtonsoft.Json;
 
 namespace BurnForMoney.Functions.Functions
 {
-    public static class ReportGenerator
+    public static class ReportGeneratorFunc
     {
         [FunctionName(FunctionsNames.T_GenerateReport)]
         public static async Task Run(
@@ -48,7 +49,13 @@ namespace BurnForMoney.Functions.Functions
             }
 
             var results = JsonConvert.DeserializeObject<List<AthleteMonthlyResult>>(json)
-                .OrderBy(r => r.AthleteId);
+                .OrderBy(r => r.AthleteId)
+                .Select(r =>
+                {
+                    r.Distance = UnitsConverter.ConvertMetersToKilometers(r.Distance);
+                    r.Time = UnitsConverter.ConvertMinutesToHours(r.Time);
+                    return r;
+                });
 
             using (var memoryStream = new MemoryStream())
             {
