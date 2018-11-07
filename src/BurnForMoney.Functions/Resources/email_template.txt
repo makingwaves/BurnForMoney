@@ -1,4 +1,5 @@
-﻿<!doctype html>
+﻿<!-- https://github.com/leemunroe/responsive-html-email-template -->
+<!doctype html>
 <html>
   <head>
     <meta name="viewport" content="width=device-width" />
@@ -301,7 +302,7 @@
           <div class="content">
 
             <!-- START CENTERED WHITE CONTAINER -->
-            <span class="preheader">This is preheader text. Some clients will show this text as a preview.</span>
+            <span class="preheader">Burn for Money</span>
             <table role="presentation" class="main">
 
               <!-- START MAIN CONTENT AREA -->
