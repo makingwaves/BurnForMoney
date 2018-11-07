@@ -4,7 +4,7 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
 using BurnForMoney.Functions.Configuration;
-using BurnForMoney.Functions.Functions.CalculateMonthlyAthleteResults;
+using BurnForMoney.Functions.Functions.ResultsSnapshots;
 using BurnForMoney.Functions.Shared.Helpers;
 using Dapper;
 using Microsoft.AspNetCore.Http;
@@ -15,7 +15,7 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
-namespace BurnForMoney.Functions.Functions.Public
+namespace BurnForMoney.Functions.Functions._Public
 {
     public static class TotalNumberApi
     {

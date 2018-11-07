@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using BurnForMoney.Functions.Configuration;
-using BurnForMoney.Functions.Functions.CalculateMonthlyAthleteResults;
+using BurnForMoney.Functions.Functions.ResultsSnapshots;
 using BurnForMoney.Functions.Shared.Helpers;
 using BurnForMoney.Functions.Shared.Queues;
 using CsvHelper;
@@ -18,7 +18,7 @@ using Microsoft.WindowsAzure.Storage.Blob;
 using Microsoft.WindowsAzure.Storage.Queue;
 using Newtonsoft.Json;
 
-namespace BurnForMoney.Functions.Functions
+namespace BurnForMoney.Functions.Functions.Reports
 {
     public static class ReportGeneratorFunc
     {

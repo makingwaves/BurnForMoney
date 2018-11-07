@@ -1,4 +1,4 @@
-﻿namespace BurnForMoney.Functions.Functions.CalculateMonthlyAthleteResults
+﻿namespace BurnForMoney.Functions.Functions.ResultsSnapshots
 {
     public class CalculateMonthlyResultsRequest
     {

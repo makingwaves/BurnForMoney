@@ -7,7 +7,7 @@ using Dapper;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 
-namespace BurnForMoney.Functions.Functions
+namespace BurnForMoney.Functions.Functions.ActivityOperations
 {
     public static class SubmitAthleteActivityFunc
     {

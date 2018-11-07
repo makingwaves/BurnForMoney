@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.WindowsAzure.Storage.Queue;
 using Newtonsoft.Json;
 
-namespace BurnForMoney.Functions.Functions
+namespace BurnForMoney.Functions.Functions.ActivityOperations
 {
     public static class ProcessRawActivityFunc
     {

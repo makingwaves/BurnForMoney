@@ -14,6 +14,7 @@ namespace BurnForMoney.Functions.Functions
 {
     public static class NotificationsGatewayFunc
     {
+        private static SendGridClient _sendGridClient;
         private static string _emailTemplate;
 
         [FunctionName(FunctionsNames.NotificationsGateway)]
@@ -21,7 +22,11 @@ namespace BurnForMoney.Functions.Functions
         {
             var configuration = ApplicationConfiguration.GetSettings(context);
 
-            var client = new SendGridClient(configuration.SendGridApiKey);
+            if (_sendGridClient == null)
+            {
+                _sendGridClient = new SendGridClient(configuration.SendGridApiKey);
+            }
+
             var message = new SendGridMessage
             {
                 From = new EmailAddress(configuration.Email.SenderEmail, "Burn for Money")
@@ -32,7 +37,7 @@ namespace BurnForMoney.Functions.Functions
             message.HtmlContent = ApplyTemplate(notification.HtmlContent, context);
 
             log.LogInformation($"Sending message to: [{string.Join(", ", notification.Recipients)}].");
-            var response = await client.SendEmailAsync(message);
+            var response = await _sendGridClient.SendEmailAsync(message);
 
             if (response.StatusCode == HttpStatusCode.Accepted || response.StatusCode == HttpStatusCode.OK)
             {

@@ -1,7 +1,7 @@
 ﻿using System;
 using BurnForMoney.Functions.Shared;
 
-namespace BurnForMoney.Functions.Functions
+namespace BurnForMoney.Functions.Functions.ActivityOperations
 {
     public class PendingActivity
     {

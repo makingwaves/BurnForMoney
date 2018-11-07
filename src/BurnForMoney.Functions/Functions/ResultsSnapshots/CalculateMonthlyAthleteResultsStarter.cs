@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.WindowsAzure.Storage.Queue;
 using Newtonsoft.Json;
 
-namespace BurnForMoney.Functions.Functions.CalculateMonthlyAthleteResults
+namespace BurnForMoney.Functions.Functions.ResultsSnapshots
 {
     public static class CalculateMonthlyAthleteResultsStarter
     {
