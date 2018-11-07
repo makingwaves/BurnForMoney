@@ -91,7 +91,9 @@ namespace BurnForMoney.Functions.Strava.Functions.EventsHub
                     {
                         Recipients = new List<string> { configuration.Email.DefaultRecipient },
                         Subject = "Athlete revoked authorization",
-                        HtmlContent = $"Athlete: {athlete.FirstName} {athlete.LastName} [{@event.AthleteId}] revoked authorization."
+                        HtmlContent = $@"
+<p>Hi there,</p>
+<p>Athlete: {athlete.FirstName} {athlete.LastName} [{@event.AthleteId}] revoked authorization.</p>"
                     };
                     await notificationsQueue.AddMessageAsync(new CloudQueueMessage(JsonConvert.SerializeObject(notification)));
                 }

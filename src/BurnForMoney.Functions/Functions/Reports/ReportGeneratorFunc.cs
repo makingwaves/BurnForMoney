@@ -108,8 +108,8 @@ namespace BurnForMoney.Functions.Functions.Reports
                 Recipients = new List<string> { configuration.Email.ReportsReceiver },
                 Subject = "Burn for Money - Report",
                 HtmlContent = $@"
-Hey, <br>
-A new report summarizing the previous month has been generated. You can download it from <a href={link}>this</a> address (the link is valid for 7 days)."
+<p>Hi there, </p>
+<p>A new report summarizing the previous month has been generated. You can download it from <a href={link}>this</a> address (the link is valid for 7 days).</p>"
             };
 
             log.LogInformation($"{FunctionsNames.B_SendNotificationWithLinkToTheReport} created notification message.");

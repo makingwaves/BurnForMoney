@@ -62,7 +62,9 @@ namespace BurnForMoney.Functions.Strava.Functions.AuthorizeNewAthlete
             {
                 Recipients = new List<string> {configuration.Email.AthletesApprovalEmail},
                 Subject = "Athlete is awaiting approval",
-                HtmlContent = $"Please review a new authorization request. Athlete: {firstName} {lastName}.<br>" +
+                HtmlContent = $@"
+<p>Hi there,</p>
+<p>Please review a new authorization request. Athlete: {firstName} {lastName}.</p>" +
                           $"<a href=\"{approvalFunctionAddress}?result={AthleteApprovalResult.Approved.ToString()}\">Approve</a><br>" +
                           $"<a href=\"{approvalFunctionAddress}?result={AthleteApprovalResult.Rejected.ToString()}\">Reject</a>"
             };
