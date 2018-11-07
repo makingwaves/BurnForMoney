@@ -30,7 +30,8 @@ namespace BurnForMoney.Functions.Configuration
                         DefaultRecipient = config["Email:DefaultRecipient"]
                     },
                     StravaAppHostName = config["StravaAppHostName"],
-                    ApplicationInsightsInstrumentationKey = config["APPINSIGHTS_INSTRUMENTATIONKEY"]
+                    ApplicationInsightsInstrumentationKey = config["APPINSIGHTS_INSTRUMENTATIONKEY"],
+                    SendGridApiKey = config["SendGrid:ApiKey"]
                 };
 
                 if (!_settings.IsValid())

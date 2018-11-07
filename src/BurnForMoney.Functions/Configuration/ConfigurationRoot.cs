@@ -7,6 +7,7 @@ namespace BurnForMoney.Functions.Configuration
         public bool IsLocalEnvironment { get; set; }
         public string StravaAppHostName { get; set; }
         public string ApplicationInsightsInstrumentationKey { get; set; }
+        public string SendGridApiKey { get; set; }
 
         public bool IsValid()
         {

@@ -1,11 +1,10 @@
 ﻿using System.Linq;
-using BurnForMoney.Functions.Strava;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-[assembly: WebJobsStartup(typeof(WebJobsExtensionStartup), "Startup")]
+[assembly: WebJobsStartup(typeof(BurnForMoney.Functions.Strava.WebJobsExtensionStartup))]
 namespace BurnForMoney.Functions.Strava
 {
     public class WebJobsExtensionStartup : IWebJobsStartup
