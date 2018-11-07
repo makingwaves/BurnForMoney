@@ -34,7 +34,7 @@ namespace BurnForMoney.Functions.Functions
             log.LogInformation($"Sending message to: [{string.Join(", ", notification.Recipients)}].");
             var response = await client.SendEmailAsync(message);
 
-            if (response.StatusCode == HttpStatusCode.OK)
+            if (response.StatusCode == HttpStatusCode.Accepted || response.StatusCode == HttpStatusCode.OK)
             {
                 log.LogInformation("The message has been sent.");
             }
