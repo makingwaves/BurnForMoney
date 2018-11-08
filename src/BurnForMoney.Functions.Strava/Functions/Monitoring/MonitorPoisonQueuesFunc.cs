@@ -1,10 +1,10 @@
 ﻿using System.Threading.Tasks;
-using BurnForMoney.Functions.Configuration;
 using BurnForMoney.Functions.Shared.Functions;
+using BurnForMoney.Functions.Strava.Configuration;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 
-namespace BurnForMoney.Functions.Functions.Monitoring
+namespace BurnForMoney.Functions.Strava.Functions.Monitoring
 {
     public static class MonitorPoisonQueuesFunc
     {
