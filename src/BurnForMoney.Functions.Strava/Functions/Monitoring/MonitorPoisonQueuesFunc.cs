@@ -14,7 +14,7 @@ namespace BurnForMoney.Functions.Strava.Functions.Monitoring
             var configuration = ApplicationConfiguration.GetSettings(context);
 
             await PoisonQueueMessagesMonitor.RunAsync(configuration.ConnectionStrings.AzureWebJobsStorage,
-                configuration.ApplicationInsightsInstrumentationKey, log);
+                configuration.ApplicationInsightsInstrumentationKey, log, "BFM - Strava");
         }
     }
 }

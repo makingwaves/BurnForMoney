@@ -14,7 +14,7 @@ namespace BurnForMoney.Functions.Shared.Functions
     {
         private static readonly TelemetryClient TelemetryClient = new TelemetryClient();
 
-        public static async Task RunAsync(string queueStorageConnectionString, string applicationInsightsInstrumentationKey, ILogger log)
+        public static async Task RunAsync(string queueStorageConnectionString, string applicationInsightsInstrumentationKey, ILogger log, string systemPrefix = "BFM")
         {
             var queuesToMonitor = new List<CloudQueue>();
 
@@ -44,7 +44,7 @@ namespace BurnForMoney.Functions.Shared.Functions
 
                 if (trackMetric)
                 {
-                    TelemetryClient.TrackMetric($"Poison queue length - {queue.Name}", (double)queueLength);
+                    TelemetryClient.TrackMetric($"[{systemPrefix}] Poison queue length - {queue.Name}", queueLength ?? 0);
                 }
                 log.LogInformation($"Queue: {queue.Name} (Items: {queueLength})");
                 poisonMessages += queueLength ?? 0;
@@ -52,7 +52,7 @@ namespace BurnForMoney.Functions.Shared.Functions
 
             if (trackMetric)
             {
-                TelemetryClient.TrackMetric("Poison messages (overall) - ", (double)poisonMessages);
+                TelemetryClient.TrackMetric($"[{systemPrefix}] Poison messages (overall) - ", poisonMessages);
             }
         }
     }
