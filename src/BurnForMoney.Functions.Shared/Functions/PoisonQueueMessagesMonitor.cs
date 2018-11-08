@@ -52,7 +52,8 @@ namespace BurnForMoney.Functions.Shared.Functions
 
             if (trackMetric)
             {
-                TelemetryClient.TrackMetric($"[{systemPrefix}] Poison messages (overall) - ", poisonMessages);
+                TelemetryClient.TrackMetric($"[{systemPrefix}] Poison messages (overall)", poisonMessages);
+                log.LogInformation($"Total number of poison messages: {poisonMessages})");
             }
         }
     }
