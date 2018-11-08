@@ -90,7 +90,7 @@ namespace BurnForMoney.Functions.Functions.Reports
         }
 
         [FunctionName(FunctionsNames.B_SendNotificationWithLinkToTheReport)]
-        public static async Task B_SendNotificationWithLinkToTheReport([BlobTrigger("reports")] CloudBlockBlob cloudBlob, 
+        public static async Task B_SendNotificationWithLinkToTheReport([BlobTrigger("reports")] CloudBlockBlob cloudBlob,
             ILogger log,
             ExecutionContext executionContext,
             [Queue(AppQueueNames.NotificationsToSend)] CloudQueue notificationsQueue)

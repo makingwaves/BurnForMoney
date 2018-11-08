@@ -40,6 +40,8 @@ namespace BurnForMoney.Functions.Functions.Monitoring
             while (continuationToken != null);
 
             TelemetryConfiguration.Active.InstrumentationKey = configuration.ApplicationInsightsInstrumentationKey ?? string.Empty;
+
+            var poisonMessages = 0;
             foreach (var queue in queuesToMonitor)
             {
                 await queue.FetchAttributesAsync();
@@ -50,6 +52,12 @@ namespace BurnForMoney.Functions.Functions.Monitoring
                     TelemetryClient.TrackMetric($"Poison queue length - {queue.Name}", (double)queueLength);
                 }
                 log.LogInformation($"Queue: {queue.Name} (Items: {queueLength})");
+                poisonMessages += queueLength ?? 0;
+            }
+
+            if (!configuration.IsLocalEnvironment)
+            {
+                TelemetryClient.TrackMetric("Poison messages (overall) - ", (double)poisonMessages);
             }
         }
     }
