@@ -50,7 +50,7 @@ namespace BurnForMoney.Functions.Shared.Functions
                 poisonMessages += queueLength ?? 0;
             }
 
-            if (!trackMetric)
+            if (trackMetric)
             {
                 TelemetryClient.TrackMetric("Poison messages (overall) - ", (double)poisonMessages);
             }
