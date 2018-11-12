@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using BurnForMoney.Functions.Strava.Exceptions;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 using Microsoft.WindowsAzure.Storage.Queue;
@@ -50,7 +51,8 @@ namespace BurnForMoney.Functions.Strava.Functions.AuthorizeNewAthlete
                 using (var cts = new CancellationTokenSource())
                 {
                     // Durable timers cannot last longer than 7 days due to limitations in Azure Storage.
-                    var timeoutTask = context.CreateTimer(context.CurrentUtcDateTime.AddDays(6), cts.Token);
+                    var timeoutTaskDuration = context.CurrentUtcDateTime.AddDays(6);
+                    var timeoutTask = context.CreateTimer(timeoutTaskDuration, cts.Token);
                     var approvalTask = context.WaitForExternalEvent<string>("AthleteApproval");
 
                     var winner = await Task.WhenAny(timeoutTask, approvalTask);
@@ -61,7 +63,7 @@ namespace BurnForMoney.Functions.Strava.Functions.AuthorizeNewAthlete
                     }
                     else
                     {
-                        throw new TimeoutException("Failed to approve athlete in the allotted time period.");
+                        throw new FailedToApproveAthleteTimeoutException(athlete.AthleteId, timeoutTaskDuration);
                     }
                 }
 

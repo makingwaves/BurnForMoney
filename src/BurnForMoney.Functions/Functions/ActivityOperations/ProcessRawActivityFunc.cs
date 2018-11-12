@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using BurnForMoney.Functions.Exceptions;
 using BurnForMoney.Functions.Shared;
 using BurnForMoney.Functions.Shared.Queues;
 using Microsoft.Azure.WebJobs;
@@ -19,7 +20,7 @@ namespace BurnForMoney.Functions.Functions.ActivityOperations
         {
             if (rawActivity.Source != "Strava")
             {
-                throw new NotSupportedException($"System: {rawActivity.Source} is not supported.");
+                throw new SystemNotSupportedException(rawActivity.Source);
             }
 
             log.LogInformation($"{FunctionsNames.Q_ProcessRawActivity} function processed a request.");

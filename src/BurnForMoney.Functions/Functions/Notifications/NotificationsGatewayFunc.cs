@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using BurnForMoney.Functions.Configuration;
+using BurnForMoney.Functions.Exceptions;
 using BurnForMoney.Functions.Shared.Queues;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
@@ -45,7 +46,7 @@ namespace BurnForMoney.Functions.Functions
             }
             else
             {
-                throw new Exception($"Failed to send email message. Status code: {response.StatusCode}.");
+                throw new EmailException(string.Join(", ", notification.Recipients), response.StatusCode.ToString());
             }
         }
 

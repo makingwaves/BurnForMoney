@@ -3,6 +3,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Threading.Tasks;
 using BurnForMoney.Functions.Strava.Configuration;
+using BurnForMoney.Functions.Strava.Exceptions;
 using Dapper;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
@@ -36,14 +37,14 @@ namespace BurnForMoney.Functions.Strava.Functions
                         athleteId = await UpsertAthlete(athlete, conn, transaction);
                         if (athleteId < 1)
                         {
-                            throw new Exception("Failed to add a new athlete.");
+                            throw new FailedToAddNewAthleteException(athlete.AthleteId.ToString());
                         }
                         log.LogInformation($"Inserted athlete with id: {athleteId}.");
 
                         var result = await UpsertAccessToken(athleteId, athlete, conn, transaction);
                         if (!result)
                         {
-                            throw new Exception("Failed to insert access tokens.");
+                            throw new FailedToAddAccessTokenException(athleteId.ToString());
                         }
                         log.LogInformation($"Inserted access tokens for athlete with id: {athleteId}.");
 
@@ -54,7 +55,7 @@ namespace BurnForMoney.Functions.Strava.Functions
                     {
                         transaction.Rollback();
                         log.LogError($"Error occuring during processing a new athlete. {ex.Message}", ex);
-                        throw ex;
+                        throw;
                     }
                 }
 

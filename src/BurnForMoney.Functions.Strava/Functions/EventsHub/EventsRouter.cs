@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using BurnForMoney.Functions.Shared.Helpers;
 using BurnForMoney.Functions.Shared.Queues;
 using BurnForMoney.Functions.Strava.Configuration;
+using BurnForMoney.Functions.Strava.Exceptions;
 using BurnForMoney.Functions.Strava.External.Strava.Api;
 using Dapper;
 using Microsoft.Azure.WebJobs;
@@ -164,11 +165,11 @@ namespace BurnForMoney.Functions.Strava.Functions.EventsHub
                 accessToken = await conn.QuerySingleOrDefaultAsync<string>(@"SELECT AccessToken 
 FROM dbo.[Strava.AccessTokens] AS Tokens
 INNER JOIN dbo.Athletes AS Athletes ON (Athletes.Id = Tokens.AthleteId)
-WHERE Athletes.ExternalId=@AthleteId", new { AthleteId = athleteId });
+WHERE Athletes.ExternalId=@AthleteId AND Tokens.IsValid=1", new { AthleteId = athleteId });
 
                 if (string.IsNullOrWhiteSpace(accessToken))
                 {
-                    throw new Exception($"Cannot find an access token fot athlete: {athleteId}. Athlete might either be not verified or deleted.");
+                    throw new AccessTokenNotFoundException(athleteId);
                 }
             }
 

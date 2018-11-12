@@ -2,6 +2,7 @@
 using System.Data.SqlClient;
 using System.Threading.Tasks;
 using BurnForMoney.Functions.Configuration;
+using BurnForMoney.Functions.Exceptions;
 using Dapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -126,7 +127,7 @@ namespace BurnForMoney.Functions.Functions._Support
 
                         if (affectedRows != 1)
                         {
-                            throw new Exception($"Failed to delete athlete: [{athleteId}]");
+                            throw new FailedToDeleteAthleteException(athleteId);
                         }
 
                         transaction.Commit();

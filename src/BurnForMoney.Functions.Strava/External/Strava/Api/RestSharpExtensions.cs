@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Net;
+using BurnForMoney.Functions.Strava.Exceptions;
 using BurnForMoney.Functions.Strava.External.Strava.Api.Exceptions;
 using RestSharp;
 
@@ -27,7 +28,7 @@ namespace BurnForMoney.Functions.Strava.External.Strava.Api
             
             if (!response.IsSuccessful)
             {
-                throw new Exception($"Strava API returned an unsuccessfull status code. Status code: {response.StatusCode}. Content: {response.Content}. Error message: {response.ErrorMessage ?? "null"}");
+                throw new UnsuccessfullCallToStravaApiException(response.StatusCode.ToString(), response.Content, response.ErrorMessage);
             }
         }
 

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using BurnForMoney.Functions.Shared.Helpers;
 using BurnForMoney.Functions.Shared.Queues;
 using BurnForMoney.Functions.Strava.Configuration;
+using BurnForMoney.Functions.Strava.Exceptions;
 using BurnForMoney.Functions.Strava.External.Strava.Api;
 using BurnForMoney.Functions.Strava.External.Strava.Api.Exceptions;
 using Dapper;
@@ -39,7 +40,7 @@ WHERE AthleteId = @AthleteId AND IsValid=1", new { input.AthleteId });
 
                 if (string.IsNullOrWhiteSpace(encryptedAccessToken))
                 {
-                    throw new Exception($"Cannot find valid access token for athlete: {input.AthleteId}.");
+                    throw new AccessTokenNotFoundException(input.AthleteId);
                 }
 
                 accessToken = AccessTokensEncryptionService.Decrypt(encryptedAccessToken,

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Threading.Tasks;
 using BurnForMoney.Functions.Strava.Configuration;
+using BurnForMoney.Functions.Strava.Exceptions;
 using BurnForMoney.Functions.Strava.External.Strava.Api;
 using Dapper;
 using Microsoft.Azure.WebJobs;
@@ -73,7 +74,7 @@ WHERE Tokens.ExpiresAt < @DateTo AND Athletes.Active=1",
                 });
                 if (affectedRows != 1)
                 {
-                    throw new Exception("Failed to refresh access tokens.");
+                    throw new FailedToRefreshAccessTokenException(request.AthleteId);
                 }
             }
         }

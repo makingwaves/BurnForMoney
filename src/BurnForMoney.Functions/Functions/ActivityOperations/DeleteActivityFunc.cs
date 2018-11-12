@@ -2,6 +2,7 @@
 using System.Data.SqlClient;
 using System.Threading.Tasks;
 using BurnForMoney.Functions.Configuration;
+using BurnForMoney.Functions.Exceptions;
 using BurnForMoney.Functions.Shared.Queues;
 using Dapper;
 using Microsoft.Azure.WebJobs;
@@ -21,7 +22,7 @@ namespace BurnForMoney.Functions.Functions.ActivityOperations
                 var affectedRows = await conn.ExecuteAsync(@"DELETE FROM dbo.Activities WHERE ActivityId=@ActivityId", new { ActivityId = activityId });
                 if (affectedRows == 0)
                 {
-                    throw new Exception($"Failed to remove activity with id: {activityId}");
+                    throw new FailedToDeleteActivityException(activityId.ToString());
                 }
             }
         }
