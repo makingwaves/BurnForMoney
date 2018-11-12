@@ -64,7 +64,7 @@ WHERE Tokens.ExpiresAt < @DateTo AND Athletes.Active=1",
 
             using (var conn = new SqlConnection(configuration.ConnectionStrings.SqlDbConnectionString))
             {
-                var affectedRows = await conn.ExecuteAsync("UPDATE dbo.[Strava.AccessTokens] SET AccessToken=@AccessToken, RefreshToken=@RefreshToken, ExpiresAt=@ExpiresAt WHERE AthleteId=@AthleteId", new
+                var affectedRows = await conn.ExecuteAsync("UPDATE dbo.[Strava.AccessTokens] SET AccessToken=@AccessToken, RefreshToken=@RefreshToken, ExpiresAt=@ExpiresAt, IsValid=1 WHERE AthleteId=@AthleteId", new
                 {
                     AccessToken = AccessTokensEncryptionService.Encrypt(response.AccessToken, configuration.Strava.AccessTokensEncryptionKey),
                     RefreshToken = AccessTokensEncryptionService.Encrypt(response.RefreshToken, configuration.Strava.AccessTokensEncryptionKey),
