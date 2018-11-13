@@ -39,7 +39,7 @@ namespace BurnForMoney.Functions.Strava.Functions.AuthorizeNewAthlete
                 TokenExpirationDate = response.ExpiresAt
             };
         }
-        
+
         [FunctionName(FunctionsNames.A_SendAthleteApprovalRequest)]
         public static async Task A_SendAthleteApprovalRequest([ActivityTrigger]DurableActivityContext activityContext, ILogger log,
             ExecutionContext context, [Queue(AppQueueNames.NotificationsToSend, Connection = "AppQueuesStorage")] CloudQueue notificationsQueue,
@@ -60,7 +60,7 @@ namespace BurnForMoney.Functions.Strava.Functions.AuthorizeNewAthlete
             var approvalFunctionAddress = $"{configuration.HostName}/api/SubmitAthleteApproval/{approvalCode}";
             var notification = new Notification
             {
-                Recipients = new List<string> {configuration.Email.AthletesApprovalEmail},
+                Recipients = new List<string> { configuration.Email.AthletesApprovalEmail },
                 Subject = "Athlete is awaiting approval",
                 HtmlContent = $@"
 <p>Hi there,</p>
@@ -72,6 +72,24 @@ namespace BurnForMoney.Functions.Strava.Functions.AuthorizeNewAthlete
             log.LogInformation($"Sending approval request for athlete {firstName} {lastName} to: {configuration.Email.AthletesApprovalEmail}.");
             await athleteApprovalCollector.AddAsync(athleteApproval);
             await notificationsQueue.AddMessageAsync(new CloudQueueMessage(JsonConvert.SerializeObject(notification)));
+        }
+
+        [FunctionName(FunctionsNames.A_ProcessNewAthleteRequest)]
+        public static async Task A_ProcessNewAthleteRequest([ActivityTrigger]DurableActivityContext activityContext, ILogger log,
+            ExecutionContext context, [Queue(QueueNames.NewStravaAthletesRequests)] CloudQueue newAthletesRequestsQueue)
+        {
+            var athlete = activityContext.GetInput<NewStravaAthlete>();
+            var json = JsonConvert.SerializeObject(athlete);
+            await newAthletesRequestsQueue.AddMessageAsync(new CloudQueueMessage(json));
+        }
+
+        [FunctionName(FunctionsNames.A_AuthorizeNewAthleteCompensation)]
+        public static async Task A_AuthorizeNewAthleteCompensation([ActivityTrigger]DurableActivityContext activityContext, ILogger log,
+            ExecutionContext context, [Queue(QueueNames.AuthorizationCodesPoison)] CloudQueue authorizationCodePoisonQueue)
+        {
+            var input = activityContext.GetInput<AuthorizeNewAthleteCompensation>();
+            var json = JsonConvert.SerializeObject(input);
+            await authorizationCodePoisonQueue.AddMessageAsync(new CloudQueueMessage(json));
         }
     }
 

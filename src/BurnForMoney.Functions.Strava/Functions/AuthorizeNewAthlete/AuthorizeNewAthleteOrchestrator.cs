@@ -4,8 +4,6 @@ using System.Threading.Tasks;
 using BurnForMoney.Functions.Strava.Exceptions;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
-using Microsoft.WindowsAzure.Storage.Queue;
-using Newtonsoft.Json;
 using ExecutionContext = Microsoft.Azure.WebJobs.ExecutionContext;
 
 namespace BurnForMoney.Functions.Strava.Functions.AuthorizeNewAthlete
@@ -13,17 +11,15 @@ namespace BurnForMoney.Functions.Strava.Functions.AuthorizeNewAthlete
     public static class AuthorizeNewAthleteOrchestrator
     {
         [FunctionName(FunctionsNames.O_AuthorizeNewAthlete)]
-        public static async Task O_AuthorizeNewAthlete(ILogger log, [OrchestrationTrigger] DurableOrchestrationContext context, ExecutionContext executionContext,
-            [Queue(QueueNames.AuthorizationCodesPoison)] CloudQueue authorizationCodePoisonQueue,
-            [Queue(QueueNames.NewStravaAthletesRequests)] CloudQueue newAthletesRequestsQueue)
+        public static async Task O_AuthorizeNewAthlete(ILogger log, [OrchestrationTrigger] DurableOrchestrationContext context, ExecutionContext executionContext)
         {
             if (!context.IsReplaying)
             {
                 log.LogInformation($"Orchestration function `{FunctionsNames.O_AuthorizeNewAthlete}` received a request.");
             }
-            
+
             var authorizationCode = context.GetInput<string>();
-            
+
             try
             {
                 // 1. Exchange and authorize athlete
@@ -73,14 +69,25 @@ namespace BurnForMoney.Functions.Strava.Functions.AuthorizeNewAthlete
                 }
 
                 // 4. Process a new athlete request
-                var json = JsonConvert.SerializeObject(athlete);
-                await newAthletesRequestsQueue.AddMessageAsync(new CloudQueueMessage(json));
+                await context.CallActivityAsync(FunctionsNames.A_ProcessNewAthleteRequest, athlete);
+                if (!context.IsReplaying)
+                {
+                    log.LogInformation($"[{FunctionsNames.O_AuthorizeNewAthlete}] processed athlete's data.");
+                }
+
             }
             catch (Exception ex)
             {
-                log.LogError($"[{FunctionsNames.O_AuthorizeNewAthlete}] failed to authorize a new athlete in the system. {ex}");
-                await authorizationCodePoisonQueue.AddMessageAsync(new CloudQueueMessage(authorizationCode));
+                var errorMessage = $"[{FunctionsNames.O_AuthorizeNewAthlete}] failed to authorize a new athlete in the system. {ex}";
+                log.LogError(errorMessage);
+                await context.CallActivityAsync(FunctionsNames.A_AuthorizeNewAthleteCompensation, new AuthorizeNewAthleteCompensation { AuthorizationCode = authorizationCode, ErrorMessage = errorMessage });
             }
         }
+    }
+
+    public class AuthorizeNewAthleteCompensation
+    {
+        public string AuthorizationCode { get; set; }
+        public string ErrorMessage { get; set; }
     }
 }
