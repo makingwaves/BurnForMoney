@@ -24,7 +24,7 @@ namespace BurnForMoney.Functions.PublicApi.Functions
         private static readonly IMemoryCache Cache = new MemoryCache(new MemoryDistributedCacheOptions());
 
         [FunctionName("TotalNumbers")]
-        public static async Task<IActionResult> TotalNumbers([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "totalnumbers")]HttpRequest req, ILogger log, ExecutionContext executionContext)
+        public static async Task<IActionResult> TotalNumbers([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "totalnumbers")] HttpRequest req, ILogger log, ExecutionContext executionContext)
         {
             log.LogFunctionStart("TotalNumbers");
             if (!Cache.TryGetValue(CacheKey, out var totalNumbers))
