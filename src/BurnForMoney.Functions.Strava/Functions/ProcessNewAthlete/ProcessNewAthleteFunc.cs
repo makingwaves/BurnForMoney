@@ -5,19 +5,21 @@ using System.Threading.Tasks;
 using BurnForMoney.Functions.Shared.Extensions;
 using BurnForMoney.Functions.Strava.Configuration;
 using BurnForMoney.Functions.Strava.Exceptions;
+using BurnForMoney.Functions.Strava.Functions.AuthorizeNewAthlete.Dto;
+using BurnForMoney.Functions.Strava.Functions.Dto;
 using Dapper;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 using Microsoft.WindowsAzure.Storage.Queue;
 using Newtonsoft.Json;
 
-namespace BurnForMoney.Functions.Strava.Functions
+namespace BurnForMoney.Functions.Strava.Functions.ProcessNewAthlete
 {
     public static class ProcessNewAthleteFunc
     {
         [FunctionName(FunctionsNames.Q_ProcessNewAthlete)]
         public static async Task Q_ProcessNewAthleteAsync(ILogger log, ExecutionContext executionContext,
-            [QueueTrigger(QueueNames.NewStravaAthletesRequests)] NewStravaAthlete athlete,
+            [QueueTrigger(QueueNames.NewStravaAthletesRequests)] StravaAthlete athlete,
             [Queue(QueueNames.NewStravaAthletesRequestsPoison)] CloudQueue newAthletesRequestPoisonQueue,
             [Queue(QueueNames.CollectAthleteActivities)] CloudQueue collectActivitiesQueues)
         {
@@ -72,7 +74,7 @@ namespace BurnForMoney.Functions.Strava.Functions
             }
         }
 
-        private static async Task<int> UpsertAthlete(NewStravaAthlete athlete, IDbConnection conn, IDbTransaction transaction)
+        private static async Task<int> UpsertAthlete(StravaAthlete athlete, IDbConnection conn, IDbTransaction transaction)
         {
             const string sql = @"
     IF EXISTS (SELECT * FROM dbo.Athletes WITH (UPDLOCK) WHERE ExternalId=@AthleteId)
@@ -95,7 +97,7 @@ namespace BurnForMoney.Functions.Strava.Functions
             }, transaction);
         }
 
-        private static async Task<bool> UpsertAccessToken(int athleteId, NewStravaAthlete athlete, IDbConnection conn, IDbTransaction transaction)
+        private static async Task<bool> UpsertAccessToken(int athleteId, StravaAthlete athlete, IDbConnection conn, IDbTransaction transaction)
         {
             const string sql = @"
     IF EXISTS (SELECT * FROM dbo.[Strava.AccessTokens] WITH (UPDLOCK) WHERE AthleteId=@AthleteId)

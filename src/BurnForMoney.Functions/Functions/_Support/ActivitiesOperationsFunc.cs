@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
-using BurnForMoney.Functions.Functions.ResultsSnapshots;
+using BurnForMoney.Functions.Functions.ResultsSnapshots.Dto;
 using BurnForMoney.Functions.Shared.Extensions;
 using BurnForMoney.Functions.Shared.Queues;
 using Microsoft.AspNetCore.Http;

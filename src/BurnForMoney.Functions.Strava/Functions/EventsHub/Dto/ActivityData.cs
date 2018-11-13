@@ -1,4 +1,4 @@
-﻿namespace BurnForMoney.Functions.Strava.Functions.EventsHub
+﻿namespace BurnForMoney.Functions.Strava.Functions.EventsHub.Dto
 {
     public class ActivityData
     {

@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using BurnForMoney.Functions.Shared.Extensions;
 using BurnForMoney.Functions.Strava.Exceptions;
+using BurnForMoney.Functions.Strava.Functions.AuthorizeNewAthlete.Dto;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 using ExecutionContext = Microsoft.Azure.WebJobs.ExecutionContext;
@@ -24,7 +25,7 @@ namespace BurnForMoney.Functions.Strava.Functions.AuthorizeNewAthlete
             try
             {
                 // 1. Exchange and authorize athlete
-                var athlete = await context.CallActivityWithRetryAsync<NewStravaAthlete>(FunctionsNames.A_ExchangeTokenAndGetAthleteSummary,
+                var athlete = await context.CallActivityWithRetryAsync<StravaAthlete>(FunctionsNames.A_ExchangeTokenAndGetAthleteSummary,
                     new RetryOptions(TimeSpan.FromSeconds(5), 3), authorizationCode);
                 if (!context.IsReplaying)
                 {

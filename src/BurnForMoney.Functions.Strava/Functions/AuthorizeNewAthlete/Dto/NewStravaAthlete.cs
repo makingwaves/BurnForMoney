@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace BurnForMoney.Functions.Strava.Functions
+namespace BurnForMoney.Functions.Strava.Functions.AuthorizeNewAthlete.Dto
 {
-    public class NewStravaAthlete
+    public class StravaAthlete
     {
         public int AthleteId { get; set; }
         public string FirstName { get; set; }

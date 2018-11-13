@@ -5,6 +5,7 @@ using BurnForMoney.Functions.Shared.Extensions;
 using BurnForMoney.Functions.Shared.Queues;
 using BurnForMoney.Functions.Strava.Configuration;
 using BurnForMoney.Functions.Strava.External.Strava.Api;
+using BurnForMoney.Functions.Strava.Functions.AuthorizeNewAthlete.Dto;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 using Microsoft.WindowsAzure.Storage.Queue;
@@ -17,7 +18,7 @@ namespace BurnForMoney.Functions.Strava.Functions.AuthorizeNewAthlete
         private static readonly StravaService StravaService = new StravaService();
 
         [FunctionName(FunctionsNames.A_ExchangeTokenAndGetAthleteSummary)]
-        public static NewStravaAthlete A_ExchangeTokenAndGetAthleteSummary([ActivityTrigger]string authorizationCode, ILogger log,
+        public static StravaAthlete A_ExchangeTokenAndGetAthleteSummary([ActivityTrigger]string authorizationCode, ILogger log,
             ExecutionContext context)
         {
             log.LogFunctionStart(FunctionsNames.A_ExchangeTokenAndGetAthleteSummary);
@@ -28,7 +29,7 @@ namespace BurnForMoney.Functions.Strava.Functions.AuthorizeNewAthlete
             var response = StravaService.ExchangeToken(configuration.Strava.ClientId, configuration.Strava.ClientSecret, authorizationCode);
 
             log.LogFunctionEnd(FunctionsNames.A_ExchangeTokenAndGetAthleteSummary);
-            return new NewStravaAthlete
+            return new StravaAthlete
             {
                 AthleteId = response.Athlete.Id,
                 FirstName = response.Athlete.Firstname,
@@ -85,7 +86,7 @@ namespace BurnForMoney.Functions.Strava.Functions.AuthorizeNewAthlete
         {
             log.LogFunctionStart(FunctionsNames.A_ProcessNewAthleteRequest);
 
-            var athlete = activityContext.GetInput<NewStravaAthlete>();
+            var athlete = activityContext.GetInput<StravaAthlete>();
             var json = JsonConvert.SerializeObject(athlete);
             await newAthletesRequestsQueue.AddMessageAsync(new CloudQueueMessage(json));
 

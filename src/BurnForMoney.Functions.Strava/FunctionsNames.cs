@@ -16,7 +16,7 @@ namespace BurnForMoney.Functions.Strava
         public const string SubmitAthleteApproval = "SubmitAthleteApproval";
         public const string Q_ProcessNewAthlete = "Q_ProcessNewAthlete";
 
-        public const string CollectAthleteActivities = "CollectAthleteActivities";
+        public const string Q_CollectAthleteActivities = "Q_CollectAthleteActivities";
 
         public const string CreateWebhookSubscription = "Webhooks_CreateSubscription";
         public const string WebhooksCallbackValidation = "Webhooks_ValidateCallback";

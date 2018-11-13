@@ -1,6 +1,6 @@
 ﻿using BurnForMoney.Functions.Shared;
 
-namespace BurnForMoney.Functions.Strava.Functions
+namespace BurnForMoney.Functions.Strava
 {
     public class AccessTokensEncryptionService
     {

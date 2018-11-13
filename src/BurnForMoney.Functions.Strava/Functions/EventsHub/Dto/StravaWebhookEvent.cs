@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace BurnForMoney.Functions.Strava.Functions.EventsHub
+namespace BurnForMoney.Functions.Strava.Functions.EventsHub.Dto
 {
     public class StravaWebhookEvent
     {
@@ -53,7 +53,7 @@ namespace BurnForMoney.Functions.Strava.Functions.EventsHub
     {
         public override bool CanConvert(Type objectType)
         {
-            return (objectType == typeof(List<T>));
+            return objectType == typeof(List<T>);
         }
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)

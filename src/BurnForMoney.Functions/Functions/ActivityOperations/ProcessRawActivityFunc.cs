@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using BurnForMoney.Functions.Exceptions;
+using BurnForMoney.Functions.Functions.ActivityOperations.Dto;
 using BurnForMoney.Functions.Shared;
 using BurnForMoney.Functions.Shared.Extensions;
 using BurnForMoney.Functions.Shared.Queues;

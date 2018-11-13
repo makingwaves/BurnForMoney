@@ -3,6 +3,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Threading.Tasks;
 using BurnForMoney.Functions.Configuration;
+using BurnForMoney.Functions.Functions.ActivityOperations.Dto;
 using BurnForMoney.Functions.Shared.Extensions;
 using Dapper;
 using Microsoft.Azure.WebJobs;
