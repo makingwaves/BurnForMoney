@@ -19,6 +19,10 @@ namespace BurnForMoney.Functions.Strava.Functions.EventsHub
             log.LogFunctionStart(FunctionsNames.EventsHub);
 
             var eventData = await req.ReadAsStringAsync();
+            if (string.IsNullOrWhiteSpace(eventData))
+            {
+                return new BadRequestResult();
+            }
 
             await outputQueue.AddMessageAsync(new CloudQueueMessage(eventData));
             log.LogInformation(FunctionsNames.EventsHub, $"Added a message to queue: {QueueNames.StravaEvents}.");
