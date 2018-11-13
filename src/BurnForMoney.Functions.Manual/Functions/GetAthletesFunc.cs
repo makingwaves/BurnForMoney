@@ -6,15 +6,6 @@ using Microsoft.Azure.WebJobs.Extensions.Http;
 
 namespace BurnForMoney.Functions.Manual.Functions
 {
-    public static class UpdateActivityFunc
-    {
-        [FunctionName("UpdateActivity")]
-        public static IActionResult UpdateActivity([HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "activities/{activityId:int}")] HttpRequest req, ExecutionContext executionContext)
-        {
-            throw new NotImplementedException();
-        }
-    }
-
     public static class GetAthletesFunc
     {
         [FunctionName("GetAthletes")]
