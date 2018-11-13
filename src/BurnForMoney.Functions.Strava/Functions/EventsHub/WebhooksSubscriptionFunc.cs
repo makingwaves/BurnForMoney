@@ -80,6 +80,11 @@ namespace BurnForMoney.Functions.Strava.Functions.EventsHub
 
             string verifyToken = req.Query["hub.verify_token"];
             string challenge = req.Query["hub.challenge"];
+
+            if (string.IsNullOrWhiteSpace(verifyToken) || string.IsNullOrWhiteSpace(challenge))
+            {
+                return new BadRequestResult();
+            }
             if (!verifyToken.Equals(CallbackToken))
             {
                 log.LogError($"{FunctionsNames.WebhooksCallbackValidation} Received callback token: {verifyToken} is not valid with token: {CallbackToken}.");
