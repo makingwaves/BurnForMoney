@@ -4,6 +4,7 @@ using System.Net;
 using System.Threading.Tasks;
 using BurnForMoney.Functions.Configuration;
 using BurnForMoney.Functions.Exceptions;
+using BurnForMoney.Functions.Shared.Extensions;
 using BurnForMoney.Functions.Shared.Queues;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
@@ -20,6 +21,7 @@ namespace BurnForMoney.Functions.Functions.Notifications
         [FunctionName(FunctionsNames.NotificationsGateway)]
         public static async Task SendEmail([QueueTrigger(AppQueueNames.NotificationsToSend)] Notification notification, ILogger log, ExecutionContext context)
         {
+            log.LogFunctionStart(FunctionsNames.NotificationsGateway);
             var configuration = ApplicationConfiguration.GetSettings(context);
 
             if (_sendGridClient == null)
@@ -41,12 +43,13 @@ namespace BurnForMoney.Functions.Functions.Notifications
 
             if (response.StatusCode == HttpStatusCode.Accepted || response.StatusCode == HttpStatusCode.OK)
             {
-                log.LogInformation("The message has been sent.");
+                log.LogInformation(FunctionsNames.NotificationsGateway, "The message has been sent.");
             }
             else
             {
                 throw new EmailException(string.Join(", ", notification.Recipients), response.StatusCode.ToString());
             }
+            log.LogFunctionEnd(FunctionsNames.NotificationsGateway);
         }
 
         private static string ApplyTemplate(string content, ExecutionContext context)

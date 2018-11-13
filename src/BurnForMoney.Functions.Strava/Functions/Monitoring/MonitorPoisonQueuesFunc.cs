@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using BurnForMoney.Functions.Shared.Extensions;
 using BurnForMoney.Functions.Shared.Functions;
 using BurnForMoney.Functions.Strava.Configuration;
 using Microsoft.Azure.WebJobs;
@@ -11,10 +12,12 @@ namespace BurnForMoney.Functions.Strava.Functions.Monitoring
         [FunctionName("MonitorPoisonQueues")]
         public static async Task Run([TimerTrigger("0 */20 * * * *")]TimerInfo myTimer, ILogger log, ExecutionContext context)
         {
+            log.LogFunctionStart("MonitorPoisonQueues");
             var configuration = ApplicationConfiguration.GetSettings(context);
 
             await PoisonQueueMessagesMonitor.RunAsync(configuration.ConnectionStrings.AzureWebJobsStorage,
                 configuration.ApplicationInsightsInstrumentationKey, log, "BFM - Strava");
+            log.LogFunctionEnd("MonitorPoisonQueues");
         }
     }
 }

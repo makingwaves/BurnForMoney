@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using BurnForMoney.Functions.Shared.Extensions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
@@ -13,10 +14,11 @@ namespace BurnForMoney.Functions.Strava.Functions.AuthorizeNewAthlete
         [FunctionName(FunctionsNames.AuthorizeNewAthleteStarter)]
         public static async Task Start([QueueTrigger(QueueNames.AuthorizationCodes)]string authorizationCode, [OrchestrationClient]DurableOrchestrationClient starter, ILogger log, ExecutionContext executionContext)
         {
-            log.LogInformation($"{FunctionsNames.AuthorizeNewAthleteStarter} queue trigger processed a request at {DateTime.UtcNow}.");
+            log.LogFunctionStart(FunctionsNames.AuthorizeNewAthleteStarter);
 
             var instanceId = await starter.StartNewAsync(FunctionsNames.O_AuthorizeNewAthlete, authorizationCode);
-            log.LogInformation($"Started orchestration function: `{FunctionsNames.O_AuthorizeNewAthlete}` with ID = `{instanceId}`.");
+            log.LogInformation(FunctionsNames.AuthorizeNewAthleteStarter, $"Started orchestration function: `{FunctionsNames.O_AuthorizeNewAthlete}` with ID = `{instanceId}`.");
+            log.LogFunctionEnd(FunctionsNames.AuthorizeNewAthleteStarter);
         }
 
         [FunctionName(FunctionsNames.SubmitAthleteApproval)]
@@ -25,7 +27,7 @@ namespace BurnForMoney.Functions.Strava.Functions.AuthorizeNewAthlete
             [Table("AthleteApprovals", "AthleteApproval", "{code}", Connection = "AzureWebJobsStorage")] AthleteApproval approval,
             ILogger log, string code)
         {
-            log.LogInformation($"{FunctionsNames.SubmitAthleteApproval} HTTP trigger processed a request.");
+            log.LogFunctionStart(FunctionsNames.SubmitAthleteApproval);
             
             string result = req.Query["result"];
             if (string.IsNullOrWhiteSpace(result))
@@ -45,9 +47,10 @@ namespace BurnForMoney.Functions.Strava.Functions.AuthorizeNewAthlete
                     return new BadRequestObjectResult("Athlete approval request is teminated. The instance was abruptly terminated.");
             }
 
-            log.LogInformation($"Sending athlete approval result to {approval.OrchestrationId} of {result}.");
+            log.LogInformation(FunctionsNames.SubmitAthleteApproval, $"Sending athlete approval result to {approval.OrchestrationId} of {result}.");
             await client.RaiseEventAsync(approval.OrchestrationId, "AthleteApproval", result);
             
+            log.LogFunctionEnd(FunctionsNames.SubmitAthleteApproval);
             return new OkObjectResult($"Thank you! Athlete has been {result.ToLowerInvariant()}.");
         }
     }

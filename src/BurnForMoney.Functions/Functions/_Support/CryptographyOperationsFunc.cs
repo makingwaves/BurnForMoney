@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using BurnForMoney.Functions.Shared;
+using BurnForMoney.Functions.Shared.Extensions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
@@ -14,7 +15,7 @@ namespace BurnForMoney.Functions.Functions._Support
         [FunctionName(FunctionsNames.Support_EncryptString)]
         public static async Task<IActionResult> EncryptStringAsync([HttpTrigger(AuthorizationLevel.Admin, "post", Route = "support/encryptstring")]HttpRequest req, ILogger log, ExecutionContext context)
         {
-            log.LogInformation($"{FunctionsNames.Support_EncryptString} function processed a request.");
+            log.LogFunctionStart(FunctionsNames.Support_EncryptString);
 
             var data =  await req.ReadAsStringAsync();
             var postData = JsonConvert.DeserializeObject<CryptographyPostData>(data);
@@ -30,13 +31,14 @@ namespace BurnForMoney.Functions.Functions._Support
 
             var encryptedText = Cryptography.EncryptString(postData.Text, postData.EncryptionKey);
 
+            log.LogFunctionEnd(FunctionsNames.Support_EncryptString);
             return new OkObjectResult(encryptedText);
         }
 
         [FunctionName(FunctionsNames.Support_DecryptString)]
         public static async Task<IActionResult> DecryptStringAsync([HttpTrigger(AuthorizationLevel.Admin, "post", Route = "support/decryptstring")]HttpRequest req, ILogger log, ExecutionContext context)
         {
-            log.LogInformation($"{FunctionsNames.Support_DecryptString} function processed a request.");
+            log.LogFunctionStart(FunctionsNames.Support_DecryptString);
 
             var data = await req.ReadAsStringAsync();
             var postData = JsonConvert.DeserializeObject<CryptographyPostData>(data);
@@ -52,6 +54,7 @@ namespace BurnForMoney.Functions.Functions._Support
 
             var encryptedText = Cryptography.DecryptString(postData.Text, postData.EncryptionKey);
 
+            log.LogFunctionEnd(FunctionsNames.Support_DecryptString);
             return new OkObjectResult(encryptedText);
         }
     }

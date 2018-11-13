@@ -2,6 +2,7 @@
 using System.Data;
 using System.Data.SqlClient;
 using System.Threading.Tasks;
+using BurnForMoney.Functions.Shared.Extensions;
 using BurnForMoney.Functions.Strava.Configuration;
 using BurnForMoney.Functions.Strava.Exceptions;
 using Dapper;
@@ -20,7 +21,7 @@ namespace BurnForMoney.Functions.Strava.Functions
             [Queue(QueueNames.NewStravaAthletesRequestsPoison)] CloudQueue newAthletesRequestPoisonQueue,
             [Queue(QueueNames.CollectAthleteActivities)] CloudQueue collectActivitiesQueues)
         {
-            log.LogInformation($"{FunctionsNames.Q_ProcessNewAthlete} function processed a request.");
+            log.LogFunctionStart(FunctionsNames.Q_ProcessNewAthlete);
 
             var configuration = ApplicationConfiguration.GetSettings(executionContext);
 
@@ -29,7 +30,7 @@ namespace BurnForMoney.Functions.Strava.Functions
                 conn.Open();
                 
                 int athleteId;
-                log.LogInformation("Beginning a new database transaction...");
+                log.LogInformation(FunctionsNames.Q_ProcessNewAthlete, "Beginning a new database transaction...");
                 using (var transaction = conn.BeginTransaction())
                 {
                     try
@@ -39,22 +40,22 @@ namespace BurnForMoney.Functions.Strava.Functions
                         {
                             throw new FailedToAddNewAthleteException(athlete.AthleteId.ToString());
                         }
-                        log.LogInformation($"Inserted athlete with id: {athleteId}.");
+                        log.LogInformation(FunctionsNames.Q_ProcessNewAthlete, $"Inserted athlete with id: {athleteId}.");
 
                         var result = await UpsertAccessToken(athleteId, athlete, conn, transaction);
                         if (!result)
                         {
                             throw new FailedToAddAccessTokenException(athleteId.ToString());
                         }
-                        log.LogInformation($"Inserted access tokens for athlete with id: {athleteId}.");
+                        log.LogInformation(FunctionsNames.Q_ProcessNewAthlete, $"Inserted access tokens for athlete with id: {athleteId}.");
 
                         transaction.Commit();
-                        log.LogInformation("Commited database transaction.");
+                        log.LogInformation(FunctionsNames.Q_ProcessNewAthlete, "Commited database transaction.");
                     }
                     catch (Exception ex)
                     {
                         transaction.Rollback();
-                        log.LogError($"Error occuring during processing a new athlete. {ex.Message}", ex);
+                        log.LogError($"[{FunctionsNames.Q_ProcessNewAthlete}] Error occuring during processing a new athlete. {ex.Message}", ex);
                         throw;
                     }
                 }
@@ -67,6 +68,7 @@ namespace BurnForMoney.Functions.Strava.Functions
                 };
                 var json = JsonConvert.SerializeObject(input);
                 await collectActivitiesQueues.AddMessageAsync(new CloudQueueMessage(json));
+                log.LogFunctionEnd(FunctionsNames.Q_ProcessNewAthlete);
             }
         }
 

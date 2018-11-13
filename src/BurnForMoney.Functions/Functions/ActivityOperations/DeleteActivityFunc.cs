@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using BurnForMoney.Functions.Configuration;
 using BurnForMoney.Functions.Exceptions;
+using BurnForMoney.Functions.Shared.Extensions;
 using BurnForMoney.Functions.Shared.Queues;
 using Dapper;
 using Microsoft.Azure.WebJobs;
@@ -15,6 +16,7 @@ namespace BurnForMoney.Functions.Functions.ActivityOperations
         public static async Task Q_DeleteActivity(ILogger log, ExecutionContext executionContext,
             [QueueTrigger(AppQueueNames.DeleteActivityRequests)] long activityId)
         {
+            log.LogFunctionStart(FunctionsNames.Q_DeleteActivity);
             var configuration = ApplicationConfiguration.GetSettings(executionContext);
             using (var conn = new SqlConnection(configuration.ConnectionStrings.SqlDbConnectionString))
             {
@@ -24,6 +26,7 @@ namespace BurnForMoney.Functions.Functions.ActivityOperations
                     throw new FailedToDeleteActivityException(activityId.ToString());
                 }
             }
+            log.LogFunctionEnd(FunctionsNames.Q_DeleteActivity);
         }
     }
 }

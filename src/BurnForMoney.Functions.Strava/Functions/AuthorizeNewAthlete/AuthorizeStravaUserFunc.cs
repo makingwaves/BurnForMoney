@@ -1,5 +1,6 @@
 using System.Linq;
 using System.Threading.Tasks;
+using BurnForMoney.Functions.Shared.Extensions;
 using BurnForMoney.Functions.Strava.Configuration;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -21,39 +22,40 @@ namespace BurnForMoney.Functions.Strava.Functions.AuthorizeNewAthlete
             HttpRequest req, ILogger log, [Queue(QueueNames.AuthorizationCodes)] CloudQueue authorizationCodesQueue,
             ExecutionContext context)
         {
-            log.LogInformation($"{FunctionsNames.AuthenticateUser} function processed a request.");
+            log.LogFunctionStart(FunctionsNames.AuthenticateUser);
             var configuration = ApplicationConfiguration.GetSettings(context);
 
             var referer = req.Headers["Referer"].FirstOrDefault() ?? "null";
-            log.LogInformation($"Request referer: [{referer}].");
+            log.LogInformation(FunctionsNames.AuthenticateUser, $"Request referer: [{referer}].");
             if (!configuration.IsLocalEnvironment && !IsRequestRefererValid(referer))
             {
-                log.LogWarning($"Request referer [{referer}] is not authorized.");
+                log.LogWarning(FunctionsNames.AuthenticateUser, $"Request referer [{referer}] is not authorized.");
                 return new UnauthorizedResult();
             }
 
             string error = req.Query["error"];
             if (!string.IsNullOrWhiteSpace(error))
             {
-                log.LogWarning($"Error occured during athlete authorization. Error code: [{error}].");
+                log.LogWarning(FunctionsNames.AuthenticateUser, $"Error occured during athlete authorization. Error code: [{error}].");
                 return new BadRequestObjectResult($"An error occured, Error code: [{error}]");
             }
 
             string code = req.Query["code"];
             if (string.IsNullOrWhiteSpace(code))
             {
-                log.LogWarning("Function invoked with incorrect parameters. [code] is null or empty.");
+                log.LogWarning(FunctionsNames.AuthenticateUser, "Function invoked with incorrect parameters. [code] is null or empty.");
                 return new BadRequestObjectResult("Code is required.");
             }
 
             if (code.Length != AuthorisationCodeLength)
             {
-                log.LogWarning($"The provided code is invalid. Authorization code should be {AuthorisationCodeLength} chars long, but was {code.Length}.");
+                log.LogWarning(FunctionsNames.AuthenticateUser, $"The provided code is invalid. Authorization code should be {AuthorisationCodeLength} chars long, but was {code.Length}.");
                 return new BadRequestObjectResult("The provided code is invalid.");
             }
 
             await InsertCodeToAuthorizationQueueAsync(code, authorizationCodesQueue, log).ConfigureAwait(false);
 
+            log.LogFunctionEnd(FunctionsNames.AuthenticateUser);
             return new OkObjectResult("Authorization completed.");
         }
         
@@ -61,7 +63,7 @@ namespace BurnForMoney.Functions.Strava.Functions.AuthorizeNewAthlete
         {
             var message = new CloudQueueMessage(code);
             await queue.AddMessageAsync(message).ConfigureAwait(false);
-            log.LogInformation($"Inserted authorization code to {QueueNames.AuthorizationCodes} queue.");
+            log.LogInformation(FunctionsNames.AuthenticateUser, $"Inserted authorization code to {QueueNames.AuthorizationCodes} queue.");
         }
 
         private static bool IsRequestRefererValid(string referer) => !string.IsNullOrEmpty(referer) && (referer.StartsWith(StravaAuthorizationUrl) || referer.StartsWith(AzureHostUrl));

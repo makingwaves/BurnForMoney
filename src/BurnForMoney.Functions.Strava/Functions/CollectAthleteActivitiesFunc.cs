@@ -2,6 +2,7 @@
 using System.Data.SqlClient;
 using System.Globalization;
 using System.Threading.Tasks;
+using BurnForMoney.Functions.Shared.Extensions;
 using BurnForMoney.Functions.Shared.Helpers;
 using BurnForMoney.Functions.Shared.Queues;
 using BurnForMoney.Functions.Strava.Configuration;
@@ -26,7 +27,7 @@ namespace BurnForMoney.Functions.Strava.Functions
             [Queue(QueueNames.UnauthorizedAccessTokens)] CloudQueue unauthorizedAccessTokensQueue,
             ILogger log, ExecutionContext executionContext)
         {
-            log.LogInformation($"{FunctionsNames.CollectAthleteActivities} function processed a request.");
+            log.LogFunctionStart(FunctionsNames.CollectAthleteActivities);
 
             var configuration = ApplicationConfiguration.GetSettings(executionContext);
 
@@ -45,15 +46,15 @@ WHERE AthleteId = @AthleteId AND IsValid=1", new { input.AthleteId });
 
                 accessToken = AccessTokensEncryptionService.Decrypt(encryptedAccessToken,
                     configuration.Strava.AccessTokensEncryptionKey);
-                log.LogInformation($"{nameof(CollectAthleteActivitiesFunc)} Decrypted access token.");
+                log.LogInformation(FunctionsNames.CollectAthleteActivities, "Decrypted access token.");
             }
 
             try
             {
                 var getActivitiesFrom = input.From ?? GetFirstDayOfTheMonth(DateTime.UtcNow);
-                log.LogInformation($"{nameof(CollectAthleteActivitiesFunc)} Looking for a new activities starting form: {getActivitiesFrom.ToString(CultureInfo.InvariantCulture)}");
+                log.LogInformation(FunctionsNames.CollectAthleteActivities, $"Looking for a new activities starting form: {getActivitiesFrom.ToString(CultureInfo.InvariantCulture)}");
                 var activities = StravaService.GetActivities(accessToken, getActivitiesFrom);
-                log.LogInformation($"{nameof(CollectAthleteActivitiesFunc)} Athlete: {input.AthleteId}. Found: {activities.Count} new activities.");
+                log.LogInformation(FunctionsNames.CollectAthleteActivities, $"Athlete: {input.AthleteId}. Found: {activities.Count} new activities.");
                 foreach (var stravaActivity in activities)
                 {
                     var pendingActivity = new PendingRawActivity
@@ -70,6 +71,7 @@ WHERE AthleteId = @AthleteId AND IsValid=1", new { input.AthleteId });
                     var json = JsonConvert.SerializeObject(pendingActivity);
                     var message = new CloudQueueMessage(json);
                     await pendingRawActivitiesQueue.AddMessageAsync(message);
+                    log.LogFunctionEnd(FunctionsNames.CollectAthleteActivities);
                 }
             }
             catch (UnauthorizedRequestException ex)

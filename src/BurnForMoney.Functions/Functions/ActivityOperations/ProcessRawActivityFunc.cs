@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using BurnForMoney.Functions.Exceptions;
 using BurnForMoney.Functions.Shared;
+using BurnForMoney.Functions.Shared.Extensions;
 using BurnForMoney.Functions.Shared.Queues;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
@@ -18,12 +19,11 @@ namespace BurnForMoney.Functions.Functions.ActivityOperations
             [Queue(QueueNames.PendingActivities)] CloudQueue pendingActivitiesQueue,
             [Queue(QueueNames.PendingActivitiesUpdates)] CloudQueue pendingActivityUpdatesQueue)
         {
+            log.LogFunctionStart(FunctionsNames.Q_ProcessRawActivity);
             if (rawActivity.Source != "Strava")
             {
                 throw new SystemNotSupportedException(rawActivity.Source);
             }
-
-            log.LogInformation($"{FunctionsNames.Q_ProcessRawActivity} function processed a request.");
 
             var activityCategory = StravaActivityMapper.MapToActivityCategory(rawActivity.ActivityType);
             var points = PointsCalculator.Calculate(activityCategory, rawActivity.DistanceInMeters, rawActivity.MovingTimeInMinutes);
@@ -51,6 +51,7 @@ namespace BurnForMoney.Functions.Functions.ActivityOperations
             {
                 await pendingActivityUpdatesQueue.AddMessageAsync(new CloudQueueMessage(json));
             }
+            log.LogFunctionEnd(FunctionsNames.Q_ProcessRawActivity);
         }
     }
 

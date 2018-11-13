@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using BurnForMoney.Functions.Functions.ResultsSnapshots;
+using BurnForMoney.Functions.Shared.Extensions;
 using BurnForMoney.Functions.Shared.Queues;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -18,7 +19,7 @@ namespace BurnForMoney.Functions.Functions._Support
         public static async Task<IActionResult> Support_Activities_CollectMonthlyStatistics([HttpTrigger(AuthorizationLevel.Admin, "get", Route = "support/activities/collectmonthlystatistics/{year}/{month}")]HttpRequest req, ILogger log,
             [Queue(QueueNames.CalculateMonthlyResults)] CloudQueue outputQueue, int year, int month)
         {
-            log.LogInformation($"{FunctionsNames.Support_Activities_CollectMonthlyStatistics} function processed a request.");
+            log.LogFunctionStart(FunctionsNames.Support_Activities_CollectMonthlyStatistics);
 
             if (month < 1 || month > 12)
             {
@@ -42,8 +43,9 @@ namespace BurnForMoney.Functions.Functions._Support
 
             var json = JsonConvert.SerializeObject(request);
             await outputQueue.AddMessageAsync(new CloudQueueMessage(json));
-            log.LogInformation($"{FunctionsNames.T_CalculateMonthlyAthleteResultsFromPreviousMonth} Put a message to the queue `{request.Month / request.Year}`.");
+            log.LogInformation(FunctionsNames.Support_Activities_CollectMonthlyStatistics, $"Put a message to the queue `{request.Month / request.Year}`.");
 
+            log.LogFunctionEnd(FunctionsNames.Support_Activities_CollectMonthlyStatistics);
             return new OkResult();
         }
 
@@ -51,7 +53,7 @@ namespace BurnForMoney.Functions.Functions._Support
         public static async Task<IActionResult> Support_Activities_Add([HttpTrigger(AuthorizationLevel.Admin, "post", Route = "support/activities/add")]HttpRequest req, ILogger log,
             ExecutionContext executionContext, [Queue(AppQueueNames.UpsertRawActivitiesRequests)] CloudQueue queue)
         {
-            log.LogInformation($"{FunctionsNames.Support_Activities_Add} function processed a request.");
+            log.LogFunctionStart(FunctionsNames.Support_Activities_Add);
 
             var data = await req.ReadAsStringAsync();
             try
@@ -67,6 +69,7 @@ namespace BurnForMoney.Functions.Functions._Support
                 return new BadRequestObjectResult($"Provided input is in the incorrect format. {ex.Message}");
             }
             await queue.AddMessageAsync(new CloudQueueMessage(data));
+            log.LogFunctionEnd(FunctionsNames.Support_Activities_Add);
             return new OkResult();
         }
     }

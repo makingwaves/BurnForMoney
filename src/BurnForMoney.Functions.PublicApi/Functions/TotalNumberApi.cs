@@ -4,6 +4,7 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
 using BurnForMoney.Functions.PublicApi.Configuration;
+using BurnForMoney.Functions.Shared.Extensions;
 using BurnForMoney.Functions.Shared.Helpers;
 using BurnForMoney.Functions.Shared.Persistence;
 using Dapper;
@@ -25,6 +26,7 @@ namespace BurnForMoney.Functions.PublicApi.Functions
         [FunctionName("TotalNumbers")]
         public static async Task<IActionResult> TotalNumbers([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "totalnumbers")]HttpRequest req, ILogger log, ExecutionContext executionContext)
         {
+            log.LogFunctionStart("TotalNumbers");
             if (!Cache.TryGetValue(CacheKey, out var totalNumbers))
             {
                 totalNumbers = await GetTotalNumbersAsync(executionContext);
@@ -38,6 +40,7 @@ namespace BurnForMoney.Functions.PublicApi.Functions
                 Cache.Set(CacheKey, totalNumbers, cacheEntryOptions);
             }
 
+            log.LogFunctionEnd("TotalNumbers");
             return new OkObjectResult(totalNumbers);
         }
 

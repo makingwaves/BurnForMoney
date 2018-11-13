@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using BurnForMoney.Functions.Shared.Extensions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
@@ -15,7 +16,7 @@ namespace BurnForMoney.Functions.Functions._Support
             [Queue("{queueName}")] CloudQueue queue,
             [Queue("{queueName}-poison")] CloudQueue poisonQueue, string queueName)
         {
-            log.LogInformation($"{FunctionsNames.Support_ReprocessPoisonQueueMessages} function processed a request.");
+            log.LogFunctionStart(FunctionsNames.Support_ReprocessPoisonQueueMessages);
 
             int.TryParse(req.Query["messageCount"], out var messageCountParameter);
             var messageCount = messageCountParameter == 0 ? 10 : messageCountParameter;
@@ -35,6 +36,7 @@ namespace BurnForMoney.Functions.Functions._Support
                 processedMessages++;
             }
 
+            log.LogFunctionEnd(FunctionsNames.Support_ReprocessPoisonQueueMessages);
             return new OkObjectResult($"Reprocessed {processedMessages} messages from the {poisonQueue.Name} queue.");
         }
     }

@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using BurnForMoney.Functions.Shared.Extensions;
 using BurnForMoney.Functions.Strava.Exceptions;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
@@ -15,7 +16,7 @@ namespace BurnForMoney.Functions.Strava.Functions.AuthorizeNewAthlete
         {
             if (!context.IsReplaying)
             {
-                log.LogInformation($"Orchestration function `{FunctionsNames.O_AuthorizeNewAthlete}` received a request.");
+                log.LogFunctionStart(FunctionsNames.O_AuthorizeNewAthlete);
             }
 
             var authorizationCode = context.GetInput<string>();
@@ -27,19 +28,18 @@ namespace BurnForMoney.Functions.Strava.Functions.AuthorizeNewAthlete
                     new RetryOptions(TimeSpan.FromSeconds(5), 3), authorizationCode);
                 if (!context.IsReplaying)
                 {
-                    log.LogInformation($"[{FunctionsNames.O_AuthorizeNewAthlete}] exchanged token for user {athlete.FirstName} " +
-                                       $"{athlete.LastName}.");
+                    log.LogInformation(FunctionsNames.O_AuthorizeNewAthlete, $"Exchanged token for user {athlete.FirstName} {athlete.LastName}.");
                 }
 
                 // 2. Send approval request
                 if (!context.IsReplaying)
                 {
-                    log.LogInformation($"[{FunctionsNames.O_AuthorizeNewAthlete}] sending approval email...");
+                    log.LogInformation(FunctionsNames.O_AuthorizeNewAthlete, "Sending approval email...");
                 }
                 await context.CallActivityAsync(FunctionsNames.A_SendAthleteApprovalRequest, (athlete.FirstName, athlete.LastName));
                 if (!context.IsReplaying)
                 {
-                    log.LogInformation($"[{FunctionsNames.O_AuthorizeNewAthlete}] sent approval email.");
+                    log.LogInformation(FunctionsNames.O_AuthorizeNewAthlete, "Sent approval email.");
                 }
 
                 // 3. Wait for approval
@@ -65,14 +65,15 @@ namespace BurnForMoney.Functions.Strava.Functions.AuthorizeNewAthlete
 
                 if (!context.IsReplaying)
                 {
-                    log.LogInformation($"[{FunctionsNames.O_AuthorizeNewAthlete}] Athlete: {athlete.FirstName} {athlete.LastName} has been {approvalResult}.");
+                    log.LogInformation(FunctionsNames.O_AuthorizeNewAthlete, $"Athlete: {athlete.FirstName} {athlete.LastName} has been {approvalResult}.");
                 }
 
                 // 4. Process a new athlete request
                 await context.CallActivityAsync(FunctionsNames.A_ProcessNewAthleteRequest, athlete);
                 if (!context.IsReplaying)
                 {
-                    log.LogInformation($"[{FunctionsNames.O_AuthorizeNewAthlete}] processed athlete's data.");
+                    log.LogInformation(FunctionsNames.O_AuthorizeNewAthlete, "Processed athlete's data.");
+                    log.LogFunctionEnd(FunctionsNames.O_AuthorizeNewAthlete);
                 }
 
             }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Threading.Tasks;
+using BurnForMoney.Functions.Shared.Extensions;
 using BurnForMoney.Functions.Strava.Configuration;
 using Dapper;
 using Microsoft.AspNetCore.Http;
@@ -20,7 +21,7 @@ namespace BurnForMoney.Functions.Strava.Functions._Support
         public static async Task<IActionResult> Support_Activities_All_Collect([HttpTrigger(AuthorizationLevel.Admin, "post", Route = "support/athlete/all/activities/collect")]HttpRequest req, ILogger log,
             [Queue(QueueNames.CollectAthleteActivities)] CloudQueue collectActivitiesQueues, ExecutionContext executionContext)
         {
-            log.LogInformation($"{FunctionsNames.Support_Activities_Collect} function processed a request.");
+            log.LogFunctionStart(FunctionsNames.Support_Activities_All_Collect);
 
             var from = DateTime.TryParse(req.Query["from"], out var date) ? date : (DateTime?)null;
             var configuration = ApplicationConfiguration.GetSettings(executionContext);
@@ -43,6 +44,7 @@ namespace BurnForMoney.Functions.Strava.Functions._Support
                 await collectActivitiesQueues.AddMessageAsync(new CloudQueueMessage(json));
             }
 
+            log.LogFunctionEnd(FunctionsNames.Support_Activities_All_Collect);
             return new OkResult();
         }
 
@@ -50,7 +52,7 @@ namespace BurnForMoney.Functions.Strava.Functions._Support
         public static async Task<IActionResult> Support_CollectActivities([HttpTrigger(AuthorizationLevel.Admin, "post", Route = "support/athlete/{athleteId}/activities/collect")]HttpRequest req, ILogger log,
             [Queue(QueueNames.CollectAthleteActivities)] CloudQueue collectActivitiesQueues, int athleteId)
         {
-            log.LogInformation($"{FunctionsNames.Support_Activities_Collect} function processed a request.");
+            log.LogFunctionStart(FunctionsNames.Support_Activities_Collect);
 
             var from = DateTime.TryParse(req.Query["from"], out var date) ? date : (DateTime?)null;
 
@@ -61,6 +63,7 @@ namespace BurnForMoney.Functions.Strava.Functions._Support
             };
             var json = JsonConvert.SerializeObject(input);
             await collectActivitiesQueues.AddMessageAsync(new CloudQueueMessage(json));
+            log.LogFunctionEnd(FunctionsNames.Support_Activities_Collect);
             return new OkObjectResult($"Ok. athleteId: {athleteId}, from: {from?.ToString() ?? "<null>"}");
         }
     }

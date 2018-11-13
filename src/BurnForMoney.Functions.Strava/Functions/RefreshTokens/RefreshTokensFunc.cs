@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Threading.Tasks;
+using BurnForMoney.Functions.Shared.Extensions;
 using BurnForMoney.Functions.Strava.Configuration;
 using BurnForMoney.Functions.Strava.Exceptions;
 using BurnForMoney.Functions.Strava.External.Strava.Api;
@@ -21,7 +22,7 @@ namespace BurnForMoney.Functions.Strava.Functions.RefreshTokens
         public static async Task T_RefreshAccessTokens([TimerTrigger("0 50 * * * *")] TimerInfo timer, ILogger log, ExecutionContext executionContext,
             [Queue(QueueNames.RefreshStravaToken)] CloudQueue refreshTokensQueue)
         {
-            log.LogInformation($"{FunctionsNames.T_RefreshAccessTokens} function processed a request.");
+            log.LogFunctionStart(FunctionsNames.T_RefreshAccessTokens);
             var configuration = ApplicationConfiguration.GetSettings(executionContext);
 
             IEnumerable<(int AthleteId, string EncryptedRefreshToken)> expiringTokens;
@@ -50,12 +51,13 @@ WHERE Tokens.ExpiresAt < @DateTo AND Athletes.Active=1",
             }
 
             await Task.WhenAll(tasks);
+            log.LogFunctionEnd(FunctionsNames.T_RefreshAccessTokens);
         }
 
         [FunctionName(FunctionsNames.Q_RefreshAccessTokens)]
         public static async Task Q_RefreshAccessTokens([QueueTrigger(QueueNames.RefreshStravaToken)] TokenRefreshRequest request, ILogger log, ExecutionContext executionContext)
         {
-            log.LogInformation($"{FunctionsNames.Q_RefreshAccessTokens} function processed a request.");
+            log.LogFunctionStart(FunctionsNames.Q_RefreshAccessTokens);
             var configuration = ApplicationConfiguration.GetSettings(executionContext);
 
             var refreshToken = AccessTokensEncryptionService.Decrypt(request.EncryptedRefreshToken, configuration.Strava.AccessTokensEncryptionKey);
@@ -77,6 +79,7 @@ WHERE Tokens.ExpiresAt < @DateTo AND Athletes.Active=1",
                     throw new FailedToRefreshAccessTokenException(request.AthleteId);
                 }
             }
+            log.LogFunctionEnd(FunctionsNames.Q_RefreshAccessTokens);
         }
     }
 }

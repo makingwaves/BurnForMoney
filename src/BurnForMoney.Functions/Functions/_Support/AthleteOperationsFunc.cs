@@ -3,6 +3,7 @@ using System.Data.SqlClient;
 using System.Threading.Tasks;
 using BurnForMoney.Functions.Configuration;
 using BurnForMoney.Functions.Exceptions;
+using BurnForMoney.Functions.Shared.Extensions;
 using Dapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -18,7 +19,7 @@ namespace BurnForMoney.Functions.Functions._Support
         public static async Task<IActionResult> Support_DeactivateAthlete([HttpTrigger(AuthorizationLevel.Admin, "post", Route = "support/athlete/{athleteId:int}/deactivate")]HttpRequest req, ILogger log,
             ExecutionContext executionContext, string athleteId)
         {
-            log.LogInformation($"{FunctionsNames.Support_Athlete_Deactivate} function processed a request.");
+            log.LogFunctionStart(FunctionsNames.Support_Athlete_Deactivate);
 
             if (string.IsNullOrWhiteSpace(athleteId))
             {
@@ -35,6 +36,7 @@ namespace BurnForMoney.Functions.Functions._Support
                 return new OkObjectResult($"Athlete with id: {athleteId} has been deactivated.");
             }
 
+            log.LogFunctionEnd(FunctionsNames.Support_Athlete_Deactivate);
             return new BadRequestResult();
         }
 
@@ -42,7 +44,7 @@ namespace BurnForMoney.Functions.Functions._Support
         public static async Task<IActionResult> Support_ActivateAthlete([HttpTrigger(AuthorizationLevel.Admin, "post", Route = "support/athlete/{athleteId:int}/activate")]HttpRequest req, ILogger log,
             ExecutionContext executionContext, string athleteId)
         {
-            log.LogInformation($"{FunctionsNames.Support_Athlete_Activate} function processed a request.");
+            log.LogFunctionStart(FunctionsNames.Support_Athlete_Activate);
 
             if (string.IsNullOrWhiteSpace(athleteId))
             {
@@ -59,6 +61,7 @@ namespace BurnForMoney.Functions.Functions._Support
                 return new OkObjectResult($"Athlete with id: {athleteId} has been activated.");
             }
 
+            log.LogFunctionEnd(FunctionsNames.Support_Athlete_Activate);
             return new BadRequestResult();
         }
 
@@ -66,7 +69,7 @@ namespace BurnForMoney.Functions.Functions._Support
         public static async Task<IActionResult> Support_Athlete_Delete([HttpTrigger(AuthorizationLevel.Admin, "delete", Route = "support/athlete/{athleteId:int}/delete")]HttpRequest req, ILogger log,
             ExecutionContext executionContext, string athleteId)
         {
-            log.LogInformation($"{FunctionsNames.Support_Athlete_Delete} function processed a request.");
+            log.LogFunctionStart(FunctionsNames.Support_Athlete_Delete);
 
             if (string.IsNullOrWhiteSpace(athleteId))
             {
@@ -80,6 +83,7 @@ namespace BurnForMoney.Functions.Functions._Support
             try
             {
                 await DeleteAthleteAsync(athleteId, connectionString, log);
+                log.LogFunctionEnd(FunctionsNames.Support_Athlete_Delete);
                 return new OkObjectResult($"Athlete with id: {athleteId} has been deleted.");
             }
             catch (Exception ex)

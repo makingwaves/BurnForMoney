@@ -5,6 +5,7 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
 using BurnForMoney.Functions.Configuration;
+using BurnForMoney.Functions.Shared.Extensions;
 using BurnForMoney.Functions.Shared.Persistence;
 using Dapper;
 using Microsoft.Azure.WebJobs;
@@ -18,7 +19,7 @@ namespace BurnForMoney.Functions.Functions.ResultsSnapshots
         [FunctionName(FunctionsNames.Q_CalculateMonthlyAthleteResults)]
         public static async Task Q_CalculateMonthlyAthleteResults([QueueTrigger(QueueNames.CalculateMonthlyResults)] CalculateMonthlyResultsRequest request, ILogger log, ExecutionContext executionContext)
         {
-            log.LogInformation($"{FunctionsNames.Q_CalculateMonthlyAthleteResults} function processed a request.");
+            log.LogFunctionStart(FunctionsNames.Q_CalculateMonthlyAthleteResults);
 
             var configuration = ApplicationConfiguration.GetSettings(executionContext);
             using (var conn = new SqlConnection(configuration.ConnectionStrings.SqlDbConnectionString))
@@ -36,7 +37,7 @@ WHERE MONTH(ActivityTime)=@Month AND YEAR(ActivityTime)=@Year", new
 
                 if (!activities.Any())
                 {
-                    log.LogWarning($"[{FunctionsNames.Q_CalculateMonthlyAthleteResults}] cannot find any activities from given date: {request.Month}/{request.Year}.");
+                    log.LogWarning(FunctionsNames.Q_CalculateMonthlyAthleteResults, $"Cannot find any activities from given date: {request.Month}/{request.Year}.");
                     return;
                 }
 
@@ -52,9 +53,10 @@ WHERE MONTH(ActivityTime)=@Month AND YEAR(ActivityTime)=@Year", new
                     .ConfigureAwait(false);
                 if (affectedRows == 1)
                 {
-                    log.LogInformation($"[{FunctionsNames.Q_CalculateMonthlyAthleteResults}] Updated snapshot.");
+                    log.LogInformation(FunctionsNames.Q_CalculateMonthlyAthleteResults, "Updated snapshot.");
                 }
             }
+            log.LogFunctionEnd(FunctionsNames.Q_CalculateMonthlyAthleteResults);
         }
 
         private static IEnumerable<AthleteMonthlyResult> GroupActivitiesByAthlete(IEnumerable<Activity> activities)

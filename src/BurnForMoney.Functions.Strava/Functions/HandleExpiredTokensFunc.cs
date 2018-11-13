@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Data.SqlClient;
 using System.Threading.Tasks;
+using BurnForMoney.Functions.Shared.Extensions;
 using BurnForMoney.Functions.Strava.Configuration;
 using Dapper;
 using Microsoft.Azure.WebJobs;
@@ -14,7 +15,7 @@ namespace BurnForMoney.Functions.Strava.Functions
         public static async Task Q_DeactivateExpiredAccessTokens(ILogger log, ExecutionContext executionContext,
             [QueueTrigger(QueueNames.UnauthorizedAccessTokens)] string encryptedAccessToken)
         {
-            log.LogInformation($"{FunctionsNames.Q_DeactivateExpiredAccessTokens} function processed a request.");
+            log.LogFunctionStart(FunctionsNames.Q_DeactivateExpiredAccessTokens);
 
             var configuration = ApplicationConfiguration.GetSettings(executionContext);
             using (var conn = new SqlConnection(configuration.ConnectionStrings.SqlDbConnectionString))
@@ -28,9 +29,10 @@ namespace BurnForMoney.Functions.Strava.Functions
                     });
                 if (affectedRows == 1)
                 {
-                    log.LogInformation($"{nameof(FunctionsNames.Q_DeactivateExpiredAccessTokens)} Deactivated inactive access token.");
+                    log.LogInformation(FunctionsNames.Q_DeactivateExpiredAccessTokens, "Deactivated inactive access token.");
                 }
             }
+            log.LogFunctionEnd(FunctionsNames.Q_DeactivateExpiredAccessTokens);
         }
     }
 }

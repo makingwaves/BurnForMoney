@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using BurnForMoney.Functions.Shared.Extensions;
 using BurnForMoney.Functions.Strava.Configuration;
 using DurableTask.AzureStorage;
 using DurableTask.Core;
@@ -19,7 +20,7 @@ namespace BurnForMoney.Functions.Strava.Functions._Support
             [OrchestrationClient]DurableOrchestrationClient starter,
             ILogger log, ExecutionContext context)
         {
-            log.LogInformation($"{FunctionsNames.Support_PurgeDurableHubHistory} function processed a request.");
+            log.LogFunctionStart(FunctionsNames.Support_PurgeDurableHubHistory);
             var configuration = ApplicationConfiguration.GetSettings(context);
 
             var settings = new AzureStorageOrchestrationServiceSettings
@@ -31,6 +32,7 @@ namespace BurnForMoney.Functions.Strava.Functions._Support
             var service = new AzureStorageOrchestrationService(settings);
             await service.PurgeOrchestrationHistoryAsync(DateTime.UtcNow.AddDays(-1), OrchestrationStateTimeRangeFilterType.OrchestrationLastUpdatedTimeFilter);
 
+            log.LogFunctionEnd(FunctionsNames.Support_PurgeDurableHubHistory);
             return new OkObjectResult("Purge operation has been scheduled.");
         }
     }

@@ -3,6 +3,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Threading.Tasks;
 using BurnForMoney.Functions.Configuration;
+using BurnForMoney.Functions.Shared.Extensions;
 using Dapper;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
@@ -16,7 +17,7 @@ namespace BurnForMoney.Functions.Functions.ActivityOperations
         [FunctionName(FunctionsNames.Q_SubmitAthleteActivity)]
         public static async Task Q_SubmitAthleteActivityAsync(ILogger log, ExecutionContext executionContext, [QueueTrigger(QueueNames.PendingActivities)] PendingActivity activity)
         {
-            log.LogInformation($"{FunctionsNames.Q_SubmitAthleteActivity} function processed a request.");
+            log.LogFunctionStart(FunctionsNames.Q_SubmitAthleteActivity);
 
             var configuration = ApplicationConfiguration.GetSettings(executionContext);
             using (var conn = new SqlConnection(configuration.ConnectionStrings.SqlDbConnectionString))
@@ -42,13 +43,14 @@ namespace BurnForMoney.Functions.Functions.ActivityOperations
 
                 if (affectedRows > 0)
                 {
-                    log.LogInformation($"Activity with id: {model.ActivityId} has been added.");
+                    log.LogInformation(FunctionsNames.Q_SubmitAthleteActivity, $"Activity with id: {model.ActivityId} has been added.");
                 }
                 else
                 {
-                    log.LogWarning($"Failed to save activity with id: {model.ActivityId}.");
+                    log.LogWarning(FunctionsNames.Q_SubmitAthleteActivity, $"Failed to save activity with id: {model.ActivityId}.");
                 }
             }
+            log.LogFunctionEnd(FunctionsNames.Q_SubmitAthleteActivity);
         }
     }
 }
