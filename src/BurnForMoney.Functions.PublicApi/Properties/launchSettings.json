@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "BurnForMoney.Functions.PublicApi": {
+      "commandName": "Project",
+      "commandLineArgs": "host start -p 7073"
+    }
+  }
+}

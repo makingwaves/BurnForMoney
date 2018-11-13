@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -11,7 +10,7 @@ using Microsoft.Extensions.Logging;
 using SendGrid;
 using SendGrid.Helpers.Mail;
 
-namespace BurnForMoney.Functions.Functions
+namespace BurnForMoney.Functions.Functions.Notifications
 {
     public static class NotificationsGatewayFunc
     {

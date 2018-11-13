@@ -1,0 +1,13 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "FUNCTIONS_WORKER_RUNTIME": "dotnet",
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "AzureWebJobsDashboard": "UseDevelopmentStorage=true",
+    "StravaAppHostName": "http://localhost:7072",
+    "KeyVaultName": "burnformoneykvdev"
+  },
+  "Host": {
+    "LocalHttpPort": 7073
+  }
+}

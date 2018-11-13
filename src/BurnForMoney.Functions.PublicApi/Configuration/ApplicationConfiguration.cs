@@ -2,7 +2,7 @@
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Configuration;
 
-namespace BurnForMoney.Functions.Configuration
+namespace BurnForMoney.Functions.PublicApi.Configuration
 {
     public class ApplicationConfiguration
     {
@@ -14,23 +14,12 @@ namespace BurnForMoney.Functions.Configuration
             {
                 var config = GetApplicationConfiguration(context.FunctionAppDirectory);
 
-                var isLocal = string.IsNullOrEmpty(GetEnvironmentVariable(EnvironmentSettingNames.AzureWebsiteInstanceId));
                 _settings = new ConfigurationRoot
                 {
-                    IsLocalEnvironment = isLocal,
                     ConnectionStrings = new ConnectionStringsSection
                     {
-                        SqlDbConnectionString = config["ConnectionStrings:Sql"],
-                        AzureWebJobsStorage = config["AzureWebJobsStorage"]
-                    },
-                    Email = new EmailSection
-                    {
-                        ReportsReceiver = config["Email:ReportsReceiver"],
-                        SenderEmail = "burnformoney@makingwaves.com",
-                        DefaultRecipient = config["Email:DefaultRecipient"]
-                    },
-                    ApplicationInsightsInstrumentationKey = config["APPINSIGHTS_INSTRUMENTATIONKEY"],
-                    SendGridApiKey = config["SendGrid:ApiKey"]
+                        SqlDbConnectionString = config["ConnectionStrings:Sql"]
+                    }
                 };
 
                 if (!_settings.IsValid())
@@ -53,17 +42,6 @@ namespace BurnForMoney.Functions.Configuration
             config.AddAzureKeyVault($"https://{builtConfig["KeyVaultName"]}.vault.azure.net/");
 
             return config.Build();
-        }
-
-        public static string GetEnvironmentVariable(string settingKey)
-        {
-            string settingValue = null;
-            if (!string.IsNullOrEmpty(settingKey))
-            {
-                settingValue = Environment.GetEnvironmentVariable(settingKey);
-            }
-
-            return settingValue;
         }
     }
 }

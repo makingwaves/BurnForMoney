@@ -3,8 +3,7 @@ using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
-using BurnForMoney.Functions.Configuration;
-using BurnForMoney.Functions.Functions.ResultsSnapshots;
+using BurnForMoney.Functions.PublicApi.Configuration;
 using BurnForMoney.Functions.Shared.Helpers;
 using BurnForMoney.Functions.Shared.Persistence;
 using Dapper;
@@ -16,7 +15,7 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
-namespace BurnForMoney.Functions.Functions._Public
+namespace BurnForMoney.Functions.PublicApi.Functions
 {
     public static class TotalNumberApi
     {

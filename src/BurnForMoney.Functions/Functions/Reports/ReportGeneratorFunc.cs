@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using BurnForMoney.Functions.Configuration;
 using BurnForMoney.Functions.Functions.ResultsSnapshots;
 using BurnForMoney.Functions.Shared.Helpers;
+using BurnForMoney.Functions.Shared.Persistence;
 using BurnForMoney.Functions.Shared.Queues;
 using CsvHelper;
 using Dapper;

@@ -5,7 +5,6 @@ namespace BurnForMoney.Functions.Configuration
         public EmailSection Email { get; set; }
         public ConnectionStringsSection ConnectionStrings { get; set; }
         public bool IsLocalEnvironment { get; set; }
-        public string StravaAppHostName { get; set; }
         public string ApplicationInsightsInstrumentationKey { get; set; }
         public string SendGridApiKey { get; set; }
 

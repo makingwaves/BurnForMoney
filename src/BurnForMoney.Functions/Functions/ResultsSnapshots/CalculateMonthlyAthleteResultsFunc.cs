@@ -5,6 +5,7 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
 using BurnForMoney.Functions.Configuration;
+using BurnForMoney.Functions.Shared.Persistence;
 using Dapper;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
@@ -98,25 +99,5 @@ WHERE MONTH(ActivityTime)=@Month AND YEAR(ActivityTime)=@Year", new
         public int MovingTime { get; set; }
         public string Category { get; set; }
         public double Points { get; set; }
-    }
-
-    public class AthleteMonthlyResult
-    {
-        public int AthleteId { get; set; }
-        public string AthleteName { get; set; }
-        public double Distance { get; set; }
-        public double Time { get; set; }
-        public int Points { get; set; }
-        public int NumberOfTrainings { get; set; }
-        public List<AthleteMonthlyResultActivity> Activities { get; set; }
-    }
-
-    public class AthleteMonthlyResultActivity
-    {
-        public string Category { get; set; }
-        public double Distance { get; set; }
-        public double Time { get; set; }
-        public int Points { get; set; }
-        public int NumberOfTrainings { get; set; }
     }
 }
