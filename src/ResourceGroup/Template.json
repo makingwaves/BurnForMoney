@@ -54,14 +54,18 @@
     "applicationShortName": "bfm",
     "webSiteName": "[concat(variables('applicationName'), '-', parameters('environmentCode'))]",
     "websiteHostingPlanName": "[concat(variables('applicationName'), '-', parameters('environmentCode'))]",
-    "stravaFunctionAppName": "[concat(variables('applicationShortName'), 'func-strava-', parameters('environmentCode'))]",
-    "stravaFunctionHostingPlanName": "[concat(variables('applicationShortName'), 'func-strava-', parameters('environmentCode'))]",
-    "stravaFunctionStorageAccountName": "[concat(variables('applicationShortName'), 'funcstrava', parameters('environmentCode'))]",
-    "stravaFunctionStorageAccountId": "[concat(resourceGroup().id,'/providers/','Microsoft.Storage/storageAccounts/', variables('stravaFunctionStorageAccountName'))]",
     "functionAppName": "[concat(variables('applicationShortName'), 'func-', parameters('environmentCode'))]",
     "functionHostingPlanName": "[concat(variables('applicationShortName'), 'func-', parameters('environmentCode'))]",
     "functionStorageAccountName": "[concat(variables('applicationShortName'), 'func', parameters('environmentCode'))]",
     "functionStorageAccountId": "[concat(resourceGroup().id,'/providers/','Microsoft.Storage/storageAccounts/', variables('functionStorageAccountName'))]",
+    "stravaFunctionAppName": "[concat(variables('applicationShortName'), 'func-strava-', parameters('environmentCode'))]",
+    "stravaFunctionHostingPlanName": "[concat(variables('applicationShortName'), 'func-strava-', parameters('environmentCode'))]",
+    "stravaFunctionStorageAccountName": "[concat(variables('applicationShortName'), 'funcstrava', parameters('environmentCode'))]",
+    "stravaFunctionStorageAccountId": "[concat(resourceGroup().id,'/providers/','Microsoft.Storage/storageAccounts/', variables('stravaFunctionStorageAccountName'))]",
+    "publicFunctionAppName": "[concat(variables('applicationShortName'), 'func-public-', parameters('environmentCode'))]",
+    "publicFunctionHostingPlanName": "[concat(variables('applicationShortName'), 'func-public-', parameters('environmentCode'))]",
+    "publicFunctionStorageAccountName": "[concat(variables('applicationShortName'), 'func', parameters('environmentCode'))]",
+    "publicFunctionStorageAccountId": "[concat(resourceGroup().id,'/providers/','Microsoft.Storage/storageAccounts/', variables('functionStorageAccountName'))]",
     "sqlDbName": "[concat(variables('applicationName'), 'sqldb', parameters('environmentCode'))]",
     "sqlServerName": "[concat(variables('applicationName'), 'sqlserver', parameters('environmentCode'))]",
     "keyVaultName": "[concat(variables('applicationName'), 'kv', parameters('environmentCode'))]",
@@ -221,10 +225,6 @@
               "value": "[parameters('email.reportsReceiver')]"
             },
             {
-              "name": "StravaAppHostName",
-              "value": "[concat('https://', variables('stravaFunctionAppName'), '.azurewebsites.net')]"
-            },
-            {
               "name": "KeyVaultName",
               "value": "[variables('keyVaultName')]"
             }
@@ -306,6 +306,65 @@
             {
               "name": "AppQueuesStorage",
               "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('functionStorageAccountName'), ';AccountKey=', listKeys(variables('functionStorageAccountid'),'2015-05-01-preview').key1)]"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "apiVersion": "2015-08-01",
+      "type": "Microsoft.Web/sites",
+      "name": "[variables('publicFunctionAppName')]",
+      "location": "[resourceGroup().location]",
+      "kind": "functionapp",
+      "identity": {
+        "type": "SystemAssigned"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/sites', variables('publicFunctionAppName'))]",
+        "[resourceId('Microsoft.Web/serverfarms', variables('publicFunctionHostingPlanName'))]",
+        "[resourceId('Microsoft.Storage/storageAccounts', variables('publicFunctionStorageAccountName'))]",
+        "[resourceId('microsoft.insights/components', variables('appInsightsName'))]"
+      ],
+      "properties": {
+        "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('publicFunctionHostingPlanName'))]",
+        "siteConfig": {
+          "appSettings": [
+            {
+              "name": "AzureWebJobsDashboard",
+              "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('publicFunctionStorageAccountName'), ';AccountKey=', listKeys(variables('publicFunctionStorageAccountid'),'2015-05-01-preview').key1)]"
+            },
+            {
+              "name": "AzureWebJobsStorage",
+              "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('publicFunctionStorageAccountName'), ';AccountKey=', listKeys(variables('publicFunctionStorageAccountid'),'2015-05-01-preview').key1)]"
+            },
+            {
+              "name": "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING",
+              "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('publicFunctionStorageAccountName'), ';AccountKey=', listKeys(variables('publicFunctionStorageAccountid'),'2015-05-01-preview').key1)]"
+            },
+            {
+              "name": "WEBSITE_CONTENTSHARE",
+              "value": "[toLower(variables('publicFunctionAppName'))]"
+            },
+            {
+              "name": "FUNCTIONS_EXTENSION_VERSION",
+              "value": "beta"
+            },
+            {
+              "name": "WEBSITE_NODE_DEFAULT_VERSION",
+              "value": "6.5.0"
+            },
+            {
+              "name": "MSDEPLOY_RENAME_LOCKED_FILES",
+              "value": "1"
+            },
+            {
+              "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
+              "value": "[reference(concat('microsoft.insights/components/', variables('appInsightsName'))).InstrumentationKey]"
+            },
+            {
+              "name": "StravaAppHostName",
+              "value": "[concat('https://', variables('stravaFunctionAppName'), '.azurewebsites.net')]"
             }
           ]
         }
