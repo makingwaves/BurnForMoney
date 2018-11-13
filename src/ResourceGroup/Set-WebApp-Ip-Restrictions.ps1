@@ -12,10 +12,6 @@ function Add-IpRestriction {
         $APIVersion
     )
 
-	if($IpSecurityRestrictions -eq $null){
-		$IpSecurityRestrictions = @()
-	}
-
 	if (-not $IpAddress)
 	{
 		$IpAddress = Read-Host -Prompt "Input IP address of the $IpRestrictionName in the CIDR format, e.g.: 51.144.182.8/32"
@@ -28,7 +24,7 @@ function Add-IpRestriction {
     Write-Status "Adding a new IP restriction... "
     $WebAppConfig | Set-AzureRmResource  -ApiVersion $APIVersion -Force | Out-Null
     Write-Succeed
-    Write-Host "New allowed IP address $IpAddress has been added."
+    Write-Host "IP address $IpAddress has been whitelisted."
 }
 
 function Set-WebAppIPRestrictions {
@@ -50,6 +46,10 @@ function Set-WebAppIPRestrictions {
     $WebAppConfig = (Get-AzureRmResource -ResourceType Microsoft.Web/sites/config -ResourceName $ApiAppName -ResourceGroupName $ResourceGroupName -ApiVersion $APIVersion)
     $IpSecurityRestrictions = $WebAppConfig.Properties.ipSecurityRestrictions
  
+	if($IpSecurityRestrictions -eq $null){
+		$IpSecurityRestrictions = @()
+	}
+
 	$IpRestrictionName = ('burnformoney-' + $Environment.ToLower())
     if ($IpSecurityRestrictions -and ($IpRestrictionName -in $IpSecurityRestrictions.name)) {
         "IP address restriction for application $IpRestrictionName is already added as allowed to access $ApiAppName."         
@@ -59,7 +59,7 @@ function Set-WebAppIPRestrictions {
     }
 
 	$IpRestrictionName = "MakingWavesOffice"
-	if ($IpSecurityRestrictions -and ("MakingWavesOffice" -in $IpSecurityRestrictions.name)) {
+	if ($IpSecurityRestrictions -and ($IpRestrictionName -in $IpSecurityRestrictions.name)) {
         "IP address restriction for $IpRestrictionName is already added as allowed to access $ApiAppName."         
     }
     else {
