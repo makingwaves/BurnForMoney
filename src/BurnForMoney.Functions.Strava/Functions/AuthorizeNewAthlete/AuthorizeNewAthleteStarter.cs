@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using BurnForMoney.Functions.Shared.Extensions;
 using Microsoft.AspNetCore.Http;

@@ -64,8 +64,6 @@ namespace BurnForMoney.Functions.Strava.Functions.EventsHub
                 return token.ToObject<List<T>>();
             }
 
-            var test = token.ToObject<T>();
-
             return new List<T> { token.ToObject<T>() };
         }
 
