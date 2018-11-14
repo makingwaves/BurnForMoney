@@ -31,14 +31,15 @@ namespace BurnForMoney.Functions.Manual.Functions
             catch (Exception ex)
             {
                 log.LogError(QueueNames.AddActivity, ex.Message);
-                return new BadRequestObjectResult(ex.Message);
+                return new BadRequestObjectResult($"Validation failed. {ex.Message}.");
             }
 
             var pendingActivity = new PendingRawActivity
             {
-                SourceActivityId = model.SourceActivityId,
                 SourceAthleteId = athleteId,
+                SourceActivityId = model.SourceActivityId,
                 ActivityType = model.ActivityCategory,
+                // ReSharper disable once PossibleInvalidOperationException
                 StartDate = model.StartDate.Value,
                 DistanceInMeters = model.DistanceInMeters,
                 MovingTimeInMinutes = model.MovingTimeInMinutes,

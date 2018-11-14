@@ -5,8 +5,9 @@ namespace BurnForMoney.Functions.Functions.ActivityOperations.Dto
 {
     public class PendingActivity
     {
-        public long SourceActivityId { get; set; }
+        public int AthleteId { get; set; }
         public int SourceAthleteId { get; set; }
+        public long SourceActivityId { get; set; }
         public DateTime StartDate { get; set; }
         public string ActivityType { get; set; }
         public double DistanceInMeters { get; set; }
