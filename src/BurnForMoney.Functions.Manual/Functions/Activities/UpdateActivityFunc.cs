@@ -23,7 +23,7 @@ namespace BurnForMoney.Functions.Manual.Functions
             log.LogFunctionStart(QueueNames.UpdateActivity);
 
             var requestData = await req.ReadAsStringAsync();
-            var model = JsonConvert.DeserializeObject<AddActivityRequest>(requestData);
+            var model = JsonConvert.DeserializeObject<UpdateActivityRequest>(requestData);
             try
             {
                 ValidateRequest(model);
@@ -52,7 +52,7 @@ namespace BurnForMoney.Functions.Manual.Functions
             return new OkObjectResult("Request received.");
         }
 
-        private static void ValidateRequest(AddActivityRequest request)
+        private static void ValidateRequest(UpdateActivityRequest request)
         {
             if (request.StartDate == null)
             {
