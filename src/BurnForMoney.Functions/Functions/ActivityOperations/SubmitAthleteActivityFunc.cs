@@ -3,6 +3,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Threading.Tasks;
 using BurnForMoney.Functions.Configuration;
+using BurnForMoney.Functions.Exceptions;
 using BurnForMoney.Functions.Functions.ActivityOperations.Dto;
 using BurnForMoney.Functions.Shared.Extensions;
 using Dapper;
@@ -23,8 +24,18 @@ namespace BurnForMoney.Functions.Functions.ActivityOperations
             var configuration = ApplicationConfiguration.GetSettings(executionContext);
             using (var conn = new SqlConnection(configuration.ConnectionStrings.SqlDbConnectionString))
             {
-                var athleteId = AthleteIdsMappings.GetOrAdd(activity.SourceAthleteId,
-                    await conn.QuerySingleAsync<int>("SELECT Id FROM dbo.Athletes WHERE ExternalId=@SourceAthleteId", new {activity.SourceAthleteId}));
+                var athleteId = activity.AthleteId;
+
+                if (athleteId <= 0)
+                {
+                    athleteId = AthleteIdsMappings.GetOrAdd(activity.SourceAthleteId,
+                        await conn.QuerySingleOrDefaultAsync<int>("SELECT Id FROM dbo.Athletes WHERE ExternalId=@SourceAthleteId", new { activity.SourceAthleteId }));
+
+                    if (athleteId == 0)
+                    {
+                        throw new AthleteNotExistsException(activity.AthleteId, activity.SourceAthleteId);
+                    }
+                }
 
                 var model = new
                 {

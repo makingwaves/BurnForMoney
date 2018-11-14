@@ -15,7 +15,7 @@ namespace BurnForMoney.Functions.Manual.Functions
     public static class AddActivityFunc
     {
         [FunctionName(QueueNames.AddActivity)]
-        public static async Task<IActionResult> AddActivityAsync([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "athlete/{athleteId:int}/activities")] HttpRequest req, ExecutionContext executionContext,
+        public static async Task<IActionResult> AddActivityAsync([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "athlete/{athleteId:int:min(1)}/activities")] HttpRequest req, ExecutionContext executionContext,
             ILogger log,
             int athleteId,
             [Queue(AppQueueNames.AddActivityRequests)] CloudQueue outputQueue)
@@ -36,10 +36,9 @@ namespace BurnForMoney.Functions.Manual.Functions
 
             var pendingActivity = new PendingRawActivity
             {
-                SourceAthleteId = athleteId,
+                AthleteId = athleteId,
                 SourceActivityId = model.SourceActivityId,
                 ActivityType = model.ActivityCategory,
-                // ReSharper disable once PossibleInvalidOperationException
                 StartDate = model.StartDate.Value,
                 DistanceInMeters = model.DistanceInMeters,
                 MovingTimeInMinutes = model.MovingTimeInMinutes,
@@ -54,6 +53,10 @@ namespace BurnForMoney.Functions.Manual.Functions
 
         private static void ValidateRequest(AddActivityRequest request)
         {
+            if (request.SourceActivityId <= 0)
+            {
+                throw new ArgumentNullException(nameof(request.SourceActivityId));
+            }
             if (request.StartDate == null)
             {
                 throw new ArgumentNullException(nameof(request.StartDate));

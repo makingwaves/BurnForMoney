@@ -15,7 +15,7 @@ namespace BurnForMoney.Functions.Manual.Functions
     public static class UpdateActivityFunc
     {
         [FunctionName(QueueNames.UpdateActivity)]
-        public static async Task<IActionResult> Async([HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "athlete/{athleteId:int}/activities/{activityId:int}")] HttpRequest req, ExecutionContext executionContext,
+        public static async Task<IActionResult> Async([HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "athlete/{athleteId:int:min(1)}/activities/{activityId:long:min(1)}")] HttpRequest req, ExecutionContext executionContext,
             int athleteId, long activityId,
             ILogger log,
             [Queue(AppQueueNames.UpdateActivityRequests)] CloudQueue outputQueue)
@@ -37,7 +37,7 @@ namespace BurnForMoney.Functions.Manual.Functions
             var pendingActivity = new PendingRawActivity
             {
                 SourceAthleteId = athleteId,
-                SourceActivityId = activityId,
+                SourceActivityId = model.SourceActivityId,
                 ActivityType = model.ActivityCategory,
                 // ReSharper disable once PossibleInvalidOperationException
                 StartDate = model.StartDate.Value,
@@ -70,6 +70,7 @@ namespace BurnForMoney.Functions.Manual.Functions
 
         public class UpdateActivityRequest
         {
+            public long SourceActivityId { get; set; }
             public DateTime? StartDate { get; set; }
             public string ActivityCategory { get; set; }
             public double DistanceInMeters { get; set; }
