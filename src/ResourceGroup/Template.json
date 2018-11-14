@@ -64,8 +64,12 @@
     "stravaFunctionStorageAccountId": "[concat(resourceGroup().id,'/providers/','Microsoft.Storage/storageAccounts/', variables('stravaFunctionStorageAccountName'))]",
     "publicFunctionAppName": "[concat(variables('applicationShortName'), 'func-public-', parameters('environmentCode'))]",
     "publicFunctionHostingPlanName": "[concat(variables('applicationShortName'), 'func-public-', parameters('environmentCode'))]",
-    "publicFunctionStorageAccountName": "[concat(variables('applicationShortName'), 'func', parameters('environmentCode'))]",
-    "publicFunctionStorageAccountId": "[concat(resourceGroup().id,'/providers/','Microsoft.Storage/storageAccounts/', variables('functionStorageAccountName'))]",
+    "publicFunctionStorageAccountName": "[concat(variables('applicationShortName'), 'funcpublic', parameters('environmentCode'))]",
+    "publicFunctionStorageAccountId": "[concat(resourceGroup().id,'/providers/','Microsoft.Storage/storageAccounts/', variables('publicFunctionStorageAccountName'))]",
+    "manualFunctionAppName": "[concat(variables('applicationShortName'), 'func-manual-', parameters('environmentCode'))]",
+    "manualFunctionHostingPlanName": "[concat(variables('applicationShortName'), 'func-manual-', parameters('environmentCode'))]",
+    "manualFunctionStorageAccountName": "[concat(variables('applicationShortName'), 'funcmanual', parameters('environmentCode'))]",
+    "manualFunctionStorageAccountId": "[concat(resourceGroup().id,'/providers/','Microsoft.Storage/storageAccounts/', variables('manualFunctionStorageAccountName'))]",
     "sqlDbName": "[concat(variables('applicationName'), 'sqldb', parameters('environmentCode'))]",
     "sqlServerName": "[concat(variables('applicationName'), 'sqlserver', parameters('environmentCode'))]",
     "keyVaultName": "[concat(variables('applicationName'), 'kv', parameters('environmentCode'))]",
@@ -131,6 +135,20 @@
       }
     },
     {
+      "apiVersion": "2015-04-01",
+      "name": "[variables('manualFunctionHostingPlanName')]",
+      "type": "Microsoft.Web/serverfarms",
+      "location": "[resourceGroup().location]",
+      "tags": {
+        "displayName": "FunctionHostingPlan"
+      },
+      "properties": {
+        "name": "[variables('manualFunctionHostingPlanName')]",
+        "computeMode": "Dynamic",
+        "sku": "Dynamic"
+      }
+    },
+    {
       "apiVersion": "2015-08-01",
       "name": "[variables('webSiteName')]",
       "type": "Microsoft.Web/sites",
@@ -160,6 +178,26 @@
     {
       "apiVersion": "2016-01-01",
       "name": "[variables('stravaFunctionStorageAccountName')]",
+      "type": "Microsoft.Storage/storageAccounts",
+      "location": "[resourceGroup().location]",
+      "kind": "Storage",
+      "sku": {
+        "name": "Standard_LRS"
+      }
+    },
+    {
+      "apiVersion": "2016-01-01",
+      "name": "[variables('publicFunctionStorageAccountName')]",
+      "type": "Microsoft.Storage/storageAccounts",
+      "location": "[resourceGroup().location]",
+      "kind": "Storage",
+      "sku": {
+        "name": "Standard_LRS"
+      }
+    },
+    {
+      "apiVersion": "2016-01-01",
+      "name": "[variables('manualFunctionStorageAccountName')]",
       "type": "Microsoft.Storage/storageAccounts",
       "location": "[resourceGroup().location]",
       "kind": "Storage",
@@ -389,6 +427,69 @@
       }
     },
     {
+      "apiVersion": "2015-08-01",
+      "type": "Microsoft.Web/sites",
+      "name": "[variables('manualFunctionAppName')]",
+      "location": "[resourceGroup().location]",
+      "kind": "functionapp",
+      "identity": {
+        "type": "SystemAssigned"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/sites', variables('functionAppName'))]",
+        "[resourceId('Microsoft.Web/serverfarms', variables('manualFunctionHostingPlanName'))]",
+        "[resourceId('Microsoft.Storage/storageAccounts', variables('manualFunctionStorageAccountName'))]",
+        "[resourceId('microsoft.insights/components', variables('appInsightsName'))]"
+      ],
+      "properties": {
+        "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('manualFunctionHostingPlanName'))]",
+        "siteConfig": {
+          "appSettings": [
+            {
+              "name": "AzureWebJobsDashboard",
+              "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('manualFunctionStorageAccountName'), ';AccountKey=', listKeys(variables('manualFunctionStorageAccountid'),'2015-05-01-preview').key1)]"
+            },
+            {
+              "name": "AzureWebJobsStorage",
+              "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('manualFunctionStorageAccountName'), ';AccountKey=', listKeys(variables('manualFunctionStorageAccountid'),'2015-05-01-preview').key1)]"
+            },
+            {
+              "name": "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING",
+              "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('manualFunctionStorageAccountName'), ';AccountKey=', listKeys(variables('manualFunctionStorageAccountid'),'2015-05-01-preview').key1)]"
+            },
+            {
+              "name": "WEBSITE_CONTENTSHARE",
+              "value": "[toLower(variables('manualFunctionAppName'))]"
+            },
+            {
+              "name": "FUNCTIONS_EXTENSION_VERSION",
+              "value": "beta"
+            },
+            {
+              "name": "WEBSITE_NODE_DEFAULT_VERSION",
+              "value": "6.5.0"
+            },
+            {
+              "name": "MSDEPLOY_RENAME_LOCKED_FILES",
+              "value": "1"
+            },
+            {
+              "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
+              "value": "[reference(concat('microsoft.insights/components/', variables('appInsightsName'))).InstrumentationKey]"
+            },
+            {
+              "name": "KeyVaultName",
+              "value": "[variables('keyVaultName')]"
+            },
+            {
+              "name": "AppQueuesStorage",
+              "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('functionStorageAccountName'), ';AccountKey=', listKeys(variables('functionStorageAccountid'),'2015-05-01-preview').key1)]"
+            }
+          ]
+        }
+      }
+    },
+    {
       "comments": "Function App - Properties (CORS, etc)",
       "type": "Microsoft.Web/sites/config",
       "name": "[concat(variables('publicFunctionAppName'), '/web')]",
@@ -404,9 +505,9 @@
       ]
     },
     {
-      "comments": "Strava Function App - Properties (CORS, etc)",
+      "comments": "Manual Function App - Properties (CORS, etc)",
       "type": "Microsoft.Web/sites/config",
-      "name": "[concat(variables('stravaFunctionAppName'), '/web')]",
+      "name": "[concat(variables('manualFunctionAppName'), '/web')]",
       "apiVersion": "2018-02-01",
       "location": "[resourceGroup().location]",
       "properties": {
@@ -415,7 +516,7 @@
         }
       },
       "dependsOn": [
-        "[resourceId('Microsoft.Web/sites', variables('stravaFunctionAppName'))]"
+        "[resourceId('Microsoft.Web/sites', variables('manualFunctionAppName'))]"
       ]
     },
     {
@@ -520,6 +621,14 @@
           {
             "tenantId": "[reference(concat('Microsoft.Web/sites/', variables('publicFunctionAppName')), '2015-08-01', 'Full').identity.tenantId]",
             "objectId": "[reference(concat('Microsoft.Web/sites/', variables('publicFunctionAppName')), '2015-08-01', 'Full').identity.principalId]",
+            "permissions": {
+              "keys": [ "get", "list" ],
+              "secrets": [ "get", "list" ]
+            }
+          },
+          {
+            "tenantId": "[reference(concat('Microsoft.Web/sites/', variables('manualFunctionAppName')), '2015-08-01', 'Full').identity.tenantId]",
+            "objectId": "[reference(concat('Microsoft.Web/sites/', variables('manualFunctionAppName')), '2015-08-01', 'Full').identity.principalId]",
             "permissions": {
               "keys": [ "get", "list" ],
               "secrets": [ "get", "list" ]
