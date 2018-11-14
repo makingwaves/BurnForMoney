@@ -37,7 +37,7 @@ namespace BurnForMoney.Functions.Manual.Functions
             var pendingActivity = new PendingRawActivity
             {
                 SourceAthleteId = athleteId,
-                SourceActivityId = model.SourceActivityId,
+                SourceActivityId = activityId,
                 ActivityType = model.ActivityCategory,
                 // ReSharper disable once PossibleInvalidOperationException
                 StartDate = model.StartDate.Value,
@@ -70,7 +70,6 @@ namespace BurnForMoney.Functions.Manual.Functions
 
         public class UpdateActivityRequest
         {
-            public long SourceActivityId { get; set; }
             public DateTime? StartDate { get; set; }
             public string ActivityCategory { get; set; }
             public double DistanceInMeters { get; set; }

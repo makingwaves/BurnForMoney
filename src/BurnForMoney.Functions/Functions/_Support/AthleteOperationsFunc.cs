@@ -16,16 +16,10 @@ namespace BurnForMoney.Functions.Functions._Support
     public static class AthleteOperationsFunc
     {
         [FunctionName(FunctionsNames.Support_Athlete_Deactivate)]
-        public static async Task<IActionResult> Support_DeactivateAthlete([HttpTrigger(AuthorizationLevel.Admin, "post", Route = "support/athlete/{athleteId:int}/deactivate")]HttpRequest req, ILogger log,
-            ExecutionContext executionContext, string athleteId)
+        public static async Task<IActionResult> Support_DeactivateAthlete([HttpTrigger(AuthorizationLevel.Admin, "post", Route = "support/athlete/{athleteId:int:min(1)}/deactivate")]HttpRequest req, ILogger log,
+            ExecutionContext executionContext, int athleteId)
         {
             log.LogFunctionStart(FunctionsNames.Support_Athlete_Deactivate);
-
-            if (string.IsNullOrWhiteSpace(athleteId))
-            {
-                log.LogWarning("Function invoked with incorrect parameters. [athleteId] is null or empty.");
-                return new BadRequestObjectResult("AthleteId is required.");
-            }
 
             var connectionString = (ApplicationConfiguration.GetSettings(executionContext)).ConnectionStrings
                 .SqlDbConnectionString;
@@ -41,16 +35,10 @@ namespace BurnForMoney.Functions.Functions._Support
         }
 
         [FunctionName(FunctionsNames.Support_Athlete_Activate)]
-        public static async Task<IActionResult> Support_ActivateAthlete([HttpTrigger(AuthorizationLevel.Admin, "post", Route = "support/athlete/{athleteId:int}/activate")]HttpRequest req, ILogger log,
-            ExecutionContext executionContext, string athleteId)
+        public static async Task<IActionResult> Support_ActivateAthlete([HttpTrigger(AuthorizationLevel.Admin, "post", Route = "support/athlete/{athleteId:int:min(1)}/activate")]HttpRequest req, ILogger log,
+            ExecutionContext executionContext, int athleteId)
         {
             log.LogFunctionStart(FunctionsNames.Support_Athlete_Activate);
-
-            if (string.IsNullOrWhiteSpace(athleteId))
-            {
-                log.LogWarning("Function invoked with incorrect parameters. [athleteId] is null or empty.");
-                return new BadRequestObjectResult("AthleteId is required.");
-            }
 
             var connectionString = (ApplicationConfiguration.GetSettings(executionContext)).ConnectionStrings
                 .SqlDbConnectionString;
@@ -66,16 +54,10 @@ namespace BurnForMoney.Functions.Functions._Support
         }
 
         [FunctionName(FunctionsNames.Support_Athlete_Delete)]
-        public static async Task<IActionResult> Support_Athlete_Delete([HttpTrigger(AuthorizationLevel.Admin, "delete", Route = "support/athlete/{athleteId:int}/delete")]HttpRequest req, ILogger log,
-            ExecutionContext executionContext, string athleteId)
+        public static async Task<IActionResult> Support_Athlete_Delete([HttpTrigger(AuthorizationLevel.Admin, "delete", Route = "support/athlete/{athleteId:int:min(1)}")]HttpRequest req, ILogger log,
+            ExecutionContext executionContext, int athleteId)
         {
             log.LogFunctionStart(FunctionsNames.Support_Athlete_Delete);
-
-            if (string.IsNullOrWhiteSpace(athleteId))
-            {
-                log.LogWarning("Function invoked with incorrect parameters. [athleteId] is null or empty.");
-                return new BadRequestObjectResult("AthleteId is required.");
-            }
 
             var connectionString = (ApplicationConfiguration.GetSettings(executionContext)).ConnectionStrings
                 .SqlDbConnectionString;
@@ -92,7 +74,7 @@ namespace BurnForMoney.Functions.Functions._Support
             }
         }
 
-        private static async Task<bool> DeactivateAthleteAsync(string athleteId, string connectionString)
+        private static async Task<bool> DeactivateAthleteAsync(int athleteId, string connectionString)
         {
             using (var conn = new SqlConnection(connectionString))
             {
@@ -103,7 +85,7 @@ namespace BurnForMoney.Functions.Functions._Support
             }
         }
 
-        private static async Task DeleteAthleteAsync(string athleteId, string connectionString, ILogger log)
+        private static async Task DeleteAthleteAsync(int athleteId, string connectionString, ILogger log)
         {
             using (var conn = new SqlConnection(connectionString))
             {
@@ -131,7 +113,7 @@ namespace BurnForMoney.Functions.Functions._Support
 
                         if (affectedRows != 1)
                         {
-                            throw new FailedToDeleteAthleteException(athleteId);
+                            throw new FailedToDeleteAthleteException(athleteId.ToString());
                         }
 
                         transaction.Commit();
@@ -147,7 +129,7 @@ namespace BurnForMoney.Functions.Functions._Support
             }
         }
 
-        private static async Task<bool> ActivateAthleteAsync(string athleteId, string connectionString)
+        private static async Task<bool> ActivateAthleteAsync(int athleteId, string connectionString)
         {
             using (var conn = new SqlConnection(connectionString))
             {

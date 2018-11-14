@@ -16,7 +16,7 @@ namespace BurnForMoney.Functions.Functions._Support
     public static class ActivitiesOperationsFunc
     {
         [FunctionName(FunctionsNames.Support_Activities_CollectMonthlyStatistics)]
-        public static async Task<IActionResult> Support_Activities_CollectMonthlyStatistics([HttpTrigger(AuthorizationLevel.Admin, "get", Route = "support/activities/collectmonthlystatistics/{year}/{month}")]HttpRequest req, ILogger log,
+        public static async Task<IActionResult> Support_Activities_CollectMonthlyStatistics([HttpTrigger(AuthorizationLevel.Admin, "get", Route = "support/activities/collectmonthlystatistics/{year:int:min(2018)}/{month:range(1,12)}")]HttpRequest req, ILogger log,
             [Queue(QueueNames.CalculateMonthlyResults)] CloudQueue outputQueue, int year, int month)
         {
             log.LogFunctionStart(FunctionsNames.Support_Activities_CollectMonthlyStatistics);
@@ -50,7 +50,7 @@ namespace BurnForMoney.Functions.Functions._Support
         }
 
         [FunctionName(FunctionsNames.Support_Activities_Add)]
-        public static async Task<IActionResult> Support_Activities_Add([HttpTrigger(AuthorizationLevel.Admin, "post", Route = "support/activities/add")]HttpRequest req, ILogger log,
+        public static async Task<IActionResult> Support_Activities_Add([HttpTrigger(AuthorizationLevel.Admin, "post", Route = "support/activity")]HttpRequest req, ILogger log,
             ExecutionContext executionContext, [Queue(AppQueueNames.AddActivityRequests)] CloudQueue queue)
         {
             log.LogFunctionStart(FunctionsNames.Support_Activities_Add);
