@@ -15,8 +15,8 @@ namespace BurnForMoney.Functions.Manual.Functions
     public static class UpdateActivityFunc
     {
         [FunctionName(QueueNames.UpdateActivity)]
-        public static async Task<IActionResult> Async([HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "athlete/{athleteId:int:min(1)}/activities/{activityId:long:min(1)}")] HttpRequest req, ExecutionContext executionContext,
-            int athleteId, long activityId,
+        public static async Task<IActionResult> Async([HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "athlete/{athleteId:length(32)}/activities/{activityId:length(32)}")] HttpRequest req, ExecutionContext executionContext,
+            string athleteId, string activityId,
             ILogger log,
             [Queue(AppQueueNames.UpdateActivityRequests)] CloudQueue outputQueue)
         {
@@ -36,8 +36,8 @@ namespace BurnForMoney.Functions.Manual.Functions
 
             var pendingActivity = new PendingRawActivity
             {
-                SourceAthleteId = athleteId,
-                SourceActivityId = activityId,
+                Id = activityId,
+                ExternalId = model.ExternalId,
                 ActivityType = model.ActivityCategory,
                 StartDate = model.StartDate.Value,
                 DistanceInMeters = model.DistanceInMeters,
@@ -48,7 +48,7 @@ namespace BurnForMoney.Functions.Manual.Functions
             var output = JsonConvert.SerializeObject(pendingActivity);
             await outputQueue.AddMessageAsync(new CloudQueueMessage(output));
             log.LogFunctionEnd(QueueNames.UpdateActivity);
-            return new OkObjectResult("Request received.");
+            return new OkObjectResult(pendingActivity.Id);
         }
 
         private static void ValidateRequest(UpdateActivityRequest request)
@@ -69,6 +69,7 @@ namespace BurnForMoney.Functions.Manual.Functions
 
         public class UpdateActivityRequest
         {
+            public string ExternalId { get; set; }
             public DateTime? StartDate { get; set; }
             public string ActivityCategory { get; set; }
             public double DistanceInMeters { get; set; }

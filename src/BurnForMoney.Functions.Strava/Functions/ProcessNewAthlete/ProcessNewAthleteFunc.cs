@@ -3,10 +3,11 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Threading.Tasks;
 using BurnForMoney.Functions.Shared.Extensions;
+using BurnForMoney.Functions.Shared.Identity;
 using BurnForMoney.Functions.Strava.Configuration;
 using BurnForMoney.Functions.Strava.Exceptions;
 using BurnForMoney.Functions.Strava.Functions.AuthorizeNewAthlete.Dto;
-using BurnForMoney.Functions.Strava.Functions.Dto;
+using BurnForMoney.Functions.Strava.Functions.CollectAthleteActivities.Dto;
 using Dapper;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
@@ -31,23 +32,23 @@ namespace BurnForMoney.Functions.Strava.Functions.ProcessNewAthlete
             {
                 conn.Open();
                 
-                int athleteId;
+                string athleteId;
                 log.LogInformation(FunctionsNames.Q_ProcessNewAthlete, "Beginning a new database transaction...");
                 using (var transaction = conn.BeginTransaction())
                 {
                     try
                     {
                         athleteId = await UpsertAthlete(athlete, conn, transaction);
-                        if (athleteId < 1)
+                        if (string.IsNullOrWhiteSpace(athleteId))
                         {
-                            throw new FailedToAddNewAthleteException(athlete.AthleteId.ToString());
+                            throw new FailedToAddAthleteException(athlete.AthleteId.ToString());
                         }
                         log.LogInformation(FunctionsNames.Q_ProcessNewAthlete, $"Inserted athlete with id: {athleteId}.");
 
                         var result = await UpsertAccessToken(athleteId, athlete, conn, transaction);
                         if (!result)
                         {
-                            throw new FailedToAddAccessTokenException(athleteId.ToString());
+                            throw new FailedToAddAccessTokenException(athleteId);
                         }
                         log.LogInformation(FunctionsNames.Q_ProcessNewAthlete, $"Inserted access tokens for athlete with id: {athleteId}.");
 
@@ -74,21 +75,25 @@ namespace BurnForMoney.Functions.Strava.Functions.ProcessNewAthlete
             }
         }
 
-        private static async Task<int> UpsertAthlete(StravaAthlete athlete, IDbConnection conn, IDbTransaction transaction)
+        private static async Task<string> UpsertAthlete(StravaAthlete athlete, IDbConnection conn, IDbTransaction transaction)
         {
             const string sql = @"
-    IF EXISTS (SELECT * FROM dbo.Athletes WITH (UPDLOCK) WHERE ExternalId=@AthleteId)
+    IF EXISTS (SELECT * FROM dbo.Athletes WITH (UPDLOCK) WHERE ExternalId=@ExternalId)
       UPDATE dbo.Athletes
          SET FirstName = @FirstName, LastName = @LastName, ProfilePictureUrl = @ProfilePictureUrl, Active = @Active, System = @System
          OUTPUT INSERTED.[Id]
-       WHERE ExternalId = @AthleteId;
+       WHERE ExternalId = @ExternalId;
     ELSE 
-      INSERT INTO dbo.Athletes(ExternalId, FirstName, LastName, ProfilePictureUrl, Active, System)
+      INSERT INTO dbo.Athletes(Id, ExternalId, FirstName, LastName, ProfilePictureUrl, Active, System)
                                     OUTPUT INSERTED.[Id]
-                                    VALUES(@AthleteId, @FirstName, @LastName, @ProfilePictureUrl, @Active, @System)";
-            return await conn.QuerySingleAsync<int>(sql, new
+                                    VALUES(@Id, @ExternalId, @FirstName, @LastName, @ProfilePictureUrl, @Active, @System)";
+
+            var id = AthleteIdentity.Next();
+
+            return await conn.QuerySingleAsync<string>(sql, new
             {
-                athlete.AthleteId,
+                Id = AthleteIdentity.Next(),
+                ExternalId = athlete.AthleteId.ToString(),
                 athlete.FirstName,
                 athlete.LastName,
                 athlete.ProfilePictureUrl,
@@ -97,7 +102,7 @@ namespace BurnForMoney.Functions.Strava.Functions.ProcessNewAthlete
             }, transaction);
         }
 
-        private static async Task<bool> UpsertAccessToken(int athleteId, StravaAthlete athlete, IDbConnection conn, IDbTransaction transaction)
+        private static async Task<bool> UpsertAccessToken(string athleteId, StravaAthlete athlete, IDbConnection conn, IDbTransaction transaction)
         {
             const string sql = @"
     IF EXISTS (SELECT * FROM dbo.[Strava.AccessTokens] WITH (UPDLOCK) WHERE AthleteId=@AthleteId)

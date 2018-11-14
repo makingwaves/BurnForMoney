@@ -14,16 +14,16 @@ namespace BurnForMoney.Functions.Functions.ActivityOperations
     {
         [FunctionName(FunctionsNames.Q_DeleteActivity)]
         public static async Task Q_DeleteActivity(ILogger log, ExecutionContext executionContext,
-            [QueueTrigger(AppQueueNames.DeleteActivityRequests)] long activityId)
+            [QueueTrigger(AppQueueNames.DeleteActivityRequests)] string activityId)
         {
             log.LogFunctionStart(FunctionsNames.Q_DeleteActivity);
             var configuration = ApplicationConfiguration.GetSettings(executionContext);
             using (var conn = new SqlConnection(configuration.ConnectionStrings.SqlDbConnectionString))
             {
-                var affectedRows = await conn.ExecuteAsync(@"DELETE FROM dbo.Activities WHERE ActivityId=@ActivityId", new { ActivityId = activityId });
+                var affectedRows = await conn.ExecuteAsync(@"DELETE FROM dbo.Activities WHERE Id=@Id", new { Id = activityId });
                 if (affectedRows == 0)
                 {
-                    throw new FailedToDeleteActivityException(activityId.ToString());
+                    throw new FailedToDeleteActivityException(activityId);
                 }
             }
             log.LogFunctionEnd(FunctionsNames.Q_DeleteActivity);

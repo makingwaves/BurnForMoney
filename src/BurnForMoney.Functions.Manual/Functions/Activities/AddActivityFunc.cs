@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using BurnForMoney.Functions.Shared.Extensions;
+using BurnForMoney.Functions.Shared.Identity;
 using BurnForMoney.Functions.Shared.Queues;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -15,9 +16,9 @@ namespace BurnForMoney.Functions.Manual.Functions
     public static class AddActivityFunc
     {
         [FunctionName(QueueNames.AddActivity)]
-        public static async Task<IActionResult> AddActivityAsync([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "athlete/{athleteId:int:min(1)}/activities")] HttpRequest req, ExecutionContext executionContext,
+        public static async Task<IActionResult> AddActivityAsync([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "athlete/{athleteId:length(32)}/activities")] HttpRequest req, ExecutionContext executionContext,
             ILogger log,
-            int athleteId,
+            string athleteId,
             [Queue(AppQueueNames.AddActivityRequests)] CloudQueue outputQueue)
         {
             log.LogFunctionStart(QueueNames.AddActivity);
@@ -36,8 +37,9 @@ namespace BurnForMoney.Functions.Manual.Functions
 
             var pendingActivity = new PendingRawActivity
             {
+                Id = ActivityIdentity.Next(),
                 AthleteId = athleteId,
-                SourceActivityId = model.SourceActivityId,
+                ExternalId = model.ExternalId,
                 ActivityType = model.ActivityCategory,
                 StartDate = model.StartDate.Value,
                 DistanceInMeters = model.DistanceInMeters,
@@ -48,15 +50,11 @@ namespace BurnForMoney.Functions.Manual.Functions
             var output = JsonConvert.SerializeObject(pendingActivity);
             await outputQueue.AddMessageAsync(new CloudQueueMessage(output));
             log.LogFunctionEnd(QueueNames.AddActivity);
-            return new OkObjectResult("Request received.");
+            return new OkObjectResult(pendingActivity.Id);
         }
 
         private static void ValidateRequest(AddActivityRequest request)
         {
-            if (request.SourceActivityId <= 0)
-            {
-                throw new ArgumentNullException(nameof(request.SourceActivityId));
-            }
             if (request.StartDate == null)
             {
                 throw new ArgumentNullException(nameof(request.StartDate));
@@ -74,7 +72,7 @@ namespace BurnForMoney.Functions.Manual.Functions
 
     public class AddActivityRequest
     {
-        public long SourceActivityId { get; set; }
+        public string ExternalId { get; set; }
         public DateTime? StartDate { get; set; }
         public string ActivityCategory { get; set; }
         public double DistanceInMeters { get; set; }

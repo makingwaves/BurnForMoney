@@ -2,7 +2,7 @@
 {
     public class ActivityData
     {
-        public int AthleteId { get; set; }
-        public long ActivityId { get; set; }
+        public string AthleteId { get; set; }
+        public string ActivityId { get; set; }
     }
 }

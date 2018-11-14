@@ -14,7 +14,7 @@ namespace BurnForMoney.Functions.Functions.ActivityOperations
 {
     public static class SubmitAthleteActivityFunc
     {
-        private static readonly ConcurrentDictionary<int, int> AthleteIdsMappings = new ConcurrentDictionary<int, int>();
+        private static readonly ConcurrentDictionary<string, string> AthleteIdsMappings = new ConcurrentDictionary<string, string>();
 
         [FunctionName(FunctionsNames.Q_SubmitAthleteActivity)]
         public static async Task Q_SubmitAthleteActivityAsync(ILogger log, ExecutionContext executionContext, [QueueTrigger(QueueNames.PendingActivities)] PendingActivity activity)
@@ -26,21 +26,22 @@ namespace BurnForMoney.Functions.Functions.ActivityOperations
             {
                 var athleteId = activity.AthleteId;
 
-                if (athleteId <= 0)
+                if (string.IsNullOrWhiteSpace(athleteId))
                 {
-                    athleteId = AthleteIdsMappings.GetOrAdd(activity.SourceAthleteId,
-                        await conn.QuerySingleOrDefaultAsync<int>("SELECT Id FROM dbo.Athletes WHERE ExternalId=@SourceAthleteId", new { activity.SourceAthleteId }));
+                    athleteId = AthleteIdsMappings.GetOrAdd(activity.ExternalAthleteId,
+                        await conn.QuerySingleOrDefaultAsync<string>("SELECT Id FROM dbo.Athletes WHERE ExternalId=@ExternalAthleteId", new { activity.ExternalAthleteId }));
 
-                    if (athleteId == 0)
+                    if (string.IsNullOrWhiteSpace(athleteId))
                     {
-                        throw new AthleteNotExistsException(activity.AthleteId, activity.SourceAthleteId);
+                        throw new AthleteNotExistsException(activity.AthleteId, activity.ExternalAthleteId);
                     }
                 }
 
                 var model = new
                 {
+                    activity.Id,
                     AthleteId = athleteId,
-                    ActivityId = activity.SourceActivityId,
+                    activity.ExternalId,
                     ActivityTime = activity.StartDate,
                     activity.ActivityType,
                     Distance = activity.DistanceInMeters,
@@ -55,11 +56,11 @@ namespace BurnForMoney.Functions.Functions.ActivityOperations
 
                 if (affectedRows > 0)
                 {
-                    log.LogInformation(FunctionsNames.Q_SubmitAthleteActivity, $"Activity with id: {model.ActivityId} has been added.");
+                    log.LogInformation(FunctionsNames.Q_SubmitAthleteActivity, $"Activity with id: {model.Id} has been added.");
                 }
                 else
                 {
-                    log.LogWarning(FunctionsNames.Q_SubmitAthleteActivity, $"Failed to save activity with id: {model.ActivityId}.");
+                    log.LogWarning(FunctionsNames.Q_SubmitAthleteActivity, $"Failed to save activity with id: {model.Id}.");
                 }
             }
             log.LogFunctionEnd(FunctionsNames.Q_SubmitAthleteActivity);

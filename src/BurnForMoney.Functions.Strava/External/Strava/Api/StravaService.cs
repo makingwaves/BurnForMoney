@@ -59,7 +59,7 @@ namespace BurnForMoney.Functions.Strava.External.Strava.Api
             return TokenRefreshResult.FromJson(response.Content);
         }
         
-        public StravaActivity GetActivity(string accessToken, long activityId)
+        public StravaActivity GetActivity(string accessToken, string activityId)
         {
             var request = new RestRequest($"api/v3/activities/{activityId}");
             request.AddQueryParameter("access_token", accessToken);

@@ -4,12 +4,13 @@ using System.Globalization;
 using System.Threading.Tasks;
 using BurnForMoney.Functions.Shared.Extensions;
 using BurnForMoney.Functions.Shared.Helpers;
+using BurnForMoney.Functions.Shared.Identity;
 using BurnForMoney.Functions.Shared.Queues;
 using BurnForMoney.Functions.Strava.Configuration;
 using BurnForMoney.Functions.Strava.Exceptions;
 using BurnForMoney.Functions.Strava.External.Strava.Api;
 using BurnForMoney.Functions.Strava.External.Strava.Api.Exceptions;
-using BurnForMoney.Functions.Strava.Functions.Dto;
+using BurnForMoney.Functions.Strava.Functions.CollectAthleteActivities.Dto;
 using Dapper;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
@@ -60,8 +61,9 @@ WHERE AthleteId = @AthleteId AND IsValid=1", new { input.AthleteId });
                 {
                     var pendingActivity = new PendingRawActivity
                     {
-                        SourceActivityId = stravaActivity.Id,
-                        SourceAthleteId = stravaActivity.Athlete.Id,
+                        Id = ActivityIdentity.Next(),
+                        ExternalId = stravaActivity.Id.ToString(),
+                        ExternalAthleteId = stravaActivity.Athlete.Id.ToString(),
                         ActivityType = stravaActivity.Type.ToString(),
                         StartDate = stravaActivity.StartDate,
                         DistanceInMeters = stravaActivity.Distance,
@@ -72,7 +74,6 @@ WHERE AthleteId = @AthleteId AND IsValid=1", new { input.AthleteId });
                     var json = JsonConvert.SerializeObject(pendingActivity);
                     var message = new CloudQueueMessage(json);
                     await pendingRawActivitiesQueue.AddMessageAsync(message);
-                    log.LogFunctionEnd(FunctionsNames.Q_CollectAthleteActivities);
                 }
             }
             catch (UnauthorizedRequestException ex)
@@ -80,6 +81,7 @@ WHERE AthleteId = @AthleteId AND IsValid=1", new { input.AthleteId });
                 log.LogError(ex, ex.Message);
                 await unauthorizedAccessTokensQueue.AddMessageAsync(new CloudQueueMessage(encryptedAccessToken));
             }
+            log.LogFunctionEnd(FunctionsNames.Q_CollectAthleteActivities);
         }
 
         private static DateTime GetFirstDayOfTheMonth(DateTime dateTime)

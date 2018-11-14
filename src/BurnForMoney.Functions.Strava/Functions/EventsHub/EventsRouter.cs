@@ -4,6 +4,7 @@ using System.Data.SqlClient;
 using System.Threading.Tasks;
 using BurnForMoney.Functions.Shared.Extensions;
 using BurnForMoney.Functions.Shared.Helpers;
+using BurnForMoney.Functions.Shared.Identity;
 using BurnForMoney.Functions.Shared.Queues;
 using BurnForMoney.Functions.Strava.Configuration;
 using BurnForMoney.Functions.Strava.Exceptions;
@@ -33,8 +34,8 @@ namespace BurnForMoney.Functions.Strava.Functions.EventsHub
 
             var message = new ActivityData
             {
-                AthleteId = @event.OwnerId,
-                ActivityId = @event.ObjectId
+                AthleteId = @event.OwnerId.ToString(),
+                ActivityId = @event.ObjectId.ToString()
             };
             var json = JsonConvert.SerializeObject(message);
 
@@ -118,8 +119,9 @@ namespace BurnForMoney.Functions.Strava.Functions.EventsHub
             var activity = StravaService.GetActivity(accessToken, @event.ActivityId);
             var pendingActivity = new PendingRawActivity
             {
-                SourceActivityId = activity.Id,
-                SourceAthleteId = activity.Athlete.Id,
+                Id = ActivityIdentity.Next(),
+                ExternalId = activity.Id.ToString(),
+                ExternalAthleteId = activity.Athlete.Id.ToString(),
                 ActivityType = activity.Type.ToString(),
                 StartDate = activity.StartDate,
                 DistanceInMeters = activity.Distance,
@@ -146,8 +148,8 @@ namespace BurnForMoney.Functions.Strava.Functions.EventsHub
             var activity = StravaService.GetActivity(accessToken, @event.ActivityId);
             var pendingActivity = new PendingRawActivity
             {
-                SourceActivityId = activity.Id,
-                SourceAthleteId = activity.Athlete.Id,
+                ExternalId = activity.Id.ToString(),
+                ExternalAthleteId = activity.Athlete.Id.ToString(),
                 ActivityType = activity.Type.ToString(),
                 StartDate = activity.StartDate,
                 DistanceInMeters = activity.Distance,
@@ -161,7 +163,7 @@ namespace BurnForMoney.Functions.Strava.Functions.EventsHub
             log.LogFunctionEnd(FunctionsNames.Events_UpdateActivity);
         }
 
-        private static async Task<string> GetAccessToken(int athleteId, ConfigurationRoot configuration)
+        private static async Task<string> GetAccessToken(string athleteId, ConfigurationRoot configuration)
         {
             string accessToken;
             using (var conn = new SqlConnection(configuration.ConnectionStrings.SqlDbConnectionString))

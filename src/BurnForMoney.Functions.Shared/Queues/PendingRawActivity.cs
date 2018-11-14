@@ -4,9 +4,12 @@ namespace BurnForMoney.Functions.Shared.Queues
 {
     public class PendingRawActivity
     {
-        public int AthleteId { get; set; }
-        public int SourceAthleteId { get; set; }
-        public long SourceActivityId { get; set; }
+        public string Id { get; set; }
+        public string ExternalId { get; set; }
+
+        public string AthleteId { get; set; }
+        public string ExternalAthleteId { get; set; }
+
         public DateTime StartDate { get; set; }
         public string ActivityType { get; set; }
         public double DistanceInMeters { get; set; }

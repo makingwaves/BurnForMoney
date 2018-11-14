@@ -1,11 +1,11 @@
-﻿using System.Net.Mail;
+﻿using System.Data;
 
 namespace BurnForMoney.Functions.Exceptions
 {
-    public class AthleteNotExistsException : SmtpException
+    public class AthleteNotExistsException : DataException
     {
-        public AthleteNotExistsException(int athleteId, int sourceAthleteId)
-            : base($"Athlete with id: [{athleteId}], external id: [{sourceAthleteId}] does not exists.")
+        public AthleteNotExistsException(string athleteId, string externalAthleteId)
+            : base($"Athlete with id: [{athleteId}], external id: [{externalAthleteId}] does not exists.")
         {
         }
     }

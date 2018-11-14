@@ -24,9 +24,10 @@ namespace BurnForMoney.Functions.Functions.ActivityOperations.Processors
 
             var activity = new PendingActivity
             {
+                Id = raw.Id,
+                ExternalId = raw.ExternalId,
                 AthleteId = raw.AthleteId,
-                SourceAthleteId = raw.SourceAthleteId,
-                SourceActivityId = raw.SourceActivityId,
+                ExternalAthleteId = raw.ExternalAthleteId,
                 StartDate = raw.StartDate,
                 ActivityType = raw.ActivityType,
                 DistanceInMeters = raw.DistanceInMeters,

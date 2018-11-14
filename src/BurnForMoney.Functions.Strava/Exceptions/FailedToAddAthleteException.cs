@@ -2,9 +2,9 @@
 
 namespace BurnForMoney.Functions.Strava.Exceptions
 {
-    public class FailedToAddNewAthleteException : DataException
+    public class FailedToAddAthleteException : DataException
     {
-        public FailedToAddNewAthleteException(string athleteExternalId)
+        public FailedToAddAthleteException(string athleteExternalId)
             : base($"Failed to add a new athlete: [{athleteExternalId}].")
         {
         }
