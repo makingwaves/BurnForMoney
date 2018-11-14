@@ -31,11 +31,11 @@ namespace BurnForMoney.Functions.Functions.ActivityOperations
                     activity.Points
                 };
 
-                var sql = "UPDATE dbo.Activities SET ActivityTime=@ActivityTime, ActivityType=@ActivityType, Distance=@Distance, MovingTime=@MovingTime, Category=@Category, Points=@Points WHERE ActivityId=@ActivityId";
+                const string sql = "UPDATE dbo.Activities SET ActivityTime=@ActivityTime, ActivityType=@ActivityType, Distance=@Distance, MovingTime=@MovingTime, Category=@Category, Points=@Points WHERE ActivityId=@ActivityId";
                 var affectedRows = await conn.ExecuteAsync(sql, model)
                     .ConfigureAwait(false);
 
-                if (affectedRows > 0)
+                if (affectedRows == 1)
                 {
                     log.LogInformation(FunctionsNames.Q_SubmitAthleteActivity, $"Activity with id: {model.ActivityId} has been updated.");
                 }

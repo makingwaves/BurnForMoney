@@ -12,12 +12,12 @@ using Newtonsoft.Json;
 
 namespace BurnForMoney.Functions.Functions.ActivityOperations
 {
-    public static class ProcessNewRawActivityFunc
+    public class ProcessRawUpdatedActivityFunc
     {
-        [FunctionName(FunctionsNames.Q_ProcessRawActivity)]
-        public static async Task ProcessNewActivity(ILogger log, ExecutionContext executionContext,
-            [QueueTrigger(AppQueueNames.AddActivityRequests)] PendingRawActivity rawActivity,
-            [Queue(QueueNames.PendingActivities)] CloudQueue pendingActivitiesQueue)
+        [FunctionName(FunctionsNames.Q_ProcessRawUpdatedActivity)]
+        public static async Task ProcessUpdatedActivity(ILogger log, ExecutionContext executionContext,
+            [QueueTrigger(AppQueueNames.UpdateActivityRequests)] PendingRawActivity rawActivity,
+            [Queue(QueueNames.PendingActivitiesUpdates)] CloudQueue pendingActivityUpdatesQueue)
         {
             log.LogFunctionStart(FunctionsNames.Q_ProcessRawActivity);
             if (rawActivity.Source != "Strava")
@@ -42,7 +42,7 @@ namespace BurnForMoney.Functions.Functions.ActivityOperations
             };
 
             var json = JsonConvert.SerializeObject(activity);
-            await pendingActivitiesQueue.AddMessageAsync(new CloudQueueMessage(json));
+            await pendingActivityUpdatesQueue.AddMessageAsync(new CloudQueueMessage(json));
             log.LogFunctionEnd(FunctionsNames.Q_ProcessRawActivity);
         }
     }
