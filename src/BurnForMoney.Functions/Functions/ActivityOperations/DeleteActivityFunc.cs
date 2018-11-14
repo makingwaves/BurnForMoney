@@ -14,17 +14,29 @@ namespace BurnForMoney.Functions.Functions.ActivityOperations
     {
         [FunctionName(FunctionsNames.Q_DeleteActivity)]
         public static async Task Q_DeleteActivity(ILogger log, ExecutionContext executionContext,
-            [QueueTrigger(AppQueueNames.DeleteActivityRequests)] string activityId)
+            [QueueTrigger(AppQueueNames.DeleteActivityRequests)] DeleteActivityRequest deleteRequest)
         {
             log.LogFunctionStart(FunctionsNames.Q_DeleteActivity);
             var configuration = ApplicationConfiguration.GetSettings(executionContext);
             using (var conn = new SqlConnection(configuration.ConnectionStrings.SqlDbConnectionString))
             {
-                var affectedRows = await conn.ExecuteAsync(@"DELETE FROM dbo.Activities WHERE Id=@Id", new { Id = activityId });
-                if (affectedRows == 0)
+                if (!string.IsNullOrWhiteSpace(deleteRequest.Id))
                 {
-                    throw new FailedToDeleteActivityException(activityId);
+                    var affectedRows = await conn.ExecuteAsync(@"DELETE FROM dbo.Activities WHERE Id=@Id", new { deleteRequest.Id });
+                    if (affectedRows == 0)
+                    {
+                        throw new FailedToDeleteActivityException(deleteRequest.Id);
+                    }
                 }
+                else if (!string.IsNullOrWhiteSpace(deleteRequest.ExternalId))
+                {
+                    var affectedRows = await conn.ExecuteAsync(@"DELETE FROM dbo.Activities WHERE ExternalId=@ExternalId", new { deleteRequest.ExternalId });
+                    if (affectedRows == 0)
+                    {
+                        throw new FailedToDeleteActivityException(deleteRequest.ExternalId);
+                    }
+                }
+
             }
             log.LogFunctionEnd(FunctionsNames.Q_DeleteActivity);
         }

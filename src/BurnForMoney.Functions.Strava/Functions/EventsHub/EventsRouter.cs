@@ -192,7 +192,8 @@ WHERE Athletes.ExternalId=@AthleteId AND Tokens.IsValid=1", new { AthleteId = at
         {
             log.LogFunctionStart(FunctionsNames.Events_DeleteActivity);
 
-            var message = new CloudQueueMessage(@event.ActivityId.ToString());
+            var json = JsonConvert.SerializeObject(new DeleteActivityRequest { ExternalId = @event.ActivityId });
+            var message = new CloudQueueMessage(json);
             await deleteActivtiesQueue.AddMessageAsync(message);
             log.LogFunctionEnd(FunctionsNames.Events_DeleteActivity);
         }
