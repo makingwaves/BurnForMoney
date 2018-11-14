@@ -11,12 +11,5 @@ namespace BurnForMoney.Functions.Shared.Queues
         public double DistanceInMeters { get; set; }
         public double MovingTimeInMinutes { get; set; }
         public string Source { get; set; }
-        public ActivityOperation ActivityOperation { get; set; } = ActivityOperation.Create;
-    }
-
-    public enum ActivityOperation
-    {
-        Create,
-        Update
     }
 }

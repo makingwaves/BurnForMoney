@@ -9,7 +9,7 @@ namespace BurnForMoney.Functions.Manual.Functions
     public static class UpdateActivityFunc
     {
         [FunctionName("UpdateActivity")]
-        public static IActionResult UpdateActivity([HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "activities/{activityId:int}")] HttpRequest req, ExecutionContext executionContext)
+        public static IActionResult UpdateActivity([HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "athlete/{athleteId:int}/activities/{activityId:int}")] HttpRequest req, ExecutionContext executionContext)
         {
             throw new NotImplementedException();
         }

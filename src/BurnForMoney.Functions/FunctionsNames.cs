@@ -6,6 +6,7 @@ namespace BurnForMoney.Functions
     public static class FunctionsNames
     {
         public const string Q_ProcessRawActivity = "Q_ProcessRawActivity";
+        public const string Q_ProcessRawUpdatedActivity = "Q_ProcessRawUpdatedActivity";
         public const string Q_DeleteActivity = "Q_DeleteActivity";
         public const string Q_SubmitAthleteActivity = "Q_SubmitAthleteActivity";
 

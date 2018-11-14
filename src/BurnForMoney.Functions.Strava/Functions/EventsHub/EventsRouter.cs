@@ -108,7 +108,7 @@ namespace BurnForMoney.Functions.Strava.Functions.EventsHub
         [FunctionName(FunctionsNames.Events_NewActivity)]
         public static async Task Events_NewActivity([QueueTrigger(QueueNames.StravaEventsActivityAdd)] ActivityData @event,
             ILogger log, ExecutionContext executionContext,
-            [Queue(AppQueueNames.UpsertRawActivitiesRequests, Connection = "AppQueuesStorage")] CloudQueue pendingRawActivitiesQueue)
+            [Queue(AppQueueNames.AddActivityRequests, Connection = "AppQueuesStorage")] CloudQueue pendingRawActivitiesQueue)
         {
             log.LogFunctionStart(FunctionsNames.Events_NewActivity);
 
@@ -124,8 +124,7 @@ namespace BurnForMoney.Functions.Strava.Functions.EventsHub
                 StartDate = activity.StartDate,
                 DistanceInMeters = activity.Distance,
                 MovingTimeInMinutes = UnitsConverter.ConvertSecondsToMinutes(activity.MovingTime),
-                Source = "Strava",
-                ActivityOperation = ActivityOperation.Create
+                Source = "Strava"
             };
 
             var json = JsonConvert.SerializeObject(pendingActivity);
@@ -137,7 +136,7 @@ namespace BurnForMoney.Functions.Strava.Functions.EventsHub
         [FunctionName(FunctionsNames.Events_UpdateActivity)]
         public static async Task Events_UpdateActivity([QueueTrigger(QueueNames.StravaEventsActivityUpdate)] ActivityData @event,
             ILogger log, ExecutionContext executionContext,
-            [Queue(AppQueueNames.UpsertRawActivitiesRequests, Connection = "AppQueuesStorage")] CloudQueue pendingRawActivitiesQueue)
+            [Queue(AppQueueNames.UpdateActivityRequests, Connection = "AppQueuesStorage")] CloudQueue pendingRawActivitiesQueue)
         {
             log.LogFunctionStart(FunctionsNames.Events_UpdateActivity);
 
@@ -153,8 +152,7 @@ namespace BurnForMoney.Functions.Strava.Functions.EventsHub
                 StartDate = activity.StartDate,
                 DistanceInMeters = activity.Distance,
                 MovingTimeInMinutes = UnitsConverter.ConvertSecondsToMinutes(activity.MovingTime),
-                Source = "Strava",
-                ActivityOperation = ActivityOperation.Update
+                Source = "Strava"
             };
 
             var json = JsonConvert.SerializeObject(pendingActivity);

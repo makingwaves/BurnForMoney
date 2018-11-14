@@ -9,7 +9,7 @@ namespace BurnForMoney.Functions.Manual.Functions
     public static class AddActivityFunc
     {
         [FunctionName("AddActivity")]
-        public static IActionResult AddActivity([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "activities")] HttpRequest req, ExecutionContext executionContext)
+        public static IActionResult AddActivity([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "/athlete/{athleteId:int}/activities")] HttpRequest req, ExecutionContext executionContext)
         {
             throw new NotImplementedException();
         }

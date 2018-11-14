@@ -51,7 +51,7 @@ namespace BurnForMoney.Functions.Functions._Support
 
         [FunctionName(FunctionsNames.Support_Activities_Add)]
         public static async Task<IActionResult> Support_Activities_Add([HttpTrigger(AuthorizationLevel.Admin, "post", Route = "support/activities/add")]HttpRequest req, ILogger log,
-            ExecutionContext executionContext, [Queue(AppQueueNames.UpsertRawActivitiesRequests)] CloudQueue queue)
+            ExecutionContext executionContext, [Queue(AppQueueNames.AddActivityRequests)] CloudQueue queue)
         {
             log.LogFunctionStart(FunctionsNames.Support_Activities_Add);
 
