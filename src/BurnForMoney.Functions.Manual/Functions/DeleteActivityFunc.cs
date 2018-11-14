@@ -10,7 +10,7 @@ namespace BurnForMoney.Functions.Manual.Functions
 {
     public static class DeleteActivityFunc
     {
-        [FunctionName("DeleteActivity")]
+        [FunctionName(QueueNames.DeleteActivity)]
         public static IActionResult DeleteActivity([HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "athlete/{athleteId:int}/activities/{activityId:int}")] HttpRequest req, ExecutionContext executionContext, int activityId,
             [Queue(AppQueueNames.DeleteActivityRequests)] CloudQueue outputQueue)
         {

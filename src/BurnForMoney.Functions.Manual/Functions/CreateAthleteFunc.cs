@@ -8,7 +8,7 @@ namespace BurnForMoney.Functions.Manual.Functions
 {
     public static class CreateAthleteFunc
     {
-        [FunctionName("CreateAthlete")]
+        [FunctionName(QueueNames.AddAthlete)]
         public static IActionResult CreateAthlete([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "athlete")] HttpRequest req, ExecutionContext executionContext)
         {
             throw new NotImplementedException();

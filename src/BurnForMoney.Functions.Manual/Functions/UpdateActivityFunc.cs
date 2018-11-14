@@ -10,7 +10,7 @@ namespace BurnForMoney.Functions.Manual.Functions
 {
     public static class UpdateActivityFunc
     {
-        [FunctionName("UpdateActivity")]
+        [FunctionName(QueueNames.UpdateActivity)]
         public static IActionResult UpdateActivity([HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "athlete/{athleteId:int}/activities/{activityId:int}")] HttpRequest req, ExecutionContext executionContext,
             [Queue(AppQueueNames.UpdateActivityRequests)] CloudQueue outputQueue)
         {
