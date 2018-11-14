@@ -1,6 +1,8 @@
 ﻿using System.Threading.Tasks;
 using BurnForMoney.Functions.Exceptions;
+using BurnForMoney.Functions.Functions.ActivityOperations.ActivityMappers;
 using BurnForMoney.Functions.Functions.ActivityOperations.Dto;
+using BurnForMoney.Functions.Functions.ActivityOperations.Points;
 using BurnForMoney.Functions.Shared.Extensions;
 using BurnForMoney.Functions.Shared.Queues;
 using Microsoft.Azure.WebJobs;
@@ -15,8 +17,7 @@ namespace BurnForMoney.Functions.Functions.ActivityOperations
         [FunctionName(FunctionsNames.Q_ProcessRawActivity)]
         public static async Task ProcessNewActivity(ILogger log, ExecutionContext executionContext,
             [QueueTrigger(AppQueueNames.AddActivityRequests)] PendingRawActivity rawActivity,
-            [Queue(QueueNames.PendingActivities)] CloudQueue pendingActivitiesQueue,
-            [Queue(QueueNames.PendingActivitiesUpdates)] CloudQueue pendingActivityUpdatesQueue)
+            [Queue(QueueNames.PendingActivities)] CloudQueue pendingActivitiesQueue)
         {
             log.LogFunctionStart(FunctionsNames.Q_ProcessRawActivity);
             if (rawActivity.Source != "Strava")

@@ -9,6 +9,7 @@ namespace BurnForMoney.Functions
         public const string Q_ProcessRawUpdatedActivity = "Q_ProcessRawUpdatedActivity";
         public const string Q_DeleteActivity = "Q_DeleteActivity";
         public const string Q_SubmitAthleteActivity = "Q_SubmitAthleteActivity";
+        public const string Q_UpdateAthleteActivity = "Q_UpdateAthleteActivity";
 
         public const string T_CalculateMonthlyAthleteResults = "T_CalculateMonthlyAthleteResults";
         public const string T_CalculateMonthlyAthleteResultsFromPreviousMonth = "T_CalculateMonthlyAthleteResultsFromPreviousMonth";

@@ -1,6 +1,6 @@
 ﻿using BurnForMoney.Functions.Shared;
 
-namespace BurnForMoney.Functions.Functions.ActivityOperations
+namespace BurnForMoney.Functions.Functions.ActivityOperations.ActivityMappers
 {
     public static class StravaActivityMapper
     {
