@@ -18,10 +18,10 @@ namespace BurnForMoney.Functions.Functions.Notifications
         private static SendGridClient _sendGridClient;
         private static string _emailTemplate;
 
-        [FunctionName(FunctionsNames.NotificationsGateway)]
+        [FunctionName(FunctionsNames.Q_NotificationsGateway)]
         public static async Task SendEmail([QueueTrigger(AppQueueNames.NotificationsToSend)] Notification notification, ILogger log, ExecutionContext context)
         {
-            log.LogFunctionStart(FunctionsNames.NotificationsGateway);
+            log.LogFunctionStart(FunctionsNames.Q_NotificationsGateway);
             var configuration = ApplicationConfiguration.GetSettings(context);
 
             if (_sendGridClient == null)
@@ -43,13 +43,13 @@ namespace BurnForMoney.Functions.Functions.Notifications
 
             if (response.StatusCode == HttpStatusCode.Accepted || response.StatusCode == HttpStatusCode.OK)
             {
-                log.LogInformation(FunctionsNames.NotificationsGateway, "The message has been sent.");
+                log.LogInformation(FunctionsNames.Q_NotificationsGateway, "The message has been sent.");
             }
             else
             {
                 throw new EmailException(string.Join(", ", notification.Recipients), response.StatusCode.ToString());
             }
-            log.LogFunctionEnd(FunctionsNames.NotificationsGateway);
+            log.LogFunctionEnd(FunctionsNames.Q_NotificationsGateway);
         }
 
         private static string ApplyTemplate(string content, ExecutionContext context)

@@ -7,7 +7,7 @@ using Dapper;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 
-namespace BurnForMoney.Functions.Strava.Functions
+namespace BurnForMoney.Functions.Strava.Functions.HandleExpiredTokens
 {
     public static class HandleExpiredTokensFunc
     {

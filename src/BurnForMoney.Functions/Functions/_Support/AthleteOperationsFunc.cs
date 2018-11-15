@@ -15,11 +15,11 @@ namespace BurnForMoney.Functions.Functions._Support
 {
     public static class AthleteOperationsFunc
     {
-        [FunctionName(FunctionsNames.Support_Athlete_Deactivate)]
+        [FunctionName(SupportFunctionsNames.DeactivateAthlete)]
         public static async Task<IActionResult> Support_DeactivateAthlete([HttpTrigger(AuthorizationLevel.Admin, "post", Route = "support/athlete/{athleteId:int:min(1)}/deactivate")]HttpRequest req, ILogger log,
             ExecutionContext executionContext, int athleteId)
         {
-            log.LogFunctionStart(FunctionsNames.Support_Athlete_Deactivate);
+            log.LogFunctionStart(SupportFunctionsNames.DeactivateAthlete);
 
             var connectionString = (ApplicationConfiguration.GetSettings(executionContext)).ConnectionStrings
                 .SqlDbConnectionString;
@@ -30,15 +30,15 @@ namespace BurnForMoney.Functions.Functions._Support
                 return new OkObjectResult($"Athlete with id: {athleteId} has been deactivated.");
             }
 
-            log.LogFunctionEnd(FunctionsNames.Support_Athlete_Deactivate);
+            log.LogFunctionEnd(SupportFunctionsNames.DeactivateAthlete);
             return new BadRequestResult();
         }
 
-        [FunctionName(FunctionsNames.Support_Athlete_Activate)]
+        [FunctionName(SupportFunctionsNames.ActivateAthlete)]
         public static async Task<IActionResult> Support_ActivateAthlete([HttpTrigger(AuthorizationLevel.Admin, "post", Route = "support/athlete/{athleteId:int:min(1)}/activate")]HttpRequest req, ILogger log,
             ExecutionContext executionContext, int athleteId)
         {
-            log.LogFunctionStart(FunctionsNames.Support_Athlete_Activate);
+            log.LogFunctionStart(SupportFunctionsNames.ActivateAthlete);
 
             var connectionString = (ApplicationConfiguration.GetSettings(executionContext)).ConnectionStrings
                 .SqlDbConnectionString;
@@ -49,15 +49,15 @@ namespace BurnForMoney.Functions.Functions._Support
                 return new OkObjectResult($"Athlete with id: {athleteId} has been activated.");
             }
 
-            log.LogFunctionEnd(FunctionsNames.Support_Athlete_Activate);
+            log.LogFunctionEnd(SupportFunctionsNames.ActivateAthlete);
             return new BadRequestResult();
         }
 
-        [FunctionName(FunctionsNames.Support_Athlete_Delete)]
+        [FunctionName(SupportFunctionsNames.DeleteAthlete)]
         public static async Task<IActionResult> Support_Athlete_Delete([HttpTrigger(AuthorizationLevel.Admin, "delete", Route = "support/athlete/{athleteId:int:min(1)}")]HttpRequest req, ILogger log,
             ExecutionContext executionContext, int athleteId)
         {
-            log.LogFunctionStart(FunctionsNames.Support_Athlete_Delete);
+            log.LogFunctionStart(SupportFunctionsNames.DeleteAthlete);
 
             var connectionString = (ApplicationConfiguration.GetSettings(executionContext)).ConnectionStrings
                 .SqlDbConnectionString;
@@ -65,7 +65,7 @@ namespace BurnForMoney.Functions.Functions._Support
             try
             {
                 await DeleteAthleteAsync(athleteId, connectionString, log);
-                log.LogFunctionEnd(FunctionsNames.Support_Athlete_Delete);
+                log.LogFunctionEnd(SupportFunctionsNames.DeleteAthlete);
                 return new OkObjectResult($"Athlete with id: {athleteId} has been deleted.");
             }
             catch (Exception ex)

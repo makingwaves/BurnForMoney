@@ -11,12 +11,12 @@ namespace BurnForMoney.Functions.Functions._Support
 {
     public static class QueueOperationsFunc
     {
-        [FunctionName(FunctionsNames.Support_ReprocessPoisonQueueMessages)]
+        [FunctionName(SupportFunctionsNames.ReprocessPoisonQueueMessages)]
         public static async Task<IActionResult> Support_ReprocessPoisonQueueMessages([HttpTrigger(AuthorizationLevel.Admin, "put", Route = "support/reprocessQueueMessages/{queueName}")]HttpRequest req, ILogger log,
             [Queue("{queueName}")] CloudQueue queue,
             [Queue("{queueName}-poison")] CloudQueue poisonQueue, string queueName)
         {
-            log.LogFunctionStart(FunctionsNames.Support_ReprocessPoisonQueueMessages);
+            log.LogFunctionStart(SupportFunctionsNames.ReprocessPoisonQueueMessages);
 
             int.TryParse(req.Query["messageCount"], out var messageCountParameter);
             var messageCount = messageCountParameter == 0 ? 10 : messageCountParameter;
@@ -36,7 +36,7 @@ namespace BurnForMoney.Functions.Functions._Support
                 processedMessages++;
             }
 
-            log.LogFunctionEnd(FunctionsNames.Support_ReprocessPoisonQueueMessages);
+            log.LogFunctionEnd(SupportFunctionsNames.ReprocessPoisonQueueMessages);
             return new OkObjectResult($"Reprocessed {processedMessages} messages from the {poisonQueue.Name} queue.");
         }
     }
