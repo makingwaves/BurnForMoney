@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
 using System.Threading.Tasks;
 using BurnForMoney.Functions.Shared.Extensions;
+using BurnForMoney.Functions.Shared.Persistence;
 using BurnForMoney.Functions.Strava.Configuration;
 using BurnForMoney.Functions.Strava.Functions.CollectAthleteActivities.Dto;
 using Dapper;
@@ -28,7 +28,7 @@ namespace BurnForMoney.Functions.Strava.Functions._Support
             var configuration = ApplicationConfiguration.GetSettings(executionContext);
 
             IEnumerable<string> ids;
-            using (var conn = new SqlConnection(configuration.ConnectionStrings.SqlDbConnectionString))
+            using (var conn = SqlConnectionFactory.Create(configuration.ConnectionStrings.SqlDbConnectionString))
             {
                 ids = await conn.QueryAsync<string>("SELECT Id FROM dbo.Athletes WHERE Active=1");
             }

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
 using BurnForMoney.Functions.PublicApi.Configuration;
@@ -47,7 +46,7 @@ namespace BurnForMoney.Functions.PublicApi.Functions
         private static async Task<object> GetTotalNumbersAsync(ExecutionContext executionContext)
         {
             var configuration = ApplicationConfiguration.GetSettings(executionContext);
-            using (var conn = new SqlConnection(configuration.ConnectionStrings.SqlDbConnectionString))
+            using (var conn = SqlConnectionFactory.Create(configuration.ConnectionStrings.SqlDbConnectionString))
             {
                 var jsonResults = await conn.QueryAsync<(string date, string json)>("SELECT Date, Results FROM dbo.[MonthlyResultsSnapshots]")
                     .ConfigureAwait(false);

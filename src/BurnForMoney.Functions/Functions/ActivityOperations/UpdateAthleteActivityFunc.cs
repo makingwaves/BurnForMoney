@@ -1,10 +1,10 @@
 ﻿using System.Collections.Concurrent;
-using System.Data.SqlClient;
 using System.Threading.Tasks;
 using BurnForMoney.Functions.Configuration;
 using BurnForMoney.Functions.Exceptions;
 using BurnForMoney.Functions.Functions.ActivityOperations.Dto;
 using BurnForMoney.Functions.Shared.Extensions;
+using BurnForMoney.Functions.Shared.Persistence;
 using Dapper;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
@@ -21,7 +21,7 @@ namespace BurnForMoney.Functions.Functions.ActivityOperations
             log.LogFunctionStart(FunctionsNames.Q_SubmitAthleteActivity);
 
             var configuration = ApplicationConfiguration.GetSettings(executionContext);
-            using (var conn = new SqlConnection(configuration.ConnectionStrings.SqlDbConnectionString))
+            using (var conn = SqlConnectionFactory.Create(configuration.ConnectionStrings.SqlDbConnectionString))
             {
                 var activityId = activity.Id;
                 if (string.IsNullOrWhiteSpace(activityId))

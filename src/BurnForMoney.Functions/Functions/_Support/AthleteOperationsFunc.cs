@@ -1,9 +1,9 @@
 ﻿using System;
-using System.Data.SqlClient;
 using System.Threading.Tasks;
 using BurnForMoney.Functions.Configuration;
 using BurnForMoney.Functions.Exceptions;
 using BurnForMoney.Functions.Shared.Extensions;
+using BurnForMoney.Functions.Shared.Persistence;
 using Dapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -76,7 +76,7 @@ namespace BurnForMoney.Functions.Functions._Support
 
         private static async Task<bool> DeactivateAthleteAsync(int athleteId, string connectionString)
         {
-            using (var conn = new SqlConnection(connectionString))
+            using (var conn = SqlConnectionFactory.Create(connectionString))
             {
                 var affectedRows = await conn.ExecuteAsync(
                     "UPDATE dbo.[Strava.Athletes] SET Active='0' WHERE AthleteId=@AthleteId",
@@ -87,7 +87,7 @@ namespace BurnForMoney.Functions.Functions._Support
 
         private static async Task DeleteAthleteAsync(int athleteId, string connectionString, ILogger log)
         {
-            using (var conn = new SqlConnection(connectionString))
+            using (var conn = SqlConnectionFactory.Create(connectionString))
             {
                 conn.Open();
 
@@ -131,7 +131,7 @@ namespace BurnForMoney.Functions.Functions._Support
 
         private static async Task<bool> ActivateAthleteAsync(int athleteId, string connectionString)
         {
-            using (var conn = new SqlConnection(connectionString))
+            using (var conn = SqlConnectionFactory.Create(connectionString))
             {
                 var affectedRows = await conn.ExecuteAsync(
                     "UPDATE dbo.[Strava.Athletes] SET Active='1' WHERE AthleteId=@AthleteId",
