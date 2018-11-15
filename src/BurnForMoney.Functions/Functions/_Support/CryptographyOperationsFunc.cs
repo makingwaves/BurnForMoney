@@ -13,7 +13,7 @@ namespace BurnForMoney.Functions.Functions._Support
     public static class CryptographyOperationsFunc
     {
         [FunctionName(SupportFunctionsNames.EncryptText)]
-        public static async Task<IActionResult> EncryptStringAsync([HttpTrigger(AuthorizationLevel.Admin, "post", Route = "support/encryptstring")]HttpRequest req, ILogger log, ExecutionContext context)
+        public static async Task<IActionResult> EncryptText([HttpTrigger(AuthorizationLevel.Admin, "post", Route = "support/encryptstring")]HttpRequest req, ILogger log, ExecutionContext context)
         {
             log.LogFunctionStart(SupportFunctionsNames.EncryptText);
 
@@ -36,7 +36,7 @@ namespace BurnForMoney.Functions.Functions._Support
         }
 
         [FunctionName(SupportFunctionsNames.DecryptText)]
-        public static async Task<IActionResult> DecryptStringAsync([HttpTrigger(AuthorizationLevel.Admin, "post", Route = "support/decryptstring")]HttpRequest req, ILogger log, ExecutionContext context)
+        public static async Task<IActionResult> DecryptText([HttpTrigger(AuthorizationLevel.Admin, "post", Route = "support/decryptstring")]HttpRequest req, ILogger log, ExecutionContext context)
         {
             log.LogFunctionStart(SupportFunctionsNames.DecryptText);
 

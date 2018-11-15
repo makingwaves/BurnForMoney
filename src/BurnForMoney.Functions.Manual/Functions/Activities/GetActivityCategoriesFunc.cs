@@ -13,11 +13,11 @@ namespace BurnForMoney.Functions.Manual.Functions.Activities
     {
         private static readonly string[] ActivityCategories = Enum.GetNames(typeof(ActivityCategory));
 
-        [FunctionName(QueueNames.GetActivityCategories)]
+        [FunctionName(FunctionsNames.GetActivityCategories)]
         public static IActionResult GetActivityCategories([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "activities/categories")] HttpRequest req, ILogger log, ExecutionContext executionContext)
         {
-            log.LogFunctionStart(QueueNames.GetActivityCategories);
-            log.LogFunctionEnd(QueueNames.GetActivityCategories);
+            log.LogFunctionStart(FunctionsNames.GetActivityCategories);
+            log.LogFunctionEnd(FunctionsNames.GetActivityCategories);
             return new OkObjectResult(ActivityCategories);
         }
     }

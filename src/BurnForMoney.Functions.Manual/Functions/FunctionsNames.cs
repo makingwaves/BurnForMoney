@@ -1,6 +1,6 @@
 ﻿namespace BurnForMoney.Functions.Manual
 {
-    public static class QueueNames
+    public static class FunctionsNames
     {
         public const string AddActivity = "AddActivity";
         public const string UpdateActivity = "UpdateActivity";

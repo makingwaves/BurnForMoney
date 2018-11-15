@@ -13,17 +13,17 @@ namespace BurnForMoney.Functions.Manual.Functions.Activities
 {
     public static class DeleteActivityFunc
     {
-        [FunctionName(QueueNames.DeleteActivity)]
+        [FunctionName(FunctionsNames.DeleteActivity)]
         public static async Task<IActionResult> DeleteActivity([HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "athlete/{athleteId:length(32)}/activities/{activityId:length(32)}")] HttpRequest req,
             ExecutionContext executionContext, string activityId,
             ILogger log,
             [Queue(AppQueueNames.DeleteActivityRequests)] CloudQueue outputQueue)
         {
-            log.LogFunctionStart(QueueNames.DeleteActivity);
+            log.LogFunctionStart(FunctionsNames.DeleteActivity);
 
             var json = JsonConvert.SerializeObject(new DeleteActivityRequest { Id = activityId });
             await outputQueue.AddMessageAsync(new CloudQueueMessage(json));
-            log.LogFunctionEnd(QueueNames.DeleteActivity);
+            log.LogFunctionEnd(FunctionsNames.DeleteActivity);
             return new OkObjectResult("Request received.");
         }
     }

@@ -12,11 +12,11 @@ namespace BurnForMoney.Functions.Manual.Functions.Athletes
 {
     public static class CreateAthleteFunc
     {
-        [FunctionName(QueueNames.AddAthlete)]
+        [FunctionName(FunctionsNames.AddAthlete)]
         public static async Task<IActionResult> CreateAthleteAsync([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "athlete")] HttpRequest req, ExecutionContext executionContext,
             ILogger log)
         {
-            log.LogFunctionStart(QueueNames.AddAthlete);
+            log.LogFunctionStart(FunctionsNames.AddAthlete);
 
             var requestData = await req.ReadAsStringAsync();
             var model = JsonConvert.DeserializeObject<CreateAthleteRequest>(requestData);
@@ -26,13 +26,13 @@ namespace BurnForMoney.Functions.Manual.Functions.Athletes
             }
             catch (Exception ex)
             {
-                log.LogError(QueueNames.AddAthlete, ex.Message);
+                log.LogError(FunctionsNames.AddAthlete, ex.Message);
                 return new BadRequestObjectResult($"Validation failed. {ex.Message}.");
             }
 
             throw new NotImplementedException();
 
-            log.LogFunctionEnd(QueueNames.AddAthlete);
+            log.LogFunctionEnd(FunctionsNames.AddAthlete);
             return new OkObjectResult("Request received");
         }
 

@@ -14,7 +14,7 @@ namespace BurnForMoney.Functions.Functions._Support
     public static class ActivitiesOperationsFunc
     {
         [FunctionName(SupportFunctionsNames.CollectMonthlyStatistics)]
-        public static async Task<IActionResult> Support_Activities_CollectMonthlyStatistics([HttpTrigger(AuthorizationLevel.Admin, "get", Route = "support/activities/collectmonthlystatistics/{year:int:min(2018)}/{month:range(1,12)}")]HttpRequest req, ILogger log,
+        public static async Task<IActionResult> CollectMonthlyStatistics([HttpTrigger(AuthorizationLevel.Admin, "get", Route = "support/activities/collectmonthlystatistics/{year:int:min(2018)}/{month:range(1,12)}")]HttpRequest req, ILogger log,
             [Queue(QueueNames.CalculateMonthlyResults)] CloudQueue outputQueue, int year, int month)
         {
             log.LogFunctionStart(SupportFunctionsNames.CollectMonthlyStatistics);

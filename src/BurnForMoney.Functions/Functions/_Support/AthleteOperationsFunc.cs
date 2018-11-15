@@ -16,7 +16,7 @@ namespace BurnForMoney.Functions.Functions._Support
     public static class AthleteOperationsFunc
     {
         [FunctionName(SupportFunctionsNames.DeactivateAthlete)]
-        public static async Task<IActionResult> Support_DeactivateAthlete([HttpTrigger(AuthorizationLevel.Admin, "post", Route = "support/athlete/{athleteId:int:min(1)}/deactivate")]HttpRequest req, ILogger log,
+        public static async Task<IActionResult> DeactivateAthlete([HttpTrigger(AuthorizationLevel.Admin, "post", Route = "support/athlete/{athleteId:int:min(1)}/deactivate")]HttpRequest req, ILogger log,
             ExecutionContext executionContext, int athleteId)
         {
             log.LogFunctionStart(SupportFunctionsNames.DeactivateAthlete);
@@ -35,7 +35,7 @@ namespace BurnForMoney.Functions.Functions._Support
         }
 
         [FunctionName(SupportFunctionsNames.ActivateAthlete)]
-        public static async Task<IActionResult> Support_ActivateAthlete([HttpTrigger(AuthorizationLevel.Admin, "post", Route = "support/athlete/{athleteId:int:min(1)}/activate")]HttpRequest req, ILogger log,
+        public static async Task<IActionResult> ActivateAthlete([HttpTrigger(AuthorizationLevel.Admin, "post", Route = "support/athlete/{athleteId:int:min(1)}/activate")]HttpRequest req, ILogger log,
             ExecutionContext executionContext, int athleteId)
         {
             log.LogFunctionStart(SupportFunctionsNames.ActivateAthlete);
@@ -54,7 +54,7 @@ namespace BurnForMoney.Functions.Functions._Support
         }
 
         [FunctionName(SupportFunctionsNames.DeleteAthlete)]
-        public static async Task<IActionResult> Support_Athlete_Delete([HttpTrigger(AuthorizationLevel.Admin, "delete", Route = "support/athlete/{athleteId:int:min(1)}")]HttpRequest req, ILogger log,
+        public static async Task<IActionResult> DeleteAthlete([HttpTrigger(AuthorizationLevel.Admin, "delete", Route = "support/athlete/{athleteId:int:min(1)}")]HttpRequest req, ILogger log,
             ExecutionContext executionContext, int athleteId)
         {
             log.LogFunctionStart(SupportFunctionsNames.DeleteAthlete);

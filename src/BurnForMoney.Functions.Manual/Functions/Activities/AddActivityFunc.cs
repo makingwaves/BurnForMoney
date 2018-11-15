@@ -15,13 +15,13 @@ namespace BurnForMoney.Functions.Manual.Functions.Activities
 {
     public static class AddActivityFunc
     {
-        [FunctionName(QueueNames.AddActivity)]
+        [FunctionName(FunctionsNames.AddActivity)]
         public static async Task<IActionResult> AddActivityAsync([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "athlete/{athleteId:length(32)}/activities")] HttpRequest req, ExecutionContext executionContext,
             ILogger log,
             string athleteId,
             [Queue(AppQueueNames.AddActivityRequests)] CloudQueue outputQueue)
         {
-            log.LogFunctionStart(QueueNames.AddActivity);
+            log.LogFunctionStart(FunctionsNames.AddActivity);
 
             var requestData = await req.ReadAsStringAsync();
             var model = JsonConvert.DeserializeObject<AddActivityRequest>(requestData);
@@ -31,7 +31,7 @@ namespace BurnForMoney.Functions.Manual.Functions.Activities
             }
             catch (Exception ex)
             {
-                log.LogError(QueueNames.AddActivity, ex.Message);
+                log.LogError(FunctionsNames.AddActivity, ex.Message);
                 return new BadRequestObjectResult($"Validation failed. {ex.Message}.");
             }
 
@@ -49,7 +49,7 @@ namespace BurnForMoney.Functions.Manual.Functions.Activities
 
             var output = JsonConvert.SerializeObject(pendingActivity);
             await outputQueue.AddMessageAsync(new CloudQueueMessage(output));
-            log.LogFunctionEnd(QueueNames.AddActivity);
+            log.LogFunctionEnd(FunctionsNames.AddActivity);
             return new OkObjectResult(pendingActivity.Id);
         }
 
