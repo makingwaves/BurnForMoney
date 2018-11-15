@@ -1,18 +1,24 @@
-﻿using System;
-using System.Data;
-using Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling;
+﻿using System.Data;
+using System.Data.SqlClient;
 
 namespace BurnForMoney.Functions.Shared.Persistence
 {
     public class SqlConnectionFactory
     {
+        public const int ConnectRetryCount = 6;
+        public const int ConnectRetryInterval = 5;
+        public const int ConnectionTimeout = 30;
+
         public static IDbConnection Create(string connectionString)
         {
-            var retryStrategy = new Incremental(5, TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(3));
-            var retryPolicy =
-                new RetryPolicy<SqlDatabaseTransientErrorDetectionStrategy>(retryStrategy);
+            return new SqlConnection(connectionString);
+        }
 
-            return new ReliableSqlConnection(connectionString, retryPolicy);
+        public static IDbConnection CreateWithRetry(string connectionString)
+        {
+            connectionString += $";ConnectRetryCount={ConnectRetryCount};ConnectRetryInterval={ConnectRetryInterval};Connection Timeout={ConnectionTimeout};";
+
+            return Create(connectionString);
         }
     }
 }

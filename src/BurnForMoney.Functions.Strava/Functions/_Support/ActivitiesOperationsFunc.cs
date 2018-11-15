@@ -28,7 +28,7 @@ namespace BurnForMoney.Functions.Strava.Functions._Support
             var configuration = ApplicationConfiguration.GetSettings(executionContext);
 
             IEnumerable<string> ids;
-            using (var conn = SqlConnectionFactory.Create(configuration.ConnectionStrings.SqlDbConnectionString))
+            using (var conn = SqlConnectionFactory.CreateWithRetry(configuration.ConnectionStrings.SqlDbConnectionString))
             {
                 ids = await conn.QueryAsync<string>("SELECT Id FROM dbo.Athletes WHERE Active=1");
             }

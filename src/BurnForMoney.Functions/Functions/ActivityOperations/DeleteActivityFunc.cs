@@ -18,7 +18,7 @@ namespace BurnForMoney.Functions.Functions.ActivityOperations
         {
             log.LogFunctionStart(FunctionsNames.Q_DeleteActivity);
             var configuration = ApplicationConfiguration.GetSettings(executionContext);
-            using (var conn = SqlConnectionFactory.Create(configuration.ConnectionStrings.SqlDbConnectionString))
+            using (var conn = SqlConnectionFactory.CreateWithRetry(configuration.ConnectionStrings.SqlDbConnectionString))
             {
                 if (!string.IsNullOrWhiteSpace(deleteRequest.Id))
                 {

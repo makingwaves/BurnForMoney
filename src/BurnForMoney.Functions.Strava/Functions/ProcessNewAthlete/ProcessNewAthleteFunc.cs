@@ -28,7 +28,7 @@ namespace BurnForMoney.Functions.Strava.Functions.ProcessNewAthlete
 
             var configuration = ApplicationConfiguration.GetSettings(executionContext);
 
-            using (var conn = SqlConnectionFactory.Create(configuration.ConnectionStrings.SqlDbConnectionString))
+            using (var conn = SqlConnectionFactory.CreateWithRetry(configuration.ConnectionStrings.SqlDbConnectionString))
             {
                 conn.Open();
                 
@@ -88,8 +88,6 @@ namespace BurnForMoney.Functions.Strava.Functions.ProcessNewAthlete
                                     OUTPUT INSERTED.[Id]
                                     VALUES(@Id, @ExternalId, @FirstName, @LastName, @ProfilePictureUrl, @Active, @System)";
 
-            var id = AthleteIdentity.Next();
-
             return await conn.QuerySingleAsync<string>(sql, new
             {
                 Id = AthleteIdentity.Next(),
@@ -107,7 +105,7 @@ namespace BurnForMoney.Functions.Strava.Functions.ProcessNewAthlete
             const string sql = @"
     IF EXISTS (SELECT * FROM dbo.[Strava.AccessTokens] WITH (UPDLOCK) WHERE AthleteId=@AthleteId)
       UPDATE dbo.[Strava.AccessTokens]
-         SET AccessToken = @AccessToken, RefreshToken = @RefreshToken, ExpiresAt = @ExpiresAt
+         SET AccessToken = @AccessToken, RefreshToken = @RefreshToken, ExpiresAt = @ExpiresAt, IsValid=1
        WHERE AthleteId = @AthleteId;
     ELSE 
       INSERT INTO dbo.[Strava.AccessTokens](AthleteId, AccessToken, RefreshToken, ExpiresAt)

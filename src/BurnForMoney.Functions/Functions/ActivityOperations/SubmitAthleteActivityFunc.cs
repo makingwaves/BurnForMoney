@@ -22,7 +22,7 @@ namespace BurnForMoney.Functions.Functions.ActivityOperations
             log.LogFunctionStart(FunctionsNames.Q_SubmitAthleteActivity);
 
             var configuration = ApplicationConfiguration.GetSettings(executionContext);
-            using (var conn = SqlConnectionFactory.Create(configuration.ConnectionStrings.SqlDbConnectionString))
+            using (var conn = SqlConnectionFactory.CreateWithRetry(configuration.ConnectionStrings.SqlDbConnectionString))
             {
                 var athleteId = activity.AthleteId;
 

@@ -1,11 +1,11 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 
-namespace BurnForMoney.Functions
+namespace BurnForMoney.Functions.Functions._Support
 {
     [SuppressMessage("ReSharper", "InconsistentNaming")]
     public static class SupportFunctionsNames
     {
-        public const string Prefix = "_Support_";
+        public const string Prefix = "Support_";
 
         public const string CollectMonthlyStatistics = Prefix + "CollectMonthlyStatistics";
         public const string ActivateAthlete = Prefix + "ActivateAthlete";

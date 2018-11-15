@@ -18,7 +18,7 @@ namespace BurnForMoney.Functions.Strava.Functions.HandleExpiredTokens
             log.LogFunctionStart(FunctionsNames.Q_DeactivateExpiredAccessTokens);
 
             var configuration = ApplicationConfiguration.GetSettings(executionContext);
-            using (var conn = SqlConnectionFactory.Create(configuration.ConnectionStrings.SqlDbConnectionString))
+            using (var conn = SqlConnectionFactory.CreateWithRetry(configuration.ConnectionStrings.SqlDbConnectionString))
             {
                 var affectedRows = await conn.ExecuteAsync(@"IF (Select ExpiresAt from dbo.[Strava.AccessTokens] WHERE AccessToken=@AccessToken) < @DateNow
                                             UPDATE dbo.[Strava.AccessTokens] SET IsValid=0 WHERE AccessToken=@AccessToken",

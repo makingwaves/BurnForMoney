@@ -8,7 +8,7 @@
     "Email:ReportsReceiver": "pawel.maga@makingwaves.com",
     "Email:DefaultRecipient": "pawel.maga@makingwaves.com",
     "KeyVaultName": "burnformoneykvdev",
-    "ConnectionStrings:Sql": "Data Source=(LocalDB)\\.;Initial Catalog=BurnForMoney;Integrated Security=True"
+    "ConnectionStrings:Sql": "Data Source=(LocalDB)\\.;Initial Catalog=BurnForMoney;Integrated Security=True;"
   },
   "Host": {
     "LocalHttpPort": 7071

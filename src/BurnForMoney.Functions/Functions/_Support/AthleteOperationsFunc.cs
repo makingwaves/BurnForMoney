@@ -76,7 +76,7 @@ namespace BurnForMoney.Functions.Functions._Support
 
         private static async Task<bool> DeactivateAthleteAsync(int athleteId, string connectionString)
         {
-            using (var conn = SqlConnectionFactory.Create(connectionString))
+            using (var conn = SqlConnectionFactory.CreateWithRetry(connectionString))
             {
                 var affectedRows = await conn.ExecuteAsync(
                     "UPDATE dbo.[Strava.Athletes] SET Active='0' WHERE AthleteId=@AthleteId",
@@ -87,7 +87,7 @@ namespace BurnForMoney.Functions.Functions._Support
 
         private static async Task DeleteAthleteAsync(int athleteId, string connectionString, ILogger log)
         {
-            using (var conn = SqlConnectionFactory.Create(connectionString))
+            using (var conn = SqlConnectionFactory.CreateWithRetry(connectionString))
             {
                 conn.Open();
 
@@ -131,7 +131,7 @@ namespace BurnForMoney.Functions.Functions._Support
 
         private static async Task<bool> ActivateAthleteAsync(int athleteId, string connectionString)
         {
-            using (var conn = SqlConnectionFactory.Create(connectionString))
+            using (var conn = SqlConnectionFactory.CreateWithRetry(connectionString))
             {
                 var affectedRows = await conn.ExecuteAsync(
                     "UPDATE dbo.[Strava.Athletes] SET Active='1' WHERE AthleteId=@AthleteId",

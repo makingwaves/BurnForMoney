@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 
-namespace BurnForMoney.Functions.Strava
+namespace BurnForMoney.Functions.Strava.Functions
 {
     [SuppressMessage("ReSharper", "InconsistentNaming")]
     public static class FunctionsNames
