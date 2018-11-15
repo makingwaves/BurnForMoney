@@ -22,8 +22,10 @@ namespace BurnForMoney.Functions.Functions.ResultsSnapshots
             log.LogFunctionStart(FunctionsNames.Q_CalculateMonthlyAthleteResults);
 
             var configuration = ApplicationConfiguration.GetSettings(executionContext);
-            using (var conn = SqlConnectionFactory.CreateWithRetry(configuration.ConnectionStrings.SqlDbConnectionString))
+            using (var conn = SqlConnectionFactory.Create(configuration.ConnectionStrings.SqlDbConnectionString))
             {
+                await conn.OpenWithRetryAsync();
+
                 var activities = (await conn.QueryAsync<Activity>(
                         @"SELECT AthleteId, Athletes.FirstName as AthleteFirstName, Athletes.LastName as AthleteLastName, Distance, MovingTime, Category, Points 
 FROM dbo.[Activities] AS Activities

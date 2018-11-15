@@ -16,8 +16,8 @@ namespace BurnForMoney.Functions.Functions._Support
     public static class AthleteOperationsFunc
     {
         [FunctionName(SupportFunctionsNames.DeactivateAthlete)]
-        public static async Task<IActionResult> DeactivateAthlete([HttpTrigger(AuthorizationLevel.Admin, "post", Route = "support/athlete/{athleteId:int:min(1)}/deactivate")]HttpRequest req, ILogger log,
-            ExecutionContext executionContext, int athleteId)
+        public static async Task<IActionResult> DeactivateAthlete([HttpTrigger(AuthorizationLevel.Admin, "post", Route = "support/athlete/{athleteId:length(32)}/deactivate")]HttpRequest req, ILogger log,
+            ExecutionContext executionContext, string athleteId)
         {
             log.LogFunctionStart(SupportFunctionsNames.DeactivateAthlete);
 
@@ -35,8 +35,8 @@ namespace BurnForMoney.Functions.Functions._Support
         }
 
         [FunctionName(SupportFunctionsNames.ActivateAthlete)]
-        public static async Task<IActionResult> ActivateAthlete([HttpTrigger(AuthorizationLevel.Admin, "post", Route = "support/athlete/{athleteId:int:min(1)}/activate")]HttpRequest req, ILogger log,
-            ExecutionContext executionContext, int athleteId)
+        public static async Task<IActionResult> ActivateAthlete([HttpTrigger(AuthorizationLevel.Admin, "post", Route = "support/athlete/{athleteId:length(32)}/activate")]HttpRequest req, ILogger log,
+            ExecutionContext executionContext, string athleteId)
         {
             log.LogFunctionStart(SupportFunctionsNames.ActivateAthlete);
 
@@ -74,12 +74,14 @@ namespace BurnForMoney.Functions.Functions._Support
             }
         }
 
-        private static async Task<bool> DeactivateAthleteAsync(int athleteId, string connectionString)
+        private static async Task<bool> DeactivateAthleteAsync(string athleteId, string connectionString)
         {
-            using (var conn = SqlConnectionFactory.CreateWithRetry(connectionString))
+            using (var conn = SqlConnectionFactory.Create(connectionString))
             {
+                await conn.OpenWithRetryAsync();
+
                 var affectedRows = await conn.ExecuteAsync(
-                    "UPDATE dbo.[Strava.Athletes] SET Active='0' WHERE AthleteId=@AthleteId",
+                    "UPDATE dbo.[Strava.Athletes] SET Active='0' WHERE Id=@AthleteId",
                     new { AthleteId = athleteId });
                 return affectedRows == 1;
             }
@@ -87,9 +89,9 @@ namespace BurnForMoney.Functions.Functions._Support
 
         private static async Task DeleteAthleteAsync(int athleteId, string connectionString, ILogger log)
         {
-            using (var conn = SqlConnectionFactory.CreateWithRetry(connectionString))
+            using (var conn = SqlConnectionFactory.Create(connectionString))
             {
-                conn.Open();
+                await conn.OpenWithRetryAsync();
 
                 log.LogInformation("Beginning a new database transaction...");
                 using (var transaction = conn.BeginTransaction())
@@ -129,12 +131,14 @@ namespace BurnForMoney.Functions.Functions._Support
             }
         }
 
-        private static async Task<bool> ActivateAthleteAsync(int athleteId, string connectionString)
+        private static async Task<bool> ActivateAthleteAsync(string athleteId, string connectionString)
         {
-            using (var conn = SqlConnectionFactory.CreateWithRetry(connectionString))
+            using (var conn = SqlConnectionFactory.Create(connectionString))
             {
+                await conn.OpenWithRetryAsync();
+
                 var affectedRows = await conn.ExecuteAsync(
-                    "UPDATE dbo.[Strava.Athletes] SET Active='1' WHERE AthleteId=@AthleteId",
+                    "UPDATE dbo.[Strava.Athletes] SET Active='1' WHERE Id=@AthleteId",
                     new { AthleteId = athleteId });
                 return affectedRows == 1;
             }

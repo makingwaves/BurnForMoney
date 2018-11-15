@@ -18,8 +18,10 @@ namespace BurnForMoney.Functions.Functions.ActivityOperations
         {
             log.LogFunctionStart(FunctionsNames.Q_DeleteActivity);
             var configuration = ApplicationConfiguration.GetSettings(executionContext);
-            using (var conn = SqlConnectionFactory.CreateWithRetry(configuration.ConnectionStrings.SqlDbConnectionString))
+            using (var conn = SqlConnectionFactory.Create(configuration.ConnectionStrings.SqlDbConnectionString))
             {
+                await conn.OpenWithRetryAsync();
+
                 if (!string.IsNullOrWhiteSpace(deleteRequest.Id))
                 {
                     var affectedRows = await conn.ExecuteAsync(@"DELETE FROM dbo.Activities WHERE Id=@Id", new { deleteRequest.Id });

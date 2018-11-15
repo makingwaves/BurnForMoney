@@ -46,8 +46,10 @@ namespace BurnForMoney.Functions.PublicApi.Functions
         private static async Task<object> GetTotalNumbersAsync(ExecutionContext executionContext)
         {
             var configuration = ApplicationConfiguration.GetSettings(executionContext);
-            using (var conn = SqlConnectionFactory.CreateWithRetry(configuration.ConnectionStrings.SqlDbConnectionString))
+            using (var conn = SqlConnectionFactory.Create(configuration.ConnectionStrings.SqlDbConnectionString))
             {
+                await conn.OpenWithRetryAsync();
+
                 var jsonResults = await conn.QueryAsync<(string date, string json)>("SELECT Date, Results FROM dbo.[MonthlyResultsSnapshots]")
                     .ConfigureAwait(false);
 

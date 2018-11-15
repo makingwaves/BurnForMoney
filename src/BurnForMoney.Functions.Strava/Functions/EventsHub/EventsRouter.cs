@@ -81,8 +81,10 @@ namespace BurnForMoney.Functions.Strava.Functions.EventsHub
 
             var configuration = ApplicationConfiguration.GetSettings(executionContext);
 
-            using (var conn = SqlConnectionFactory.CreateWithRetry(configuration.ConnectionStrings.SqlDbConnectionString))
+            using (var conn = SqlConnectionFactory.Create(configuration.ConnectionStrings.SqlDbConnectionString))
             {
+                await conn.OpenWithRetryAsync();
+
                 var affectedRows = await conn.ExecuteAsync(@"UPDATE dbo.Athletes SET Active=0 WHERE ExternalId=@AthleteId", new { @event.AthleteId });
 
                 if (affectedRows == 1)
@@ -166,8 +168,10 @@ namespace BurnForMoney.Functions.Strava.Functions.EventsHub
         private static async Task<string> GetAccessToken(string athleteId, ConfigurationRoot configuration)
         {
             string accessToken;
-            using (var conn = SqlConnectionFactory.CreateWithRetry(configuration.ConnectionStrings.SqlDbConnectionString))
+            using (var conn = SqlConnectionFactory.Create(configuration.ConnectionStrings.SqlDbConnectionString))
             {
+                await conn.OpenWithRetryAsync();
+
                 accessToken = await conn.QuerySingleOrDefaultAsync<string>(@"SELECT AccessToken 
 FROM dbo.[Strava.AccessTokens] AS Tokens
 INNER JOIN dbo.Athletes AS Athletes ON (Athletes.Id = Tokens.AthleteId)

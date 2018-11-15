@@ -28,9 +28,9 @@ namespace BurnForMoney.Functions.Strava.Functions.ProcessNewAthlete
 
             var configuration = ApplicationConfiguration.GetSettings(executionContext);
 
-            using (var conn = SqlConnectionFactory.CreateWithRetry(configuration.ConnectionStrings.SqlDbConnectionString))
+            using (var conn = SqlConnectionFactory.Create(configuration.ConnectionStrings.SqlDbConnectionString))
             {
-                conn.Open();
+                await conn.OpenWithRetryAsync();
                 
                 string athleteId;
                 log.LogInformation(FunctionsNames.Q_ProcessNewAthlete, "Beginning a new database transaction...");

@@ -33,8 +33,10 @@ namespace BurnForMoney.Functions.Functions.Reports
             var lastMonth = DateTime.UtcNow.AddMonths(-1);
 
             string json;
-            using (var conn = SqlConnectionFactory.CreateWithRetry(configuration.ConnectionStrings.SqlDbConnectionString))
+            using (var conn = SqlConnectionFactory.Create(configuration.ConnectionStrings.SqlDbConnectionString))
             {
+                await conn.OpenWithRetryAsync();
+
                 json = await conn
                     .QuerySingleOrDefaultAsync<string>(
                         "SELECT Results FROM dbo.[MonthlyResultsSnapshots] WHERE Date=@Date", new

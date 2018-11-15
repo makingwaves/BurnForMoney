@@ -35,8 +35,10 @@ namespace BurnForMoney.Functions.Strava.Functions.CollectAthleteActivities
 
             string encryptedAccessToken;
             string accessToken;
-            using (var conn = SqlConnectionFactory.CreateWithRetry(configuration.ConnectionStrings.SqlDbConnectionString))
+            using (var conn = SqlConnectionFactory.Create(configuration.ConnectionStrings.SqlDbConnectionString))
             {
+                await conn.OpenWithRetryAsync();
+
                 encryptedAccessToken = await conn.QuerySingleOrDefaultAsync<string>(@"SELECT AccessToken
 FROM dbo.[Strava.AccessTokens]
 WHERE AthleteId = @AthleteId AND IsValid=1", new { input.AthleteId });

@@ -27,8 +27,10 @@ namespace BurnForMoney.Functions.Strava.Functions.RefreshTokens
             var configuration = ApplicationConfiguration.GetSettings(executionContext);
 
             IEnumerable<(string AthleteId, string EncryptedRefreshToken)> expiringTokens;
-            using (var conn = SqlConnectionFactory.CreateWithRetry(configuration.ConnectionStrings.SqlDbConnectionString))
+            using (var conn = SqlConnectionFactory.Create(configuration.ConnectionStrings.SqlDbConnectionString))
             {
+                await conn.OpenWithRetryAsync();
+
                 expiringTokens = await conn.QueryAsync<(string, string)>(@"SELECT AthleteId, RefreshToken as EncryptedRefreshToken
 FROM dbo.[Strava.AccessTokens] AS Tokens
 INNER JOIN dbo.Athletes AS Athletes ON (Athletes.Id = Tokens.AthleteId)
@@ -66,8 +68,10 @@ WHERE Tokens.ExpiresAt < @DateTo AND Athletes.Active=1",
             var response = StravaService.RefreshToken(configuration.Strava.ClientId, configuration.Strava.ClientSecret,
                 refreshToken);
 
-            using (var conn = SqlConnectionFactory.CreateWithRetry(configuration.ConnectionStrings.SqlDbConnectionString))
+            using (var conn = SqlConnectionFactory.Create(configuration.ConnectionStrings.SqlDbConnectionString))
             {
+                await conn.OpenWithRetryAsync();
+
                 var affectedRows = await conn.ExecuteAsync("UPDATE dbo.[Strava.AccessTokens] SET AccessToken=@AccessToken, RefreshToken=@RefreshToken, ExpiresAt=@ExpiresAt, IsValid=1 WHERE AthleteId=@AthleteId", new
                 {
                     AccessToken = AccessTokensEncryptionService.Encrypt(response.AccessToken, configuration.Strava.AccessTokensEncryptionKey),
