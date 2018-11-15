@@ -25,7 +25,7 @@ namespace BurnForMoney.Functions.Functions.ResultsSnapshots
             };
             var json = JsonConvert.SerializeObject(request);
             await outputQueue.AddMessageAsync(new CloudQueueMessage(json));
-            log.LogInformation(FunctionsNames.T_CalculateMonthlyAthleteResults, $"Put a message to the queue `{date.Month / date.Year}`.");
+            log.LogInformation(FunctionsNames.T_CalculateMonthlyAthleteResults, $"Put a message to the queue `{request.Month} / {request.Year}`.");
             log.LogFunctionEnd(FunctionsNames.T_CalculateMonthlyAthleteResults);
         }
 
@@ -43,7 +43,7 @@ namespace BurnForMoney.Functions.Functions.ResultsSnapshots
             };
             var json = JsonConvert.SerializeObject(request);
             await outputQueue.AddMessageAsync(new CloudQueueMessage(json));
-            log.LogInformation(FunctionsNames.T_CalculateMonthlyAthleteResultsFromPreviousMonth, $"Put a message to the queue `{date.Month / date.Year}`.");
+            log.LogInformation(FunctionsNames.T_CalculateMonthlyAthleteResultsFromPreviousMonth, $"Put a message to the queue `{request.Month} / {request.Year}`.");
             log.LogFunctionEnd(FunctionsNames.T_CalculateMonthlyAthleteResultsFromPreviousMonth);
         }
     }

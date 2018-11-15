@@ -43,7 +43,7 @@ namespace BurnForMoney.Functions.Functions._Support
 
             var json = JsonConvert.SerializeObject(request);
             await outputQueue.AddMessageAsync(new CloudQueueMessage(json));
-            log.LogInformation(FunctionsNames.Support_Activities_CollectMonthlyStatistics, $"Put a message to the queue `{request.Month / request.Year}`.");
+            log.LogInformation(FunctionsNames.Support_Activities_CollectMonthlyStatistics, $"Put a message to the queue `{request.Month} / {request.Year}`.");
 
             log.LogFunctionEnd(FunctionsNames.Support_Activities_CollectMonthlyStatistics);
             return new OkResult();
