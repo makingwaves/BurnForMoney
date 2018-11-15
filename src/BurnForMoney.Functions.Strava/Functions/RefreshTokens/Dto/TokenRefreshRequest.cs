@@ -2,7 +2,7 @@
 {
     public class TokenRefreshRequest
     {
-        public int AthleteId { get; set; }
+        public string AthleteId { get; set; }
         public string EncryptedRefreshToken { get; set; }
     }
 }
