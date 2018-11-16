@@ -23,16 +23,6 @@ namespace BurnForMoney.Functions.Shared.Persistence
             return @this;
         }
 
-        public static TResult OpenWithRetry<TResult>(this SqlConnection conn, Func<SqlConnection, TResult> process)
-        {
-            return DefaultSqlRetryPolicy.Execute(() =>
-                {
-                    conn.Open();
-                    return process(conn);
-                }
-            );
-        }
-
         private static Policy CreatePolicy(int numberOfRetries)
         {
             return Policy

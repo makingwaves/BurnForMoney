@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using Polly;
@@ -19,15 +20,10 @@ namespace BurnForMoney.Functions.Shared.Web
         private static readonly Polly.Retry.RetryPolicy<IRestResponse> DefaultRetryPolicy = Policy
             .Handle<HttpRequestException>()
             .OrResult<IRestResponse>(r => HttpStatusCodesWorthRetrying.Contains(r.StatusCode))
-            .Retry(1);
+            .WaitAndRetry(2, _ => TimeSpan.FromSeconds(1));
 
         public static IRestResponse ExecuteWithRetry(this RestClient @this, IRestRequest request)
         {
-            var a = Policy
-                .Handle<HttpRequestException>()
-                .OrResult<IRestResponse>(r => HttpStatusCodesWorthRetrying.Contains(r.StatusCode))
-                .Retry(1);
-
             return DefaultRetryPolicy.Execute(() => @this.Execute(request));
         }
     }

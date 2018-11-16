@@ -1,3 +1,4 @@
+using BurnForMoney.Functions.Shared.Web;
 using RestSharp;
 
 namespace BurnForMoney.Functions.Strava.External.Strava.Api
@@ -19,7 +20,7 @@ namespace BurnForMoney.Functions.Strava.External.Strava.Api
             request.AddQueryParameter("client_secret", clientSecret);
             request.AddQueryParameter("callback_url", callbackUrl);
             request.AddQueryParameter("verify_token", callbackToken);
-            var response = _restClient.Execute(request);
+            var response = _restClient.ExecuteWithRetry(request);
 
             response.ThrowExceptionIfNotSuccessful();
         }
@@ -29,7 +30,7 @@ namespace BurnForMoney.Functions.Strava.External.Strava.Api
             var request = new RestRequest("api/v3/push_subscriptions");
             request.AddQueryParameter("client_id", clientId.ToString());
             request.AddQueryParameter("client_secret", clientSecret);
-            var response = _restClient.Execute(request);
+            var response = _restClient.ExecuteWithRetry(request);
 
             response.ThrowExceptionIfNotSuccessful();
             return response.Content;
@@ -40,7 +41,7 @@ namespace BurnForMoney.Functions.Strava.External.Strava.Api
             var request = new RestRequest($"api/v3/push_subscriptions/{subscriptionId}", Method.DELETE);
             request.AddQueryParameter("client_id", clientId.ToString());
             request.AddQueryParameter("client_secret", clientSecret);
-            var response = _restClient.Execute(request);
+            var response = _restClient.ExecuteWithRetry(request);
 
             response.ThrowExceptionIfNotSuccessful();
             return response.Content;
