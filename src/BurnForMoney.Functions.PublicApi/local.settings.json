@@ -5,7 +5,8 @@
     "AzureWebJobsStorage": "UseDevelopmentStorage=true",
     "AzureWebJobsDashboard": "UseDevelopmentStorage=true",
     "StravaAppHostName": "http://localhost:7072",
-    "KeyVaultName": "burnformoneykvdev"
+    "KeyVaultName": "burnformoneykvdev",
+    "ConnectionStrings:Sql": "Data Source=(LocalDB)\\.;Initial Catalog=BurnForMoney;Integrated Security=True;"
   },
   "Host": {
     "LocalHttpPort": 7073
