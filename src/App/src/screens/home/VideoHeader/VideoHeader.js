@@ -8,6 +8,8 @@ import awardCSR from '../img/award-csr.svg';
 import bfmVideoBg from 'video/bfm-www-movie.mp4';
 import bfmVideo from 'video/bfm-www-movie-full.mp4';
 
+import { withNamespaces } from 'react-i18next';
+
 const customStyles = {
   content : {
     top                   : '50%',
@@ -69,6 +71,8 @@ class VideoHeader extends Component {
   }
 
   render() {
+    const { t } = this.props;
+
     return (
       <div className="VideoHeader">
         <video loop muted autoPlay className="VideoHeader__background">
@@ -82,11 +86,11 @@ class VideoHeader extends Component {
         <div className="VideoHeader__content">
           <img src={logoBFMblue} alt="Burn for money" className="VideoHeader__logo" />
           <div className="VideoHeader__title">
-            <span className="VideoHeader__title-line">Workout</span><br/>
-            <span className="VideoHeader__title-line">for support</span><br/>
-            <span className="VideoHeader__title-line">charity</span>
+            <span className="VideoHeader__title-line">{t('intro line1')}</span><br/>
+            <span className="VideoHeader__title-line">{t('intro line2')}</span><br/>
+            <span className="VideoHeader__title-line">{t('intro line3')}</span>
           </div>
-          <button className="VideoHeader__openVideo" onClick={this.openModal} >Watch in action</button>
+          <button className="VideoHeader__openVideo" onClick={this.openModal} >{t('watch in action')}</button>
         </div>
         <button className="VideoHeader__goDown" onClick={this.goDown}></button>
 
@@ -94,7 +98,7 @@ class VideoHeader extends Component {
           isOpen={this.state.modalIsOpen}
           onAfterOpen={this.afterOpenModal}
           onRequestClose={this.closeModal}
-          contentLabel="Example Modal"
+          contentLabel="Video Modal"
           style={customStyles}
         >
           <video loop controls autoPlay className="VideoHeader__video">
@@ -108,4 +112,4 @@ class VideoHeader extends Component {
 
 }
 
-export default VideoHeader;
+export default withNamespaces()(VideoHeader);

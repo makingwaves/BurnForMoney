@@ -1,4 +1,6 @@
 import React, { Component } from 'react';
+
+import './Home.css';
 import * as contentful from 'contentful';
 import VideoHeader from './VideoHeader/VideoHeader.js';
 import TotalNumbers from './TotalNumbers/TotalNumbers.js';
@@ -10,19 +12,36 @@ import InstaGallery from './InstaGallery/InstaGallery.js';
 import OtherInitiatives from './OtherInitiatives/OtherInitiatives.js';
 import Footer from 'components/Footer/Footer.js';
 
+import i18n from 'i18n';
+import { withNamespaces } from 'react-i18next';
+
+
 class Home extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
       bfmStats: '',
-      contentful: ''
+      contentful: '',
+      lang: 'en'
     };
   }
 
   render() {
+    const changeLanguage = (lng) => {
+      this.setState({
+        lang: lng
+      });
+      i18n.changeLanguage(lng);
+    }
+
     return (
       <div className="Home">
+        <div className="Home__langSwitcher">
+          <button className={`Home__langSwitcher-Button ${(this.state.lang == 'en' ? 'active' : '')}`} onClick={() => changeLanguage('en') }>en</button>
+          <button className={`Home__langSwitcher-Button ${(this.state.lang == 'pl' ? 'active' : '')}`} onClick={() => changeLanguage('pl')}>pl</button>
+        </div>
+
         <VideoHeader/>
         <TotalNumbers data={this.state.bfmStats}/>
         <CurrentCharts data={this.state.bfmStats}/>
@@ -51,7 +70,7 @@ class Home extends Component {
       this.setState({
         contentful: entries.items
       });
-      
+
     })
 
     fetch(api_url+"api/totalnumbers")
@@ -72,4 +91,4 @@ class Home extends Component {
   }
 }
 
-export default Home;
+export default withNamespaces()(Home);

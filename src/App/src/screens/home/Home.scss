@@ -1,0 +1,26 @@
+@import "style/variables.scss";
+
+.Home{
+  &__langSwitcher{
+    position: absolute;
+    top:40px;
+    right:10px;
+
+    &-Button{
+      background: transparent;
+      font-weight: bold;
+      text-transform: uppercase;
+      color: $primary-color;
+      font-size: 16px;
+      padding: 5px;
+      outline: none;
+      cursor: pointer;
+
+      &.active{
+        background-color: $primary-color;
+        color: #000;
+      }
+    }
+  }
+
+}
