@@ -23,12 +23,8 @@ GitHub wiki: https://github.com/makingwaves/BurnForMoney/wiki
 
 ### Environments
 
-- **Test:**
-  - Website: https://burnformoney-test.azurewebsites.net/
-  - Api: https://burnformoneyfunc-test.azurewebsites.net/
-- **Production:**
-  - Website: https://bfm.makingwaves.com/
-  - Api: https://burnformoneyfunc-prod.azurewebsites.net/
+- **Test:** https://burnformoney-test.azurewebsites.net/
+- **Production:** https://bfm.makingwaves.com/
 
 ## Code of conduct
 

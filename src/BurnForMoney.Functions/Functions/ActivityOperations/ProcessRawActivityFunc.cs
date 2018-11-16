@@ -1,6 +1,9 @@
-﻿using System;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
-using BurnForMoney.Functions.Shared;
+using BurnForMoney.Functions.Exceptions;
+using BurnForMoney.Functions.Functions.ActivityOperations.Processors;
+using BurnForMoney.Functions.Shared.Extensions;
 using BurnForMoney.Functions.Shared.Queues;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
@@ -11,152 +14,33 @@ namespace BurnForMoney.Functions.Functions.ActivityOperations
 {
     public static class ProcessRawActivityFunc
     {
-        [FunctionName(FunctionsNames.Q_ProcessRawActivity)]
-        public static async Task Q_ProcessRawActivityAsync(ILogger log, ExecutionContext executionContext,
-            [QueueTrigger(AppQueueNames.UpsertRawActivitiesRequests)] PendingRawActivity rawActivity,
-            [Queue(QueueNames.PendingActivities)] CloudQueue pendingActivitiesQueue,
-            [Queue(QueueNames.PendingActivitiesUpdates)] CloudQueue pendingActivityUpdatesQueue)
-        {
-            if (rawActivity.Source != "Strava")
+        private static readonly string[] SupportedSystems = { StravaActivityProcessor.System, ManualActivityProcessor.System };
+
+        private static readonly IDictionary<string, IActivityProcessor> ActivityProcessors =
+            new Dictionary<string, IActivityProcessor>
             {
-                throw new NotSupportedException($"System: {rawActivity.Source} is not supported.");
-            }
-
-            log.LogInformation($"{FunctionsNames.Q_ProcessRawActivity} function processed a request.");
-
-            var activityCategory = StravaActivityMapper.MapToActivityCategory(rawActivity.ActivityType);
-            var points = PointsCalculator.Calculate(activityCategory, rawActivity.DistanceInMeters, rawActivity.MovingTimeInMinutes);
-
-            var activity = new PendingActivity
-            {
-                SourceAthleteId = rawActivity.SourceAthleteId,
-                SourceActivityId = rawActivity.SourceActivityId,
-                StartDate = rawActivity.StartDate,
-                ActivityType = rawActivity.ActivityType,
-                DistanceInMeters = rawActivity.DistanceInMeters,
-                MovingTimeInMinutes = rawActivity.MovingTimeInMinutes,
-                Category = activityCategory,
-                Points = points,
-                Source = rawActivity.Source
+                {StravaActivityProcessor.System, new StravaActivityProcessor()},
+                {ManualActivityProcessor.System, new ManualActivityProcessor()}
             };
 
+        [FunctionName(FunctionsNames.Q_ProcessRawActivity)]
+        public static async Task ProcessNewActivity(ILogger log, ExecutionContext executionContext,
+            [QueueTrigger(AppQueueNames.AddActivityRequests)] PendingRawActivity rawActivity,
+            [Queue(QueueNames.PendingActivities)] CloudQueue pendingActivitiesQueue)
+        {
+            log.LogFunctionStart(FunctionsNames.Q_ProcessRawActivity);
+            if (!SupportedSystems.Contains(rawActivity.Source))
+            {
+                throw new SystemNotSupportedException(rawActivity.Source);
+            }
+
+            var activityProcessor = ActivityProcessors[rawActivity.Source];
+
+            var activity = activityProcessor.Process(rawActivity);
+
             var json = JsonConvert.SerializeObject(activity);
-
-            if (rawActivity.ActivityOperation == ActivityOperation.Create)
-            {
-                await pendingActivitiesQueue.AddMessageAsync(new CloudQueueMessage(json));
-            }
-            else
-            {
-                await pendingActivityUpdatesQueue.AddMessageAsync(new CloudQueueMessage(json));
-            }
-        }
-    }
-
-    internal class PointsCalculator
-    {
-        public static double Calculate(ActivityCategory category, double distanceInMeters, double timeInMinutes)
-        {
-            double points;
-
-            switch (category)
-            {
-                case ActivityCategory.Run:
-                    points = GetPointsForDistanceBasedCategory(distanceInMeters, 2); // 1km = 2 points
-                    break;
-                case ActivityCategory.Ride:
-                    points = GetPointsForDistanceBasedCategory(distanceInMeters); // 1km = 1 point
-                    break;
-                case ActivityCategory.Walk:
-                    points = GetPointsForDistanceBasedCategory(distanceInMeters);
-                    break;
-                case ActivityCategory.WinterSports:
-                    points = GetPointsForTimeBasedCategory(timeInMinutes); // 10min = 1 point
-                    break;
-                case ActivityCategory.WaterSports:
-                    points = GetPointsForTimeBasedCategory(timeInMinutes);
-                    break;
-                case ActivityCategory.TeamSports:
-                    points = GetPointsForTimeBasedCategory(timeInMinutes);
-                    break;
-                case ActivityCategory.Gym:
-                    points = GetPointsForTimeBasedCategory(timeInMinutes);
-                    break;
-                case ActivityCategory.Hike:
-                    points = GetPointsForTimeBasedCategory(timeInMinutes);
-                    break;
-                case ActivityCategory.Fitness:
-                    points = GetPointsForTimeBasedCategory(timeInMinutes);
-                    break;
-                default:
-                    points = GetPointsForTimeBasedCategory(timeInMinutes);
-                    break;
-            }
-
-            return Math.Round(points, 2);
-        }
-
-        private static double GetPointsForDistanceBasedCategory(double distanceInMeters, double factor = 1)
-        {
-            return Math.Round(distanceInMeters * factor / 1000, 2);
-        }
-
-        private static double GetPointsForTimeBasedCategory(double timeInMinutes, double factor = 1)
-        {
-            return Math.Round(timeInMinutes * factor / 10, 2);
-        }
-    }
-
-    public static class StravaActivityMapper
-    {
-        public static ActivityCategory MapToActivityCategory(string activityType)
-        {
-            switch (activityType)
-            {
-                case "Snowboard":
-                case "AlpineSki":
-                case "BackcountrySki":
-                case "IceSkate":
-                case "NordicSki":
-                    return ActivityCategory.WinterSports;
-                case "Canoeing":
-                case "Kayaking":
-                case "Kitesurf":
-                case "Rowing":
-                case "StandUpPaddling":
-                case "Surfing":
-                case "Swim":
-                case "Windsurf":
-                    return ActivityCategory.WaterSports;
-                case "Crossfit":
-                case "WeightTraining":
-                    return ActivityCategory.Gym;
-                case "Ride":
-                case "EBikeRide":
-                case "Handcycle":
-                case "VirtualRide":
-                    return ActivityCategory.Ride;
-                case "Run":
-                case "Elliptical":
-                case "VirtualRun":
-                    return ActivityCategory.Run;
-                case "Hike":
-                case "RockClimbing":
-                case "Snowshoe":
-                    return ActivityCategory.Hike;
-                case "InlineSkate":
-                case "RollerSki":
-                case "StairStepper":
-                case "Wheelchair":
-                    return ActivityCategory.Other;
-                case "Walk":
-                    return ActivityCategory.Walk;
-                case "Workout":
-                case "Yoga":
-                    return ActivityCategory.Fitness;
-                default:
-                    return ActivityCategory.Other;
-            }
+            await pendingActivitiesQueue.AddMessageAsync(new CloudQueueMessage(json));
+            log.LogFunctionEnd(FunctionsNames.Q_ProcessRawActivity);
         }
     }
 }

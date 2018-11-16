@@ -29,7 +29,6 @@ namespace BurnForMoney.Functions.Configuration
                         SenderEmail = "burnformoney@makingwaves.com",
                         DefaultRecipient = config["Email:DefaultRecipient"]
                     },
-                    StravaAppHostName = config["StravaAppHostName"],
                     ApplicationInsightsInstrumentationKey = config["APPINSIGHTS_INSTRUMENTATIONKEY"],
                     SendGridApiKey = config["SendGrid:ApiKey"]
                 };

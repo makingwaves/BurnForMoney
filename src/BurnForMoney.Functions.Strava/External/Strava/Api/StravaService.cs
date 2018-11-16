@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using BurnForMoney.Functions.Shared.Helpers;
+using BurnForMoney.Functions.Shared.Web;
 using BurnForMoney.Functions.Strava.Configuration;
 using BurnForMoney.Functions.Strava.External.Strava.Api.Auth;
 using BurnForMoney.Functions.Strava.External.Strava.Api.Model;
@@ -34,7 +35,7 @@ namespace BurnForMoney.Functions.Strava.External.Strava.Api
                 Code = code
             };
             request.AddParameter("application/json", payLoad.ToJson(), ParameterType.RequestBody);
-            var response = _restClient.Execute(request);
+            var response = _restClient.ExecuteWithRetry(request);
             response.ThrowExceptionIfNotSuccessful();
 
             return TokenExchangeResult.FromJson(response.Content);
@@ -53,18 +54,18 @@ namespace BurnForMoney.Functions.Strava.External.Strava.Api
                 RefreshToken = refreshToken
             };
             request.AddParameter("application/json", payLoad.ToJson(), ParameterType.RequestBody);
-            var response = _restClient.Execute(request);
+            var response = _restClient.ExecuteWithRetry(request);
             response.ThrowExceptionIfNotSuccessful();
 
             return TokenRefreshResult.FromJson(response.Content);
         }
         
-        public StravaActivity GetActivity(string accessToken, long id)
+        public StravaActivity GetActivity(string accessToken, string activityId)
         {
-            var request = new RestRequest($"api/v3/activities/{id}");
+            var request = new RestRequest($"api/v3/activities/{activityId}");
             request.AddQueryParameter("access_token", accessToken);
 
-            var response = _restClient.Execute(request);
+            var response = _restClient.ExecuteWithRetry(request);
             response.ThrowExceptionIfNotSuccessful();
 
             var activity = JsonConvert.DeserializeObject<StravaActivity>(response.Content, new JsonSettings());
@@ -82,7 +83,7 @@ namespace BurnForMoney.Functions.Strava.External.Strava.Api
             request.AddQueryParameter("per_page", ActivitiesPerPage.ToString());
             request.AddQueryParameter("page", page.ToString());
 
-            var response = _restClient.Execute(request);
+            var response = _restClient.ExecuteWithRetry(request);
             response.ThrowExceptionIfNotSuccessful();
 
             var activities = JsonConvert.DeserializeObject<List<StravaActivity>>(response.Content, new JsonSettings());
@@ -99,17 +100,8 @@ namespace BurnForMoney.Functions.Strava.External.Strava.Api
         {
             var request = new RestRequest("/oauth/deauthorize", Method.POST);
             request.AddQueryParameter("access_token", accessToken);
-            var response = _restClient.Execute(request);
+            var response = _restClient.ExecuteWithRetry(request);
             response.ThrowExceptionIfNotSuccessful();
-        }
-    }
-
-    public class UnauthorizedRequestException : UnauthorizedAccessException
-    {
-        public UnauthorizedRequestException()
-            :base("Application is not authorized to get athlete's data (expired / deauthorized / unauthorized).")
-        {
-            
         }
     }
 }

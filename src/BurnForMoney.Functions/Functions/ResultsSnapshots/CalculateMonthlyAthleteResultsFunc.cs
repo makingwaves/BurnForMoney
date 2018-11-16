@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
 using BurnForMoney.Functions.Configuration;
+using BurnForMoney.Functions.Functions.ResultsSnapshots.Dto;
+using BurnForMoney.Functions.Shared.Extensions;
+using BurnForMoney.Functions.Shared.Persistence;
 using Dapper;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
@@ -17,11 +19,13 @@ namespace BurnForMoney.Functions.Functions.ResultsSnapshots
         [FunctionName(FunctionsNames.Q_CalculateMonthlyAthleteResults)]
         public static async Task Q_CalculateMonthlyAthleteResults([QueueTrigger(QueueNames.CalculateMonthlyResults)] CalculateMonthlyResultsRequest request, ILogger log, ExecutionContext executionContext)
         {
-            log.LogInformation($"{FunctionsNames.Q_CalculateMonthlyAthleteResults} function processed a request.");
+            log.LogFunctionStart(FunctionsNames.Q_CalculateMonthlyAthleteResults);
 
             var configuration = ApplicationConfiguration.GetSettings(executionContext);
-            using (var conn = new SqlConnection(configuration.ConnectionStrings.SqlDbConnectionString))
+            using (var conn = SqlConnectionFactory.Create(configuration.ConnectionStrings.SqlDbConnectionString))
             {
+                await conn.OpenWithRetryAsync();
+
                 var activities = (await conn.QueryAsync<Activity>(
                         @"SELECT AthleteId, Athletes.FirstName as AthleteFirstName, Athletes.LastName as AthleteLastName, Distance, MovingTime, Category, Points 
 FROM dbo.[Activities] AS Activities
@@ -35,7 +39,7 @@ WHERE MONTH(ActivityTime)=@Month AND YEAR(ActivityTime)=@Year", new
 
                 if (!activities.Any())
                 {
-                    log.LogWarning($"[{FunctionsNames.Q_CalculateMonthlyAthleteResults}] cannot find any activities from given date: {request.Month}/{request.Year}.");
+                    log.LogWarning(FunctionsNames.Q_CalculateMonthlyAthleteResults, $"Cannot find any activities from given date: {request.Month}/{request.Year}.");
                     return;
                 }
 
@@ -51,9 +55,10 @@ WHERE MONTH(ActivityTime)=@Month AND YEAR(ActivityTime)=@Year", new
                     .ConfigureAwait(false);
                 if (affectedRows == 1)
                 {
-                    log.LogInformation($"[{FunctionsNames.Q_CalculateMonthlyAthleteResults}] Updated snapshot.");
+                    log.LogInformation(FunctionsNames.Q_CalculateMonthlyAthleteResults, "Updated snapshot.");
                 }
             }
+            log.LogFunctionEnd(FunctionsNames.Q_CalculateMonthlyAthleteResults);
         }
 
         private static IEnumerable<AthleteMonthlyResult> GroupActivitiesByAthlete(IEnumerable<Activity> activities)
@@ -91,32 +96,12 @@ WHERE MONTH(ActivityTime)=@Month AND YEAR(ActivityTime)=@Year", new
 
     public class Activity
     {
-        public int AthleteId { get; set; }
+        public string AthleteId { get; set; }
         public string AthleteFirstName { get; set; }
         public string AthleteLastName { get; set; }
         public int Distance { get; set; }
         public int MovingTime { get; set; }
         public string Category { get; set; }
         public double Points { get; set; }
-    }
-
-    public class AthleteMonthlyResult
-    {
-        public int AthleteId { get; set; }
-        public string AthleteName { get; set; }
-        public double Distance { get; set; }
-        public double Time { get; set; }
-        public int Points { get; set; }
-        public int NumberOfTrainings { get; set; }
-        public List<AthleteMonthlyResultActivity> Activities { get; set; }
-    }
-
-    public class AthleteMonthlyResultActivity
-    {
-        public string Category { get; set; }
-        public double Distance { get; set; }
-        public double Time { get; set; }
-        public int Points { get; set; }
-        public int NumberOfTrainings { get; set; }
     }
 }

@@ -1,10 +1,11 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using BurnForMoney.Functions.Shared.Extensions;
+using BurnForMoney.Functions.Strava.Exceptions;
+using BurnForMoney.Functions.Strava.Functions.AuthorizeNewAthlete.Dto;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
-using Microsoft.WindowsAzure.Storage.Queue;
-using Newtonsoft.Json;
 using ExecutionContext = Microsoft.Azure.WebJobs.ExecutionContext;
 
 namespace BurnForMoney.Functions.Strava.Functions.AuthorizeNewAthlete
@@ -12,37 +13,34 @@ namespace BurnForMoney.Functions.Strava.Functions.AuthorizeNewAthlete
     public static class AuthorizeNewAthleteOrchestrator
     {
         [FunctionName(FunctionsNames.O_AuthorizeNewAthlete)]
-        public static async Task O_AuthorizeNewAthlete(ILogger log, [OrchestrationTrigger] DurableOrchestrationContext context, ExecutionContext executionContext,
-            [Queue(QueueNames.AuthorizationCodesPoison)] CloudQueue authorizationCodePoisonQueue,
-            [Queue(QueueNames.NewStravaAthletesRequests)] CloudQueue newAthletesRequestsQueue)
+        public static async Task O_AuthorizeNewAthlete(ILogger log, [OrchestrationTrigger] DurableOrchestrationContext context, ExecutionContext executionContext)
         {
             if (!context.IsReplaying)
             {
-                log.LogInformation($"Orchestration function `{FunctionsNames.O_AuthorizeNewAthlete}` received a request.");
+                log.LogFunctionStart(FunctionsNames.O_AuthorizeNewAthlete);
             }
-            
+
             var authorizationCode = context.GetInput<string>();
-            
+
             try
             {
                 // 1. Exchange and authorize athlete
-                var athlete = await context.CallActivityWithRetryAsync<NewStravaAthlete>(FunctionsNames.A_ExchangeTokenAndGetAthleteSummary,
+                var athlete = await context.CallActivityWithRetryAsync<StravaAthlete>(FunctionsNames.A_ExchangeTokenAndGetAthleteSummary,
                     new RetryOptions(TimeSpan.FromSeconds(5), 3), authorizationCode);
                 if (!context.IsReplaying)
                 {
-                    log.LogInformation($"[{FunctionsNames.O_AuthorizeNewAthlete}] exchanged token for user {athlete.FirstName} " +
-                                       $"{athlete.LastName}.");
+                    log.LogInformation(FunctionsNames.O_AuthorizeNewAthlete, $"Exchanged token for user {athlete.FirstName} {athlete.LastName}.");
                 }
 
                 // 2. Send approval request
                 if (!context.IsReplaying)
                 {
-                    log.LogInformation($"[{FunctionsNames.O_AuthorizeNewAthlete}] sending approval email...");
+                    log.LogInformation(FunctionsNames.O_AuthorizeNewAthlete, "Sending approval email...");
                 }
                 await context.CallActivityAsync(FunctionsNames.A_SendAthleteApprovalRequest, (athlete.FirstName, athlete.LastName));
                 if (!context.IsReplaying)
                 {
-                    log.LogInformation($"[{FunctionsNames.O_AuthorizeNewAthlete}] sent approval email.");
+                    log.LogInformation(FunctionsNames.O_AuthorizeNewAthlete, "Sent approval email.");
                 }
 
                 // 3. Wait for approval
@@ -50,7 +48,8 @@ namespace BurnForMoney.Functions.Strava.Functions.AuthorizeNewAthlete
                 using (var cts = new CancellationTokenSource())
                 {
                     // Durable timers cannot last longer than 7 days due to limitations in Azure Storage.
-                    var timeoutTask = context.CreateTimer(context.CurrentUtcDateTime.AddDays(6), cts.Token);
+                    var timeoutTaskDuration = context.CurrentUtcDateTime.AddDays(6);
+                    var timeoutTask = context.CreateTimer(timeoutTaskDuration, cts.Token);
                     var approvalTask = context.WaitForExternalEvent<string>("AthleteApproval");
 
                     var winner = await Task.WhenAny(timeoutTask, approvalTask);
@@ -61,24 +60,36 @@ namespace BurnForMoney.Functions.Strava.Functions.AuthorizeNewAthlete
                     }
                     else
                     {
-                        throw new TimeoutException("Failed to approve athlete in the allotted time period.");
+                        throw new FailedToApproveAthleteTimeoutException(athlete.AthleteId, timeoutTaskDuration);
                     }
                 }
 
                 if (!context.IsReplaying)
                 {
-                    log.LogInformation($"[{FunctionsNames.O_AuthorizeNewAthlete}] Athlete: {athlete.FirstName} {athlete.LastName} has been {approvalResult}.");
+                    log.LogInformation(FunctionsNames.O_AuthorizeNewAthlete, $"Athlete: {athlete.FirstName} {athlete.LastName} has been {approvalResult}.");
                 }
 
                 // 4. Process a new athlete request
-                var json = JsonConvert.SerializeObject(athlete);
-                await newAthletesRequestsQueue.AddMessageAsync(new CloudQueueMessage(json));
+                await context.CallActivityAsync(FunctionsNames.A_ProcessNewAthleteRequest, athlete);
+                if (!context.IsReplaying)
+                {
+                    log.LogInformation(FunctionsNames.O_AuthorizeNewAthlete, "Processed athlete's data.");
+                    log.LogFunctionEnd(FunctionsNames.O_AuthorizeNewAthlete);
+                }
+
             }
             catch (Exception ex)
             {
-                log.LogError($"[{FunctionsNames.O_AuthorizeNewAthlete}] failed to authorize a new athlete in the system. {ex}");
-                await authorizationCodePoisonQueue.AddMessageAsync(new CloudQueueMessage(authorizationCode));
+                var errorMessage = $"[{FunctionsNames.O_AuthorizeNewAthlete}] failed to authorize a new athlete in the system. {ex}";
+                log.LogError(errorMessage);
+                await context.CallActivityAsync(FunctionsNames.A_AuthorizeNewAthleteCompensation, new AuthorizeNewAthleteCompensation { AuthorizationCode = authorizationCode, ErrorMessage = errorMessage });
             }
         }
+    }
+
+    public class AuthorizeNewAthleteCompensation
+    {
+        public string AuthorizationCode { get; set; }
+        public string ErrorMessage { get; set; }
     }
 }

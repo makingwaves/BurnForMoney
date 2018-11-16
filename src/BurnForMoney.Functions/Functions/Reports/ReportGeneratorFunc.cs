@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using BurnForMoney.Functions.Configuration;
-using BurnForMoney.Functions.Functions.ResultsSnapshots;
+using BurnForMoney.Functions.Shared.Extensions;
 using BurnForMoney.Functions.Shared.Helpers;
+using BurnForMoney.Functions.Shared.Persistence;
 using BurnForMoney.Functions.Shared.Queues;
 using CsvHelper;
 using Dapper;
@@ -28,13 +28,15 @@ namespace BurnForMoney.Functions.Functions.Reports
             ILogger log,
             ExecutionContext executionContext)
         {
-            log.LogInformation($"{FunctionsNames.T_GenerateReport} function processed a request.");
+            log.LogFunctionStart(FunctionsNames.T_GenerateReport);
             var configuration = ApplicationConfiguration.GetSettings(executionContext);
             var lastMonth = DateTime.UtcNow.AddMonths(-1);
 
             string json;
-            using (var conn = new SqlConnection(configuration.ConnectionStrings.SqlDbConnectionString))
+            using (var conn = SqlConnectionFactory.Create(configuration.ConnectionStrings.SqlDbConnectionString))
             {
+                await conn.OpenWithRetryAsync();
+
                 json = await conn
                     .QuerySingleOrDefaultAsync<string>(
                         "SELECT Results FROM dbo.[MonthlyResultsSnapshots] WHERE Date=@Date", new
@@ -75,6 +77,7 @@ namespace BurnForMoney.Functions.Functions.Reports
                     }
                 }
             }
+            log.LogFunctionEnd(FunctionsNames.T_GenerateReport);
         }
 
         private static async Task<CloudBlockBlob> GetBlobReportAsync(string storageConnectionString)
@@ -90,17 +93,17 @@ namespace BurnForMoney.Functions.Functions.Reports
         }
 
         [FunctionName(FunctionsNames.B_SendNotificationWithLinkToTheReport)]
-        public static async Task B_SendNotificationWithLinkToTheReport([BlobTrigger("reports")] CloudBlockBlob cloudBlob, 
+        public static async Task B_SendNotificationWithLinkToTheReport([BlobTrigger("reports")] CloudBlockBlob cloudBlob,
             ILogger log,
             ExecutionContext executionContext,
             [Queue(AppQueueNames.NotificationsToSend)] CloudQueue notificationsQueue)
         {
-            log.LogInformation($"{FunctionsNames.B_SendNotificationWithLinkToTheReport} function processed a request.");
+            log.LogFunctionStart(FunctionsNames.B_SendNotificationWithLinkToTheReport);
 
             var configuration = ApplicationConfiguration.GetSettings(executionContext);
 
             var blobSasToken = GetBlobSasToken(cloudBlob, SharedAccessBlobPermissions.Read);
-            log.LogInformation($"{FunctionsNames.B_SendNotificationWithLinkToTheReport} generated SAS token.");
+            log.LogInformation(FunctionsNames.B_SendNotificationWithLinkToTheReport, "Fenerated SAS token.");
             var link = cloudBlob.Uri + blobSasToken;
 
             var notification = new Notification
@@ -108,13 +111,14 @@ namespace BurnForMoney.Functions.Functions.Reports
                 Recipients = new List<string> { configuration.Email.ReportsReceiver },
                 Subject = "Burn for Money - Report",
                 HtmlContent = $@"
-Hey, <br>
-A new report summarizing the previous month has been generated. You can download it from <a href={link}>this</a> address (the link is valid for 7 days)."
+<p>Hi there, </p>
+<p>A new report summarizing the previous month has been generated. You can download it from <a href={link}>this</a> address (the link is valid for 7 days).</p>"
             };
 
-            log.LogInformation($"{FunctionsNames.B_SendNotificationWithLinkToTheReport} created notification message.");
+            log.LogInformation(FunctionsNames.B_SendNotificationWithLinkToTheReport, "Created notification message.");
             var json = JsonConvert.SerializeObject(notification);
             await notificationsQueue.AddMessageAsync(new CloudQueueMessage(json));
+            log.LogFunctionEnd(FunctionsNames.B_SendNotificationWithLinkToTheReport);
         }
 
         private static string GetBlobSasToken(CloudBlob blob, SharedAccessBlobPermissions permissions)

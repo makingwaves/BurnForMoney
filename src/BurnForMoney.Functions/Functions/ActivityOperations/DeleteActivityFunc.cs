@@ -1,7 +1,8 @@
-﻿using System;
-using System.Data.SqlClient;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using BurnForMoney.Functions.Configuration;
+using BurnForMoney.Functions.Exceptions;
+using BurnForMoney.Functions.Shared.Extensions;
+using BurnForMoney.Functions.Shared.Persistence;
 using BurnForMoney.Functions.Shared.Queues;
 using Dapper;
 using Microsoft.Azure.WebJobs;
@@ -13,17 +14,33 @@ namespace BurnForMoney.Functions.Functions.ActivityOperations
     {
         [FunctionName(FunctionsNames.Q_DeleteActivity)]
         public static async Task Q_DeleteActivity(ILogger log, ExecutionContext executionContext,
-            [QueueTrigger(AppQueueNames.DeleteActivityRequests)] long activityId)
+            [QueueTrigger(AppQueueNames.DeleteActivityRequests)] DeleteActivityRequest deleteRequest)
         {
+            log.LogFunctionStart(FunctionsNames.Q_DeleteActivity);
             var configuration = ApplicationConfiguration.GetSettings(executionContext);
-            using (var conn = new SqlConnection(configuration.ConnectionStrings.SqlDbConnectionString))
+            using (var conn = SqlConnectionFactory.Create(configuration.ConnectionStrings.SqlDbConnectionString))
             {
-                var affectedRows = await conn.ExecuteAsync(@"DELETE FROM dbo.Activities WHERE ActivityId=@ActivityId", new { ActivityId = activityId });
-                if (affectedRows == 0)
+                await conn.OpenWithRetryAsync();
+
+                if (!string.IsNullOrWhiteSpace(deleteRequest.Id))
                 {
-                    throw new Exception($"Failed to remove activity with id: {activityId}");
+                    var affectedRows = await conn.ExecuteAsync(@"DELETE FROM dbo.Activities WHERE Id=@Id", new { deleteRequest.Id });
+                    if (affectedRows == 0)
+                    {
+                        throw new FailedToDeleteActivityException(deleteRequest.Id);
+                    }
                 }
+                else if (!string.IsNullOrWhiteSpace(deleteRequest.ExternalId))
+                {
+                    var affectedRows = await conn.ExecuteAsync(@"DELETE FROM dbo.Activities WHERE ExternalId=@ExternalId", new { deleteRequest.ExternalId });
+                    if (affectedRows == 0)
+                    {
+                        throw new FailedToDeleteActivityException(deleteRequest.ExternalId);
+                    }
+                }
+
             }
+            log.LogFunctionEnd(FunctionsNames.Q_DeleteActivity);
         }
     }
 }

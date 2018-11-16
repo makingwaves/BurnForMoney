@@ -1,25 +1,27 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using BurnForMoney.Functions.Configuration;
+using BurnForMoney.Functions.Exceptions;
+using BurnForMoney.Functions.Shared.Extensions;
 using BurnForMoney.Functions.Shared.Queues;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 using SendGrid;
 using SendGrid.Helpers.Mail;
 
-namespace BurnForMoney.Functions.Functions
+namespace BurnForMoney.Functions.Functions.Notifications
 {
     public static class NotificationsGatewayFunc
     {
         private static SendGridClient _sendGridClient;
         private static string _emailTemplate;
 
-        [FunctionName(FunctionsNames.NotificationsGateway)]
+        [FunctionName(FunctionsNames.Q_NotificationsGateway)]
         public static async Task SendEmail([QueueTrigger(AppQueueNames.NotificationsToSend)] Notification notification, ILogger log, ExecutionContext context)
         {
+            log.LogFunctionStart(FunctionsNames.Q_NotificationsGateway);
             var configuration = ApplicationConfiguration.GetSettings(context);
 
             if (_sendGridClient == null)
@@ -41,12 +43,13 @@ namespace BurnForMoney.Functions.Functions
 
             if (response.StatusCode == HttpStatusCode.Accepted || response.StatusCode == HttpStatusCode.OK)
             {
-                log.LogInformation("The message has been sent.");
+                log.LogInformation(FunctionsNames.Q_NotificationsGateway, "The message has been sent.");
             }
             else
             {
-                throw new Exception($"Failed to send email message. Status code: {response.StatusCode}.");
+                throw new EmailException(string.Join(", ", notification.Recipients), response.StatusCode.ToString());
             }
+            log.LogFunctionEnd(FunctionsNames.Q_NotificationsGateway);
         }
 
         private static string ApplyTemplate(string content, ExecutionContext context)

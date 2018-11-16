@@ -70,8 +70,8 @@ if ($DeployArm)
 		Write-Succeed
 	}
 
-	Set-WebAppIPRestrictions -ApiAppName ('bfmfunc-' + $Environment.ToLower()) -Environment $Environment -ResourceGroupName $ResourceGroupName
-	Set-WebAppIPRestrictions -ApiAppName ('bfmfunc-strava-' + $Environment.ToLower()) -Environment $Environment -ResourceGroupName $ResourceGroupName
+	Set-WebAppIPRestrictions -ApiAppName ('bfmfunc-public-' + $Environment.ToLower()) -Environment $Environment -ResourceGroupName $ResourceGroupName
+	Set-WebAppIPRestrictions -ApiAppName ('bfmfunc-manual-' + $Environment.ToLower()) -Environment $Environment -ResourceGroupName $ResourceGroupName
 }
 
 if ($UpgradeDatabase -And (-Not $ErrorMessages))

@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using BurnForMoney.Functions.Shared.Extensions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
@@ -15,13 +16,18 @@ namespace BurnForMoney.Functions.Strava.Functions.EventsHub
             ILogger log, ExecutionContext executionContext,
             [Queue(QueueNames.StravaEvents)] CloudQueue outputQueue)
         {
-            log.LogInformation($"{FunctionsNames.EventsHub} function processed a request.");
+            log.LogFunctionStart(FunctionsNames.EventsHub);
 
             var eventData = await req.ReadAsStringAsync();
+            if (string.IsNullOrWhiteSpace(eventData))
+            {
+                return new BadRequestResult();
+            }
 
             await outputQueue.AddMessageAsync(new CloudQueueMessage(eventData));
-            log.LogInformation($"{FunctionsNames.EventsHub} added a message to queue: {QueueNames.StravaEvents}.");
+            log.LogInformation(FunctionsNames.EventsHub, $"Added a message to queue: {QueueNames.StravaEvents}.");
 
+            log.LogFunctionEnd(FunctionsNames.EventsHub);
             return new OkResult();
         }
     }

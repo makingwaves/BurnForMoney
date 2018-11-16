@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using BurnForMoney.Functions.Shared.Extensions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
@@ -10,12 +11,12 @@ namespace BurnForMoney.Functions.Functions._Support
 {
     public static class QueueOperationsFunc
     {
-        [FunctionName(FunctionsNames.Support_ReprocessPoisonQueueMessages)]
-        public static async Task<IActionResult> Support_ReprocessPoisonQueueMessages([HttpTrigger(AuthorizationLevel.Admin, "put", Route = "support/reprocessQueueMessages/{queueName}")]HttpRequest req, ILogger log,
+        [FunctionName(SupportFunctionsNames.ReprocessPoisonQueueMessages)]
+        public static async Task<IActionResult> ReprocessPoisonQueueMessages([HttpTrigger(AuthorizationLevel.Admin, "put", Route = "support/reprocessQueueMessages/{queueName}")]HttpRequest req, ILogger log,
             [Queue("{queueName}")] CloudQueue queue,
             [Queue("{queueName}-poison")] CloudQueue poisonQueue, string queueName)
         {
-            log.LogInformation($"{FunctionsNames.Support_ReprocessPoisonQueueMessages} function processed a request.");
+            log.LogFunctionStart(SupportFunctionsNames.ReprocessPoisonQueueMessages);
 
             int.TryParse(req.Query["messageCount"], out var messageCountParameter);
             var messageCount = messageCountParameter == 0 ? 10 : messageCountParameter;
@@ -35,6 +36,7 @@ namespace BurnForMoney.Functions.Functions._Support
                 processedMessages++;
             }
 
+            log.LogFunctionEnd(SupportFunctionsNames.ReprocessPoisonQueueMessages);
             return new OkObjectResult($"Reprocessed {processedMessages} messages from the {poisonQueue.Name} queue.");
         }
     }

@@ -1,8 +1,11 @@
 ﻿using System.Collections.Concurrent;
 using System.Data;
-using System.Data.SqlClient;
 using System.Threading.Tasks;
 using BurnForMoney.Functions.Configuration;
+using BurnForMoney.Functions.Exceptions;
+using BurnForMoney.Functions.Functions.ActivityOperations.Dto;
+using BurnForMoney.Functions.Shared.Extensions;
+using BurnForMoney.Functions.Shared.Persistence;
 using Dapper;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
@@ -11,23 +14,36 @@ namespace BurnForMoney.Functions.Functions.ActivityOperations
 {
     public static class SubmitAthleteActivityFunc
     {
-        private static readonly ConcurrentDictionary<int, int> AthleteIdsMappings = new ConcurrentDictionary<int, int>();
+        private static readonly ConcurrentDictionary<string, string> AthleteIdsMappings = new ConcurrentDictionary<string, string>();
 
         [FunctionName(FunctionsNames.Q_SubmitAthleteActivity)]
         public static async Task Q_SubmitAthleteActivityAsync(ILogger log, ExecutionContext executionContext, [QueueTrigger(QueueNames.PendingActivities)] PendingActivity activity)
         {
-            log.LogInformation($"{FunctionsNames.Q_SubmitAthleteActivity} function processed a request.");
+            log.LogFunctionStart(FunctionsNames.Q_SubmitAthleteActivity);
 
             var configuration = ApplicationConfiguration.GetSettings(executionContext);
-            using (var conn = new SqlConnection(configuration.ConnectionStrings.SqlDbConnectionString))
+            using (var conn = SqlConnectionFactory.Create(configuration.ConnectionStrings.SqlDbConnectionString))
             {
-                var athleteId = AthleteIdsMappings.GetOrAdd(activity.SourceAthleteId,
-                    await conn.QuerySingleAsync<int>("SELECT Id FROM dbo.Athletes WHERE ExternalId=@SourceAthleteId", new {activity.SourceAthleteId}));
+                await conn.OpenWithRetryAsync();
+
+                var athleteId = activity.AthleteId;
+
+                if (string.IsNullOrWhiteSpace(athleteId))
+                {
+                    athleteId = AthleteIdsMappings.GetOrAdd(activity.ExternalAthleteId,
+                        await conn.QuerySingleOrDefaultAsync<string>("SELECT Id FROM dbo.Athletes WHERE ExternalId=@ExternalAthleteId", new { activity.ExternalAthleteId }));
+
+                    if (string.IsNullOrWhiteSpace(athleteId))
+                    {
+                        throw new AthleteNotExistsException(activity.AthleteId, activity.ExternalAthleteId);
+                    }
+                }
 
                 var model = new
                 {
+                    activity.Id,
                     AthleteId = athleteId,
-                    ActivityId = activity.SourceActivityId,
+                    activity.ExternalId,
                     ActivityTime = activity.StartDate,
                     activity.ActivityType,
                     Distance = activity.DistanceInMeters,
@@ -42,13 +58,14 @@ namespace BurnForMoney.Functions.Functions.ActivityOperations
 
                 if (affectedRows > 0)
                 {
-                    log.LogInformation($"Activity with id: {model.ActivityId} has been added.");
+                    log.LogInformation(FunctionsNames.Q_SubmitAthleteActivity, $"Activity with id: {model.Id} has been added.");
                 }
                 else
                 {
-                    log.LogWarning($"Failed to save activity with id: {model.ActivityId}.");
+                    log.LogWarning(FunctionsNames.Q_SubmitAthleteActivity, $"Failed to save activity with id: {model.Id}.");
                 }
             }
+            log.LogFunctionEnd(FunctionsNames.Q_SubmitAthleteActivity);
         }
     }
 }
