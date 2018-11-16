@@ -38,7 +38,7 @@ namespace BurnForMoney.Functions.Shared.Persistence
             return Policy
                 .Handle<TimeoutException>()
                 .Or<SqlException>(AnyRetryableError)
-                .WaitAndRetry(numberOfRetries, ExponentialBackOff);
+                .WaitAndRetryAsync(numberOfRetries, ExponentialBackOff);
         }
 
         private static TimeSpan ExponentialBackOff(int attempt) => TimeSpan.FromSeconds(Math.Pow(2, attempt));
