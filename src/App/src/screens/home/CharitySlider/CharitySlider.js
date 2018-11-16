@@ -1,10 +1,13 @@
 import React, { Component } from 'react';
 import Slider from "react-slick";
+import { withNamespaces } from 'react-i18next';
+
 
 import './CharitySlider.css';
 
 class CharitySlider extends Component {
   render() {
+    const { t } = this.props;
     const settings = {
       dots: true,
       infinite: true,
@@ -28,7 +31,7 @@ class CharitySlider extends Component {
 
       <div className="CharitySlider">
         <div className="CharitySlider__container container">
-          <h2 className="CharitySlider__header Header"><strong>... for charity</strong></h2>
+          <h2 className="CharitySlider__header Header"><strong>... {t('for charity')}</strong></h2>
           <Slider className="CharitySlider__slider" {...settings}>
             {slides}
           </Slider>
@@ -39,4 +42,4 @@ class CharitySlider extends Component {
   }
 }
 
-export default CharitySlider;
+export default withNamespaces()(CharitySlider);

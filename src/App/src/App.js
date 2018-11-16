@@ -7,18 +7,17 @@ import {
 import Home from './screens/home/Home';
 import StravaAuth from './screens/stravaAuth/StravaAuth';
 
+function App () {
 
-class App extends Component {
-  render() {
-    return (
-      <Router>
-        <div className="App">
-          <Route exact path="/" component={Home} />
-          <Route path="/strava" component={StravaAuth} />
-        </div>
-      </Router>
-    );
-  }
+  return (
+    <Router>
+      <div className="App">
+
+        <Route exact path="/" component={Home} />
+        <Route path="/strava" component={StravaAuth} />
+      </div>
+    </Router>
+  );
 }
 
 export default App;

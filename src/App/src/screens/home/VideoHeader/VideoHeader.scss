@@ -47,13 +47,13 @@
     bottom:0;
     left: 0;
     right:0;
-    width: 550px;
+    width: 585px;
     height: 45%;
     margin: auto;
     z-index:1;
     text-align: left;
     @media (max-width: 1000px){
-      width:400px;
+      width:425px;
       height: 40%;
     }
   }
@@ -137,7 +137,7 @@
     z-index: 1;
     position: absolute;
     top:40px;
-    right:40px;
+    right:70px;
     max-width:40%;
 
   }

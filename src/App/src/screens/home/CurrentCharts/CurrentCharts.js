@@ -12,6 +12,7 @@ import iconGym from 'img/icon-gym.svg';
 import iconHike from 'img/icon-hike.svg';
 import iconFitness from 'img/icon-fitness.svg';
 import iconOther from 'img/icon-other.svg';
+import { withNamespaces, Trans } from 'react-i18next';
 
 class CurrentCharts extends Component {
 
@@ -54,7 +55,7 @@ class CurrentCharts extends Component {
   }
 
   render() {
-
+    const { t } = this.props;
     let frequentActivitiesList;
     if(this.props.data){
       let mostFrequentActivities = this.props.data.thisMonth.mostFrequentActivities;
@@ -79,22 +80,22 @@ class CurrentCharts extends Component {
       <div className="CurrentCharts">
         <div className="CurrentCharts__container container">
 
-          <h2 className="CurrentCharts__header Header"><strong className="flames">We do sports</strong></h2>
-          <h4>Current month</h4>
+          <h2 className="CurrentCharts__header Header"><strong className="flames">{t('We do sports')}</strong></h2>
+          <h4>{t('Current month')}</h4>
           <div className="CurrentCharts__stats">
 
             <div className="CurrentCharts__stats-overall">
               <div className="CurrentCharts__stats-trainings CurrentCharts__stats-block">
                 <div className="CurrentCharts__stats-trainings__value CurrentCharts__stats-block__value">{(this.props.data ? this.props.data.thisMonth.numberOfTrainings : 0)}</div>
-                <div className="CurrentCharts__stats-trainings__text CurrentCharts__stats-block__text">Trainings</div>
+                <div className="CurrentCharts__stats-trainings__text CurrentCharts__stats-block__text">{t('Trainings')}</div>
               </div>
               <div className="CurrentCharts__stats-engagement CurrentCharts__stats-block">
                 <div className="CurrentCharts__stats-engagement__value CurrentCharts__stats-block__value">{(this.props.data ? this.props.data.thisMonth.percentOfEngagedEmployees : 0)}%</div>
-                <div className="CurrentCharts__stats-engagement__text CurrentCharts__stats-block__text">Making<br/>Wavers<br/>engaged</div>
+                <div className="CurrentCharts__stats-engagement__text CurrentCharts__stats-block__text"><Trans i18nKey="Making Wavers engaged">Making<br/>Wavers<br/>engaged</Trans></div>
               </div>
               <div className="CurrentCharts__stats-money CurrentCharts__stats-block">
                 <div className="CurrentCharts__stats-money__value CurrentCharts__stats-block__value">{(this.props.data ? this.props.data.thisMonth.money : 0)} zł</div>
-                <div className="CurrentCharts__stats-money__text CurrentCharts__stats-block__text">This month. So far.</div>
+                <div className="CurrentCharts__stats-money__text CurrentCharts__stats-block__text">{t('This month So far')}</div>
               </div>
             </div>
 
@@ -110,4 +111,4 @@ class CurrentCharts extends Component {
   }
 }
 
-export default CurrentCharts;
+export default withNamespaces()(CurrentCharts);
