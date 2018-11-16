@@ -419,6 +419,10 @@
               "value": "[concat('https://', variables('stravaFunctionAppName'), '.azurewebsites.net')]"
             },
             {
+              "name": "ManualAppHostName",
+              "value": "[concat('https://', variables('manualFunctionAppName'), '.azurewebsites.net')]"
+            },
+            {
               "name": "KeyVaultName",
               "value": "[variables('keyVaultName')]"
             }
