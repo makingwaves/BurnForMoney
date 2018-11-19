@@ -14,7 +14,7 @@ namespace BurnForMoney.Functions.Shared.Functions.Extensions
         public void Initialize(ExtensionConfigContext context)
         {
             context.AddBindingRule<ConfigurationAttribute>()
-                .BindToInput<T>(_ => _configuration);
+                .BindToInput(_ => _configuration);
         }
     }
 }

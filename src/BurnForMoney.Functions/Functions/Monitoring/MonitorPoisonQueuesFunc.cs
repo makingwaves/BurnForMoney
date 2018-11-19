@@ -11,7 +11,7 @@ namespace BurnForMoney.Functions.Functions.Monitoring
     public static class MonitorPoisonQueuesFunc
     {
         [FunctionName("MonitorPoisonQueues")]
-        public static async Task Run([TimerTrigger("0 * * * * *")]TimerInfo myTimer, ILogger log,
+        public static async Task Run([TimerTrigger("0 */20 * * * *")]TimerInfo myTimer, ILogger log,
             [Configuration] ConfigurationRoot configuration)
         {
             log.LogFunctionStart("MonitorPoisonQueues");

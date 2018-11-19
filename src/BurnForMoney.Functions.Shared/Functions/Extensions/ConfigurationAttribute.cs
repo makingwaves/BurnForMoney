@@ -3,7 +3,7 @@ using Microsoft.Azure.WebJobs.Description;
 
 namespace BurnForMoney.Functions.Shared.Functions.Extensions
 {
-    [AttributeUsage(AttributeTargets.Parameter)]
+    [AttributeUsage(AttributeTargets.Parameter | AttributeTargets.ReturnValue)]
     [Binding]
     public class ConfigurationAttribute : Attribute
     {
