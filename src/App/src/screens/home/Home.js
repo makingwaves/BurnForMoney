@@ -23,15 +23,18 @@ class Home extends Component {
     this.state = {
       bfmStats: '',
       contentful: '',
-      lang: 'en'
+      lang: localStorage.getItem('language') || 'en'
     };
   }
 
   render() {
+    console.log(this.state.lang);
     const changeLanguage = (lng) => {
       this.setState({
         lang: lng
       });
+      localStorage.setItem('language', lng);
+
       i18n.changeLanguage(lng);
     }
 
