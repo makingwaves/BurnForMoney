@@ -277,6 +277,10 @@
               "value": "[parameters('email.reportsReceiver')]"
             },
             {
+              "name": "Email:SenderEmail",
+              "value": "burnformoney@makingwaves.com"
+            },
+            {
               "name": "KeyVaultName",
               "value": "[variables('keyVaultName')]"
             }

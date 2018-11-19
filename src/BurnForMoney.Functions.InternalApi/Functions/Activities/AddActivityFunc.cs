@@ -11,7 +11,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.WindowsAzure.Storage.Queue;
 using Newtonsoft.Json;
 
-namespace BurnForMoney.Functions.Manual.Functions.Activities
+namespace BurnForMoney.Functions.InternalApi.Functions.Activities
 {
     public static class AddActivityFunc
     {

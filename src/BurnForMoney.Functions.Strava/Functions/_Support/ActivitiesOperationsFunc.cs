@@ -20,12 +20,12 @@ namespace BurnForMoney.Functions.Strava.Functions._Support
     {
         [FunctionName(SupportFunctionsNames.PullAllAthletesActivities)]
         public static async Task<IActionResult> PullAllAthletesActivities([HttpTrigger(AuthorizationLevel.Admin, "post", Route = "support/athlete/all/activities/collect")]HttpRequest req, ILogger log,
-            [Queue(QueueNames.CollectAthleteActivities)] CloudQueue collectActivitiesQueues, ExecutionContext executionContext)
+            [Queue(QueueNames.CollectAthleteActivities)] CloudQueue collectActivitiesQueues)
         {
             log.LogFunctionStart(SupportFunctionsNames.PullAllAthletesActivities);
 
             var from = DateTime.TryParse(req.Query["from"], out var date) ? date : (DateTime?)null;
-            var configuration = ApplicationConfiguration.GetSettings(executionContext);
+            var configuration = ApplicationConfiguration.GetSettings();
 
             IEnumerable<string> ids;
             using (var conn = SqlConnectionFactory.Create(configuration.ConnectionStrings.SqlDbConnectionString))

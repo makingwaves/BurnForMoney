@@ -13,11 +13,11 @@ namespace BurnForMoney.Functions.Functions.ActivityOperations
     public static class DeleteActivityFunc
     {
         [FunctionName(FunctionsNames.Q_DeleteActivity)]
-        public static async Task Q_DeleteActivity(ILogger log, ExecutionContext executionContext,
+        public static async Task Q_DeleteActivity(ILogger log,
             [QueueTrigger(AppQueueNames.DeleteActivityRequests)] DeleteActivityRequest deleteRequest)
         {
             log.LogFunctionStart(FunctionsNames.Q_DeleteActivity);
-            var configuration = ApplicationConfiguration.GetSettings(executionContext);
+            var configuration = ApplicationConfiguration.GetSettings();
             using (var conn = SqlConnectionFactory.Create(configuration.ConnectionStrings.SqlDbConnectionString))
             {
                 await conn.OpenWithRetryAsync();

@@ -1,4 +1,5 @@
 ﻿using System;
+using BurnForMoney.Functions.Shared.Extensions;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Configuration;
 
@@ -8,11 +9,16 @@ namespace BurnForMoney.Functions.Configuration
     {
         private static ConfigurationRoot _settings;
 
-        public static ConfigurationRoot GetSettings(ExecutionContext context)
+        public static ConfigurationRoot GetSettings()
+        {
+            return GetSettings(Environment.CurrentDirectory);
+        }
+
+        public static ConfigurationRoot GetSettings(string functionAppDirectory)
         {
             if (_settings == null)
             {
-                var config = GetApplicationConfiguration(context.FunctionAppDirectory);
+                var config = GetApplicationConfiguration(functionAppDirectory);
 
                 var isLocal = string.IsNullOrEmpty(GetEnvironmentVariable(EnvironmentSettingNames.AzureWebsiteInstanceId));
                 _settings = new ConfigurationRoot
@@ -23,12 +29,7 @@ namespace BurnForMoney.Functions.Configuration
                         SqlDbConnectionString = config["ConnectionStrings:Sql"],
                         AzureWebJobsStorage = config["AzureWebJobsStorage"]
                     },
-                    Email = new EmailSection
-                    {
-                        ReportsReceiver = config["Email:ReportsReceiver"],
-                        SenderEmail = "burnformoney@makingwaves.com",
-                        DefaultRecipient = config["Email:DefaultRecipient"]
-                    },
+                    Email = config.Get<EmailSection>("Email"),
                     ApplicationInsightsInstrumentationKey = config["APPINSIGHTS_INSTRUMENTATIONKEY"],
                     SendGridApiKey = config["SendGrid:ApiKey"]
                 };

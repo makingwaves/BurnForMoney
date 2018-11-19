@@ -18,11 +18,10 @@ namespace BurnForMoney.Functions.Strava.Functions.AuthorizeNewAthlete
         private static readonly StravaService StravaService = new StravaService();
 
         [FunctionName(FunctionsNames.A_ExchangeTokenAndGetAthleteSummary)]
-        public static StravaAthlete A_ExchangeTokenAndGetAthleteSummary([ActivityTrigger]string authorizationCode, ILogger log,
-            ExecutionContext context)
+        public static StravaAthlete A_ExchangeTokenAndGetAthleteSummary([ActivityTrigger]string authorizationCode, ILogger log)
         {
             log.LogFunctionStart(FunctionsNames.A_ExchangeTokenAndGetAthleteSummary);
-            var configuration = ApplicationConfiguration.GetSettings(context);
+            var configuration = ApplicationConfiguration.GetSettings();
 
             log.LogInformation($"Requesting for access token using clientId: {configuration.Strava.ClientId}.");
 
@@ -45,13 +44,13 @@ namespace BurnForMoney.Functions.Strava.Functions.AuthorizeNewAthlete
 
         [FunctionName(FunctionsNames.A_SendAthleteApprovalRequest)]
         public static async Task A_SendAthleteApprovalRequest([ActivityTrigger]DurableActivityContext activityContext, ILogger log,
-            ExecutionContext context, [Queue(AppQueueNames.NotificationsToSend, Connection = "AppQueuesStorage")] CloudQueue notificationsQueue,
+            [Queue(AppQueueNames.NotificationsToSend, Connection = "AppQueuesStorage")] CloudQueue notificationsQueue,
             [Table("AthleteApprovals", "AzureWebJobsStorage")] IAsyncCollector<AthleteApproval> athleteApprovalCollector)
         {
             log.LogFunctionStart(FunctionsNames.A_SendAthleteApprovalRequest);
             var (firstName, lastName) = activityContext.GetInput<(string, string)>();
 
-            var configuration = ApplicationConfiguration.GetSettings(context);
+            var configuration = ApplicationConfiguration.GetSettings();
 
             var approvalCode = Guid.NewGuid().ToString("N");
             var athleteApproval = new AthleteApproval

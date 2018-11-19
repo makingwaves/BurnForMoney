@@ -17,11 +17,11 @@ namespace BurnForMoney.Functions.Functions.ResultsSnapshots
     public static class CalculateMonthlyAthleteResultsFunc
     {
         [FunctionName(FunctionsNames.Q_CalculateMonthlyAthleteResults)]
-        public static async Task Q_CalculateMonthlyAthleteResults([QueueTrigger(QueueNames.CalculateMonthlyResults)] CalculateMonthlyResultsRequest request, ILogger log, ExecutionContext executionContext)
+        public static async Task Q_CalculateMonthlyAthleteResults([QueueTrigger(QueueNames.CalculateMonthlyResults)] CalculateMonthlyResultsRequest request, ILogger log)
         {
             log.LogFunctionStart(FunctionsNames.Q_CalculateMonthlyAthleteResults);
 
-            var configuration = ApplicationConfiguration.GetSettings(executionContext);
+            var configuration = ApplicationConfiguration.GetSettings();
             using (var conn = SqlConnectionFactory.Create(configuration.ConnectionStrings.SqlDbConnectionString))
             {
                 await conn.OpenWithRetryAsync();

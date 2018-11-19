@@ -5,10 +5,13 @@
     "AzureWebJobsStorage": "UseDevelopmentStorage=true",
     "AzureWebJobsDashboard": "UseDevelopmentStorage=true",
     "StravaAppHostName": "http://localhost:7072",
-    "Email:ReportsReceiver": "pawel.maga@makingwaves.com",
-    "Email:DefaultRecipient": "pawel.maga@makingwaves.com",
     "KeyVaultName": "burnformoneykvdev",
     "ConnectionStrings:Sql": "Data Source=(LocalDB)\\.;Initial Catalog=BurnForMoney;Integrated Security=True;"
+  },
+  "Email": {
+    "SenderEmail": "burnformoney@makingwaves.com",
+    "ReportsReceiver": "pawel.maga@makingwaves.com",
+    "DefaultRecipient": "pawel.maga@makingwaves.com"
   },
   "Host": {
     "LocalHttpPort": 7071

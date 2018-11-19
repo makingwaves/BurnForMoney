@@ -19,11 +19,10 @@ namespace BurnForMoney.Functions.Strava.Functions.AuthorizeNewAthlete
 
         [FunctionName(FunctionsNames.AuthenticateUser)]
         public static async Task<IActionResult> RunAuthorizeStravaUser([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "strava/authenticate")]
-            HttpRequest req, ILogger log, [Queue(QueueNames.AuthorizationCodes)] CloudQueue authorizationCodesQueue,
-            ExecutionContext context)
+            HttpRequest req, ILogger log, [Queue(QueueNames.AuthorizationCodes)] CloudQueue authorizationCodesQueue)
         {
             log.LogFunctionStart(FunctionsNames.AuthenticateUser);
-            var configuration = ApplicationConfiguration.GetSettings(context);
+            var configuration = ApplicationConfiguration.GetSettings();
 
             var referer = req.Headers["Referer"].FirstOrDefault() ?? "null";
             log.LogInformation(FunctionsNames.AuthenticateUser, $"Request referer: [{referer}].");

@@ -1,4 +1,4 @@
-﻿namespace BurnForMoney.Functions.Manual.Functions
+﻿namespace BurnForMoney.Functions.InternalApi.Functions
 {
     public static class FunctionsNames
     {

@@ -8,6 +8,7 @@ using BurnForMoney.Functions.Shared.Extensions;
 using BurnForMoney.Functions.Shared.Queues;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using SendGrid;
 using SendGrid.Helpers.Mail;
 
@@ -19,10 +20,11 @@ namespace BurnForMoney.Functions.Functions.Notifications
         private static string _emailTemplate;
 
         [FunctionName(FunctionsNames.Q_NotificationsGateway)]
-        public static async Task SendEmail([QueueTrigger(AppQueueNames.NotificationsToSend)] Notification notification, ILogger log, ExecutionContext context)
+        public static async Task SendEmail([QueueTrigger(AppQueueNames.NotificationsToSend)] Notification notification, 
+            ILogger log, ExecutionContext context)
         {
             log.LogFunctionStart(FunctionsNames.Q_NotificationsGateway);
-            var configuration = ApplicationConfiguration.GetSettings(context);
+            var configuration = ApplicationConfiguration.GetSettings();
 
             if (_sendGridClient == null)
             {

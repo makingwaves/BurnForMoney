@@ -18,10 +18,10 @@ namespace BurnForMoney.Functions.Strava.Functions._Support
         [Disable] //Not supported by Durable Task (https://github.com/Azure/durabletask/blob/2c2e9c27980473641b99a81e4c35fb6245670590/src/DurableTask.AzureStorage/Tracking/AzureTableTrackingStore.cs)
         public static async Task<IActionResult> PurgeDurableHubHistory([HttpTrigger(AuthorizationLevel.Admin, "delete", Route = "support/durablehub/purge/olderthan1day")]HttpRequest req,
             [OrchestrationClient]DurableOrchestrationClient starter,
-            ILogger log, ExecutionContext context)
+            ILogger log)
         {
             log.LogFunctionStart(SupportFunctionsNames.PurgeDurableHubHistory);
-            var configuration = ApplicationConfiguration.GetSettings(context);
+            var configuration = ApplicationConfiguration.GetSettings();
 
             var settings = new AzureStorageOrchestrationServiceSettings
             {

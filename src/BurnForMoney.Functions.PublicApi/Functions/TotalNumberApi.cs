@@ -23,12 +23,13 @@ namespace BurnForMoney.Functions.PublicApi.Functions
         private static readonly IMemoryCache Cache = new MemoryCache(new MemoryDistributedCacheOptions());
 
         [FunctionName("TotalNumbers")]
-        public static async Task<IActionResult> TotalNumbers([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "totalnumbers")] HttpRequest req, ILogger log, ExecutionContext executionContext)
+        public static async Task<IActionResult> TotalNumbers([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "totalnumbers")] HttpRequest req, 
+            ILogger log)
         {
             log.LogFunctionStart("TotalNumbers");
             if (!Cache.TryGetValue(CacheKey, out var totalNumbers))
             {
-                totalNumbers = await GetTotalNumbersAsync(executionContext);
+                totalNumbers = await GetTotalNumbersAsync();
 
                 var cacheEntryOptions = new MemoryCacheEntryOptions
                 {
@@ -43,9 +44,9 @@ namespace BurnForMoney.Functions.PublicApi.Functions
             return new OkObjectResult(totalNumbers);
         }
 
-        private static async Task<object> GetTotalNumbersAsync(ExecutionContext executionContext)
+        private static async Task<object> GetTotalNumbersAsync()
         {
-            var configuration = ApplicationConfiguration.GetSettings(executionContext);
+            var configuration = ApplicationConfiguration.GetSettings();
             using (var conn = SqlConnectionFactory.Create(configuration.ConnectionStrings.SqlDbConnectionString))
             {
                 await conn.OpenWithRetryAsync();

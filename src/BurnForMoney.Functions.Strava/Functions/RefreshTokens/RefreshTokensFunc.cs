@@ -20,11 +20,11 @@ namespace BurnForMoney.Functions.Strava.Functions.RefreshTokens
         private static readonly StravaService StravaService = new StravaService();
 
         [FunctionName(FunctionsNames.T_RefreshAccessTokens)]
-        public static async Task T_RefreshAccessTokens([TimerTrigger("0 50 * * * *")] TimerInfo timer, ILogger log, ExecutionContext executionContext,
+        public static async Task T_RefreshAccessTokens([TimerTrigger("0 50 * * * *")] TimerInfo timer, ILogger log,
             [Queue(QueueNames.RefreshStravaToken)] CloudQueue refreshTokensQueue)
         {
             log.LogFunctionStart(FunctionsNames.T_RefreshAccessTokens);
-            var configuration = ApplicationConfiguration.GetSettings(executionContext);
+            var configuration = ApplicationConfiguration.GetSettings();
 
             IEnumerable<(string AthleteId, string EncryptedRefreshToken)> expiringTokens;
             using (var conn = SqlConnectionFactory.Create(configuration.ConnectionStrings.SqlDbConnectionString))
@@ -58,10 +58,10 @@ WHERE Tokens.ExpiresAt < @DateTo AND Athletes.Active=1",
         }
 
         [FunctionName(FunctionsNames.Q_RefreshAccessTokens)]
-        public static async Task Q_RefreshAccessTokens([QueueTrigger(QueueNames.RefreshStravaToken)] TokenRefreshRequest request, ILogger log, ExecutionContext executionContext)
+        public static async Task Q_RefreshAccessTokens([QueueTrigger(QueueNames.RefreshStravaToken)] TokenRefreshRequest request, ILogger log)
         {
             log.LogFunctionStart(FunctionsNames.Q_RefreshAccessTokens);
-            var configuration = ApplicationConfiguration.GetSettings(executionContext);
+            var configuration = ApplicationConfiguration.GetSettings();
 
             var refreshToken = AccessTokensEncryptionService.Decrypt(request.EncryptedRefreshToken, configuration.Strava.AccessTokensEncryptionKey);
 

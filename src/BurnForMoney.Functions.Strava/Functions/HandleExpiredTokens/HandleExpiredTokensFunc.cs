@@ -12,12 +12,12 @@ namespace BurnForMoney.Functions.Strava.Functions.HandleExpiredTokens
     public static class HandleExpiredTokensFunc
     {
         [FunctionName(FunctionsNames.Q_DeactivateExpiredAccessTokens)]
-        public static async Task Q_DeactivateExpiredAccessTokens(ILogger log, ExecutionContext executionContext,
+        public static async Task Q_DeactivateExpiredAccessTokens(ILogger log, 
             [QueueTrigger(QueueNames.UnauthorizedAccessTokens)] string encryptedAccessToken)
         {
             log.LogFunctionStart(FunctionsNames.Q_DeactivateExpiredAccessTokens);
 
-            var configuration = ApplicationConfiguration.GetSettings(executionContext);
+            var configuration = ApplicationConfiguration.GetSettings();
             using (var conn = SqlConnectionFactory.Create(configuration.ConnectionStrings.SqlDbConnectionString))
             {
                 await conn.OpenWithRetryAsync();

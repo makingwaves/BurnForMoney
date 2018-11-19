@@ -19,14 +19,14 @@ namespace BurnForMoney.Functions.Strava.Functions.ProcessNewAthlete
     public static class ProcessNewAthleteFunc
     {
         [FunctionName(FunctionsNames.Q_ProcessNewAthlete)]
-        public static async Task Q_ProcessNewAthleteAsync(ILogger log, ExecutionContext executionContext,
+        public static async Task Q_ProcessNewAthleteAsync(ILogger log,
             [QueueTrigger(QueueNames.NewStravaAthletesRequests)] StravaAthlete athlete,
             [Queue(QueueNames.NewStravaAthletesRequestsPoison)] CloudQueue newAthletesRequestPoisonQueue,
             [Queue(QueueNames.CollectAthleteActivities)] CloudQueue collectActivitiesQueues)
         {
             log.LogFunctionStart(FunctionsNames.Q_ProcessNewAthlete);
 
-            var configuration = ApplicationConfiguration.GetSettings(executionContext);
+            var configuration = ApplicationConfiguration.GetSettings();
 
             using (var conn = SqlConnectionFactory.Create(configuration.ConnectionStrings.SqlDbConnectionString))
             {

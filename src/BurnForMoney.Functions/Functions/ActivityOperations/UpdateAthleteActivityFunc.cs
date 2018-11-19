@@ -16,11 +16,11 @@ namespace BurnForMoney.Functions.Functions.ActivityOperations
         private static readonly ConcurrentDictionary<string, string> AthleteIdsMappings = new ConcurrentDictionary<string, string>();
 
         [FunctionName(FunctionsNames.Q_UpdateAthleteActivity)]
-        public static async Task Q_UpdateAthleteActivity(ILogger log, ExecutionContext executionContext, [QueueTrigger(QueueNames.PendingActivitiesUpdates)] PendingActivity activity)
+        public static async Task Q_UpdateAthleteActivity(ILogger log, [QueueTrigger(QueueNames.PendingActivitiesUpdates)] PendingActivity activity)
         {
             log.LogFunctionStart(FunctionsNames.Q_SubmitAthleteActivity);
 
-            var configuration = ApplicationConfiguration.GetSettings(executionContext);
+            var configuration = ApplicationConfiguration.GetSettings();
             using (var conn = SqlConnectionFactory.Create(configuration.ConnectionStrings.SqlDbConnectionString))
             {
                 await conn.OpenWithRetryAsync();

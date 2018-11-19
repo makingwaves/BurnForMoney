@@ -7,7 +7,7 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
 
-namespace BurnForMoney.Functions.Manual.Functions.Activities
+namespace BurnForMoney.Functions.InternalApi.Functions.Activities
 {
     public static class GetActivityCategoriesFunc
     {
