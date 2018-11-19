@@ -13,7 +13,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BurnForMoney.Functions.Shar
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BurnForMoney.Functions.PublicApi", "BurnForMoney.Functions.PublicApi\BurnForMoney.Functions.PublicApi.csproj", "{E6354980-45FB-43B5-8A66-ABAC7E0DA242}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BurnForMoney.Functions.Manual", "BurnForMoney.Functions.Manual\BurnForMoney.Functions.Manual.csproj", "{53E4412E-3B79-4CE2-8B4F-0ECF02B59557}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BurnForMoney.Functions.InternalApi", "BurnForMoney.Functions.InternalApi\BurnForMoney.Functions.InternalApi.csproj", "{53E4412E-3B79-4CE2-8B4F-0ECF02B59557}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

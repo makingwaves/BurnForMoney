@@ -66,10 +66,10 @@
     "publicFunctionHostingPlanName": "[concat(variables('applicationShortName'), 'func-public-', parameters('environmentCode'))]",
     "publicFunctionStorageAccountName": "[concat(variables('applicationShortName'), 'funcpublic', parameters('environmentCode'))]",
     "publicFunctionStorageAccountId": "[concat(resourceGroup().id,'/providers/','Microsoft.Storage/storageAccounts/', variables('publicFunctionStorageAccountName'))]",
-    "manualFunctionAppName": "[concat(variables('applicationShortName'), 'func-manual-', parameters('environmentCode'))]",
-    "manualFunctionHostingPlanName": "[concat(variables('applicationShortName'), 'func-manual-', parameters('environmentCode'))]",
-    "manualFunctionStorageAccountName": "[concat(variables('applicationShortName'), 'funcmanual', parameters('environmentCode'))]",
-    "manualFunctionStorageAccountId": "[concat(resourceGroup().id,'/providers/','Microsoft.Storage/storageAccounts/', variables('manualFunctionStorageAccountName'))]",
+    "internalFunctionAppName": "[concat(variables('applicationShortName'), 'func-internal-', parameters('environmentCode'))]",
+    "internalFunctionHostingPlanName": "[concat(variables('applicationShortName'), 'func-internal-', parameters('environmentCode'))]",
+    "internalFunctionStorageAccountName": "[concat(variables('applicationShortName'), 'funcinternal', parameters('environmentCode'))]",
+    "internalFunctionStorageAccountId": "[concat(resourceGroup().id,'/providers/','Microsoft.Storage/storageAccounts/', variables('internalFunctionStorageAccountName'))]",
     "sqlDbName": "[concat(variables('applicationName'), 'sqldb', parameters('environmentCode'))]",
     "sqlServerName": "[concat(variables('applicationName'), 'sqlserver', parameters('environmentCode'))]",
     "keyVaultName": "[concat(variables('applicationName'), 'kv', parameters('environmentCode'))]",
@@ -136,14 +136,14 @@
     },
     {
       "apiVersion": "2015-04-01",
-      "name": "[variables('manualFunctionHostingPlanName')]",
+      "name": "[variables('internalFunctionHostingPlanName')]",
       "type": "Microsoft.Web/serverfarms",
       "location": "[resourceGroup().location]",
       "tags": {
         "displayName": "FunctionHostingPlan"
       },
       "properties": {
-        "name": "[variables('manualFunctionHostingPlanName')]",
+        "name": "[variables('internalFunctionHostingPlanName')]",
         "computeMode": "Dynamic",
         "sku": "Dynamic"
       }
@@ -197,7 +197,7 @@
     },
     {
       "apiVersion": "2016-01-01",
-      "name": "[variables('manualFunctionStorageAccountName')]",
+      "name": "[variables('internalFunctionStorageAccountName')]",
       "type": "Microsoft.Storage/storageAccounts",
       "location": "[resourceGroup().location]",
       "kind": "Storage",
@@ -419,10 +419,6 @@
               "value": "[concat('https://', variables('stravaFunctionAppName'), '.azurewebsites.net')]"
             },
             {
-              "name": "ManualAppHostName",
-              "value": "[concat('https://', variables('manualFunctionAppName'), '.azurewebsites.net')]"
-            },
-            {
               "name": "KeyVaultName",
               "value": "[variables('keyVaultName')]"
             }
@@ -433,7 +429,7 @@
     {
       "apiVersion": "2015-08-01",
       "type": "Microsoft.Web/sites",
-      "name": "[variables('manualFunctionAppName')]",
+      "name": "[variables('internalFunctionAppName')]",
       "location": "[resourceGroup().location]",
       "kind": "functionapp",
       "identity": {
@@ -441,29 +437,29 @@
       },
       "dependsOn": [
         "[resourceId('Microsoft.Web/sites', variables('functionAppName'))]",
-        "[resourceId('Microsoft.Web/serverfarms', variables('manualFunctionHostingPlanName'))]",
-        "[resourceId('Microsoft.Storage/storageAccounts', variables('manualFunctionStorageAccountName'))]",
+        "[resourceId('Microsoft.Web/serverfarms', variables('internalFunctionHostingPlanName'))]",
+        "[resourceId('Microsoft.Storage/storageAccounts', variables('internalFunctionStorageAccountName'))]",
         "[resourceId('microsoft.insights/components', variables('appInsightsName'))]"
       ],
       "properties": {
-        "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('manualFunctionHostingPlanName'))]",
+        "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('internalFunctionHostingPlanName'))]",
         "siteConfig": {
           "appSettings": [
             {
               "name": "AzureWebJobsDashboard",
-              "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('manualFunctionStorageAccountName'), ';AccountKey=', listKeys(variables('manualFunctionStorageAccountid'),'2015-05-01-preview').key1)]"
+              "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('internalFunctionStorageAccountName'), ';AccountKey=', listKeys(variables('internalFunctionStorageAccountid'),'2015-05-01-preview').key1)]"
             },
             {
               "name": "AzureWebJobsStorage",
-              "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('manualFunctionStorageAccountName'), ';AccountKey=', listKeys(variables('manualFunctionStorageAccountid'),'2015-05-01-preview').key1)]"
+              "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('internalFunctionStorageAccountName'), ';AccountKey=', listKeys(variables('internalFunctionStorageAccountid'),'2015-05-01-preview').key1)]"
             },
             {
               "name": "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING",
-              "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('manualFunctionStorageAccountName'), ';AccountKey=', listKeys(variables('manualFunctionStorageAccountid'),'2015-05-01-preview').key1)]"
+              "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('internalFunctionStorageAccountName'), ';AccountKey=', listKeys(variables('internalFunctionStorageAccountid'),'2015-05-01-preview').key1)]"
             },
             {
               "name": "WEBSITE_CONTENTSHARE",
-              "value": "[toLower(variables('manualFunctionAppName'))]"
+              "value": "[toLower(variables('internalFunctionAppName'))]"
             },
             {
               "name": "FUNCTIONS_EXTENSION_VERSION",
@@ -509,9 +505,9 @@
       ]
     },
     {
-      "comments": "Manual Function App - Properties (CORS, etc)",
+      "comments": "internal Function App - Properties (CORS, etc)",
       "type": "Microsoft.Web/sites/config",
-      "name": "[concat(variables('manualFunctionAppName'), '/web')]",
+      "name": "[concat(variables('internalFunctionAppName'), '/web')]",
       "apiVersion": "2018-02-01",
       "location": "[resourceGroup().location]",
       "properties": {
@@ -520,7 +516,7 @@
         }
       },
       "dependsOn": [
-        "[resourceId('Microsoft.Web/sites', variables('manualFunctionAppName'))]"
+        "[resourceId('Microsoft.Web/sites', variables('internalFunctionAppName'))]"
       ]
     },
     {
@@ -631,8 +627,8 @@
             }
           },
           {
-            "tenantId": "[reference(concat('Microsoft.Web/sites/', variables('manualFunctionAppName')), '2015-08-01', 'Full').identity.tenantId]",
-            "objectId": "[reference(concat('Microsoft.Web/sites/', variables('manualFunctionAppName')), '2015-08-01', 'Full').identity.principalId]",
+            "tenantId": "[reference(concat('Microsoft.Web/sites/', variables('internalFunctionAppName')), '2015-08-01', 'Full').identity.tenantId]",
+            "objectId": "[reference(concat('Microsoft.Web/sites/', variables('internalFunctionAppName')), '2015-08-01', 'Full').identity.principalId]",
             "permissions": {
               "keys": [ "get", "list" ],
               "secrets": [ "get", "list" ]
