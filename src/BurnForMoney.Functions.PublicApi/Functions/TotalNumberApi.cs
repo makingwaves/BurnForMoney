@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using BurnForMoney.Functions.PublicApi.Configuration;
 using BurnForMoney.Functions.Shared.Extensions;
+using BurnForMoney.Functions.Shared.Functions.Extensions;
 using BurnForMoney.Functions.Shared.Helpers;
 using BurnForMoney.Functions.Shared.Persistence;
 using Dapper;
@@ -24,12 +25,12 @@ namespace BurnForMoney.Functions.PublicApi.Functions
 
         [FunctionName("TotalNumbers")]
         public static async Task<IActionResult> TotalNumbers([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "totalnumbers")] HttpRequest req, 
-            ILogger log)
+            ILogger log, [Configuration] ConfigurationRoot configuration)
         {
             log.LogFunctionStart("TotalNumbers");
             if (!Cache.TryGetValue(CacheKey, out var totalNumbers))
             {
-                totalNumbers = await GetTotalNumbersAsync();
+                totalNumbers = await GetTotalNumbersAsync(configuration.ConnectionStrings.SqlDbConnectionString);
 
                 var cacheEntryOptions = new MemoryCacheEntryOptions
                 {
@@ -44,10 +45,9 @@ namespace BurnForMoney.Functions.PublicApi.Functions
             return new OkObjectResult(totalNumbers);
         }
 
-        private static async Task<object> GetTotalNumbersAsync()
+        private static async Task<object> GetTotalNumbersAsync(string connectionString)
         {
-            var configuration = ApplicationConfiguration.GetSettings();
-            using (var conn = SqlConnectionFactory.Create(configuration.ConnectionStrings.SqlDbConnectionString))
+            using (var conn = SqlConnectionFactory.Create(connectionString))
             {
                 await conn.OpenWithRetryAsync();
 

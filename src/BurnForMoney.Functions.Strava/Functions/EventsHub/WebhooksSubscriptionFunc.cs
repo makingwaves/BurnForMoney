@@ -2,6 +2,7 @@
 using System.Net.Http;
 using System.Threading.Tasks;
 using BurnForMoney.Functions.Shared.Extensions;
+using BurnForMoney.Functions.Shared.Functions.Extensions;
 using BurnForMoney.Functions.Strava.Configuration;
 using BurnForMoney.Functions.Strava.External.Strava.Api;
 using Microsoft.AspNetCore.Http;
@@ -21,11 +22,9 @@ namespace BurnForMoney.Functions.Strava.Functions.EventsHub
 
         [FunctionName(FunctionsNames.CreateWebhookSubscription)]
         public static async Task<IActionResult> CreateWebhookSubscription([HttpTrigger(AuthorizationLevel.Admin, "post", Route = "strava/subscription/create")] HttpRequest req,
-            ILogger log)
+            ILogger log, [Configuration] ConfigurationRoot configuration)
         {
             log.LogFunctionStart(FunctionsNames.CreateWebhookSubscription);
-
-            var configuration = ApplicationConfiguration.GetSettings();
 
             var data = await req.ReadAsStringAsync();
             log.LogInformation(FunctionsNames.CreateWebhookSubscription, $"Function executed with the following data: <{data}>.");
@@ -107,10 +106,9 @@ namespace BurnForMoney.Functions.Strava.Functions.EventsHub
 
         [FunctionName(FunctionsNames.ViewWebhookSubscription)]
         public static IActionResult ViewWebhookSubscription([HttpTrigger(AuthorizationLevel.Admin, "get", Route = "strava/subscription")] HttpRequest req,
-            ILogger log)
+            ILogger log, [Configuration] ConfigurationRoot configuration)
         {
             log.LogFunctionStart(FunctionsNames.ViewWebhookSubscription);
-            var configuration = ApplicationConfiguration.GetSettings();
 
             try
             {
@@ -128,7 +126,7 @@ namespace BurnForMoney.Functions.Strava.Functions.EventsHub
 
         [FunctionName(FunctionsNames.DeleteWebhookSubscription)]
         public static IActionResult DeleteWebhookSubscription([HttpTrigger(AuthorizationLevel.Admin, "delete", Route = "strava/subscription/{id}")] HttpRequest req,
-            ILogger log, int id)
+            ILogger log, int id, [Configuration] ConfigurationRoot configuration)
         {
             log.LogFunctionStart(FunctionsNames.ViewWebhookSubscription);
 
@@ -136,8 +134,7 @@ namespace BurnForMoney.Functions.Strava.Functions.EventsHub
             {
                 return new BadRequestObjectResult("Subscription id required.");
             }
-
-            var configuration = ApplicationConfiguration.GetSettings();
+            
             try
             {
                 var subscription = StravaWebhooksService.DeleteSubscription(configuration.Strava.ClientId,

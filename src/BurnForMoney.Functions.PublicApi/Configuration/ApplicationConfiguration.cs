@@ -7,7 +7,7 @@ namespace BurnForMoney.Functions.PublicApi.Configuration
     {
         private static ConfigurationRoot _settings;
 
-        public static ConfigurationRoot GetSettings()
+        internal static ConfigurationRoot GetSettings()
         {
             return GetSettings(Environment.CurrentDirectory);
         }

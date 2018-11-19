@@ -2,6 +2,7 @@
 using System.Globalization;
 using System.Threading.Tasks;
 using BurnForMoney.Functions.Shared.Extensions;
+using BurnForMoney.Functions.Shared.Functions.Extensions;
 using BurnForMoney.Functions.Shared.Helpers;
 using BurnForMoney.Functions.Shared.Identity;
 using BurnForMoney.Functions.Shared.Persistence;
@@ -27,11 +28,10 @@ namespace BurnForMoney.Functions.Strava.Functions.CollectAthleteActivities
         public static async Task Run([QueueTrigger(QueueNames.CollectAthleteActivities)] CollectAthleteActivitiesInput input,
             [Queue(AppQueueNames.AddActivityRequests, Connection = "AppQueuesStorage")] CloudQueue pendingRawActivitiesQueue,
             [Queue(QueueNames.UnauthorizedAccessTokens)] CloudQueue unauthorizedAccessTokensQueue,
-            ILogger log)
+            ILogger log,
+            [Configuration] ConfigurationRoot configuration)
         {
             log.LogFunctionStart(FunctionsNames.Q_CollectAthleteActivities);
-
-            var configuration = ApplicationConfiguration.GetSettings();
 
             string encryptedAccessToken;
             string accessToken;

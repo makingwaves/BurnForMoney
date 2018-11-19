@@ -2,6 +2,7 @@
 using BurnForMoney.Functions.Configuration;
 using BurnForMoney.Functions.Exceptions;
 using BurnForMoney.Functions.Shared.Extensions;
+using BurnForMoney.Functions.Shared.Functions.Extensions;
 using BurnForMoney.Functions.Shared.Persistence;
 using BurnForMoney.Functions.Shared.Queues;
 using Dapper;
@@ -14,10 +15,10 @@ namespace BurnForMoney.Functions.Functions.ActivityOperations
     {
         [FunctionName(FunctionsNames.Q_DeleteActivity)]
         public static async Task Q_DeleteActivity(ILogger log,
-            [QueueTrigger(AppQueueNames.DeleteActivityRequests)] DeleteActivityRequest deleteRequest)
+            [QueueTrigger(AppQueueNames.DeleteActivityRequests)] DeleteActivityRequest deleteRequest,
+            [Configuration] ConfigurationRoot configuration)
         {
             log.LogFunctionStart(FunctionsNames.Q_DeleteActivity);
-            var configuration = ApplicationConfiguration.GetSettings();
             using (var conn = SqlConnectionFactory.Create(configuration.ConnectionStrings.SqlDbConnectionString))
             {
                 await conn.OpenWithRetryAsync();

@@ -1,13 +1,13 @@
 ﻿using System.Linq;
+using BurnForMoney.Functions.InternalApi.Configuration;
 using BurnForMoney.Functions.Shared.Functions.Extensions;
-using BurnForMoney.Functions.Strava.Configuration;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-[assembly: WebJobsStartup(typeof(BurnForMoney.Functions.Strava.WebJobsExtensionStartup))]
-namespace BurnForMoney.Functions.Strava
+[assembly: WebJobsStartup(typeof(BurnForMoney.Functions.InternalAPi.WebJobsExtensionStartup))]
+namespace BurnForMoney.Functions.InternalAPi
 {
     public class WebJobsExtensionStartup : IWebJobsStartup
     {
@@ -21,7 +21,7 @@ namespace BurnForMoney.Functions.Strava
                 .AddConfiguration(rootConfig).AddAzureKeyVault($"https://{keyvaultName}.vault.azure.net/").Build();
 
             builder.Services.AddSingleton<IConfiguration>(config);
-            builder.AddExtension(new ConfigurationExtensionConfigProvider<Configuration.ConfigurationRoot>(
+            builder.AddExtension(new ConfigurationExtensionConfigProvider<InternalApi.Configuration.ConfigurationRoot>(
                 ApplicationConfiguration.GetSettings()));
         }
     }

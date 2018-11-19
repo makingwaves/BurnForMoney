@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using BurnForMoney.Functions.Configuration;
 using BurnForMoney.Functions.Shared.Extensions;
+using BurnForMoney.Functions.Shared.Functions.Extensions;
 using BurnForMoney.Functions.Shared.Helpers;
 using BurnForMoney.Functions.Shared.Persistence;
 using BurnForMoney.Functions.Shared.Queues;
@@ -25,10 +26,10 @@ namespace BurnForMoney.Functions.Functions.Reports
         [FunctionName(FunctionsNames.T_GenerateReport)]
         public static async Task Run(
             [TimerTrigger("0 0 0 5 * *")] TimerInfo timer,
+            [Configuration] ConfigurationRoot configuration,
             ILogger log)
         {
             log.LogFunctionStart(FunctionsNames.T_GenerateReport);
-            var configuration = ApplicationConfiguration.GetSettings();
             var lastMonth = DateTime.UtcNow.AddMonths(-1);
 
             string json;
@@ -94,11 +95,10 @@ namespace BurnForMoney.Functions.Functions.Reports
         [FunctionName(FunctionsNames.B_SendNotificationWithLinkToTheReport)]
         public static async Task B_SendNotificationWithLinkToTheReport([BlobTrigger("reports")] CloudBlockBlob cloudBlob,
             ILogger log,
+            [Configuration] ConfigurationRoot configuration,
             [Queue(AppQueueNames.NotificationsToSend)] CloudQueue notificationsQueue)
         {
             log.LogFunctionStart(FunctionsNames.B_SendNotificationWithLinkToTheReport);
-
-            var configuration = ApplicationConfiguration.GetSettings();
 
             var blobSasToken = GetBlobSasToken(cloudBlob, SharedAccessBlobPermissions.Read);
             log.LogInformation(FunctionsNames.B_SendNotificationWithLinkToTheReport, "Fenerated SAS token.");
