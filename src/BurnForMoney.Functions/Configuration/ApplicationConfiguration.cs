@@ -1,6 +1,5 @@
 ﻿using System;
 using BurnForMoney.Functions.Shared.Extensions;
-using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Configuration;
 
 namespace BurnForMoney.Functions.Configuration

@@ -1,4 +1,6 @@
 ﻿using System.Linq;
+using BurnForMoney.Functions.Configuration;
+using BurnForMoney.Functions.Shared.Functions.Extensions;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -19,6 +21,8 @@ namespace BurnForMoney.Functions
                 .AddConfiguration(rootConfig).AddAzureKeyVault($"https://{keyvaultName}.vault.azure.net/").Build();
 
             builder.Services.AddSingleton<IConfiguration>(config);
+            builder.AddExtension(new ConfigurationExtensionConfigProvider<Configuration.ConfigurationRoot>(
+                ApplicationConfiguration.GetSettings()));
         }
     }
 }
