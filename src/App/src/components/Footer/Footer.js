@@ -2,10 +2,12 @@ import React, { Component } from 'react';
 
 import logoMW from 'img/mw-logo-black.svg';
 import NoA_member from 'img/noa-member.svg';
+import { withNamespaces } from 'react-i18next';
 import './Footer.css';
 
 class Footer extends Component {
   render() {
+    const { t } = this.props;
     return (
       <div className="Footer">
         <div className="Footer__container container">
@@ -15,8 +17,8 @@ class Footer extends Component {
           <div className="Footer__links">
             <ul className="Footer__links-list">
               <li className="Footer__links-listItem"><a href="http://makingwaves.com/">makingwaves.com</a></li>
-              <li className="Footer__links-listItem"><a href="http://praca.makingwaves.com/#initiatives">our initiatives</a></li>
-              <li className="Footer__links-listItem"><a href="https://www.makingwaves.com/contact-us/">contact us</a></li>
+              <li className="Footer__links-listItem"><a href="http://praca.makingwaves.com/#initiatives">{t('Our initiatives')}</a></li>
+              <li className="Footer__links-listItem"><a href="https://www.makingwaves.com/contact-us/">{t('Contact us')}</a></li>
             </ul>
           </div>
           <div className="Footer__company">
@@ -40,4 +42,4 @@ class Footer extends Component {
   }
 }
 
-export default Footer;
+export default withNamespaces()(Footer);

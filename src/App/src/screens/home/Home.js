@@ -59,22 +59,28 @@ class Home extends Component {
   }
 
   componentDidMount(){
-    const api_contentful = process.env.REACT_APP_CONTENTFUL;
-    const api_url = process.env.REACT_APP_API_URL;
-
+    //contentful
     const client = contentful.createClient({
       space: "r9sx20y0suod",
       accessToken: "0cfdeec874152c24de8109da60c0bd09630fd3e4efdeddf9223652a433927fc4",
       host: "preview.contentful.com"
     });
+    console.log('client', client);
 
     client.getEntries().then(entries => {
-
+      console.log('contentful: ', entries)
       this.setState({
         contentful: entries.items
       });
-
     })
+    client.getLocales()
+      .then((response) => console.log('response', response))
+      .catch(console.error)
+
+      //.catch(console.error)
+
+    // internal api_url
+    const api_url = process.env.REACT_APP_API_URL;
 
     fetch(api_url+"api/totalnumbers")
       .then(res => res.json())
