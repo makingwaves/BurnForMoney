@@ -41,7 +41,7 @@ namespace BurnForMoney.Functions.Strava.Functions.EventsHub
             };
 
             var athleteExists =
-                await AthleteExistsAsync(message.AthleteId, configuration.ConnectionStrings.SqlDbConnectionString);
+                await AthleteExistsAndIsActiveAsync(message.AthleteId, configuration.ConnectionStrings.SqlDbConnectionString);
             if (!athleteExists)
             {
                 // This can happen when the athlete is either deactivated (but authenticated) or has not yet been authorized.
@@ -84,13 +84,13 @@ namespace BurnForMoney.Functions.Strava.Functions.EventsHub
             log.LogFunctionEnd(FunctionsNames.EventsRouter);
         }
 
-        private static async Task<bool> AthleteExistsAsync(string athleteExternalId, string connectionString)
+        private static async Task<bool> AthleteExistsAndIsActiveAsync(string athleteExternalId, string connectionString)
         {
             using (var conn = SqlConnectionFactory.Create(connectionString))
             {
                 await conn.OpenWithRetryAsync();
 
-                var exists = await conn.ExecuteScalarAsync<bool>("SELECT COUNT(1) FROM dbo.Athletes WHERE ExternalId=@AthleteExternalId", new
+                var exists = await conn.ExecuteScalarAsync<bool>("SELECT COUNT(1) FROM dbo.Athletes WHERE ExternalId=@AthleteExternalId AND Active=1", new
                 {
                     AthleteExternalId = athleteExternalId
                 });
