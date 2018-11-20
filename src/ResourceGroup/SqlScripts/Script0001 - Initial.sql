@@ -7,7 +7,7 @@ GO
 CREATE TABLE dbo.[Activities] (Id nvarchar(32) NOT NULL, AthleteId nvarchar(32) NOT NULL, ExternalId nvarchar(100) UNIQUE, ActivityTime datetime2, ActivityType nvarchar(50), Distance int, MovingTime int, Category nvarchar(60), Points float DEFAULT 0 NOT NULL, Source nvarchar(30), PRIMARY KEY (Id), FOREIGN KEY (AthleteId) REFERENCES dbo.Athletes(Id))
 GO
 
-CREATE TABLE dbo.[MonthlyResultsSnapshots] (Id int PRIMARY KEY IDENTITY, Date nvarchar(7) NOT NULL, Results nvarchar(4000) NOT NULL)
+CREATE TABLE dbo.[MonthlyResultsSnapshots] (Id int PRIMARY KEY IDENTITY, Date nvarchar(7) NOT NULL, Results nvarchar(max) NOT NULL)
 GO
 
 ALTER TABLE dbo.[MonthlyResultsSnapshots]

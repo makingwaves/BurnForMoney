@@ -3,7 +3,7 @@ ADD LastUpdate datetime2
 GO
 DROP PROCEDURE MonthlyResultsSnapshots_Upsert
 GO
-CREATE PROCEDURE MonthlyResultsSnapshots_Upsert ( @Date nvarchar(7), @Results nvarchar(4000))
+CREATE PROCEDURE MonthlyResultsSnapshots_Upsert ( @Date nvarchar(7), @Results nvarchar(max))
 AS 
   SET TRANSACTION ISOLATION LEVEL SERIALIZABLE;
   BEGIN TRAN
