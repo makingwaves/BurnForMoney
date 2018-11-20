@@ -2,6 +2,7 @@
 using System.Data;
 using System.Threading.Tasks;
 using BurnForMoney.Functions.Shared.Extensions;
+using BurnForMoney.Functions.Shared.Functions.Extensions;
 using BurnForMoney.Functions.Shared.Identity;
 using BurnForMoney.Functions.Shared.Persistence;
 using BurnForMoney.Functions.Strava.Configuration;
@@ -19,14 +20,13 @@ namespace BurnForMoney.Functions.Strava.Functions.ProcessNewAthlete
     public static class ProcessNewAthleteFunc
     {
         [FunctionName(FunctionsNames.Q_ProcessNewAthlete)]
-        public static async Task Q_ProcessNewAthleteAsync(ILogger log, ExecutionContext executionContext,
+        public static async Task Q_ProcessNewAthleteAsync(ILogger log,
             [QueueTrigger(QueueNames.NewStravaAthletesRequests)] StravaAthlete athlete,
             [Queue(QueueNames.NewStravaAthletesRequestsPoison)] CloudQueue newAthletesRequestPoisonQueue,
-            [Queue(QueueNames.CollectAthleteActivities)] CloudQueue collectActivitiesQueues)
+            [Queue(QueueNames.CollectAthleteActivities)] CloudQueue collectActivitiesQueues,
+            [Configuration] ConfigurationRoot configuration)
         {
             log.LogFunctionStart(FunctionsNames.Q_ProcessNewAthlete);
-
-            var configuration = ApplicationConfiguration.GetSettings(executionContext);
 
             using (var conn = SqlConnectionFactory.Create(configuration.ConnectionStrings.SqlDbConnectionString))
             {

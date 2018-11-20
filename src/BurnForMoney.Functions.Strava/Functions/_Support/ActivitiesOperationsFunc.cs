@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using BurnForMoney.Functions.Shared.Extensions;
+using BurnForMoney.Functions.Shared.Functions.Extensions;
 using BurnForMoney.Functions.Shared.Persistence;
 using BurnForMoney.Functions.Strava.Configuration;
 using BurnForMoney.Functions.Strava.Functions.CollectAthleteActivities.Dto;
@@ -20,12 +21,12 @@ namespace BurnForMoney.Functions.Strava.Functions._Support
     {
         [FunctionName(SupportFunctionsNames.PullAllAthletesActivities)]
         public static async Task<IActionResult> PullAllAthletesActivities([HttpTrigger(AuthorizationLevel.Admin, "post", Route = "support/athlete/all/activities/collect")]HttpRequest req, ILogger log,
-            [Queue(QueueNames.CollectAthleteActivities)] CloudQueue collectActivitiesQueues, ExecutionContext executionContext)
+            [Queue(QueueNames.CollectAthleteActivities)] CloudQueue collectActivitiesQueues,
+            [Configuration] ConfigurationRoot configuration)
         {
             log.LogFunctionStart(SupportFunctionsNames.PullAllAthletesActivities);
 
             var from = DateTime.TryParse(req.Query["from"], out var date) ? date : (DateTime?)null;
-            var configuration = ApplicationConfiguration.GetSettings(executionContext);
 
             IEnumerable<string> ids;
             using (var conn = SqlConnectionFactory.Create(configuration.ConnectionStrings.SqlDbConnectionString))

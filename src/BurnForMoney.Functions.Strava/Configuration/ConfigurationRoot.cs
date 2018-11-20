@@ -17,7 +17,6 @@ namespace BurnForMoney.Functions.Strava.Configuration
 
     public class EmailSection
     {
-        public string SenderEmail { get; set; }
         public string AthletesApprovalEmail { get; set; }
         public string DefaultRecipient { get; set; }
     }

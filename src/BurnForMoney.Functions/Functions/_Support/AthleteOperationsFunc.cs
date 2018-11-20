@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using BurnForMoney.Functions.Configuration;
 using BurnForMoney.Functions.Exceptions;
 using BurnForMoney.Functions.Shared.Extensions;
+using BurnForMoney.Functions.Shared.Functions.Extensions;
 using BurnForMoney.Functions.Shared.Persistence;
 using Dapper;
 using Microsoft.AspNetCore.Http;
@@ -17,11 +18,12 @@ namespace BurnForMoney.Functions.Functions._Support
     {
         [FunctionName(SupportFunctionsNames.DeactivateAthlete)]
         public static async Task<IActionResult> DeactivateAthlete([HttpTrigger(AuthorizationLevel.Admin, "post", Route = "support/athlete/{athleteId:length(32)}/deactivate")]HttpRequest req, ILogger log,
-            ExecutionContext executionContext, string athleteId)
+            [Configuration] ConfigurationRoot configuration,
+            string athleteId)
         {
             log.LogFunctionStart(SupportFunctionsNames.DeactivateAthlete);
 
-            var connectionString = (ApplicationConfiguration.GetSettings(executionContext)).ConnectionStrings
+            var connectionString = configuration.ConnectionStrings
                 .SqlDbConnectionString;
 
             var deactivationResult = await DeactivateAthleteAsync(athleteId, connectionString);
@@ -36,11 +38,12 @@ namespace BurnForMoney.Functions.Functions._Support
 
         [FunctionName(SupportFunctionsNames.ActivateAthlete)]
         public static async Task<IActionResult> ActivateAthlete([HttpTrigger(AuthorizationLevel.Admin, "post", Route = "support/athlete/{athleteId:length(32)}/activate")]HttpRequest req, ILogger log,
-            ExecutionContext executionContext, string athleteId)
+            [Configuration] ConfigurationRoot configuration,
+            string athleteId)
         {
             log.LogFunctionStart(SupportFunctionsNames.ActivateAthlete);
 
-            var connectionString = (ApplicationConfiguration.GetSettings(executionContext)).ConnectionStrings
+            var connectionString = configuration.ConnectionStrings
                 .SqlDbConnectionString;
 
             var activationResult = await ActivateAthleteAsync(athleteId, connectionString);
@@ -55,11 +58,12 @@ namespace BurnForMoney.Functions.Functions._Support
 
         [FunctionName(SupportFunctionsNames.DeleteAthlete)]
         public static async Task<IActionResult> DeleteAthlete([HttpTrigger(AuthorizationLevel.Admin, "delete", Route = "support/athlete/{athleteId:int:min(1)}")]HttpRequest req, ILogger log,
-            ExecutionContext executionContext, int athleteId)
+            [Configuration] ConfigurationRoot configuration,
+            int athleteId)
         {
             log.LogFunctionStart(SupportFunctionsNames.DeleteAthlete);
 
-            var connectionString = (ApplicationConfiguration.GetSettings(executionContext)).ConnectionStrings
+            var connectionString = (configuration).ConnectionStrings
                 .SqlDbConnectionString;
 
             try

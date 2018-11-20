@@ -1,5 +1,5 @@
 ﻿using System;
-using Microsoft.Azure.WebJobs;
+using BurnForMoney.Functions.Shared.Extensions;
 using Microsoft.Extensions.Configuration;
 
 namespace BurnForMoney.Functions.Strava.Configuration
@@ -8,11 +8,16 @@ namespace BurnForMoney.Functions.Strava.Configuration
     {
         private static ConfigurationRoot _settings;
 
-        public static ConfigurationRoot GetSettings(ExecutionContext context)
+        internal static ConfigurationRoot GetSettings()
+        {
+            return GetSettings(Environment.CurrentDirectory);
+        }
+
+        public static ConfigurationRoot GetSettings(string functionAppDirectory)
         {
             if (_settings == null)
             {
-                var config = GetApplicationConfiguration(context.FunctionAppDirectory);
+                var config = GetApplicationConfiguration(functionAppDirectory);
 
                 var isLocal = string.IsNullOrEmpty(GetEnvironmentVariable(EnvironmentSettingNames.AzureWebsiteInstanceId));
                 _settings = new ConfigurationRoot
@@ -29,12 +34,7 @@ namespace BurnForMoney.Functions.Strava.Configuration
                         ClientSecret = config["Strava:ClientSecret"],
                         AccessTokensEncryptionKey = config["strava:AccessTokensEncryptionKey"]
                     },
-                    Email = new EmailSection
-                    {
-                        AthletesApprovalEmail = config["Email:AthletesApprovalEmail"],
-                        SenderEmail = "burnformoney@makingwaves.com",
-                        DefaultRecipient = config["Email:DefaultRecipient"]
-                    },
+                    Email = config.Get<EmailSection>("Email"),
                     HostName = config["WEB_HOST"],
                     ApplicationInsightsInstrumentationKey = config["APPINSIGHTS_INSTRUMENTATIONKEY"]
                 };

@@ -8,7 +8,7 @@ using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
-namespace BurnForMoney.Functions.Manual.Functions.Athletes
+namespace BurnForMoney.Functions.InternalApi.Functions.Athletes
 {
     public static class CreateAthleteFunc
     {

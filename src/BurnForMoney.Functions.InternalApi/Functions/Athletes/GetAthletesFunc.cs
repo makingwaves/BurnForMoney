@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
-using BurnForMoney.Functions.Manual.Configuration;
+using BurnForMoney.Functions.InternalApi.Configuration;
 using BurnForMoney.Functions.Shared.Extensions;
+using BurnForMoney.Functions.Shared.Functions.Extensions;
 using BurnForMoney.Functions.Shared.Persistence;
 using Dapper;
 using Microsoft.AspNetCore.Http;
@@ -9,17 +10,15 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
 
-namespace BurnForMoney.Functions.Manual.Functions.Athletes
+namespace BurnForMoney.Functions.InternalApi.Functions.Athletes
 {
     public static class GetAthletesFunc
     {
         [FunctionName(FunctionsNames.GetAthletes)]
-        public static async Task<IActionResult> GetAthletes([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "athletes")] HttpRequest req, ExecutionContext executionContext,
-            ILogger log)
+        public static async Task<IActionResult> GetAthletes([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "athletes")] HttpRequest req,  
+            ILogger log, [Configuration] ConfigurationRoot configuration)
         {
             log.LogFunctionStart(FunctionsNames.GetAthletes);
-
-            var configuration = ApplicationConfiguration.GetSettings(executionContext);
 
             using (var conn = SqlConnectionFactory.Create(configuration.ConnectionStrings.SqlDbConnectionString))
             {

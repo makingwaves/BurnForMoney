@@ -5,6 +5,7 @@ using BurnForMoney.Functions.Configuration;
 using BurnForMoney.Functions.Exceptions;
 using BurnForMoney.Functions.Functions.ActivityOperations.Dto;
 using BurnForMoney.Functions.Shared.Extensions;
+using BurnForMoney.Functions.Shared.Functions.Extensions;
 using BurnForMoney.Functions.Shared.Persistence;
 using Dapper;
 using Microsoft.Azure.WebJobs;
@@ -17,11 +18,11 @@ namespace BurnForMoney.Functions.Functions.ActivityOperations
         private static readonly ConcurrentDictionary<string, string> AthleteIdsMappings = new ConcurrentDictionary<string, string>();
 
         [FunctionName(FunctionsNames.Q_SubmitAthleteActivity)]
-        public static async Task Q_SubmitAthleteActivityAsync(ILogger log, ExecutionContext executionContext, [QueueTrigger(QueueNames.PendingActivities)] PendingActivity activity)
+        public static async Task Q_SubmitAthleteActivityAsync(ILogger log, [QueueTrigger(QueueNames.PendingActivities)] PendingActivity activity,
+            [Configuration] ConfigurationRoot configuration)
         {
             log.LogFunctionStart(FunctionsNames.Q_SubmitAthleteActivity);
-
-            var configuration = ApplicationConfiguration.GetSettings(executionContext);
+            
             using (var conn = SqlConnectionFactory.Create(configuration.ConnectionStrings.SqlDbConnectionString))
             {
                 await conn.OpenWithRetryAsync();

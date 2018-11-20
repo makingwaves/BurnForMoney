@@ -1,4 +1,4 @@
-namespace BurnForMoney.Functions.Manual.Configuration
+namespace BurnForMoney.Functions.InternalApi.Configuration
 {
     public class ConfigurationRoot
     {

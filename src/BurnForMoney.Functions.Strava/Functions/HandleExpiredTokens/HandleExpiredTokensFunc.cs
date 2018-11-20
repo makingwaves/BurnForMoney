@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using BurnForMoney.Functions.Shared.Extensions;
+using BurnForMoney.Functions.Shared.Functions.Extensions;
 using BurnForMoney.Functions.Shared.Persistence;
 using BurnForMoney.Functions.Strava.Configuration;
 using Dapper;
@@ -12,12 +13,12 @@ namespace BurnForMoney.Functions.Strava.Functions.HandleExpiredTokens
     public static class HandleExpiredTokensFunc
     {
         [FunctionName(FunctionsNames.Q_DeactivateExpiredAccessTokens)]
-        public static async Task Q_DeactivateExpiredAccessTokens(ILogger log, ExecutionContext executionContext,
-            [QueueTrigger(QueueNames.UnauthorizedAccessTokens)] string encryptedAccessToken)
+        public static async Task Q_DeactivateExpiredAccessTokens(ILogger log, 
+            [QueueTrigger(QueueNames.UnauthorizedAccessTokens)] string encryptedAccessToken,
+            [Configuration] ConfigurationRoot configuration)
         {
             log.LogFunctionStart(FunctionsNames.Q_DeactivateExpiredAccessTokens);
-
-            var configuration = ApplicationConfiguration.GetSettings(executionContext);
+            
             using (var conn = SqlConnectionFactory.Create(configuration.ConnectionStrings.SqlDbConnectionString))
             {
                 await conn.OpenWithRetryAsync();

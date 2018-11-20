@@ -1,6 +1,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using BurnForMoney.Functions.Shared.Extensions;
+using BurnForMoney.Functions.Shared.Functions.Extensions;
 using BurnForMoney.Functions.Strava.Configuration;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -20,10 +21,9 @@ namespace BurnForMoney.Functions.Strava.Functions.AuthorizeNewAthlete
         [FunctionName(FunctionsNames.AuthenticateUser)]
         public static async Task<IActionResult> RunAuthorizeStravaUser([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "strava/authenticate")]
             HttpRequest req, ILogger log, [Queue(QueueNames.AuthorizationCodes)] CloudQueue authorizationCodesQueue,
-            ExecutionContext context)
+            [Configuration] ConfigurationRoot configuration)
         {
             log.LogFunctionStart(FunctionsNames.AuthenticateUser);
-            var configuration = ApplicationConfiguration.GetSettings(context);
 
             var referer = req.Headers["Referer"].FirstOrDefault() ?? "null";
             log.LogInformation(FunctionsNames.AuthenticateUser, $"Request referer: [{referer}].");

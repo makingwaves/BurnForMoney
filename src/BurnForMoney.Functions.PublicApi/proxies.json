@@ -1,13 +1,6 @@
 ﻿{
   "$schema": "http://json.schemastore.org/proxies",
   "proxies": {
-    "manual_activity_management_proxy": {
-      "matchCondition": {
-        "methods": [ "GET", "PUT", "POST", "DELETE" ],
-        "route": "/api/manual/{*restOfPath}"
-      },
-      "backendUri": "%ManualAppHostName%/api/{restOfPath}"
-    },
     "strava_authorization_page_proxy": {
       "matchCondition": {
         "methods": [ "GET" ],

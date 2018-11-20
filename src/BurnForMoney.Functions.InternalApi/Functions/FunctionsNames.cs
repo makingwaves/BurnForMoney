@@ -1,4 +1,4 @@
-﻿namespace BurnForMoney.Functions.Manual.Functions
+﻿namespace BurnForMoney.Functions.InternalApi.Functions
 {
     public static class FunctionsNames
     {
@@ -8,6 +8,7 @@
         public const string AddAthlete = "AddAthlete";
 
         public const string GetAthletes = "GetAthletes";
+        public const string GetAthleteActivities = "GetAthleteActivities";
         public const string GetActivityCategories = "GetActivityCategories";
     }
 }

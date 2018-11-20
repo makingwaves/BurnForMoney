@@ -7,10 +7,12 @@
     "AzureWebJobsDashboard": "UseDevelopmentStorage=true",
     "WEB_HOST": "http://localhost:7072",
     "Strava:ClientId": 28597,
-    "Email:AthletesApprovalEmail": "pawel.maga@makingwaves.com",
-    "Email:DefaultRecipient": "pawel.maga@makingwaves.com",
     "KeyVaultName": "burnformoneykvdev",
     "ConnectionStrings:Sql": "Data Source=(LocalDB)\\.;Initial Catalog=BurnForMoney;Integrated Security=True;"
+  },
+  "Email": {
+    "AthletesApprovalEmail": "pawel.maga@makingwaves.com",
+    "DefaultRecipient": "pawel.maga@makingwaves.com"
   },
   "Host": {
     "LocalHttpPort": 7072

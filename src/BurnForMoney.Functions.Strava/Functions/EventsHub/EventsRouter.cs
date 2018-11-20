@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using BurnForMoney.Functions.Shared.Extensions;
+using BurnForMoney.Functions.Shared.Functions.Extensions;
 using BurnForMoney.Functions.Shared.Helpers;
 using BurnForMoney.Functions.Shared.Identity;
 using BurnForMoney.Functions.Shared.Persistence;
@@ -74,12 +75,11 @@ namespace BurnForMoney.Functions.Strava.Functions.EventsHub
 
         [FunctionName(FunctionsNames.Events_DeauthorizedAthlete)]
         public static async Task Events_DeauthorizedAthlete([QueueTrigger(QueueNames.StravaEventsAthleteDeauthorized)] ActivityData @event,
-            ILogger log, ExecutionContext executionContext,
-            [Queue(AppQueueNames.NotificationsToSend, Connection = "AppQueuesStorage")] CloudQueue notificationsQueue)
+            ILogger log,
+            [Queue(AppQueueNames.NotificationsToSend, Connection = "AppQueuesStorage")] CloudQueue notificationsQueue,
+            [Configuration] ConfigurationRoot configuration)
         {
             log.LogFunctionStart(FunctionsNames.Events_DeauthorizedAthlete);
-
-            var configuration = ApplicationConfiguration.GetSettings(executionContext);
 
             using (var conn = SqlConnectionFactory.Create(configuration.ConnectionStrings.SqlDbConnectionString))
             {
@@ -110,12 +110,12 @@ namespace BurnForMoney.Functions.Strava.Functions.EventsHub
 
         [FunctionName(FunctionsNames.Events_NewActivity)]
         public static async Task Events_NewActivity([QueueTrigger(QueueNames.StravaEventsActivityAdd)] ActivityData @event,
-            ILogger log, ExecutionContext executionContext,
-            [Queue(AppQueueNames.AddActivityRequests, Connection = "AppQueuesStorage")] CloudQueue pendingRawActivitiesQueue)
+            ILogger log, 
+            [Queue(AppQueueNames.AddActivityRequests, Connection = "AppQueuesStorage")] CloudQueue pendingRawActivitiesQueue,
+            [Configuration] ConfigurationRoot configuration)
         {
             log.LogFunctionStart(FunctionsNames.Events_NewActivity);
 
-            var configuration = ApplicationConfiguration.GetSettings(executionContext);
             var accessToken = await GetAccessToken(@event.AthleteId, configuration);
 
             var activity = StravaService.GetActivity(accessToken, @event.ActivityId);
@@ -139,12 +139,12 @@ namespace BurnForMoney.Functions.Strava.Functions.EventsHub
 
         [FunctionName(FunctionsNames.Events_UpdateActivity)]
         public static async Task Events_UpdateActivity([QueueTrigger(QueueNames.StravaEventsActivityUpdate)] ActivityData @event,
-            ILogger log, ExecutionContext executionContext,
-            [Queue(AppQueueNames.UpdateActivityRequests, Connection = "AppQueuesStorage")] CloudQueue pendingRawActivitiesQueue)
+            ILogger log,
+            [Queue(AppQueueNames.UpdateActivityRequests, Connection = "AppQueuesStorage")] CloudQueue pendingRawActivitiesQueue,
+            [Configuration] ConfigurationRoot configuration)
         {
             log.LogFunctionStart(FunctionsNames.Events_UpdateActivity);
-
-            var configuration = ApplicationConfiguration.GetSettings(executionContext);
+            
             var accessToken = await GetAccessToken(@event.AthleteId, configuration);
 
             var activity = StravaService.GetActivity(accessToken, @event.ActivityId);

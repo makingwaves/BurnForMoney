@@ -1,18 +1,22 @@
 ﻿using System;
-using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Configuration;
 
-namespace BurnForMoney.Functions.Manual.Configuration
+namespace BurnForMoney.Functions.InternalApi.Configuration
 {
     public class ApplicationConfiguration
     {
         private static ConfigurationRoot _settings;
-
-        public static ConfigurationRoot GetSettings(ExecutionContext context)
+        
+        internal static ConfigurationRoot GetSettings()
         {
+            return GetSettings(Environment.CurrentDirectory);
+        }
+
+        public static ConfigurationRoot GetSettings(string functionAppDirectory)
+        { 
             if (_settings == null)
             {
-                var config = GetApplicationConfiguration(context.FunctionAppDirectory);
+                var config = GetApplicationConfiguration(functionAppDirectory);
 
                 _settings = new ConfigurationRoot
                 {
