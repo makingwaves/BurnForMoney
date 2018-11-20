@@ -1,7 +1,6 @@
 {
-  "Welcome to React": "Welcome to React and react-i18next",
   "intro line1": "Working out",
-  "intro line2": "for support",
+  "intro line2": "to support",
   "intro line3": "charity",
   "watch in action": "Watch in action",
   "is internal initiative": "is a CSR internal initiative that connects charity with fit lifestyle.",
@@ -17,7 +16,7 @@
   "for charity": "for charity",
   "We are a team": "We are a team",
   "We work together in Making Waves solving problems side by side and creating technological solutions for our clients.": "We work together in Making Waves solving problems side by side and creating technological solutions for our clients.",
-  "After work we": "After work we <1>competing</1> cooperate and train to collect points for our sports activities and to support charity.",
+  "After work we": "After work we <1>compete</1> cooperate and train to collect points for our sports activities and to support charity.",
   "How it works": "How it works:",
   "Every month": "Every month",
   "Employees": "Employees",
@@ -27,7 +26,9 @@
   "Exchange every 500 points to 100zł": "Exchange every 500 points to 100 zł",
   "Beneficiary": "Beneficiary",
   "Receives the money collected": "Receives the money collected",
-  "Other Initiatives": "Other Initiatives",
+  "Other Initiatives": "Other initiatives",
   "Conferences, employees support, events sponsorship and other charity programmes": "Conferences, employees support, events sponsorship<1></1> and other charity programmes",
-  "See our initiatives": "See our initiatives"
+  "See our initiatives": "See our initiatives",
+  "Our initiatives": "Our initiatives",
+  "Contact us": "Contact us"
 }
