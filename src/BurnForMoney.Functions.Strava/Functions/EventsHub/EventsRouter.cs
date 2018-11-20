@@ -61,11 +61,11 @@ namespace BurnForMoney.Functions.Strava.Functions.EventsHub
                         break;
                     case AspectType.Update:
                         log.LogInformation(FunctionsNames.EventsRouter, $"Adding message to {QueueNames.StravaEventsActivityUpdate} queue.");
-                        await updateActivityQueue.AddMessageAsync(new CloudQueueMessage(json));
+                        await updateActivityQueue.AddMessageAsync(new CloudQueueMessage(json), TimeSpan.FromDays(7), TimeSpan.FromMinutes(1), null, null); // Handle quick add->update operation. An event informing about the addition of activity may appear later.
                         break;
                     case AspectType.Delete:
                         log.LogInformation(FunctionsNames.EventsRouter, $"Adding message to {QueueNames.StravaEventsActivityDelete} queue.");
-                        await deleteActivityQueue.AddMessageAsync(new CloudQueueMessage(json));
+                        await deleteActivityQueue.AddMessageAsync(new CloudQueueMessage(json), TimeSpan.FromDays(7), TimeSpan.FromMinutes(1), null, null); // Handle quick add->delete operation. An event informing about the addition of activity may appear later.
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();
