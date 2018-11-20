@@ -29,7 +29,8 @@ namespace BurnForMoney.Functions.Strava.Functions.EventsHub
             [Queue(QueueNames.StravaEventsActivityAdd)] CloudQueue addActivityQueue,
             [Queue(QueueNames.StravaEventsActivityUpdate)] CloudQueue updateActivityQueue,
             [Queue(QueueNames.StravaEventsActivityDelete)] CloudQueue deleteActivityQueue,
-            [Queue(QueueNames.StravaEventsAthleteDeauthorized)] CloudQueue deauthorizationQueue)
+            [Queue(QueueNames.StravaEventsAthleteDeauthorized)] CloudQueue deauthorizationQueue,
+            [Configuration] ConfigurationRoot configuration)
         {
             log.LogFunctionStart(FunctionsNames.EventsRouter);
 
@@ -38,6 +39,16 @@ namespace BurnForMoney.Functions.Strava.Functions.EventsHub
                 AthleteId = @event.OwnerId.ToString(),
                 ActivityId = @event.ObjectId.ToString()
             };
+
+            var athleteExists =
+                await AthleteExistsAsync(message.AthleteId, configuration.ConnectionStrings.SqlDbConnectionString);
+            if (!athleteExists)
+            {
+                // This can happen when the athlete is either deactivated (but authenticated) or has not yet been authorized.
+                log.LogInformation($"Athlete with id: {message.AthleteId} does not exists.");
+                return;
+            }
+
             var json = JsonConvert.SerializeObject(message);
 
             if (@event.ObjectType == ObjectType.Activity)
@@ -53,7 +64,7 @@ namespace BurnForMoney.Functions.Strava.Functions.EventsHub
                         await updateActivityQueue.AddMessageAsync(new CloudQueueMessage(json));
                         break;
                     case AspectType.Delete:
-                        log.LogInformation(FunctionsNames.EventsRouter, $"Aadding message to {QueueNames.StravaEventsActivityDelete} queue.");
+                        log.LogInformation(FunctionsNames.EventsRouter, $"Adding message to {QueueNames.StravaEventsActivityDelete} queue.");
                         await deleteActivityQueue.AddMessageAsync(new CloudQueueMessage(json));
                         break;
                     default:
@@ -71,6 +82,20 @@ namespace BurnForMoney.Functions.Strava.Functions.EventsHub
                 throw new Exception($"Unknown event type: {@event.ObjectType}");
             }
             log.LogFunctionEnd(FunctionsNames.EventsRouter);
+        }
+
+        private static async Task<bool> AthleteExistsAsync(string athleteExternalId, string connectionString)
+        {
+            using (var conn = SqlConnectionFactory.Create(connectionString))
+            {
+                await conn.OpenWithRetryAsync();
+
+                var exists = await conn.ExecuteScalarAsync<bool>("SELECT COUNT(1) FROM dbo.Athletes WHERE ExternalId=@AthleteExternalId", new
+                {
+                    AthleteExternalId = athleteExternalId
+                });
+                return exists;
+            }
         }
 
         [FunctionName(FunctionsNames.Events_DeauthorizedAthlete)]
