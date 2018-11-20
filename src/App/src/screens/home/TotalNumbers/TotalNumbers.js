@@ -12,7 +12,7 @@ class TotalNumbers extends Component {
       <div className="TotalNumbers">
         <div className="TotalNumebrs__container container">
 
-          <h2 className="TotalNumbers__header Header"><strong className="flames">Burn For Money</strong> <Trans i18nKey="is a CSR internal initiative that connects charity with fit lifestyle.">is <span class="no-break-space">a CSR</span> internal initiative that connects charity with fit lifestyle.</Trans></h2>
+          <h2 className="TotalNumbers__header Header"><strong className="flames">Burn For Money</strong> <Trans i18nKey="is a CSR internal initiative that connects charity with fit lifestyle.">is <span className="no-break-space">a CSR</span> internal initiative that connects charity with fit lifestyle.</Trans></h2>
           <h4>{t('Our achievements so far')}</h4>
           <div className="TotalNumbers__equation">
             <div className="TotalNumbers__equation-circle">

@@ -17,12 +17,15 @@ import { withNamespaces } from 'react-i18next';
 
 
 class Home extends Component {
+  client: null;
+
   constructor(props) {
     super(props);
 
     this.state = {
       bfmStats: '',
       contentful: '',
+      contentfulLang: localStorage.getItem('contentfulLang') || 'en-US',
       lang: localStorage.getItem('language') || 'en'
     };
   }
@@ -30,10 +33,13 @@ class Home extends Component {
   render() {
     console.log(this.state.lang);
     const changeLanguage = (lng) => {
+      let contentfulLang = (lng==='en' ? 'en-US': lng);
       this.setState({
-        lang: lng
+        lang: lng,
+        contentfulLang: contentfulLang
       });
       localStorage.setItem('language', lng);
+      localStorage.setItem('contentfulLang', contentfulLang);
 
       i18n.changeLanguage(lng);
     }
@@ -41,8 +47,8 @@ class Home extends Component {
     return (
       <div className="Home">
         <div className="Home__langSwitcher">
-          <button className={`Home__langSwitcher-Button ${(this.state.lang == 'en' ? 'active' : '')}`} onClick={() => changeLanguage('en') }>en</button>
-          <button className={`Home__langSwitcher-Button ${(this.state.lang == 'pl' ? 'active' : '')}`} onClick={() => changeLanguage('pl')}>pl</button>
+          <button className={`Home__langSwitcher-Button ${(this.state.lang === 'en' ? 'active' : '')}`} onClick={() => changeLanguage('en') }>en</button>
+          <button className={`Home__langSwitcher-Button ${(this.state.lang === 'pl' ? 'active' : '')}`} onClick={() => changeLanguage('pl')}>pl</button>
         </div>
 
         <VideoHeader/>
@@ -60,24 +66,18 @@ class Home extends Component {
 
   componentDidMount(){
     //contentful
-    const client = contentful.createClient({
+    this.client = contentful.createClient({
       space: "r9sx20y0suod",
       accessToken: "0cfdeec874152c24de8109da60c0bd09630fd3e4efdeddf9223652a433927fc4",
       host: "preview.contentful.com"
     });
-    console.log('client', client);
 
-    client.getEntries().then(entries => {
-      console.log('contentful: ', entries)
+    this.client.getEntries({locale:this.state.contentfulLang}).then(entries => {
       this.setState({
         contentful: entries.items
       });
     })
-    client.getLocales()
-      .then((response) => console.log('response', response))
-      .catch(console.error)
 
-      //.catch(console.error)
 
     // internal api_url
     const api_url = process.env.REACT_APP_API_URL;
@@ -97,6 +97,16 @@ class Home extends Component {
           console.error('Error:', error);
         }
       );
+  }
+  componentDidUpdate(prevProps, prevState){
+    if(this.state.contentfulLang !== prevState.contentfulLang){
+      this.client.getEntries({locale:this.state.contentfulLang}).then(entries => {
+        this.setState({
+          contentful: entries.items
+        });
+      })
+    }
+
   }
 }
 
