@@ -10,6 +10,8 @@ using BurnForMoney.Functions.Shared.Queues;
 using BurnForMoney.Functions.Strava.Configuration;
 using BurnForMoney.Functions.Strava.Exceptions;
 using BurnForMoney.Functions.Strava.External.Strava.Api;
+using BurnForMoney.Functions.Strava.External.Strava.Api.Exceptions;
+using BurnForMoney.Functions.Strava.External.Strava.Api.Model;
 using BurnForMoney.Functions.Strava.Functions.EventsHub.Dto;
 using Dapper;
 using Microsoft.Azure.WebJobs;
@@ -143,7 +145,17 @@ namespace BurnForMoney.Functions.Strava.Functions.EventsHub
 
             var accessToken = await GetAccessToken(@event.AthleteId, configuration);
 
-            var activity = StravaService.GetActivity(accessToken, @event.ActivityId);
+            StravaActivity activity = null;
+            try
+            {
+                StravaService.GetActivity(accessToken, @event.ActivityId);
+            }
+            catch (ActivityNotFoundException ex)
+            {
+                log.LogWarning(ex.Message);
+                return;
+            }
+
             var pendingActivity = new PendingRawActivity
             {
                 Id = ActivityIdentity.Next(),
@@ -172,7 +184,17 @@ namespace BurnForMoney.Functions.Strava.Functions.EventsHub
             
             var accessToken = await GetAccessToken(@event.AthleteId, configuration);
 
-            var activity = StravaService.GetActivity(accessToken, @event.ActivityId);
+            StravaActivity activity = null;
+            try
+            {
+                StravaService.GetActivity(accessToken, @event.ActivityId);
+            }
+            catch (ActivityNotFoundException ex)
+            {
+                log.LogWarning(ex.Message);
+                return;
+            }
+
             var pendingActivity = new PendingRawActivity
             {
                 ExternalId = activity.Id.ToString(),

@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using BurnForMoney.Functions.Shared.Helpers;
 using BurnForMoney.Functions.Shared.Web;
 using BurnForMoney.Functions.Strava.Configuration;
 using BurnForMoney.Functions.Strava.External.Strava.Api.Auth;
+using BurnForMoney.Functions.Strava.External.Strava.Api.Exceptions;
 using BurnForMoney.Functions.Strava.External.Strava.Api.Model;
 using Newtonsoft.Json;
 using RestSharp;
@@ -66,6 +68,17 @@ namespace BurnForMoney.Functions.Strava.External.Strava.Api
             request.AddQueryParameter("access_token", accessToken);
 
             var response = _restClient.ExecuteWithRetry(request);
+
+            if (response.StatusCode == HttpStatusCode.NotFound)
+            {
+                var fault = JsonConvert.DeserializeObject<Fault>(response.Content);
+                if (fault.Errors.Any(error => error.Field.Equals("Id", StringComparison.InvariantCultureIgnoreCase) && 
+                                              error.Code.Equals("invalid", StringComparison.InvariantCultureIgnoreCase) &&
+                                              error.Resource.Equals("Activity", StringComparison.InvariantCultureIgnoreCase)))
+                {
+                    throw new ActivityNotFoundException(activityId);
+                }
+            }
             response.ThrowExceptionIfNotSuccessful();
 
             var activity = JsonConvert.DeserializeObject<StravaActivity>(response.Content, new JsonSettings());
