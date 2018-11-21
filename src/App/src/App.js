@@ -6,6 +6,7 @@ import {
 
 import Home from './screens/home/Home';
 import StravaAuth from './screens/stravaAuth/StravaAuth';
+import StravaConfirmation from './screens/stravaAuth/StravaConfirmation';
 
 function App () {
 
@@ -15,6 +16,7 @@ function App () {
 
         <Route exact path="/" component={Home} />
         <Route path="/strava" component={StravaAuth} />
+        <Route path="/strava-confirmation" component={StravaConfirmation} />
       </div>
     </Router>
   );

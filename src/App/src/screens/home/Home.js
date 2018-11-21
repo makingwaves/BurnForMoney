@@ -31,7 +31,6 @@ class Home extends Component {
   }
 
   render() {
-    console.log(this.state.lang);
     const changeLanguage = (lng) => {
       let contentfulLang = (lng==='en' ? 'en-US': lng);
       this.setState({
@@ -71,13 +70,6 @@ class Home extends Component {
       accessToken: "0cfdeec874152c24de8109da60c0bd09630fd3e4efdeddf9223652a433927fc4",
       host: "preview.contentful.com"
     });
-
-    this.client.getEntries({locale:this.state.contentfulLang}).then(entries => {
-      this.setState({
-        contentful: entries.items
-      });
-    })
-
 
     // internal api_url
     const api_url = process.env.REACT_APP_API_URL;
