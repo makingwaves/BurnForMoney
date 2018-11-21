@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using BurnForMoney.Functions.Shared.Extensions;
@@ -24,6 +25,7 @@ namespace BurnForMoney.Functions.Strava.Functions.EventsHub
     public static class EventsRouter
     {
         private static readonly StravaService StravaService = new StravaService();
+        private static readonly IDictionary<string, bool> AthletesExistenceConfirmed = new ConcurrentDictionary<string, bool>();
 
         [FunctionName(FunctionsNames.EventsRouter)]
         public static async Task EventsHub([QueueTrigger(QueueNames.StravaEvents)] StravaWebhookEvent @event,
@@ -88,16 +90,24 @@ namespace BurnForMoney.Functions.Strava.Functions.EventsHub
 
         private static async Task<bool> AthleteExistsAndIsActiveAsync(string athleteExternalId, string connectionString)
         {
+            if (AthletesExistenceConfirmed.TryGetValue(athleteExternalId, out var exists))
+            {
+                return exists;
+            }
+
             using (var conn = SqlConnectionFactory.Create(connectionString))
             {
                 await conn.OpenWithRetryAsync();
 
-                var exists = await conn.ExecuteScalarAsync<bool>("SELECT COUNT(1) FROM dbo.Athletes WHERE ExternalId=@AthleteExternalId AND Active=1", new
+                exists = await conn.ExecuteScalarAsync<bool>("SELECT COUNT(1) FROM dbo.Athletes WHERE ExternalId=@AthleteExternalId AND Active=1", new
                 {
                     AthleteExternalId = athleteExternalId
                 });
-                return exists;
             }
+            AthletesExistenceConfirmed.Add(athleteExternalId, exists);
+
+            return exists;
+
         }
 
         [FunctionName(FunctionsNames.Events_DeauthorizedAthlete)]
@@ -145,10 +155,10 @@ namespace BurnForMoney.Functions.Strava.Functions.EventsHub
 
             var accessToken = await GetAccessToken(@event.AthleteId, configuration);
 
-            StravaActivity activity = null;
+            StravaActivity activity;
             try
             {
-                StravaService.GetActivity(accessToken, @event.ActivityId);
+                activity = StravaService.GetActivity(accessToken, @event.ActivityId);
             }
             catch (ActivityNotFoundException ex)
             {
