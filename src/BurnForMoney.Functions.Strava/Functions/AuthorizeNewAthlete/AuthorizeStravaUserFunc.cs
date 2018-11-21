@@ -56,7 +56,7 @@ namespace BurnForMoney.Functions.Strava.Functions.AuthorizeNewAthlete
             await InsertCodeToAuthorizationQueueAsync(code, authorizationCodesQueue, log).ConfigureAwait(false);
 
             log.LogFunctionEnd(FunctionsNames.AuthenticateUser);
-            return new OkObjectResult("Authorization completed.");
+            return new RedirectResult(configuration.Strava.ConfirmationPageUrl);
         }
         
         private static async Task InsertCodeToAuthorizationQueueAsync(string code, CloudQueue queue, ILogger log)

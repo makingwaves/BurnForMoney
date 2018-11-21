@@ -25,7 +25,7 @@ namespace BurnForMoney.Functions.Strava.Functions.EventsHub
     public static class EventsRouter
     {
         private static readonly StravaService StravaService = new StravaService();
-        private static readonly IDictionary<string, bool> AthletesExistenceConfirmed = new ConcurrentDictionary<string, bool>();
+        private static readonly ConcurrentDictionary<string, bool> AthletesExistenceConfirmed = new ConcurrentDictionary<string, bool>();
 
         [FunctionName(FunctionsNames.EventsRouter)]
         public static async Task EventsHub([QueueTrigger(QueueNames.StravaEvents)] StravaWebhookEvent @event,
@@ -104,10 +104,9 @@ namespace BurnForMoney.Functions.Strava.Functions.EventsHub
                     AthleteExternalId = athleteExternalId
                 });
             }
-            AthletesExistenceConfirmed.Add(athleteExternalId, exists);
+            AthletesExistenceConfirmed.TryAdd(athleteExternalId, exists);
 
             return exists;
-
         }
 
         [FunctionName(FunctionsNames.Events_DeauthorizedAthlete)]
