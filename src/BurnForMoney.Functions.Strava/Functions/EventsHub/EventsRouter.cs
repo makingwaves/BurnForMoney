@@ -155,10 +155,10 @@ namespace BurnForMoney.Functions.Strava.Functions.EventsHub
 
             var accessToken = await GetAccessToken(@event.AthleteId, configuration);
 
-            StravaActivity activity = null;
+            StravaActivity activity;
             try
             {
-                StravaService.GetActivity(accessToken, @event.ActivityId);
+                activity = StravaService.GetActivity(accessToken, @event.ActivityId);
             }
             catch (ActivityNotFoundException ex)
             {
