@@ -45,10 +45,16 @@ WHERE MONTH(ActivityTime)=@Month AND YEAR(ActivityTime)=@Year", new
                     return;
                 }
 
-                var aggregatedActivities = GroupActivitiesByAthlete(activities);
+                var athleteResults = GroupActivitiesByAthlete(activities);
+                var monthResults = new AthleteMonthlyResult
+                {
+                    Points = Convert.ToInt32(activities.Sum(a => a.Points)),
+                    Distance = activities.Sum(a => a.Distance),
+                    Time = activities.Sum(a => a.MovingTime),
+                    AthleteResults = athleteResults.ToList()
+                };
 
-                var json = JsonConvert.SerializeObject(aggregatedActivities);
-
+                var json = JsonConvert.SerializeObject(monthResults);
                 var affectedRows = await conn.ExecuteAsync("MonthlyResultsSnapshots_Upsert", new
                     {
                         Date = $"{request.Year}/{request.Month}",
@@ -63,15 +69,15 @@ WHERE MONTH(ActivityTime)=@Month AND YEAR(ActivityTime)=@Year", new
             log.LogFunctionEnd(FunctionsNames.Q_CalculateMonthlyAthleteResults);
         }
 
-        private static IEnumerable<AthleteMonthlyResult> GroupActivitiesByAthlete(IEnumerable<Activity> activities)
+        private static IEnumerable<AthleteResult> GroupActivitiesByAthlete(IEnumerable<Activity> activities)
         {
-            var aggregatedActivities = activities.GroupBy(key => key.AthleteId, element => element, (key, g) =>
+            var athleteResults = activities.GroupBy(key => key.AthleteId, element => element, (key, g) =>
             {
                 var allSingleAthleteActivities = g.ToList();
 
-                return new AthleteMonthlyResult
+                return new AthleteResult
                 {
-                    AthleteId = key,
+                    Id = key,
                     AthleteName = $"{allSingleAthleteActivities[0].AthleteFirstName} {allSingleAthleteActivities[0].AthleteLastName}",
                     Distance = allSingleAthleteActivities.Sum(activity => activity.Distance),
                     Time = allSingleAthleteActivities.Sum(activity => activity.MovingTime),
@@ -92,7 +98,7 @@ WHERE MONTH(ActivityTime)=@Month AND YEAR(ActivityTime)=@Year", new
                 };
             });
 
-            return aggregatedActivities;
+            return athleteResults;
         }
     }
 
