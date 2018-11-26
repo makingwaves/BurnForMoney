@@ -22,7 +22,6 @@ namespace BurnForMoney.Functions.PublicApi.Functions
     {
         private const string CacheKey = "api.totalnumbers";
         private static readonly IMemoryCache Cache = new MemoryCache(new MemoryDistributedCacheOptions());
-        private static readonly bool ApplyHistoricalData = true;
 
         [FunctionName("TotalNumbers")]
         public static async Task<IActionResult> TotalNumbers([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "totalnumbers")] HttpRequest req, 
