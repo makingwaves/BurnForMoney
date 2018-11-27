@@ -18,7 +18,7 @@
       "value": "burnformoney@makingwaves.com"
     },
     "cors.allowedOrigins": {
-      "value": [ "https://burnformoney-prod.azurewebsites.net/", "https://burnformoney-prod.azurewebsites.net", "http://bfm.makingwaves.pl", "http://bfm.makingwaves.com", "https://bfm.makingwaves.com" ]
+      "value": [ "https://burnformoney-prod.azurewebsites.net/", "https://burnformoney-prod.azurewebsites.net", "http://bfm.makingwaves.com", "https://bfm.makingwaves.com" ]
     },
     "sqlServerPassword": {
       "reference": {
@@ -35,6 +35,9 @@
         },
         "secretName": "strava--ClientId"
       }
+    },
+    "strava.confirmationPageUrl": {
+      "value": "http://bfm.makingwaves.com/strava-confirmation"
     }
   }
 }

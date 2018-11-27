@@ -7,6 +7,7 @@
     "AzureWebJobsDashboard": "UseDevelopmentStorage=true",
     "WEB_HOST": "http://localhost:7072",
     "Strava:ClientId": 28597,
+    "Strava:ConfirmationPageUrl": "http://localhost:3000/strava-confirmation",
     "KeyVaultName": "burnformoneykvdev",
     "ConnectionStrings:Sql": "Data Source=(LocalDB)\\.;Initial Catalog=BurnForMoney;Integrated Security=True;"
   },

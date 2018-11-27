@@ -36,6 +36,9 @@
     "strava.clientId": {
       "type": "securestring"
     },
+    "strava.confirmationPageUrl": {
+      "type": "string"
+    },
     "email.athletesApprovalEmail": {
       "type": "string"
     },
@@ -342,6 +345,10 @@
             {
               "name": "Strava:ClientId",
               "value": "[parameters('strava.clientId')]"
+            },
+            {
+              "name": "Strava:ConfirmationPageUrl",
+              "value": "[parameters('strava.confirmationPageUrl')]"
             },
             {
               "name": "Email:AthletesApprovalEmail",

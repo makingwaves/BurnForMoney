@@ -51,7 +51,8 @@ namespace BurnForMoney.Functions.Functions.Reports
             }
 
             var results = JsonConvert.DeserializeObject<List<AthleteMonthlyResult>>(json)
-                .OrderBy(r => r.AthleteId)
+                .SelectMany(s => s.AthleteResults)
+                .OrderBy(r => r.Id)
                 .Select(r =>
                 {
                     r.Distance = UnitsConverter.ConvertMetersToKilometers(r.Distance);

@@ -51,56 +51,63 @@ namespace BurnForMoney.Functions.PublicApi.Functions
             {
                 await conn.OpenWithRetryAsync();
 
-                var jsonResults = await conn.QueryAsync<(string date, string json)>("SELECT Date, Results FROM dbo.[MonthlyResultsSnapshots]")
+                var dto = await conn.QueryAsync<(string date, string json)>("SELECT Date, Results FROM dbo.[MonthlyResultsSnapshots]")
                     .ConfigureAwait(false);
 
-                var months = jsonResults.Select(record =>
+                var results = dto.Select(record =>
                     new
                     {
                         Date = record.date,
-                        Results = JsonConvert.DeserializeObject<List<AthleteMonthlyResult>>(record.json)
+                        Results = JsonConvert.DeserializeObject<AthleteMonthlyResult>(record.json)
                     })
                     .OrderBy(month => month.Date, new DateComparer())
                     .ToList();
 
-                var totalDistance = months.Sum(j => j.Results.Sum(r => r.Distance));
-                var totalTime = months.Sum(j => j.Results.Sum(r => r.Time));
-                var totalPoints = months.Sum(j => j.Results.Sum(r => r.Points));
-
-                var thisMonth = months.Last();
-                var totalPointsThisMonth = thisMonth.Results.Sum(r => r.Points);
-                var mostFrequentActivities = thisMonth.Results.SelectMany(r => r.Activities)
-                    .GroupBy(key => key.Category, el => el, (category, activities) =>
-                    {
-                        activities = activities.ToList();
-                        return new
-                        {
-                            Category = category,
-                            NumberOfTrainings = activities.Sum(a => a.NumberOfTrainings),
-                            Points = activities.Sum(a => a.Points)
-                        };
-                    }).OrderByDescending(o => o.NumberOfTrainings)
-                    .Take(5);
-
-                var uniqueAthletes = thisMonth.Results.Count;
+                var totalDistance = results.Sum(r => r.Results.Distance);
+                var totalTime = results.Sum(r => r.Results.Time);
+                var totalPoints = results.Sum(r => r.Results.Points);
 
                 var result = new
                 {
                     Distance = (int)UnitsConverter.ConvertMetersToKilometers(totalDistance, 0),
                     Time = (int)UnitsConverter.ConvertMinutesToHours(totalTime, 0),
                     Money = PointsToMoneyConverter.Convert(totalPoints),
-                    ThisMonth = new
-                    {
-                        NumberOfTrainings = thisMonth.Results.Sum(r => r.NumberOfTrainings),
-                        PercentOfEngagedEmployees = EmployeesEngagementCalculator.GetPercentOfEngagedEmployees(uniqueAthletes),
-                        Points = totalPointsThisMonth,
-                        Money = PointsToMoneyConverter.Convert(totalPointsThisMonth),
-                        MostFrequentActivities = mostFrequentActivities
-                    }
+                    ThisMonth = GetThisMonthStatistics(results.Last().Results)
                 };
 
                 return result;
             }
+        }
+
+        private static ThisMonth GetThisMonthStatistics(AthleteMonthlyResult thisMonth)
+        {
+            var uniqueAthletes = thisMonth.AthleteResults.Count;
+
+            var totalPointsThisMonth = thisMonth.Points;
+            var mostFrequentActivities = thisMonth
+                .AthleteResults
+                .SelectMany(r => r.Activities)
+                .GroupBy(key => key.Category, el => el, (category, activities) =>
+                {
+                    activities = activities.ToList();
+                    return new
+                    {
+                        Category = category,
+                        NumberOfTrainings = activities.Sum(a => a.NumberOfTrainings),
+                        Points = activities.Sum(a => a.Points)
+                    };
+                })
+                .OrderByDescending(o => o.NumberOfTrainings)
+                .Take(5);
+
+            return new ThisMonth
+            {
+                NumberOfTrainings = thisMonth.AthleteResults.Sum(r => r.NumberOfTrainings),
+                PercentOfEngagedEmployees = EmployeesEngagementCalculator.GetPercentOfEngagedEmployees(uniqueAthletes),
+                Points = totalPointsThisMonth,
+                Money = PointsToMoneyConverter.Convert(totalPointsThisMonth),
+                MostFrequentActivities = mostFrequentActivities
+            };
         }
 
         public class EmployeesEngagementCalculator
@@ -114,6 +121,15 @@ namespace BurnForMoney.Functions.PublicApi.Functions
         public class PointsToMoneyConverter
         {
             public static int Convert(int points) => points * 100 / 500;
+        }
+
+        public class ThisMonth
+        {
+            public int NumberOfTrainings { get; set; }
+            public int PercentOfEngagedEmployees { get; set; }
+            public int Points { get; set; }
+            public int Money { get; set; }
+            public IEnumerable<object> MostFrequentActivities { get; set; }
         }
     }
 

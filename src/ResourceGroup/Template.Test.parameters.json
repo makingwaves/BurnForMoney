@@ -32,6 +32,9 @@
         },
         "secretName": "strava--ClientId"
       }
+    },
+    "strava.confirmationPageUrl": {
+      "value": "https://burnformoney-test.azurewebsites.net/strava-confirmation"
     }
   }
 }
