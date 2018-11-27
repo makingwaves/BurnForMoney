@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace BurnForMoney.Functions.Strava.Functions.CollectAthleteActivities.Dto
+namespace BurnForMoney.Functions.Strava.Functions.CollectAthleteActivitiesFromStravaFunc.Dto
 {
     public class CollectAthleteActivitiesInput
     {

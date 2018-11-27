@@ -8,7 +8,7 @@ using BurnForMoney.Functions.Shared.Persistence;
 using BurnForMoney.Functions.Strava.Configuration;
 using BurnForMoney.Functions.Strava.Exceptions;
 using BurnForMoney.Functions.Strava.Functions.AuthorizeNewAthlete.Dto;
-using BurnForMoney.Functions.Strava.Functions.CollectAthleteActivities.Dto;
+using BurnForMoney.Functions.Strava.Functions.CollectAthleteActivitiesFromStravaFunc.Dto;
 using Dapper;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;

@@ -11,16 +11,16 @@ using BurnForMoney.Functions.Strava.Configuration;
 using BurnForMoney.Functions.Strava.Exceptions;
 using BurnForMoney.Functions.Strava.External.Strava.Api;
 using BurnForMoney.Functions.Strava.External.Strava.Api.Exceptions;
-using BurnForMoney.Functions.Strava.Functions.CollectAthleteActivities.Dto;
+using BurnForMoney.Functions.Strava.Functions.CollectAthleteActivitiesFromStravaFunc.Dto;
 using Dapper;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 using Microsoft.WindowsAzure.Storage.Queue;
 using Newtonsoft.Json;
 
-namespace BurnForMoney.Functions.Strava.Functions.CollectAthleteActivities
+namespace BurnForMoney.Functions.Strava.Functions.CollectAthleteActivitiesFromStravaFunc
 {
-    public static class CollectAthleteActivitiesFunc
+    public static class CollectAthleteActivitiesFromStravaFunc
     {
         private static readonly StravaService StravaService = new StravaService();
 
@@ -33,32 +33,18 @@ namespace BurnForMoney.Functions.Strava.Functions.CollectAthleteActivities
         {
             log.LogFunctionStart(FunctionsNames.Q_CollectAthleteActivities);
 
-            string encryptedAccessToken;
-            string accessToken;
-            using (var conn = SqlConnectionFactory.Create(configuration.ConnectionStrings.SqlDbConnectionString))
-            {
-                await conn.OpenWithRetryAsync();
-
-                encryptedAccessToken = await conn.QuerySingleOrDefaultAsync<string>(@"SELECT AccessToken
-FROM dbo.[Strava.AccessTokens]
-WHERE AthleteId = @AthleteId AND IsValid=1", new { input.AthleteId });
-
-                if (string.IsNullOrWhiteSpace(encryptedAccessToken))
-                {
-                    throw new AccessTokenNotFoundException(input.AthleteId);
-                }
-
-                accessToken = AccessTokensEncryptionService.Decrypt(encryptedAccessToken,
-                    configuration.Strava.AccessTokensEncryptionKey);
-                log.LogInformation(FunctionsNames.Q_CollectAthleteActivities, "Decrypted access token.");
-            }
-
+            var encryptedAccessToken =
+                await GetEncryptedAccessTokenAsync(configuration.ConnectionStrings.SqlDbConnectionString, input.AthleteId);
+            var accessToken =
+                DecryptAccessToken(encryptedAccessToken, configuration.Strava.AccessTokensEncryptionKey, log);
+      
             try
             {
                 var getActivitiesFrom = input.From ?? GetFirstDayOfTheMonth(DateTime.UtcNow);
                 log.LogInformation(FunctionsNames.Q_CollectAthleteActivities, $"Looking for a new activities starting form: {getActivitiesFrom.ToString(CultureInfo.InvariantCulture)}");
                 var activities = StravaService.GetActivities(accessToken, getActivitiesFrom);
                 log.LogInformation(FunctionsNames.Q_CollectAthleteActivities, $"Athlete: {input.AthleteId}. Found: {activities.Count} new activities.");
+
                 foreach (var stravaActivity in activities)
                 {
                     var pendingActivity = new PendingRawActivity
@@ -84,6 +70,34 @@ WHERE AthleteId = @AthleteId AND IsValid=1", new { input.AthleteId });
                 await unauthorizedAccessTokensQueue.AddMessageAsync(new CloudQueueMessage(encryptedAccessToken));
             }
             log.LogFunctionEnd(FunctionsNames.Q_CollectAthleteActivities);
+        }
+
+        private static async Task<string> GetEncryptedAccessTokenAsync(string connectionString, string athleteId)
+        {
+            using (var conn = SqlConnectionFactory.Create(connectionString))
+            {
+                await conn.OpenWithRetryAsync();
+
+                var encryptedAccessToken = await conn.QuerySingleOrDefaultAsync<string>(@"SELECT AccessToken
+FROM dbo.[Strava.AccessTokens]
+WHERE AthleteId = @AthleteId AND IsValid=1", new { AthleteId = athleteId });
+
+                if (string.IsNullOrWhiteSpace(encryptedAccessToken))
+                {
+                    throw new AccessTokenNotFoundException(athleteId);
+                }
+
+                return encryptedAccessToken;
+            }
+        }
+
+        private static string DecryptAccessToken(string encryptedAccessToken, string encryptionKey, ILogger log)
+        {
+            var accessToken = AccessTokensEncryptionService.Decrypt(encryptedAccessToken,
+                encryptionKey);
+            log.LogInformation(FunctionsNames.Q_CollectAthleteActivities, "Decrypted access token.");
+
+            return accessToken;
         }
 
         private static DateTime GetFirstDayOfTheMonth(DateTime dateTime)

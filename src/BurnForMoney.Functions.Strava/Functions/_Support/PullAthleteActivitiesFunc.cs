@@ -5,7 +5,7 @@ using BurnForMoney.Functions.Shared.Extensions;
 using BurnForMoney.Functions.Shared.Functions.Extensions;
 using BurnForMoney.Functions.Shared.Persistence;
 using BurnForMoney.Functions.Strava.Configuration;
-using BurnForMoney.Functions.Strava.Functions.CollectAthleteActivities.Dto;
+using BurnForMoney.Functions.Strava.Functions.CollectAthleteActivitiesFromStravaFunc.Dto;
 using Dapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -17,7 +17,7 @@ using Newtonsoft.Json;
 
 namespace BurnForMoney.Functions.Strava.Functions._Support
 {
-    public static class ActivitiesOperationsFunc
+    public static class PullAthleteActivitiesFunc
     {
         [FunctionName(SupportFunctionsNames.PullAllAthletesActivities)]
         public static async Task<IActionResult> PullAllAthletesActivities([HttpTrigger(AuthorizationLevel.Admin, "post", Route = "support/athlete/all/activities/collect")]HttpRequest req, ILogger log,
