@@ -30,7 +30,6 @@
     <None Include="SqlScripts\Script0003- Create MonthlyResultsSnapshots_Upsert procedure .sql" />
     <None Include="Upgrade-Database.ps1" />
     <None Include="Deploy-Credentials.ps1" />
-    <None Include="WebJobsExtensionsStartup.cs" />
     <None Include="_Deploy.Dev.ps1" />
     <None Include="_Deploy.Prod.ps1" />
     <None Include="_Deploy.Test.ps1" />

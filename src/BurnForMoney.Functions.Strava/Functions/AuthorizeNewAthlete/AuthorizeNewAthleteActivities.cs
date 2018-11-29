@@ -134,7 +134,14 @@ namespace BurnForMoney.Functions.Strava.Functions.AuthorizeNewAthlete
             var json = JsonConvert.SerializeObject(input);
             await authorizationCodePoisonQueue.AddMessageAsync(new CloudQueueMessage(json));
 
-            await AccessTokensStore.DeleteAsync(input.AthleteId, configuration.Strava.AccessTokensKeyVaultUrl);
+            try
+            {
+                await AccessTokensStore.DeleteAsync(input.AthleteId, configuration.Strava.AccessTokensKeyVaultUrl);
+            }
+            catch (Exception)
+            {
+                // ignored, it may not be added
+            }
 
             log.LogFunctionEnd(FunctionsNames.A_AuthorizeNewAthleteCompensation);
         }
