@@ -32,8 +32,8 @@ namespace BurnForMoney.Functions.Strava.Functions.AuthorizeNewAthlete
                 var athlete = await context.CallActivityWithRetryAsync<Athlete>(FunctionsNames.A_ExchangeTokenAndGetAthleteSummary,
                     new RetryOptions(TimeSpan.FromSeconds(5), 3)
                     {
-                        Handle = ex => !(ex.InnerException is AthleteAlreadyExistsException)
-                        
+                        //Handle = ex => !(ex.InnerException is AthleteAlreadyExistsException)
+                        Handle = ex => !ex.InnerException.Message.StartsWith(nameof(AthleteAlreadyExistsException)) // temp fix: https://github.com/Azure/azure-functions-durable-extension/issues/84
                     }, new A_ExchangeTokenAndGetAthleteSummaryInput(athleteId, authorizationCode));
                 if (!context.IsReplaying)
                 {
@@ -89,6 +89,8 @@ namespace BurnForMoney.Functions.Strava.Functions.AuthorizeNewAthlete
                 var errorMessage = $"[{FunctionsNames.O_AuthorizeNewAthlete}] failed to authorize a new athlete in the system. {ex}";
                 log.LogError(errorMessage);
                 await context.CallActivityAsync(FunctionsNames.A_AuthorizeNewAthleteCompensation, new AuthorizeNewAthleteCompensation(athleteId, authorizationCode) { ErrorMessage = errorMessage });
+
+                throw;
             }
             log.LogFunctionEnd(FunctionsNames.O_AuthorizeNewAthlete);
         }

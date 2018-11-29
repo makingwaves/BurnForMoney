@@ -6,7 +6,7 @@ namespace BurnForMoney.Functions.Strava.Exceptions
     public class AthleteAlreadyExistsException : Exception
     {
         public AthleteAlreadyExistsException(string athleteId)
-            : base($"Athlete with strava id: [{athleteId}] already exists..")
+            : base($"{nameof(AthleteAlreadyExistsException)} Athlete with strava id: [{athleteId}] already exists..")
         {
         }
 
