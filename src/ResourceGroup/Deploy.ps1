@@ -41,6 +41,12 @@ New-AzureRmResourceGroup -Name $ResourceGroupName -Location $ResourceGroupLocati
 
 if ($DeployCredentials)
 {
+	$StravaKeyVaultName = "bfmkvstravatokens" + $Environment.ToLower();
+	CreateKeyVault -Environment $Environment `
+					-ResourceGroupName $ResourceGroupName `
+					-ResourceGroupLocation $ResourceGroupLocation `
+					-KeyVaultName $StravaKeyVaultName
+
 	DeployCredentials -Environment $Environment `
 		-ResourceGroupName $ResourceGroupName `
 		-ResourceGroupLocation $ResourceGroupLocation `

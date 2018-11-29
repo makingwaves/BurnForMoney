@@ -31,7 +31,8 @@ namespace BurnForMoney.Functions.Strava.Configuration
     {
         public int ClientId { get; set; }
         public string ClientSecret { get; set; }
-        public string AccessTokensEncryptionKey { get; set; }
         public string ConfirmationPageUrl { get; set; }
+        public string AccessTokensKeyVaultName { get; set; }
+        public string AccessTokensKeyVaultUrl => $"https://{AccessTokensKeyVaultName}.vault.azure.net/";
     }
 }

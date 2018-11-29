@@ -9,6 +9,7 @@ namespace BurnForMoney.Functions.Strava.Functions
 
         public const string AuthorizeNewAthleteStarter = "AuthorizeNewAthleteStarter";
         public const string O_AuthorizeNewAthlete = "O_AuthorizeNewAthlete";
+        public const string A_GenerateAthleteId = "A_GenerateAthleteId";
         public const string A_ExchangeTokenAndGetAthleteSummary = "A_ExchangeTokenAndGetAthleteSummary";
         public const string A_SendAthleteApprovalRequest = "A_SendAthleteApprovalRequest";
         public const string A_ProcessNewAthleteRequest = "A_ProcessNewAthleteRequest";

@@ -56,14 +56,15 @@ namespace BurnForMoney.Functions.Functions._Support
             return new BadRequestResult();
         }
 
+        [Disable("Should be executed from Strava context, add support for access tokens.")]
         [FunctionName(SupportFunctionsNames.DeleteAthlete)]
-        public static async Task<IActionResult> DeleteAthlete([HttpTrigger(AuthorizationLevel.Admin, "delete", Route = "support/athlete/{athleteId:int:min(1)}")]HttpRequest req, ILogger log,
+        public static async Task<IActionResult> DeleteAthlete([HttpTrigger(AuthorizationLevel.Admin, "delete", Route = "support/athlete/{athleteId:length(32)}")]HttpRequest req, ILogger log,
             [Configuration] ConfigurationRoot configuration,
-            int athleteId)
+            string athleteId)
         {
             log.LogFunctionStart(SupportFunctionsNames.DeleteAthlete);
 
-            var connectionString = (configuration).ConnectionStrings
+            var connectionString = configuration.ConnectionStrings
                 .SqlDbConnectionString;
 
             try
@@ -91,7 +92,7 @@ namespace BurnForMoney.Functions.Functions._Support
             }
         }
 
-        private static async Task DeleteAthleteAsync(int athleteId, string connectionString, ILogger log)
+        private static async Task DeleteAthleteAsync(string athleteId, string connectionString,  ILogger log)
         {
             using (var conn = SqlConnectionFactory.Create(connectionString))
             {
@@ -102,11 +103,6 @@ namespace BurnForMoney.Functions.Functions._Support
                 {
                     try
                     {
-                        await conn.ExecuteAsync(
-                            "DELETE FROM dbo.[Strava.AccessTokens] WHERE AthleteId=@AthleteId",
-                            new { AthleteId = athleteId }, transaction);
-                        log.LogInformation("Removed access token.");
-
                         var removedActivities = await conn.ExecuteAsync(
                             "DELETE FROM dbo.[Activities] WHERE AthleteId=@AthleteId",
                             new { AthleteId = athleteId }, transaction);

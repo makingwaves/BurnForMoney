@@ -9,6 +9,7 @@
     "Strava:ClientId": 28597,
     "Strava:ConfirmationPageUrl": "http://localhost:3000/strava-confirmation",
     "KeyVaultName": "burnformoneykvdev",
+    "Strava:AccessTokensKeyVaultName": "bfmkvstravatokensdev",
     "ConnectionStrings:Sql": "Data Source=(LocalDB)\\.;Initial Catalog=BurnForMoney;Integrated Security=True;"
   },
   "Email": {

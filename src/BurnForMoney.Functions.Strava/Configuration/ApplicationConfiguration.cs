@@ -32,8 +32,8 @@ namespace BurnForMoney.Functions.Strava.Configuration
                     {
                         ClientId = int.Parse(config["Strava:ClientId"]),
                         ClientSecret = config["Strava:ClientSecret"],
-                        AccessTokensEncryptionKey = config["strava:AccessTokensEncryptionKey"],
-                        ConfirmationPageUrl = config["Strava:ConfirmationPageUrl"]
+                        ConfirmationPageUrl = config["Strava:ConfirmationPageUrl"],
+                        AccessTokensKeyVaultName = config["Strava:AccessTokensKeyVaultName"]
                     },
                     Email = config.Get<EmailSection>("Email"),
                     HostName = config["WEB_HOST"],

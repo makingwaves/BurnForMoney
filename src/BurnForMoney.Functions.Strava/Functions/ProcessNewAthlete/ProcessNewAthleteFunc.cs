@@ -3,12 +3,11 @@ using System.Data;
 using System.Threading.Tasks;
 using BurnForMoney.Functions.Shared.Extensions;
 using BurnForMoney.Functions.Shared.Functions.Extensions;
-using BurnForMoney.Functions.Shared.Identity;
 using BurnForMoney.Functions.Shared.Persistence;
 using BurnForMoney.Functions.Strava.Configuration;
 using BurnForMoney.Functions.Strava.Exceptions;
-using BurnForMoney.Functions.Strava.Functions.AuthorizeNewAthlete.Dto;
 using BurnForMoney.Functions.Strava.Functions.CollectAthleteActivitiesFromStravaFunc.Dto;
+using BurnForMoney.Functions.Strava.Functions.Dto;
 using Dapper;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
@@ -21,61 +20,47 @@ namespace BurnForMoney.Functions.Strava.Functions.ProcessNewAthlete
     {
         [FunctionName(FunctionsNames.Q_ProcessNewAthlete)]
         public static async Task Q_ProcessNewAthleteAsync(ILogger log,
-            [QueueTrigger(QueueNames.NewStravaAthletesRequests)] StravaAthlete athlete,
+            [QueueTrigger(QueueNames.NewStravaAthletesRequests)] Athlete athlete,
             [Queue(QueueNames.NewStravaAthletesRequestsPoison)] CloudQueue newAthletesRequestPoisonQueue,
             [Queue(QueueNames.CollectAthleteActivities)] CloudQueue collectActivitiesQueues,
             [Configuration] ConfigurationRoot configuration)
         {
             log.LogFunctionStart(FunctionsNames.Q_ProcessNewAthlete);
 
+            string athleteId;
             using (var conn = SqlConnectionFactory.Create(configuration.ConnectionStrings.SqlDbConnectionString))
             {
                 await conn.OpenWithRetryAsync();
                 
-                string athleteId;
                 log.LogInformation(FunctionsNames.Q_ProcessNewAthlete, "Beginning a new database transaction...");
-                using (var transaction = conn.BeginTransaction())
+                try
                 {
-                    try
+                    athleteId = await UpsertAthlete(athlete, conn);
+                    if (string.IsNullOrWhiteSpace(athleteId))
                     {
-                        athleteId = await UpsertAthlete(athlete, conn, transaction);
-                        if (string.IsNullOrWhiteSpace(athleteId))
-                        {
-                            throw new FailedToAddAthleteException(athlete.AthleteId.ToString());
-                        }
-                        log.LogInformation(FunctionsNames.Q_ProcessNewAthlete, $"Inserted athlete with id: {athleteId}.");
-
-                        var result = await UpsertAccessToken(athleteId, athlete, conn, transaction);
-                        if (!result)
-                        {
-                            throw new FailedToAddAccessTokenException(athleteId);
-                        }
-                        log.LogInformation(FunctionsNames.Q_ProcessNewAthlete, $"Inserted access tokens for athlete with id: {athleteId}.");
-
-                        transaction.Commit();
-                        log.LogInformation(FunctionsNames.Q_ProcessNewAthlete, "Commited database transaction.");
+                        throw new FailedToAddAthleteException(athlete.Id);
                     }
-                    catch (Exception ex)
-                    {
-                        transaction.Rollback();
-                        log.LogError($"[{FunctionsNames.Q_ProcessNewAthlete}] Error occuring during processing a new athlete. {ex.Message}", ex);
-                        throw;
-                    }
+                    log.LogInformation(FunctionsNames.Q_ProcessNewAthlete, $"Inserted athlete with id: {athleteId}.");
                 }
-
-                await Task.Delay(1000);
-
-                var input = new CollectAthleteActivitiesInput
+                catch (Exception ex)
                 {
-                    AthleteId = athleteId
-                };
-                var json = JsonConvert.SerializeObject(input);
-                await collectActivitiesQueues.AddMessageAsync(new CloudQueueMessage(json));
-                log.LogFunctionEnd(FunctionsNames.Q_ProcessNewAthlete);
+                    log.LogError($"[{FunctionsNames.Q_ProcessNewAthlete}] Error occuring during processing a new athlete. {ex.Message}", ex);
+                    throw;
+                }
             }
+
+            await Task.Delay(1000);
+
+            var input = new CollectAthleteActivitiesInput
+            {
+                AthleteId = athleteId
+            };
+            var json = JsonConvert.SerializeObject(input);
+            await collectActivitiesQueues.AddMessageAsync(new CloudQueueMessage(json));
+            log.LogFunctionEnd(FunctionsNames.Q_ProcessNewAthlete);
         }
 
-        private static async Task<string> UpsertAthlete(StravaAthlete athlete, IDbConnection conn, IDbTransaction transaction)
+        private static async Task<string> UpsertAthlete(Athlete athlete, IDbConnection conn)
         {
             const string sql = @"
     IF EXISTS (SELECT * FROM dbo.Athletes WITH (UPDLOCK) WHERE ExternalId=@ExternalId)
@@ -90,34 +75,14 @@ namespace BurnForMoney.Functions.Strava.Functions.ProcessNewAthlete
 
             return await conn.QuerySingleAsync<string>(sql, new
             {
-                Id = AthleteIdentity.Next(),
-                ExternalId = athlete.AthleteId.ToString(),
+                athlete.Id,
+                athlete.ExternalId,
                 athlete.FirstName,
                 athlete.LastName,
                 athlete.ProfilePictureUrl,
                 Active = true,
                 System = "Strava"
-            }, transaction);
-        }
-
-        private static async Task<bool> UpsertAccessToken(string athleteId, StravaAthlete athlete, IDbConnection conn, IDbTransaction transaction)
-        {
-            const string sql = @"
-    IF EXISTS (SELECT * FROM dbo.[Strava.AccessTokens] WITH (UPDLOCK) WHERE AthleteId=@AthleteId)
-      UPDATE dbo.[Strava.AccessTokens]
-         SET AccessToken = @AccessToken, RefreshToken = @RefreshToken, ExpiresAt = @ExpiresAt, IsValid=1
-       WHERE AthleteId = @AthleteId;
-    ELSE 
-      INSERT INTO dbo.[Strava.AccessTokens](AthleteId, AccessToken, RefreshToken, ExpiresAt)
-                                    VALUES(@AthleteId, @AccessToken, @RefreshToken, @ExpiresAt)";
-            var affectedRows = await conn.ExecuteAsync(sql, new
-            {
-                AthleteId = athleteId,
-                AccessToken = athlete.EncryptedAccessToken,
-                RefreshToken = athlete.EncryptedRefreshToken,
-                ExpiresAt = athlete.TokenExpirationDate
-            }, transaction);
-            return affectedRows == 1;
+            });
         }
     }
 }

@@ -9,7 +9,6 @@ using BurnForMoney.Functions.Shared.Identity;
 using BurnForMoney.Functions.Shared.Persistence;
 using BurnForMoney.Functions.Shared.Queues;
 using BurnForMoney.Functions.Strava.Configuration;
-using BurnForMoney.Functions.Strava.Exceptions;
 using BurnForMoney.Functions.Strava.External.Strava.Api;
 using BurnForMoney.Functions.Strava.External.Strava.Api.Exceptions;
 using BurnForMoney.Functions.Strava.External.Strava.Api.Model;
@@ -25,7 +24,9 @@ namespace BurnForMoney.Functions.Strava.Functions.EventsHub
     public static class EventsRouter
     {
         private static readonly StravaService StravaService = new StravaService();
+        private static readonly ConcurrentDictionary<string, string> AccessTokens = new ConcurrentDictionary<string, string>();
         private static readonly ConcurrentDictionary<string, bool> AthletesExistenceConfirmed = new ConcurrentDictionary<string, bool>();
+        private static readonly ConcurrentDictionary<string, string> AthleteIdsMappings = new ConcurrentDictionary<string, string>();
 
         [FunctionName(FunctionsNames.EventsRouter)]
         public static async Task EventsHub([QueueTrigger(QueueNames.StravaEvents)] StravaWebhookEvent @event,
@@ -127,8 +128,8 @@ namespace BurnForMoney.Functions.Strava.Functions.EventsHub
                 {
                     log.LogInformation(FunctionsNames.Events_DeauthorizedAthlete, $"Successfully deauthorized athlete with id: {@event.AthleteId}.");
 
-                    (string FirstName, string LastName) athlete = await conn.QuerySingleAsync<ValueTuple<string, string>>(
-                        "SELECT FirstName, LastName from dbo.Athletes WHERE ExternalId=@AthleteId", new { @event.AthleteId });
+                    (string Id, string FirstName, string LastName) athlete = await conn.QuerySingleAsync<ValueTuple<string, string, string>>(
+                        "SELECT Id, FirstName, LastName from dbo.Athletes WHERE ExternalId=@AthleteId", new { @event.AthleteId });
 
                     var notification = new Notification
                     {
@@ -139,20 +140,23 @@ namespace BurnForMoney.Functions.Strava.Functions.EventsHub
 <p>Athlete: {athlete.FirstName} {athlete.LastName} [{@event.AthleteId}] revoked authorization.</p>"
                     };
                     await notificationsQueue.AddMessageAsync(new CloudQueueMessage(JsonConvert.SerializeObject(notification)));
+                    await AccessTokensStore.DeactivateAccessTokenOfAsync(athlete.Id, configuration.Strava.AccessTokensKeyVaultUrl);
                 }
+
             }
             log.LogFunctionEnd(FunctionsNames.Events_DeauthorizedAthlete);
         }
 
         [FunctionName(FunctionsNames.Events_NewActivity)]
         public static async Task Events_NewActivity([QueueTrigger(QueueNames.StravaEventsActivityAdd)] ActivityData @event,
-            ILogger log, 
+            ILogger log,
             [Queue(AppQueueNames.AddActivityRequests, Connection = "AppQueuesStorage")] CloudQueue pendingRawActivitiesQueue,
             [Configuration] ConfigurationRoot configuration)
         {
             log.LogFunctionStart(FunctionsNames.Events_NewActivity);
 
-            var accessToken = await GetAccessToken(@event.AthleteId, configuration);
+            var athleteId = await GetAthleteIdAsync(@event.AthleteId, configuration.ConnectionStrings.SqlDbConnectionString);
+            var accessToken = await GetAccessTokenAsync(athleteId, configuration.Strava.AccessTokensKeyVaultUrl);
 
             StravaActivity activity;
             try
@@ -190,8 +194,9 @@ namespace BurnForMoney.Functions.Strava.Functions.EventsHub
             [Configuration] ConfigurationRoot configuration)
         {
             log.LogFunctionStart(FunctionsNames.Events_UpdateActivity);
-            
-            var accessToken = await GetAccessToken(@event.AthleteId, configuration);
+
+            var athleteId = await GetAthleteIdAsync(@event.AthleteId, configuration.ConnectionStrings.SqlDbConnectionString);
+            var accessToken = await GetAccessTokenAsync(athleteId, configuration.Strava.AccessTokensKeyVaultUrl);
 
             StravaActivity activity;
             try
@@ -221,28 +226,38 @@ namespace BurnForMoney.Functions.Strava.Functions.EventsHub
             log.LogFunctionEnd(FunctionsNames.Events_UpdateActivity);
         }
 
-        private static async Task<string> GetAccessToken(string athleteId, ConfigurationRoot configuration)
+        private static async Task<string> GetAccessTokenAsync(string athleteId, string keyVaultBaseUrl)
         {
-            string accessToken;
-            using (var conn = SqlConnectionFactory.Create(configuration.ConnectionStrings.SqlDbConnectionString))
+            if (AccessTokens.TryGetValue(athleteId, out var accessToken))
+            {
+                return accessToken;
+            }
+
+            var secret = await AccessTokensStore.GetAccessTokenForAsync(athleteId, keyVaultBaseUrl);
+            AccessTokens.TryAdd(athleteId, secret.Value);
+
+            return secret.Value;
+        }
+
+        private static async Task<string> GetAthleteIdAsync(string athleteExternalId, string connectionString)
+        {
+            if (AthleteIdsMappings.TryGetValue(athleteExternalId, out var exists))
+            {
+                return exists;
+            }
+
+            using (var conn = SqlConnectionFactory.Create(connectionString))
             {
                 await conn.OpenWithRetryAsync();
 
-                accessToken = await conn.QuerySingleOrDefaultAsync<string>(@"SELECT AccessToken 
-FROM dbo.[Strava.AccessTokens] AS Tokens
-INNER JOIN dbo.Athletes AS Athletes ON (Athletes.Id = Tokens.AthleteId)
-WHERE Athletes.ExternalId=@AthleteId AND Tokens.IsValid=1", new { AthleteId = athleteId });
-
-                if (string.IsNullOrWhiteSpace(accessToken))
+                exists = await conn.ExecuteScalarAsync<string>("SELECT Id FROM dbo.Athletes WHERE ExternalId=@AthleteExternalId AND Active=1", new
                 {
-                    throw new AccessTokenNotFoundException(athleteId);
-                }
+                    AthleteExternalId = athleteExternalId
+                });
             }
+            AthleteIdsMappings.TryAdd(athleteExternalId, exists);
 
-            accessToken = AccessTokensEncryptionService.Decrypt(accessToken,
-                configuration.Strava.AccessTokensEncryptionKey);
-
-            return accessToken;
+            return exists;
         }
 
         [FunctionName(FunctionsNames.Events_DeleteActivity)]

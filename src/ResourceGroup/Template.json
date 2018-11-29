@@ -76,6 +76,7 @@
     "sqlDbName": "[concat(variables('applicationName'), 'sqldb', parameters('environmentCode'))]",
     "sqlServerName": "[concat(variables('applicationName'), 'sqlserver', parameters('environmentCode'))]",
     "keyVaultName": "[concat(variables('applicationName'), 'kv', parameters('environmentCode'))]",
+    "stravaAccessTokensKeyVaultName": "[concat(variables('applicationShortName'), 'kvstravatokens', parameters('environmentCode'))]",
     "appInsightsName": "[concat(variables('applicationName'), 'ai', parameters('environmentCode'))]"
   },
   "resources": [
@@ -367,6 +368,10 @@
               "value": "[variables('keyVaultName')]"
             },
             {
+              "name": "Strava:AccessTokensKeyVaultName",
+              "value": "[variables('stravaAccessTokensKeyVaultName')]"
+            },
+            {
               "name": "AppQueuesStorage",
               "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('functionStorageAccountName'), ';AccountKey=', listKeys(variables('functionStorageAccountid'),'2015-05-01-preview').key1)]"
             }
@@ -640,6 +645,27 @@
           {
             "tenantId": "[reference(concat('Microsoft.Web/sites/', variables('internalFunctionAppName')), '2015-08-01', 'Full').identity.tenantId]",
             "objectId": "[reference(concat('Microsoft.Web/sites/', variables('internalFunctionAppName')), '2015-08-01', 'Full').identity.principalId]",
+            "permissions": {
+              "keys": [ "get", "list" ],
+              "secrets": [ "get", "list" ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.KeyVault/vaults/accessPolicies",
+      "name": "[concat(variables('stravaAccessTokensKeyVaultName'), '/add')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/sites', variables('functionAppName'))]",
+        "[resourceId('Microsoft.Web/sites', variables('stravaFunctionAppName'))]"
+      ],
+      "apiVersion": "2016-10-01",
+      "properties": {
+        "accessPolicies": [
+          {
+            "tenantId": "[reference(concat('Microsoft.Web/sites/', variables('stravaFunctionAppName')), '2015-08-01', 'Full').identity.tenantId]",
+            "objectId": "[reference(concat('Microsoft.Web/sites/', variables('stravaFunctionAppName')), '2015-08-01', 'Full').identity.principalId]",
             "permissions": {
               "keys": [ "get", "list" ],
               "secrets": [ "get", "list" ]
