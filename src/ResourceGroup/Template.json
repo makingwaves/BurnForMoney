@@ -668,7 +668,7 @@
             "objectId": "[reference(concat('Microsoft.Web/sites/', variables('stravaFunctionAppName')), '2015-08-01', 'Full').identity.principalId]",
             "permissions": {
               "keys": [ "get", "list" ],
-              "secrets": [ "get", "set", "update", "list" ]
+              "secrets": [ "get", "set", "list" ]
             }
           }
         ]
