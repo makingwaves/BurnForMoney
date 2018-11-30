@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Threading.Tasks;
 using BurnForMoney.Functions.Shared.Extensions;
 using BurnForMoney.Functions.Shared.Functions.Extensions;
@@ -11,6 +12,7 @@ using BurnForMoney.Functions.Strava.Exceptions;
 using BurnForMoney.Functions.Strava.External.Strava.Api;
 using BurnForMoney.Functions.Strava.Functions.Dto;
 using Dapper;
+using Microsoft.Azure.KeyVault.Models;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 using Microsoft.WindowsAzure.Storage.Queue;
@@ -138,7 +140,7 @@ namespace BurnForMoney.Functions.Strava.Functions.AuthorizeNewAthlete
             {
                 await AccessTokensStore.DeleteAsync(input.AthleteId, configuration.Strava.AccessTokensKeyVaultUrl);
             }
-            catch (Exception)
+            catch (KeyVaultErrorException ex) when (ex.Response.StatusCode == HttpStatusCode.NotFound)
             {
                 // ignored, it may not be added
             }
