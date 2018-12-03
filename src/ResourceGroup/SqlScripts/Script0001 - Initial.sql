@@ -1,7 +1,7 @@
 ﻿CREATE TABLE dbo.[Athletes] (Id nvarchar(32) NOT NULL, ExternalId nvarchar(100) UNIQUE, FirstName nvarchar(50), LastName nvarchar(50) NOT NULL, ProfilePictureUrl nvarchar(max), Active bit NOT NULL, System nvarchar(30), PRIMARY KEY (Id))
 GO
 
-CREATE TABLE dbo.[Activities] (Id nvarchar(32) NOT NULL, AthleteId nvarchar(32) NOT NULL, ExternalId nvarchar(100) UNIQUE, ActivityTime datetime2, ActivityType nvarchar(50), Distance int, MovingTime int, Category nvarchar(60), Points float DEFAULT 0 NOT NULL, Source nvarchar(30), PRIMARY KEY (Id), FOREIGN KEY (AthleteId) REFERENCES dbo.Athletes(Id))
+CREATE TABLE dbo.[Activities] (Id nvarchar(32) NOT NULL, AthleteId nvarchar(32) NOT NULL, ExternalId nvarchar(100), ActivityTime datetime2, ActivityType nvarchar(50), Distance int, MovingTime int, Category nvarchar(60), Points float DEFAULT 0 NOT NULL, Source nvarchar(30), PRIMARY KEY (Id), FOREIGN KEY (AthleteId) REFERENCES dbo.Athletes(Id))
 GO
 
 CREATE UNIQUE INDEX ix_acitivites_externalId_unique
