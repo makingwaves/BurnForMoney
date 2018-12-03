@@ -14,7 +14,11 @@ namespace BurnForMoney.Functions.Strava.Functions
         private static readonly IMemoryCache AccessTokensCache = new MemoryCache(new MemoryDistributedCacheOptions());
         private static readonly IMemoryCache RefreshTokensCache = new MemoryCache(new MemoryDistributedCacheOptions());
         private static readonly IKeyVaultClient KeyVault = KeyVaultClientFactory.Create();
-        private static readonly TimeSpan CacheAbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(30);
+        private static readonly MemoryCacheEntryOptions CacheEntryOptions = new MemoryCacheEntryOptions
+        {
+            Size = 1,
+            AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(30)
+        };
 
         public static async Task<SecretBundle> GetAccessTokenForAsync(string athleteId, string keyVaultBaseUrl)
         {
@@ -27,7 +31,7 @@ namespace BurnForMoney.Functions.Strava.Functions
                 AccessTokensSecretNameConvention.AccessToken(athleteId));
 
 
-            AccessTokensCache.Set(athleteId, accessToken, CacheAbsoluteExpirationRelativeToNow);
+            AccessTokensCache.Set(athleteId, accessToken, CacheEntryOptions);
             return accessToken;
         }
 
@@ -40,7 +44,7 @@ namespace BurnForMoney.Functions.Strava.Functions
 
             refreshToken = await KeyVault.GetSecretAsync(keyVaultBaseUrl,
                 AccessTokensSecretNameConvention.RefreshToken(athleteId));
-            RefreshTokensCache.Set(athleteId, refreshToken, CacheAbsoluteExpirationRelativeToNow);
+            RefreshTokensCache.Set(athleteId, refreshToken, CacheEntryOptions);
             return refreshToken;
         }
 
@@ -63,9 +67,9 @@ namespace BurnForMoney.Functions.Strava.Functions
                 refreshToken);
 
             AccessTokensCache.Remove(athleteId);
-            AccessTokensCache.Set(athleteId, accessTokenSecret, CacheAbsoluteExpirationRelativeToNow);
+            AccessTokensCache.Set(athleteId, accessTokenSecret, CacheEntryOptions);
             RefreshTokensCache.Remove(athleteId);
-            RefreshTokensCache.Set(athleteId, refreshTokenSecret, CacheAbsoluteExpirationRelativeToNow);
+            RefreshTokensCache.Set(athleteId, refreshTokenSecret, CacheEntryOptions);
         }
 
         public static async Task DeleteAsync(string athleteId, string keyVaultBaseUrl)
