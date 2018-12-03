@@ -41,7 +41,7 @@ namespace BurnForMoney.Functions.InternalApi.Functions.Activities
                 AthleteId = athleteId,
                 ActivityType = model.Category,
                 StartDate = model.StartDate.Value,
-                DistanceInMeters = model.DistanceInMeters,
+                DistanceInMeters = model.DistanceInMeters ?? 0,
                 MovingTimeInMinutes = model.MovingTimeInMinutes,
                 Source = "Manual"
             };
@@ -73,7 +73,7 @@ namespace BurnForMoney.Functions.InternalApi.Functions.Activities
     {
         public DateTime? StartDate { get; set; }
         public string Category { get; set; }
-        public double DistanceInMeters { get; set; }
+        public double? DistanceInMeters { get; set; }
         public double MovingTimeInMinutes { get; set; }
     }
 }
