@@ -24,7 +24,6 @@ namespace BurnForMoney.Functions.Strava.Functions.EventsHub
     public static class EventsRouter
     {
         private static readonly StravaService StravaService = new StravaService();
-        private static readonly ConcurrentDictionary<string, string> AccessTokens = new ConcurrentDictionary<string, string>();
         private static readonly ConcurrentDictionary<string, bool> AthletesExistenceConfirmed = new ConcurrentDictionary<string, bool>();
         private static readonly ConcurrentDictionary<string, string> AthleteIdsMappings = new ConcurrentDictionary<string, string>();
 
@@ -228,14 +227,7 @@ namespace BurnForMoney.Functions.Strava.Functions.EventsHub
 
         private static async Task<string> GetAccessTokenAsync(string athleteId, string keyVaultBaseUrl)
         {
-            if (AccessTokens.TryGetValue(athleteId, out var accessToken))
-            {
-                return accessToken;
-            }
-
             var secret = await AccessTokensStore.GetAccessTokenForAsync(athleteId, keyVaultBaseUrl);
-            AccessTokens.TryAdd(athleteId, secret.Value);
-
             return secret.Value;
         }
 

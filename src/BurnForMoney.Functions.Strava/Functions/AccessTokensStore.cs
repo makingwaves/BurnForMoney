@@ -1,43 +1,46 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using BurnForMoney.Functions.Shared;
 using Microsoft.Azure.KeyVault;
 using Microsoft.Azure.KeyVault.Models;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace BurnForMoney.Functions.Strava.Functions
 {
     public class AccessTokensStore
     {
-        private static readonly ConcurrentDictionary<string, SecretBundle> AccessTokensCache = new ConcurrentDictionary<string, SecretBundle>();
-        private static readonly ConcurrentDictionary<string, SecretBundle> RefreshTokensCache = new ConcurrentDictionary<string, SecretBundle>();
+        private static readonly IMemoryCache AccessTokensCache = new MemoryCache(new MemoryDistributedCacheOptions());
+        private static readonly IMemoryCache RefreshTokensCache = new MemoryCache(new MemoryDistributedCacheOptions());
         private static readonly IKeyVaultClient KeyVault = KeyVaultClientFactory.Create();
+        private static readonly TimeSpan CacheAbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(30);
 
         public static async Task<SecretBundle> GetAccessTokenForAsync(string athleteId, string keyVaultBaseUrl)
         {
-            if (AccessTokensCache.TryGetValue(athleteId, out var accessToken))
+            if (AccessTokensCache.TryGetValue(athleteId, out SecretBundle accessToken))
             {
                 return accessToken;
             }
 
             accessToken = await KeyVault.GetSecretAsync(keyVaultBaseUrl,
                 AccessTokensSecretNameConvention.AccessToken(athleteId));
-            AccessTokensCache.TryAdd(athleteId, accessToken);
+
+
+            AccessTokensCache.Set(athleteId, accessToken, CacheAbsoluteExpirationRelativeToNow);
             return accessToken;
         }
 
         public static async Task<SecretBundle> GetRefreshTokenForAsync(string athleteId, string keyVaultBaseUrl)
         {
-            if (RefreshTokensCache.TryGetValue(athleteId, out var refreshToken))
+            if (RefreshTokensCache.TryGetValue(athleteId, out SecretBundle refreshToken))
             {
                 return refreshToken;
             }
 
             refreshToken = await KeyVault.GetSecretAsync(keyVaultBaseUrl,
                 AccessTokensSecretNameConvention.RefreshToken(athleteId));
-            RefreshTokensCache.TryAdd(athleteId, refreshToken);
+            RefreshTokensCache.Set(athleteId, refreshToken, CacheAbsoluteExpirationRelativeToNow);
             return refreshToken;
         }
 
@@ -59,10 +62,10 @@ namespace BurnForMoney.Functions.Strava.Functions
                 refreshTokenSecretName,
                 refreshToken);
 
-            AccessTokensCache.TryRemove(athleteId, out var _);
-            AccessTokensCache.TryAdd(athleteId, accessTokenSecret);
-            RefreshTokensCache.TryRemove(athleteId, out var _);
-            RefreshTokensCache.TryAdd(athleteId, refreshTokenSecret);
+            AccessTokensCache.Remove(athleteId);
+            AccessTokensCache.Set(athleteId, accessTokenSecret, CacheAbsoluteExpirationRelativeToNow);
+            RefreshTokensCache.Remove(athleteId);
+            RefreshTokensCache.Set(athleteId, refreshTokenSecret, CacheAbsoluteExpirationRelativeToNow);
         }
 
         public static async Task DeleteAsync(string athleteId, string keyVaultBaseUrl)
@@ -72,8 +75,8 @@ namespace BurnForMoney.Functions.Strava.Functions
             await KeyVault.DeleteSecretAsync(keyVaultBaseUrl,
                 AccessTokensSecretNameConvention.RefreshToken(athleteId));
 
-            AccessTokensCache.TryRemove(athleteId, out var _);
-            RefreshTokensCache.TryRemove(athleteId, out var _);
+            AccessTokensCache.Remove(athleteId);
+            RefreshTokensCache.Remove(athleteId);
         }
 
         public static async Task<List<SecretItem>> GetAllSecretsAsync(string keyVaultBaseUrl)
@@ -101,7 +104,7 @@ namespace BurnForMoney.Functions.Strava.Functions
 
             await KeyVault.UpdateSecretAsync(secretIdentifier.Identifier,
                 secretAttributes: new SecretAttributes(enabled: false));
-            AccessTokensCache.TryRemove(athleteId, out var _);
+            AccessTokensCache.Remove(athleteId);
         }
     }
 }
