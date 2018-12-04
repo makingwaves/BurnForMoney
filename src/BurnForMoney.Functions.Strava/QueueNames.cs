@@ -9,7 +9,6 @@
         public const string UnauthorizedAthletes = "unauthorized-athletes";
 
         public const string NewStravaAthletesRequests = "new-strava-athletes-requests";
-        public const string NewStravaAthletesRequestsPoison = NewStravaAthletesRequests + PoisonQueueSuffix;
         public const string RefreshStravaToken = "refresh-strava-token";
 
         public const string StravaEvents = "strava-events";

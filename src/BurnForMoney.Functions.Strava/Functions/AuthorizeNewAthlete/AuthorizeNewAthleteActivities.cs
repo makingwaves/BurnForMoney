@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using BurnForMoney.Functions.Shared.Extensions;
@@ -10,12 +11,14 @@ using BurnForMoney.Functions.Shared.Queues;
 using BurnForMoney.Functions.Strava.Configuration;
 using BurnForMoney.Functions.Strava.Exceptions;
 using BurnForMoney.Functions.Strava.External.Strava.Api;
+using BurnForMoney.Functions.Strava.Functions.AddNewAthlete;
 using BurnForMoney.Functions.Strava.Functions.Dto;
 using Dapper;
 using Microsoft.Azure.KeyVault.Models;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 using Microsoft.WindowsAzure.Storage.Queue;
+using Microsoft.WindowsAzure.Storage.Table;
 using Newtonsoft.Json;
 
 namespace BurnForMoney.Functions.Strava.Functions.AuthorizeNewAthlete
@@ -32,6 +35,7 @@ namespace BurnForMoney.Functions.Strava.Functions.AuthorizeNewAthlete
 
         [FunctionName(FunctionsNames.A_ExchangeTokenAndGetAthleteSummary)]
         public static async Task<Athlete> A_ExchangeTokenAndGetAthleteSummaryAsync([ActivityTrigger]A_ExchangeTokenAndGetAthleteSummaryInput input, ILogger log,
+            [Table("Athletes")] CloudTable athletesTable,
             [Configuration] ConfigurationRoot configuration)
         {
             log.LogFunctionStart(FunctionsNames.A_ExchangeTokenAndGetAthleteSummary);
@@ -39,18 +43,15 @@ namespace BurnForMoney.Functions.Strava.Functions.AuthorizeNewAthlete
             log.LogInformation($"Requesting for access token using clientId: {configuration.Strava.ClientId}.");
             var response = StravaService.ExchangeToken(configuration.Strava.ClientId, configuration.Strava.ClientSecret, input.AuthorizationCode);
 
-            using (var conn = SqlConnectionFactory.Create(configuration.ConnectionStrings.SqlDbConnectionString))
+            var query = new TableQuery<AthleteEntity>
             {
-                await conn.OpenWithRetryAsync();
-
-                var athleteExists = await conn.ExecuteScalarAsync<bool>("SELECT COUNT(1) FROM dbo.Athletes WHERE ExternalId=@AthleteExternalId", new
-                {
-                    AthleteExternalId = response.Athlete.Id
-                });
-                if (athleteExists)
-                {
-                    throw new AthleteAlreadyExistsException(response.Athlete.Id.ToString());
-                }
+                FilterString =
+                    TableQuery.GenerateFilterCondition("RowKey", QueryComparisons.Equal, response.Athlete.Id.ToString())
+            };
+            var queryResult = await athletesTable.ExecuteQuerySegmentedAsync(query, null);
+            if (queryResult.Any())
+            {
+                throw new AthleteAlreadyExistsException(response.Athlete.Id.ToString());
             }
 
             try
