@@ -8,7 +8,7 @@
         public const string AuthorizationCodesPoison = AuthorizationCodes + PoisonQueueSuffix;
         public const string UnauthorizedAthletes = "unauthorized-athletes";
 
-        public const string NewStravaAthletesRequests = "new-strava-athletes-requests";
+        public const string AddStravaAthleteRequests = "add-strava-athlete-requests";
         public const string RefreshStravaToken = "refresh-strava-token";
 
         public const string StravaEvents = "strava-events";

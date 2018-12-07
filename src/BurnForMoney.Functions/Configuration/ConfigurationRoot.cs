@@ -7,11 +7,18 @@ namespace BurnForMoney.Functions.Configuration
         public bool IsLocalEnvironment { get; set; }
         public string ApplicationInsightsInstrumentationKey { get; set; }
         public string SendGridApiKey { get; set; }
+        public EventGridSection EventGrid { get; set; }
 
         public bool IsValid()
         {
             return  ConnectionStrings != null;
         }
+    }
+
+    public class EventGridSection
+    {
+        public string SasKey { get; set; }
+        public string TopicEndpoint { get; set; }
     }
 
     public class EmailSection

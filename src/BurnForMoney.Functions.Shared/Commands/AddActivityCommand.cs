@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace BurnForMoney.Functions.Shared.Queues
+namespace BurnForMoney.Functions.Shared.Commands
 {
-    public class PendingRawActivity
+    public class AddActivityCommand
     {
         public string Id { get; set; }
         public string ExternalId { get; set; }

@@ -37,6 +37,7 @@
       <Visible>False</Visible>
     </None>
     <Content Include="Deploy.ps1" />
+    <Content Include="Template.Dev.json" />
     <Content Include="Template.Test.parameters.json" />
     <Content Include="Template.json" />
     <Content Include="Template.Prod.parameters.json" />

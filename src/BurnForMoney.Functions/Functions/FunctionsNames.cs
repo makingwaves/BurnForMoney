@@ -5,8 +5,8 @@ namespace BurnForMoney.Functions.Functions
     [SuppressMessage("ReSharper", "InconsistentNaming")]
     public static class FunctionsNames
     {
-        public const string Q_ProcessRawActivity = "Q_ProcessRawActivity";
-        public const string Q_ProcessRawUpdatedActivity = "Q_ProcessRawUpdatedActivity";
+        public const string Q_AddActivity = "Q_AddActivity";
+        public const string Q_UpdateActivity = "Q_UpdateActivity";
         public const string Q_DeleteActivity = "Q_DeleteActivity";
         public const string Q_SubmitAthleteActivity = "Q_SubmitAthleteActivity";
         public const string Q_UpdateAthleteActivity = "Q_UpdateAthleteActivity";

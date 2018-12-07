@@ -15,7 +15,7 @@ namespace BurnForMoney.Functions.Strava.Functions
         public const string A_ProcessNewAthleteRequest = "A_ProcessNewAthleteRequest";
         public const string A_AuthorizeNewAthleteCompensation = "A_AuthorizeNewAthleteCompensation";
         public const string SubmitAthleteApproval = "SubmitAthleteApproval";
-        public const string Q_ProcessNewAthlete = "Q_ProcessNewAthlete";
+        public const string Q_AddNewAthlete = "Q_AddNewAthlete";
 
         public const string Q_CollectAthleteActivities = "Q_CollectAthleteActivities";
 

@@ -1,0 +1,34 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "environmentCode": {
+      "type": "string",
+      "defaultValue": "dev" 
+    }
+  },
+  "variables": {
+    "applicationShortName": "bfm",
+    "keyVaultName": "[concat('burnformoney', 'kv', 'dev')]",
+    "eventGridTopicName": "[concat(variables('applicationShortName'), 'domainEvents', parameters('environmentCode'))]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "name": "[concat(variables('keyVaultName'), '/', 'EventGrid--SasKey')]",
+      "apiVersion": "2015-06-01",
+      "properties": {
+        "value": "[listKeys(resourceId('Microsoft.EventGrid/topics', variables('eventGridTopicName')), '2018-01-01').key1]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.EventGrid/topics', variables('eventGridTopicName'))]"
+      ]
+    },
+    {
+      "name": "[variables('eventGridTopicName')]",
+      "type": "Microsoft.EventGrid/topics",
+      "location": "[resourceGroup().location]",
+      "apiVersion": "2018-01-01"
+    }
+  ]
+}

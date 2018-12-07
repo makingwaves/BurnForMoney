@@ -77,7 +77,8 @@
     "sqlServerName": "[concat(variables('applicationName'), 'sqlserver', parameters('environmentCode'))]",
     "keyVaultName": "[concat(variables('applicationName'), 'kv', parameters('environmentCode'))]",
     "stravaAccessTokensKeyVaultName": "[concat(variables('applicationShortName'), 'kvstravatokens', parameters('environmentCode'))]",
-    "appInsightsName": "[concat(variables('applicationName'), 'ai', parameters('environmentCode'))]"
+    "appInsightsName": "[concat(variables('applicationName'), 'ai', parameters('environmentCode'))]",
+    "eventGridTopicName": "[concat(variables('applicationShortName'), 'domainEvents', parameters('environmentCode'))]"
   },
   "resources": [
     {
@@ -287,6 +288,14 @@
             {
               "name": "KeyVaultName",
               "value": "[variables('keyVaultName')]"
+            },
+            {
+              "name": "EventGrid:TopicEndpoint",
+              "value": "[reference(variables('eventGridTopicName')).endpoint]"
+            },
+            {
+              "name": "EventGrid:SasKey",
+              "value": "[listKeys(resourceId('Microsoft.EventGrid/topics', variables('eventGridTopicName')), '2018-01-01').key1]"
             }
           ]
         }
@@ -305,7 +314,8 @@
         "[resourceId('Microsoft.Web/sites', variables('functionAppName'))]",
         "[resourceId('Microsoft.Web/serverfarms', variables('stravaFunctionHostingPlanName'))]",
         "[resourceId('Microsoft.Storage/storageAccounts', variables('stravaFunctionStorageAccountName'))]",
-        "[resourceId('microsoft.insights/components', variables('appInsightsName'))]"
+        "[resourceId('microsoft.insights/components', variables('appInsightsName'))]",
+        "[resourceId('Microsoft.EventGrid/topics', variables('eventGridTopicName'))]"
       ],
       "properties": {
         "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('functionHostingPlanName'))]",
@@ -374,6 +384,14 @@
             {
               "name": "AppQueuesStorage",
               "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('functionStorageAccountName'), ';AccountKey=', listKeys(variables('functionStorageAccountid'),'2015-05-01-preview').key1)]"
+            },
+            {
+              "name": "AppStorage",
+              "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('functionStorageAccountName'), ';AccountKey=', listKeys(variables('functionStorageAccountid'),'2015-05-01-preview').key1)]"
+            },
+            {
+              "name": "EventGrid:TopicEndpoint",
+              "value": "[reference(variables('eventGridTopicName')).endpoint]"
             }
           ]
         }
@@ -684,6 +702,23 @@
       "dependsOn": [
         "[resourceId('Microsoft.Sql/servers', variables('sqlserverName'))]"
       ]
+    },
+    {
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "name": "[concat(variables('keyVaultName'), '/', 'EventGrid--SasKey')]",
+      "apiVersion": "2015-06-01",
+      "properties": {
+        "value": "[listKeys(resourceId('Microsoft.EventGrid/topics', variables('eventGridTopicName')), '2018-01-01').key1]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.EventGrid/topics', variables('eventGridTopicName'))]"
+      ]
+    },
+    {
+      "name": "[variables('eventGridTopicName')]",
+      "type": "Microsoft.EventGrid/topics",
+      "location": "[resourceGroup().location]",
+      "apiVersion": "2018-01-01"
     }
   ]
 }

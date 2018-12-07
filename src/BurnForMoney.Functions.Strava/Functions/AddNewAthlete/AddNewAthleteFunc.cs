@@ -13,13 +13,13 @@ namespace BurnForMoney.Functions.Strava.Functions.AddNewAthlete
 {
     public static class AddNewAthleteFunc
     {
-        [FunctionName(FunctionsNames.Q_ProcessNewAthlete)]
+        [FunctionName(FunctionsNames.Q_AddNewAthlete)]
         public static async Task Q_ProcessNewAthlete(ILogger log,
-            [QueueTrigger(QueueNames.NewStravaAthletesRequests)] Athlete athlete,
-            [Table("Athletes")] CloudTable outputTable,
+            [QueueTrigger(QueueNames.AddStravaAthleteRequests)] Athlete athlete,
+            [Table("Athletes", Connection = "AppStorage")] CloudTable outputTable,
             [Queue(QueueNames.CollectAthleteActivities)] CloudQueue collectActivitiesQueues)
         {
-            log.LogFunctionStart(FunctionsNames.Q_ProcessNewAthlete);
+            log.LogFunctionStart(FunctionsNames.Q_AddNewAthlete);
 
             var row = new AthleteEntity
             {
@@ -38,12 +38,12 @@ namespace BurnForMoney.Functions.Strava.Functions.AddNewAthlete
 
             var input = new CollectAthleteActivitiesInput
             {
-                AthleteId = row.RowKey
+                AthleteId = row.PartitionKey
             };
             var json = JsonConvert.SerializeObject(input);
             await collectActivitiesQueues.AddMessageAsync(new CloudQueueMessage(json));
 
-            log.LogFunctionEnd(FunctionsNames.Q_ProcessNewAthlete);
+            log.LogFunctionEnd(FunctionsNames.Q_AddNewAthlete);
         }
     }
 

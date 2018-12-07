@@ -1,22 +1,26 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using BurnForMoney.Functions.Shared.Commands;
 using BurnForMoney.Functions.Shared.Extensions;
 using BurnForMoney.Functions.Shared.Functions.Extensions;
 using BurnForMoney.Functions.Shared.Helpers;
 using BurnForMoney.Functions.Shared.Identity;
 using BurnForMoney.Functions.Shared.Persistence;
 using BurnForMoney.Functions.Shared.Queues;
+using BurnForMoney.Functions.Shared.Repositories;
 using BurnForMoney.Functions.Strava.Configuration;
 using BurnForMoney.Functions.Strava.External.Strava.Api;
 using BurnForMoney.Functions.Strava.External.Strava.Api.Exceptions;
 using BurnForMoney.Functions.Strava.External.Strava.Api.Model;
+using BurnForMoney.Functions.Strava.Functions.AddNewAthlete;
 using BurnForMoney.Functions.Strava.Functions.EventsHub.Dto;
 using Dapper;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 using Microsoft.WindowsAzure.Storage.Queue;
+using Microsoft.WindowsAzure.Storage.Table;
 using Newtonsoft.Json;
 
 namespace BurnForMoney.Functions.Strava.Functions.EventsHub
@@ -24,12 +28,11 @@ namespace BurnForMoney.Functions.Strava.Functions.EventsHub
     public static class EventsRouter
     {
         private static readonly StravaService StravaService = new StravaService();
-        private static readonly ConcurrentDictionary<string, bool> AthletesExistenceConfirmed = new ConcurrentDictionary<string, bool>();
-        private static readonly ConcurrentDictionary<string, string> AthleteIdsMappings = new ConcurrentDictionary<string, string>();
 
         [FunctionName(FunctionsNames.EventsRouter)]
         public static async Task EventsHub([QueueTrigger(QueueNames.StravaEvents)] StravaWebhookEvent @event,
             ILogger log, ExecutionContext executionContext,
+            [Table("Athletes", Connection = "AppStorage")] CloudTable athletesTable,
             [Queue(QueueNames.StravaEventsActivityAdd)] CloudQueue addActivityQueue,
             [Queue(QueueNames.StravaEventsActivityUpdate)] CloudQueue updateActivityQueue,
             [Queue(QueueNames.StravaEventsActivityDelete)] CloudQueue deleteActivityQueue,
@@ -44,13 +47,16 @@ namespace BurnForMoney.Functions.Strava.Functions.EventsHub
                 ActivityId = @event.ObjectId.ToString()
             };
 
-            var athleteExists =
-                await AthleteExistsAndIsActiveAsync(message.AthleteId, configuration.ConnectionStrings.SqlDbConnectionString);
-            if (!athleteExists)
+            var query = new TableQuery<AthleteEntity>
+            {
+                FilterString =
+                    TableQuery.GenerateFilterCondition("RowKey", QueryComparisons.Equal, message.AthleteId)
+            };
+            var athleteEntity = (await athletesTable.ExecuteQuerySegmentedAsync(query, null)).FirstOrDefault();
+            if (athleteEntity != null)
             {
                 // This can happen when the athlete is either deactivated (but authenticated) or has not yet been authorized.
                 log.LogInformation($"Athlete with id: {message.AthleteId} does not exists.");
-                return;
             }
 
             var json = JsonConvert.SerializeObject(message);
@@ -86,27 +92,6 @@ namespace BurnForMoney.Functions.Strava.Functions.EventsHub
                 throw new Exception($"Unknown event type: {@event.ObjectType}");
             }
             log.LogFunctionEnd(FunctionsNames.EventsRouter);
-        }
-
-        private static async Task<bool> AthleteExistsAndIsActiveAsync(string athleteExternalId, string connectionString)
-        {
-            if (AthletesExistenceConfirmed.TryGetValue(athleteExternalId, out var exists))
-            {
-                return exists;
-            }
-
-            using (var conn = SqlConnectionFactory.Create(connectionString))
-            {
-                await conn.OpenWithRetryAsync();
-
-                exists = await conn.ExecuteScalarAsync<bool>("SELECT COUNT(1) FROM dbo.Athletes WHERE ExternalId=@AthleteExternalId AND Active=1", new
-                {
-                    AthleteExternalId = athleteExternalId
-                });
-            }
-            AthletesExistenceConfirmed.TryAdd(athleteExternalId, exists);
-
-            return exists;
         }
 
         [FunctionName(FunctionsNames.Events_DeauthorizedAthlete)]
@@ -150,11 +135,19 @@ namespace BurnForMoney.Functions.Strava.Functions.EventsHub
         public static async Task Events_NewActivity([QueueTrigger(QueueNames.StravaEventsActivityAdd)] ActivityData @event,
             ILogger log,
             [Queue(AppQueueNames.AddActivityRequests, Connection = "AppQueuesStorage")] CloudQueue pendingRawActivitiesQueue,
+            [Table("Athletes", Connection = "AppStorage")] CloudTable athletesTable,
             [Configuration] ConfigurationRoot configuration)
         {
             log.LogFunctionStart(FunctionsNames.Events_NewActivity);
 
-            var athleteId = await GetAthleteIdAsync(@event.AthleteId, configuration.ConnectionStrings.SqlDbConnectionString);
+            var query = new TableQuery<AthleteEntity>
+            {
+                FilterString =
+                    TableQuery.GenerateFilterCondition("RowKey", QueryComparisons.Equal, @event.AthleteId)
+            };
+            var queryResult = await athletesTable.ExecuteQuerySegmentedAsync(query, null);
+            var athleteId = queryResult.FirstOrDefault()?.PartitionKey;
+
             var accessToken = await GetAccessTokenAsync(athleteId, configuration.Strava.AccessTokensKeyVaultUrl);
 
             StravaActivity activity;
@@ -167,11 +160,12 @@ namespace BurnForMoney.Functions.Strava.Functions.EventsHub
                 log.LogWarning(ex.Message);
                 return;
             }
-
-            var pendingActivity = new PendingRawActivity
+    
+            var pendingActivity = new AddActivityCommand
             {
                 Id = ActivityIdentity.Next(),
                 ExternalId = activity.Id.ToString(),
+                AthleteId = athleteId,
                 ExternalAthleteId = activity.Athlete.Id.ToString(),
                 ActivityType = activity.Type.ToString(),
                 StartDate = activity.StartDate,
@@ -190,11 +184,19 @@ namespace BurnForMoney.Functions.Strava.Functions.EventsHub
         public static async Task Events_UpdateActivity([QueueTrigger(QueueNames.StravaEventsActivityUpdate)] ActivityData @event,
             ILogger log,
             [Queue(AppQueueNames.UpdateActivityRequests, Connection = "AppQueuesStorage")] CloudQueue pendingRawActivitiesQueue,
+            [Table("Athletes", Connection = "AppStorage")] CloudTable athletesTable,
             [Configuration] ConfigurationRoot configuration)
         {
             log.LogFunctionStart(FunctionsNames.Events_UpdateActivity);
 
-            var athleteId = await GetAthleteIdAsync(@event.AthleteId, configuration.ConnectionStrings.SqlDbConnectionString);
+            var query = new TableQuery<AthleteEntity>
+            {
+                FilterString =
+                    TableQuery.GenerateFilterCondition("RowKey", QueryComparisons.Equal, @event.AthleteId)
+            };
+            var queryResult = await athletesTable.ExecuteQuerySegmentedAsync(query, null);
+            var athleteId = queryResult.FirstOrDefault()?.PartitionKey;
+
             var accessToken = await GetAccessTokenAsync(athleteId, configuration.Strava.AccessTokensKeyVaultUrl);
 
             StravaActivity activity;
@@ -208,8 +210,9 @@ namespace BurnForMoney.Functions.Strava.Functions.EventsHub
                 return;
             }
 
-            var pendingActivity = new PendingRawActivity
+            var pendingActivity = new UpdateActivityCommand
             {
+                Id = null,
                 ExternalId = activity.Id.ToString(),
                 ExternalAthleteId = activity.Athlete.Id.ToString(),
                 ActivityType = activity.Type.ToString(),
@@ -231,35 +234,18 @@ namespace BurnForMoney.Functions.Strava.Functions.EventsHub
             return secret.Value;
         }
 
-        private static async Task<string> GetAthleteIdAsync(string athleteExternalId, string connectionString)
-        {
-            if (AthleteIdsMappings.TryGetValue(athleteExternalId, out var exists))
-            {
-                return exists;
-            }
-
-            using (var conn = SqlConnectionFactory.Create(connectionString))
-            {
-                await conn.OpenWithRetryAsync();
-
-                exists = await conn.ExecuteScalarAsync<string>("SELECT Id FROM dbo.Athletes WHERE ExternalId=@AthleteExternalId AND Active=1", new
-                {
-                    AthleteExternalId = athleteExternalId
-                });
-            }
-            AthleteIdsMappings.TryAdd(athleteExternalId, exists);
-
-            return exists;
-        }
-
         [FunctionName(FunctionsNames.Events_DeleteActivity)]
         public static async Task Events_DeleteActivity([QueueTrigger(QueueNames.StravaEventsActivityDelete)] ActivityData @event,
             ILogger log, ExecutionContext executionContext,
-            [Queue(AppQueueNames.DeleteActivityRequests, Connection = "AppQueuesStorage")] CloudQueue deleteActivtiesQueue)
+            [Queue(AppQueueNames.DeleteActivityRequests, Connection = "AppQueuesStorage")] CloudQueue deleteActivtiesQueue,
+            [Configuration] ConfigurationRoot configuration)
         {
             log.LogFunctionStart(FunctionsNames.Events_DeleteActivity);
 
-            var json = JsonConvert.SerializeObject(new DeleteActivityRequest { ExternalId = @event.ActivityId });
+            var activityRepository = new ActivityRepository(configuration.ConnectionStrings.SqlDbConnectionString);
+            var activity = await activityRepository.GetByExternalIdAsync(@event.ActivityId);
+
+            var json = JsonConvert.SerializeObject(new DeleteActivityCommand { Id = activity.ActivityId, AthleteId = activity.AthleteId});
             var message = new CloudQueueMessage(json);
             await deleteActivtiesQueue.AddMessageAsync(message);
             log.LogFunctionEnd(FunctionsNames.Events_DeleteActivity);

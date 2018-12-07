@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Globalization;
 using System.Threading.Tasks;
+using BurnForMoney.Functions.Shared.Commands;
 using BurnForMoney.Functions.Shared.Extensions;
 using BurnForMoney.Functions.Shared.Functions.Extensions;
 using BurnForMoney.Functions.Shared.Helpers;
@@ -23,7 +24,7 @@ namespace BurnForMoney.Functions.Strava.Functions.CollectAthleteActivitiesFromSt
 
         [FunctionName(FunctionsNames.Q_CollectAthleteActivities)]
         public static async Task Run([QueueTrigger(QueueNames.CollectAthleteActivities)] CollectAthleteActivitiesInput input,
-            [Queue(AppQueueNames.AddActivityRequests, Connection = "AppQueuesStorage")] CloudQueue pendingRawActivitiesQueue,
+            [Queue(AppQueueNames.AddActivityRequests, Connection = "AppQueuesStorage")] CloudQueue pendingActivitiesQueue,
             [Queue(QueueNames.UnauthorizedAthletes)] CloudQueue unauthorizedAthletesQueue,
             ILogger log,
             [Configuration] ConfigurationRoot configuration)
@@ -42,9 +43,10 @@ namespace BurnForMoney.Functions.Strava.Functions.CollectAthleteActivitiesFromSt
 
                 foreach (var stravaActivity in activities)
                 {
-                    var pendingActivity = new PendingRawActivity
+                    var pendingActivity = new AddActivityCommand
                     {
                         Id = ActivityIdentity.Next(),
+                        AthleteId = input.AthleteId,
                         ExternalId = stravaActivity.Id.ToString(),
                         ExternalAthleteId = stravaActivity.Athlete.Id.ToString(),
                         ActivityType = stravaActivity.Type.ToString(),
@@ -56,7 +58,7 @@ namespace BurnForMoney.Functions.Strava.Functions.CollectAthleteActivitiesFromSt
 
                     var json = JsonConvert.SerializeObject(pendingActivity);
                     var message = new CloudQueueMessage(json);
-                    await pendingRawActivitiesQueue.AddMessageAsync(message);
+                    await pendingActivitiesQueue.AddMessageAsync(message);
                 }
             }
             catch (UnauthorizedRequestException ex)

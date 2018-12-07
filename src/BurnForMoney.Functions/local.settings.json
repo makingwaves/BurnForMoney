@@ -13,6 +13,9 @@
     "ReportsReceiver": "pawel.maga@makingwaves.com",
     "DefaultRecipient": "pawel.maga@makingwaves.com"
   },
+  "EventGrid": {
+    "TopicEndpoint": "https://bfmdomainEventsdev.westeurope-1.eventgrid.azure.net/api/events"
+  },
   "Host": {
     "LocalHttpPort": 7071
   }

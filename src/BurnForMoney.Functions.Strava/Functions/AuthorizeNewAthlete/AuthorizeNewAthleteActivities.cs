@@ -6,14 +6,12 @@ using System.Threading.Tasks;
 using BurnForMoney.Functions.Shared.Extensions;
 using BurnForMoney.Functions.Shared.Functions.Extensions;
 using BurnForMoney.Functions.Shared.Identity;
-using BurnForMoney.Functions.Shared.Persistence;
 using BurnForMoney.Functions.Shared.Queues;
 using BurnForMoney.Functions.Strava.Configuration;
 using BurnForMoney.Functions.Strava.Exceptions;
 using BurnForMoney.Functions.Strava.External.Strava.Api;
 using BurnForMoney.Functions.Strava.Functions.AddNewAthlete;
 using BurnForMoney.Functions.Strava.Functions.Dto;
-using Dapper;
 using Microsoft.Azure.KeyVault.Models;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
@@ -35,7 +33,7 @@ namespace BurnForMoney.Functions.Strava.Functions.AuthorizeNewAthlete
 
         [FunctionName(FunctionsNames.A_ExchangeTokenAndGetAthleteSummary)]
         public static async Task<Athlete> A_ExchangeTokenAndGetAthleteSummaryAsync([ActivityTrigger]A_ExchangeTokenAndGetAthleteSummaryInput input, ILogger log,
-            [Table("Athletes")] CloudTable athletesTable,
+            [Table("Athletes", Connection = "AppStorage")] CloudTable athletesTable,
             [Configuration] ConfigurationRoot configuration)
         {
             log.LogFunctionStart(FunctionsNames.A_ExchangeTokenAndGetAthleteSummary);
@@ -115,13 +113,13 @@ namespace BurnForMoney.Functions.Strava.Functions.AuthorizeNewAthlete
 
         [FunctionName(FunctionsNames.A_ProcessNewAthleteRequest)]
         public static async Task A_ProcessNewAthleteRequest([ActivityTrigger]DurableActivityContext activityContext, ILogger log,
-            ExecutionContext context, [Queue(QueueNames.NewStravaAthletesRequests)] CloudQueue newAthletesRequestsQueue)
+            ExecutionContext context, [Queue(QueueNames.AddStravaAthleteRequests)] CloudQueue addAthleteRequestsQueue)
         {
             log.LogFunctionStart(FunctionsNames.A_ProcessNewAthleteRequest);
 
             var athlete = activityContext.GetInput<Athlete>();
             var json = JsonConvert.SerializeObject(athlete);
-            await newAthletesRequestsQueue.AddMessageAsync(new CloudQueueMessage(json));
+            await addAthleteRequestsQueue.AddMessageAsync(new CloudQueueMessage(json));
 
             log.LogFunctionEnd(FunctionsNames.A_ProcessNewAthleteRequest);
         }

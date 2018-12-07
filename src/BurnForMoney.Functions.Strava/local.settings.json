@@ -5,6 +5,7 @@
     "AzureWebJobsStorage": "UseDevelopmentStorage=true",
     "AppQueuesStorage": "UseDevelopmentStorage=true",
     "AzureWebJobsDashboard": "UseDevelopmentStorage=true",
+    "AppStorage": "UseDevelopmentStorage=true",
     "WEB_HOST": "http://localhost:7072",
     "Strava:ClientId": 28597,
     "Strava:ConfirmationPageUrl": "http://localhost:3000/strava-confirmation",

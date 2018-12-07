@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using BurnForMoney.Functions.Shared.Commands;
 using BurnForMoney.Functions.Shared.Extensions;
 using BurnForMoney.Functions.Shared.Queues;
 using Microsoft.AspNetCore.Http;
@@ -34,7 +35,7 @@ namespace BurnForMoney.Functions.InternalApi.Functions.Activities
                 return new BadRequestObjectResult($"Validation failed. {ex.Message}.");
             }
 
-            var pendingActivity = new PendingRawActivity
+            var pendingActivity = new AddActivityCommand
             {
                 Id = activityId,
                 ExternalId = model.ExternalId,
