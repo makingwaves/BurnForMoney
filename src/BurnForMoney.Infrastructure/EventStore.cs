@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.WindowsAzure.Storage;
@@ -11,6 +12,7 @@ namespace BurnForMoney.Infrastructure
     public interface IEventStore
     {
         Task SaveAsync(Guid aggregateId, DomainEvent[] events, int expectedVersion);
+        Task<List<DomainEvent>> GetEventsForAggregateAsync(Guid aggregateId);
     }
 
     public class EventStore : IEventStore
@@ -79,13 +81,65 @@ namespace BurnForMoney.Infrastructure
             return JsonConvert.SerializeObject(data);
         }
 
+        public async Task<List<DomainEvent>> GetEventsForAggregateAsync(Guid aggregateId)
+        {
+            var paritionKey = aggregateId.ToString("D");
+            var partition = new Partition(_domainEventsTable, paritionKey);
+
+            if ((await Stream.ExistsAsync(partition)))
+            {
+                throw new AggregateNotFoundException();
+            }
+
+            var partitionRead = await Stream.ReadAsync<DomainEventEntity>(partition);
+            return partitionRead.Events.Select(ToEvent).ToList();
+        }
+
+        private static DomainEvent ToEvent(DomainEventEntity e)
+        {
+            return (DomainEvent)JsonConvert.DeserializeObject(e.Data, Type.GetType(e.Type));
+        }
+
         public static IEventStore Create(string storageConnectionString, IEventPublisher eventPublisher)
         {
             return new EventStore(storageConnectionString, eventPublisher);
         }
     }
 
+    public class AggregateNotFoundException : Exception
+    {
+    }
+
     public class ConcurrencyException : Exception
     {
+    }
+
+    public interface IRepository<T> where T : IAggregateRoot, new()
+    {
+        Task SaveAsync(IAggregateRoot aggregate, int expectedVersion);
+        Task<T> GetByIdAsync(Guid id);
+    }
+
+    public class Repository<T> : IRepository<T> where T : IAggregateRoot, new()
+    {
+        private readonly IEventStore _storage;
+
+        public Repository(IEventStore storage)
+        {
+            _storage = storage;
+        }
+
+        public async Task SaveAsync(IAggregateRoot aggregate, int expectedVersion)
+        {
+            await _storage.SaveAsync(aggregate.Id, aggregate.GetUncommittedEvents().ToArray(), expectedVersion);
+        }
+
+        public async Task<T> GetByIdAsync(Guid id)
+        {
+            var obj = new T();//lots of ways to do this
+            var e = await _storage.GetEventsForAggregateAsync(id);
+            obj.LoadsFromHistory(e);
+            return obj;
+        }
     }
 }

@@ -3,11 +3,12 @@ using System.Collections.Generic;
 
 namespace BurnForMoney.Infrastructure
 {
-    public interface IAggregate
+    public interface IAggregateRoot
     {
         Guid Id { get; }
         bool HasPendingChanges { get; }
         IEnumerable<DomainEvent> GetUncommittedEvents();
-        void ClearUncommittedEvents();
+        void MarkChangesAsCommitted();
+        void LoadsFromHistory(IEnumerable<DomainEvent> history);
     }
 }
