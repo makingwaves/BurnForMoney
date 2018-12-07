@@ -1,13 +1,13 @@
 ﻿using System;
 
-namespace BurnForMoney.Functions.Shared.Commands
+namespace BurnForMoney.Infrastructure.Commands
 {
-    public class AddActivityCommand
+    public class AddActivityCommand : Command
     {
-        public string Id { get; set; }
+        public Guid Id { get; set; }
         public string ExternalId { get; set; }
 
-        public string AthleteId { get; set; }
+        public Guid AthleteId { get; set; }
         public string ExternalAthleteId { get; set; }
 
         public DateTime StartDate { get; set; }

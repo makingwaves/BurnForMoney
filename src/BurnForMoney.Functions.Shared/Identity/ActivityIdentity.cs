@@ -4,6 +4,6 @@ namespace BurnForMoney.Functions.Shared.Identity
 {
     public class ActivityIdentity
     {
-        public static string Next() => Guid.NewGuid().ToString("N");
+        public static Guid Next() => Guid.NewGuid();
     }
 }

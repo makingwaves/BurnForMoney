@@ -1,17 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Net;
-using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
-using BurnForMoney.Infrastructure;
 using Microsoft.Azure.EventGrid;
 using Microsoft.Azure.EventGrid.Models;
-using Newtonsoft.Json;
 
-namespace BurnForMoney.Functions.Shared.Events
+namespace BurnForMoney.Infrastructure
 {
-    public class EventsDispatcher
+    public interface IEventPublisher
+    {
+        Task PublishAsync<T>(IEnumerable<T> events) where T : DomainEvent;
+    }
+
+    public class EventsDispatcher : IEventPublisher
     {   
         private readonly EventGridClient _eventGridClient;
         private readonly string _topicHostname;
@@ -23,7 +23,7 @@ namespace BurnForMoney.Functions.Shared.Events
             _topicHostname = new Uri(topicEndpoint).Host;
         }
 
-        public async Task DispatchAsync<T>(IEnumerable<T> events) where T: DomainEvent
+        public async Task PublishAsync<T>(IEnumerable<T> events) where T: DomainEvent
         {
             var eventsList = GetEventsList(events);
 
@@ -39,11 +39,11 @@ namespace BurnForMoney.Functions.Shared.Events
                 eventsList.Add(new EventGridEvent
                 {
                     Id = Guid.NewGuid().ToString(),
-                    EventType = domainEvent.Name,
-                    EventTime = domainEvent.TimeStamp,
-                    Subject = domainEvent.Name,
+                    EventType = domainEvent.GetType().FullName,
+                    EventTime = DateTime.UtcNow,
+                    Subject = domainEvent.GetType().Name,
                     Data = domainEvent,
-                    DataVersion = domainEvent.Version
+                    DataVersion = domainEvent.Version.ToString()
                 });
             }
 

@@ -23,7 +23,7 @@ namespace BurnForMoney.Functions.Strava.Functions.AddNewAthlete
 
             var row = new AthleteEntity
             {
-                PartitionKey = athlete.Id,
+                PartitionKey = athlete.Id.ToString("D"),
                 RowKey = athlete.ExternalId,
                 ExternalId = athlete.ExternalId,
                 FirstName = athlete.FirstName,
@@ -38,7 +38,7 @@ namespace BurnForMoney.Functions.Strava.Functions.AddNewAthlete
 
             var input = new CollectAthleteActivitiesInput
             {
-                AthleteId = row.PartitionKey
+                AthleteId = Guid.Parse(row.PartitionKey)
             };
             var json = JsonConvert.SerializeObject(input);
             await collectActivitiesQueues.AddMessageAsync(new CloudQueueMessage(json));

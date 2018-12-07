@@ -20,7 +20,7 @@ namespace BurnForMoney.Functions.Strava.Functions
             AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(30)
         };
 
-        public static async Task<SecretBundle> GetAccessTokenForAsync(string athleteId, string keyVaultBaseUrl)
+        public static async Task<SecretBundle> GetAccessTokenForAsync(Guid athleteId, string keyVaultBaseUrl)
         {
             if (AccessTokensCache.TryGetValue(athleteId, out SecretBundle accessToken))
             {
@@ -35,7 +35,7 @@ namespace BurnForMoney.Functions.Strava.Functions
             return accessToken;
         }
 
-        public static async Task<SecretBundle> GetRefreshTokenForAsync(string athleteId, string keyVaultBaseUrl)
+        public static async Task<SecretBundle> GetRefreshTokenForAsync(Guid athleteId, string keyVaultBaseUrl)
         {
             if (RefreshTokensCache.TryGetValue(athleteId, out SecretBundle refreshToken))
             {
@@ -48,7 +48,7 @@ namespace BurnForMoney.Functions.Strava.Functions
             return refreshToken;
         }
 
-        public static async Task AddAsync(string athleteId, string accessToken, string refreshToken, DateTime accessTokenExpirationDate, string keyVaultBaseUrl)
+        public static async Task AddAsync(Guid athleteId, string accessToken, string refreshToken, DateTime accessTokenExpirationDate, string keyVaultBaseUrl)
         {
             var accessTokenSecretName = AccessTokensSecretNameConvention.AccessToken(athleteId);
             var refreshTokenSecretName = AccessTokensSecretNameConvention.RefreshToken(athleteId);
@@ -60,7 +60,7 @@ namespace BurnForMoney.Functions.Strava.Functions
                 tags: new Dictionary<string, string>
                 {
                     { AccessTokensTag.RefreshTokenSecretName, refreshTokenSecretName },
-                    { AccessTokensTag.AthleteId, athleteId }
+                    { AccessTokensTag.AthleteId, athleteId.ToString() }
                 });
             var refreshTokenSecret = await KeyVault.SetSecretAsync(keyVaultBaseUrl,
                 refreshTokenSecretName,
@@ -72,7 +72,7 @@ namespace BurnForMoney.Functions.Strava.Functions
             RefreshTokensCache.Set(athleteId, refreshTokenSecret, CacheEntryOptions);
         }
 
-        public static async Task DeleteAsync(string athleteId, string keyVaultBaseUrl)
+        public static async Task DeleteAsync(Guid athleteId, string keyVaultBaseUrl)
         {
             await KeyVault.DeleteSecretAsync(keyVaultBaseUrl,
                 AccessTokensSecretNameConvention.AccessToken(athleteId));
@@ -102,7 +102,7 @@ namespace BurnForMoney.Functions.Strava.Functions
             return secrets;
         }
 
-        public static async Task DeactivateAccessTokenOfAsync(string athleteId, string keyVaultBaseUrl)
+        public static async Task DeactivateAccessTokenOfAsync(Guid athleteId, string keyVaultBaseUrl)
         {
             var secretIdentifier = new SecretIdentifier(keyVaultBaseUrl, AccessTokensSecretNameConvention.AccessToken(athleteId));
 

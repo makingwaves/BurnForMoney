@@ -22,11 +22,11 @@ namespace BurnForMoney.Functions.Strava.Functions.AuthorizeNewAthlete
 
             var authorizationCode = context.GetInput<string>();
 
-            string athleteId = string.Empty;
+            var athleteId = Guid.Empty;
             try
             {
                 // 1. Generate athlete id
-                athleteId = await context.CallActivityAsync<string>(FunctionsNames.A_GenerateAthleteId, null);
+                athleteId = await context.CallActivityAsync<Guid>(FunctionsNames.A_GenerateAthleteId, null);
 
                 // 2. Exchange and authorize athlete
                 var athlete = await context.CallActivityWithRetryAsync<Athlete>(FunctionsNames.A_ExchangeTokenAndGetAthleteSummary,
@@ -98,11 +98,11 @@ namespace BurnForMoney.Functions.Strava.Functions.AuthorizeNewAthlete
 
     public class AuthorizeNewAthleteCompensation
     {
-        public string AthleteId { get; set; }
+        public Guid AthleteId { get; set; }
         public string AuthorizationCode { get; set; }
         public string ErrorMessage { get; set; }
 
-        public AuthorizeNewAthleteCompensation(string athleteId, string authorizationCode)
+        public AuthorizeNewAthleteCompensation(Guid athleteId, string authorizationCode)
         {
             AthleteId = athleteId;
             AuthorizationCode = authorizationCode;

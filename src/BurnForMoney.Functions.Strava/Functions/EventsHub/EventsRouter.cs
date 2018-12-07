@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using BurnForMoney.Functions.Shared.Commands;
 using BurnForMoney.Functions.Shared.Extensions;
 using BurnForMoney.Functions.Shared.Functions.Extensions;
 using BurnForMoney.Functions.Shared.Helpers;
@@ -16,6 +15,7 @@ using BurnForMoney.Functions.Strava.External.Strava.Api.Exceptions;
 using BurnForMoney.Functions.Strava.External.Strava.Api.Model;
 using BurnForMoney.Functions.Strava.Functions.AddNewAthlete;
 using BurnForMoney.Functions.Strava.Functions.EventsHub.Dto;
+using BurnForMoney.Infrastructure.Commands;
 using Dapper;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
@@ -112,7 +112,7 @@ namespace BurnForMoney.Functions.Strava.Functions.EventsHub
                 {
                     log.LogInformation(FunctionsNames.Events_DeauthorizedAthlete, $"Successfully deauthorized athlete with id: {@event.AthleteId}.");
 
-                    (string Id, string FirstName, string LastName) athlete = await conn.QuerySingleAsync<ValueTuple<string, string, string>>(
+                    (Guid Id, string FirstName, string LastName) athlete = await conn.QuerySingleAsync<ValueTuple<Guid, string, string>>(
                         "SELECT Id, FirstName, LastName from dbo.Athletes WHERE ExternalId=@AthleteId", new { @event.AthleteId });
 
                     var notification = new Notification
@@ -146,7 +146,8 @@ namespace BurnForMoney.Functions.Strava.Functions.EventsHub
                     TableQuery.GenerateFilterCondition("RowKey", QueryComparisons.Equal, @event.AthleteId)
             };
             var queryResult = await athletesTable.ExecuteQuerySegmentedAsync(query, null);
-            var athleteId = queryResult.FirstOrDefault()?.PartitionKey;
+            var athleteId =
+                Guid.Parse(queryResult.FirstOrDefault()?.PartitionKey ?? throw new InvalidOperationException());
 
             var accessToken = await GetAccessTokenAsync(athleteId, configuration.Strava.AccessTokensKeyVaultUrl);
 
@@ -197,7 +198,7 @@ namespace BurnForMoney.Functions.Strava.Functions.EventsHub
             var queryResult = await athletesTable.ExecuteQuerySegmentedAsync(query, null);
             var athleteId = queryResult.FirstOrDefault()?.PartitionKey;
 
-            var accessToken = await GetAccessTokenAsync(athleteId, configuration.Strava.AccessTokensKeyVaultUrl);
+            var accessToken = await GetAccessTokenAsync(Guid.Parse(athleteId), configuration.Strava.AccessTokensKeyVaultUrl);
 
             StravaActivity activity;
             try
@@ -228,7 +229,7 @@ namespace BurnForMoney.Functions.Strava.Functions.EventsHub
             log.LogFunctionEnd(FunctionsNames.Events_UpdateActivity);
         }
 
-        private static async Task<string> GetAccessTokenAsync(string athleteId, string keyVaultBaseUrl)
+        private static async Task<string> GetAccessTokenAsync(Guid athleteId, string keyVaultBaseUrl)
         {
             var secret = await AccessTokensStore.GetAccessTokenForAsync(athleteId, keyVaultBaseUrl);
             return secret.Value;

@@ -36,7 +36,7 @@ namespace BurnForMoney.Functions.Strava.Functions.RefreshTokens
             var tasks = new List<Task>();
             foreach (var athleteId in athleteIdsWithExpiringTokens)
             {
-                tasks.Add(refreshTokensQueue.AddMessageAsync(new CloudQueueMessage(athleteId)));
+                tasks.Add(refreshTokensQueue.AddMessageAsync(new CloudQueueMessage(Guid.Parse(athleteId).ToString())));
             }
 
             await Task.WhenAll(tasks);
@@ -45,7 +45,7 @@ namespace BurnForMoney.Functions.Strava.Functions.RefreshTokens
 
 
         [FunctionName(FunctionsNames.Q_RefreshAccessTokens)]
-        public static async Task Q_RefreshAccessTokens([QueueTrigger(QueueNames.RefreshStravaToken)] string athleteId, ILogger log,
+        public static async Task Q_RefreshAccessTokens([QueueTrigger(QueueNames.RefreshStravaToken)] Guid athleteId, ILogger log,
             [Configuration] ConfigurationRoot configuration)
         {
             log.LogFunctionStart(FunctionsNames.Q_RefreshAccessTokens);

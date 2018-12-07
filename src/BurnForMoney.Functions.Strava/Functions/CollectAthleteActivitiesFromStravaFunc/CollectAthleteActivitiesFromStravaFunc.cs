@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Globalization;
 using System.Threading.Tasks;
-using BurnForMoney.Functions.Shared.Commands;
 using BurnForMoney.Functions.Shared.Extensions;
 using BurnForMoney.Functions.Shared.Functions.Extensions;
 using BurnForMoney.Functions.Shared.Helpers;
@@ -11,6 +10,7 @@ using BurnForMoney.Functions.Strava.Configuration;
 using BurnForMoney.Functions.Strava.External.Strava.Api;
 using BurnForMoney.Functions.Strava.External.Strava.Api.Exceptions;
 using BurnForMoney.Functions.Strava.Functions.CollectAthleteActivitiesFromStravaFunc.Dto;
+using BurnForMoney.Infrastructure.Commands;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 using Microsoft.WindowsAzure.Storage.Queue;
@@ -64,7 +64,7 @@ namespace BurnForMoney.Functions.Strava.Functions.CollectAthleteActivitiesFromSt
             catch (UnauthorizedRequestException ex)
             {
                 log.LogError(ex, ex.Message);
-                await unauthorizedAthletesQueue.AddMessageAsync(new CloudQueueMessage(input.AthleteId));
+                await unauthorizedAthletesQueue.AddMessageAsync(new CloudQueueMessage(input.AthleteId.ToString()));
             }
             log.LogFunctionEnd(FunctionsNames.Q_CollectAthleteActivities);
         }

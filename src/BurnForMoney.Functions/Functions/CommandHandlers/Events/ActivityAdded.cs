@@ -1,25 +1,28 @@
 ﻿using System;
 using BurnForMoney.Infrastructure;
-using Newtonsoft.Json;
 
 namespace BurnForMoney.Functions.Functions.CommandHandlers.Events
 {
     public class ActivityAdded : DomainEvent
     {
-        [JsonProperty(PropertyName = "activityId")]
-        public string ActivityId { get; set; }
-        [JsonProperty(PropertyName = "externalId")]
-        public string ExternalId { get; set; }
-        [JsonProperty(PropertyName = "distaneInMeters")]
-        public double DistanceInMeters { get; set; }
-        [JsonProperty(PropertyName = "movingTimeInMinutes")]
-        public double MovingTimeInMinutes { get; set; }
+        public readonly Guid ActivityId;
+        public readonly string ExternalId;
+        public readonly double DistanceInMeters;
+        public readonly double MovingTimeInMinutes;
+                
+        public readonly string ActivityType;
+        public readonly DateTime StartDate;
+        public readonly string Source;
 
-        [JsonProperty(PropertyName = "activityType")]
-        public string ActivityType { get; set; }
-        [JsonProperty(PropertyName = "startDate")]
-        public DateTime StartDate { get; set; }
-        [JsonProperty(PropertyName = "source")]
-        public string Source { get; set; }
+        public ActivityAdded(Guid activityId, string externalId, double distanceInMeters, double movingTimeInMinutes, string activityType, DateTime startDate, string source)
+        {
+            ActivityId = activityId;
+            ExternalId = externalId;
+            DistanceInMeters = distanceInMeters;
+            MovingTimeInMinutes = movingTimeInMinutes;
+            ActivityType = activityType;
+            StartDate = startDate;
+            Source = source;
+        }
     }
 }

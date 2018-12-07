@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
-using BurnForMoney.Functions.Shared.Commands;
 using BurnForMoney.Functions.Shared.Extensions;
 using BurnForMoney.Functions.Shared.Queues;
+using BurnForMoney.Infrastructure.Commands;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
@@ -17,7 +17,7 @@ namespace BurnForMoney.Functions.InternalApi.Functions.Activities
     {
         [FunctionName(FunctionsNames.UpdateActivity)]
         public static async Task<IActionResult> Async([HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "athlete/{athleteId:length(32)}/activities/{activityId:length(32)}")] HttpRequest req, ExecutionContext executionContext,
-            string athleteId, string activityId,
+            string athleteId, Guid activityId,
             ILogger log,
             [Queue(AppQueueNames.UpdateActivityRequests, Connection = "AppQueuesStorage")] CloudQueue outputQueue)
         {

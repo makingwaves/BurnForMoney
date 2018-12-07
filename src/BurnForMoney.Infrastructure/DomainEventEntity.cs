@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.WindowsAzure.Storage.Table;
 
-namespace BurnForMoney.Functions.Functions.CommandHandlers.Events
+namespace BurnForMoney.Infrastructure
 {
     public class DomainEventEntity : TableEntity
     {

@@ -28,12 +28,12 @@ namespace BurnForMoney.Functions.Strava.Functions._Support
 
             var from = DateTime.TryParse(req.Query["from"], out var date) ? date : (DateTime?)null;
 
-            IEnumerable<string> ids;
+            IEnumerable<Guid> ids;
             using (var conn = SqlConnectionFactory.Create(configuration.ConnectionStrings.SqlDbConnectionString))
             {
                 await conn.OpenWithRetryAsync();
 
-                ids = await conn.QueryAsync<string>("SELECT Id FROM dbo.Athletes WHERE Active=1");
+                ids = await conn.QueryAsync<Guid>("SELECT Id FROM dbo.Athletes WHERE Active=1");
             }
 
             foreach (var athleteId in ids)
@@ -53,7 +53,7 @@ namespace BurnForMoney.Functions.Strava.Functions._Support
 
         [FunctionName(SupportFunctionsNames.PullAthleteActivities)]
         public static async Task<IActionResult> PullAthleteActivities([HttpTrigger(AuthorizationLevel.Admin, "post", Route = "support/athlete/{athleteId:length(32)}/activities/collect")]HttpRequest req, ILogger log,
-            [Queue(QueueNames.CollectAthleteActivities)] CloudQueue collectActivitiesQueues, string athleteId)
+            [Queue(QueueNames.CollectAthleteActivities)] CloudQueue collectActivitiesQueues, Guid athleteId)
         {
             log.LogFunctionStart(SupportFunctionsNames.PullAthleteActivities);
 

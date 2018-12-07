@@ -32,7 +32,7 @@ namespace BurnForMoney.Functions.Shared.Repositories
 
     public class Activity
     {
-        public string AthleteId { get; set; }
+        public Guid AthleteId { get; set; }
         public string ActivityId { get; set; }
         public string ExternalId { get; set; }
         public double DistanceInMeters { get; set; }

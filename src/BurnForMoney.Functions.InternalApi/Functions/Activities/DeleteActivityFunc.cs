@@ -1,7 +1,8 @@
-﻿using System.Threading.Tasks;
-using BurnForMoney.Functions.Shared.Commands;
+﻿using System;
+using System.Threading.Tasks;
 using BurnForMoney.Functions.Shared.Extensions;
 using BurnForMoney.Functions.Shared.Queues;
+using BurnForMoney.Infrastructure.Commands;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
@@ -16,7 +17,7 @@ namespace BurnForMoney.Functions.InternalApi.Functions.Activities
     {
         [FunctionName(FunctionsNames.DeleteActivity)]
         public static async Task<IActionResult> DeleteActivity([HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "athlete/{athleteId:length(32)}/activities/{activityId:length(32)}")] HttpRequest req,
-            ExecutionContext executionContext, string athleteId, string activityId,
+            ExecutionContext executionContext, Guid athleteId, string activityId,
             ILogger log,
             [Queue(AppQueueNames.DeleteActivityRequests, Connection = "AppQueuesStorage")] CloudQueue outputQueue)
         {

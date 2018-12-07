@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Threading.Tasks;
-using BurnForMoney.Functions.Shared.Commands;
 using BurnForMoney.Functions.Shared.Extensions;
 using BurnForMoney.Functions.Shared.Identity;
 using BurnForMoney.Functions.Shared.Queues;
+using BurnForMoney.Infrastructure.Commands;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
@@ -19,7 +19,7 @@ namespace BurnForMoney.Functions.InternalApi.Functions.Activities
         [FunctionName(FunctionsNames.AddActivity)]
         public static async Task<IActionResult> AddActivityAsync([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "athlete/{athleteId:length(32)}/activities")] HttpRequest req, ExecutionContext executionContext,
             ILogger log,
-            string athleteId,
+            Guid athleteId,
             [Queue(AppQueueNames.AddActivityRequests, Connection = "AppQueuesStorage")] CloudQueue outputQueue)
         {
             log.LogFunctionStart(FunctionsNames.AddActivity);
@@ -36,7 +36,7 @@ namespace BurnForMoney.Functions.InternalApi.Functions.Activities
                 return new BadRequestObjectResult($"Validation failed. {ex.Message}.");
             }
 
-            var pendingActivity = new AddActivityCommand
+            var addActivityCommand = new AddActivityCommand
             {
                 Id = ActivityIdentity.Next(),
                 AthleteId = athleteId,
@@ -47,10 +47,10 @@ namespace BurnForMoney.Functions.InternalApi.Functions.Activities
                 Source = "Manual"
             };
 
-            var output = JsonConvert.SerializeObject(pendingActivity);
+            var output = JsonConvert.SerializeObject(addActivityCommand);
             await outputQueue.AddMessageAsync(new CloudQueueMessage(output));
             log.LogFunctionEnd(FunctionsNames.AddActivity);
-            return new OkObjectResult(pendingActivity.Id);
+            return new OkObjectResult(addActivityCommand.Id);
         }
 
         private static void ValidateRequest(AddActivityRequest request)

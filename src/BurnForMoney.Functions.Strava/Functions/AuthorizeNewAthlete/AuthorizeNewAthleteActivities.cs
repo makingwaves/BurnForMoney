@@ -163,10 +163,10 @@ namespace BurnForMoney.Functions.Strava.Functions.AuthorizeNewAthlete
 
     public class A_ExchangeTokenAndGetAthleteSummaryInput
     {
-        public string AthleteId { get; set; }
+        public Guid AthleteId { get; set; }
         public string AuthorizationCode { get; set; }
 
-        public A_ExchangeTokenAndGetAthleteSummaryInput(string athleteId, string authorizationCode)
+        public A_ExchangeTokenAndGetAthleteSummaryInput(Guid athleteId, string authorizationCode)
         {
             AthleteId = athleteId;
             AuthorizationCode = authorizationCode;

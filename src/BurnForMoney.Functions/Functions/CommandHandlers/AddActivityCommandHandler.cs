@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using BurnForMoney.Functions.Configuration;
 using BurnForMoney.Functions.Functions.CommandHandlers.Events;
-using BurnForMoney.Functions.Shared.Commands;
-using BurnForMoney.Functions.Shared.Events;
 using BurnForMoney.Functions.Shared.Extensions;
 using BurnForMoney.Functions.Shared.Functions.Extensions;
 using BurnForMoney.Functions.Shared.Queues;
+using BurnForMoney.Infrastructure;
+using BurnForMoney.Infrastructure.Commands;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 
@@ -17,33 +17,20 @@ namespace BurnForMoney.Functions.Functions.CommandHandlers
     {
         [FunctionName(FunctionsNames.Q_AddActivity)]
         public static async Task Q_AddActivity(ILogger log, ExecutionContext executionContext,
-            [QueueTrigger(AppQueueNames.AddActivityRequests)] AddActivityCommand addActivityCommand,
+            [QueueTrigger(AppQueueNames.AddActivityRequests)] AddActivityCommand message,
             [Configuration] ConfigurationRoot configuration)
         {
             log.LogFunctionStart(FunctionsNames.Q_AddActivity);
 
-            var eventStore = EventStore.Create(configuration.ConnectionStrings.AzureWebJobsStorage);
+            var eventStore = EventStore.Create(configuration.ConnectionStrings.AzureWebJobsStorage,
+                new EventsDispatcher(configuration.EventGrid.SasKey, configuration.EventGrid.TopicEndpoint));
 
-            var @event = new ActivityAdded
-            {
-                ActivityId = addActivityCommand.Id,
-                DistanceInMeters = addActivityCommand.DistanceInMeters,
-                MovingTimeInMinutes = addActivityCommand.MovingTimeInMinutes,
-                ExternalId = addActivityCommand.ExternalId,
-                ActivityType = addActivityCommand.ActivityType,
-                StartDate = addActivityCommand.StartDate,
-                Source = addActivityCommand.Source,
-                SagaId = addActivityCommand.AthleteId
-            };
+            var @event = new ActivityAdded(message.Id, message.ExternalId, message.DistanceInMeters,
+                message.MovingTimeInMinutes, message.ActivityType, message.StartDate, message.Source);
 
-            await eventStore.SaveAsync(@event);
-            log.LogInformation(nameof(FunctionsNames.Q_AddActivity), $"Logged event: {@event.Name}");
-
-            var eventsDispatcher = new EventsDispatcher(configuration.EventGrid.SasKey, configuration.EventGrid.TopicEndpoint);
-            await eventsDispatcher.DispatchAsync(new[] { @event }); //TODO: Compensation
-
-            log.LogInformation(nameof(FunctionsNames.Q_AddActivity), $"Dispatched event: {@event.Name}");
-
+            await eventStore.SaveAsync(message.AthleteId, new DomainEvent[] { @event }, @event.Version);
+            log.LogInformation(nameof(FunctionsNames.Q_AddActivity), "Logged event.");
+            ;
             log.LogFunctionEnd(FunctionsNames.Q_AddActivity);
         }
     }
