@@ -28,8 +28,6 @@ namespace BurnForMoney.Infrastructure
 
         public async Task SaveAsync(Guid aggregateId, DomainEvent[] events, int expectedVersion)
         {
-            await _domainEventsTable.CreateIfNotExistsAsync();
-
             var i = expectedVersion;
 
             foreach (var @event in events)
