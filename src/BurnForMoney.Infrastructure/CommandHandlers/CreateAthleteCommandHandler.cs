@@ -16,7 +16,7 @@ namespace BurnForMoney.Infrastructure.CommandHandlers
         public async Task HandleAsync(CreateAthleteCommand message)
         {
             var athlete = new Athlete(message.Id, message.ExternalId, message.FirstName, message.LastName,
-                message.ProfilePictureUrl);
+                message.ProfilePictureUrl, message.System);
             await _repository.SaveAsync(athlete, 0);
         }
     }

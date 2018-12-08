@@ -36,10 +36,11 @@ namespace BurnForMoney.Infrastructure
 
             foreach (var domainEvent in events)
             {
+                var domainEventType = domainEvent.GetType();
                 eventsList.Add(new EventGridEvent
                 {
                     Id = Guid.NewGuid().ToString(),
-                    EventType = domainEvent.GetType().FullName,
+                    EventType = domainEventType.AssemblyQualifiedName,
                     EventTime = DateTime.UtcNow,
                     Subject = domainEvent.GetType().Name,
                     Data = domainEvent,

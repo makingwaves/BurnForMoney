@@ -21,6 +21,8 @@ namespace BurnForMoney.Infrastructure.Domain
 
         public bool IsActive { get; private set; }
 
+        public System System { get; private set; }
+
         public int Version { get; private set; }
 
         public bool HasPendingChanges => _changes.Any();
@@ -35,7 +37,7 @@ namespace BurnForMoney.Infrastructure.Domain
             _changes.Clear();
         }
 
-        public void Apply(AthleteCreatedEvent @event)
+        public void Apply(AthleteCreated @event)
         {
             Id = @event.Id;
             ExternalId = @event.ExternalId;
@@ -43,6 +45,7 @@ namespace BurnForMoney.Infrastructure.Domain
             LastName = @event.LastName;
             ProfilePictureUrl = @event.ProfilePictureUrl;
             IsActive = true;
+            System = @event.System;
         }
 
         public Athlete()
@@ -72,9 +75,9 @@ namespace BurnForMoney.Infrastructure.Domain
             // no-op
         }
 
-        public Athlete(Guid id, string externalId, string firstName, string lastName, string profilePictureUrl)
+        public Athlete(Guid id, string externalId, string firstName, string lastName, string profilePictureUrl, System system)
         {
-            ApplyChange(new AthleteCreatedEvent(id, externalId, firstName, lastName, profilePictureUrl));
+            ApplyChange(new AthleteCreated(id, externalId, firstName, lastName, profilePictureUrl, system));
         }
 
         public void AddActivity(Guid id, string externalId, string activityType, double distanceInMeters, double movingTimeInMinutes, DateTime startDate, string source)
