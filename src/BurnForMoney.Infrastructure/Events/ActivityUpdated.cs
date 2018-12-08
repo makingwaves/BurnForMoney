@@ -1,7 +1,6 @@
 ﻿using System;
-using BurnForMoney.Infrastructure;
 
-namespace BurnForMoney.Functions.Functions.CommandHandlers.Events
+namespace BurnForMoney.Infrastructure.Events
 {
     public class ActivityUpdated : DomainEvent
     {

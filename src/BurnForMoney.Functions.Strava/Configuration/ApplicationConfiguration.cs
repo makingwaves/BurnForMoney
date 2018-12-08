@@ -37,7 +37,8 @@ namespace BurnForMoney.Functions.Strava.Configuration
                     },
                     Email = config.Get<EmailSection>("Email"),
                     HostName = config["WEB_HOST"],
-                    ApplicationInsightsInstrumentationKey = config["APPINSIGHTS_INSTRUMENTATIONKEY"]
+                    ApplicationInsightsInstrumentationKey = config["APPINSIGHTS_INSTRUMENTATIONKEY"],
+                    EventGrid = config.Get<EventGridSection>("EventGrid")
                 };
 
                 if (!_settings.IsValid())

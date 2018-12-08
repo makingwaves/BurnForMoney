@@ -8,7 +8,6 @@ namespace BurnForMoney.Infrastructure.Commands
         public string ExternalId { get; set; }
 
         public Guid AthleteId { get; set; }
-        public string ExternalAthleteId { get; set; }
 
         public DateTime StartDate { get; set; }
         public string ActivityType { get; set; }

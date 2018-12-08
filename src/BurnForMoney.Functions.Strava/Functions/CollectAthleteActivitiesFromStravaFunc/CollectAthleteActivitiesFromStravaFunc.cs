@@ -48,7 +48,6 @@ namespace BurnForMoney.Functions.Strava.Functions.CollectAthleteActivitiesFromSt
                         Id = ActivityIdentity.Next(),
                         AthleteId = input.AthleteId,
                         ExternalId = stravaActivity.Id.ToString(),
-                        ExternalAthleteId = stravaActivity.Athlete.Id.ToString(),
                         ActivityType = stravaActivity.Type.ToString(),
                         StartDate = stravaActivity.StartDate,
                         DistanceInMeters = stravaActivity.Distance,

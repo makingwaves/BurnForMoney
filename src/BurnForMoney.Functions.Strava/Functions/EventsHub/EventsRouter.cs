@@ -13,7 +13,7 @@ using BurnForMoney.Functions.Strava.Configuration;
 using BurnForMoney.Functions.Strava.External.Strava.Api;
 using BurnForMoney.Functions.Strava.External.Strava.Api.Exceptions;
 using BurnForMoney.Functions.Strava.External.Strava.Api.Model;
-using BurnForMoney.Functions.Strava.Functions.AddNewAthlete;
+using BurnForMoney.Functions.Strava.Functions.AuthorizeNewAthlete;
 using BurnForMoney.Functions.Strava.Functions.EventsHub.Dto;
 using BurnForMoney.Infrastructure.Commands;
 using Dapper;
@@ -134,7 +134,7 @@ namespace BurnForMoney.Functions.Strava.Functions.EventsHub
         [FunctionName(FunctionsNames.Events_NewActivity)]
         public static async Task Events_NewActivity([QueueTrigger(QueueNames.StravaEventsActivityAdd)] ActivityData @event,
             ILogger log,
-            [Queue(AppQueueNames.AddActivityRequests, Connection = "AppQueuesStorage")] CloudQueue pendingRawActivitiesQueue,
+            [Queue(AppQueueNames.AddActivityRequests, Connection = "AppQueuesStorage")] CloudQueue addActivitiesRequestesQueue,
             [Table("Athletes", Connection = "AppStorage")] CloudTable athletesTable,
             [Configuration] ConfigurationRoot configuration)
         {
@@ -167,7 +167,6 @@ namespace BurnForMoney.Functions.Strava.Functions.EventsHub
                 Id = ActivityIdentity.Next(),
                 ExternalId = activity.Id.ToString(),
                 AthleteId = athleteId,
-                ExternalAthleteId = activity.Athlete.Id.ToString(),
                 ActivityType = activity.Type.ToString(),
                 StartDate = activity.StartDate,
                 DistanceInMeters = activity.Distance,
@@ -177,7 +176,7 @@ namespace BurnForMoney.Functions.Strava.Functions.EventsHub
 
             var json = JsonConvert.SerializeObject(pendingActivity);
             var message = new CloudQueueMessage(json);
-            await pendingRawActivitiesQueue.AddMessageAsync(message);
+            await addActivitiesRequestesQueue.AddMessageAsync(message);
             log.LogFunctionEnd(FunctionsNames.Events_NewActivity);
         }
 

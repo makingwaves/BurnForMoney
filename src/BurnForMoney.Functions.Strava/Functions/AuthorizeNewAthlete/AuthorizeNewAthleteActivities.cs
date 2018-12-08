@@ -10,8 +10,8 @@ using BurnForMoney.Functions.Shared.Queues;
 using BurnForMoney.Functions.Strava.Configuration;
 using BurnForMoney.Functions.Strava.Exceptions;
 using BurnForMoney.Functions.Strava.External.Strava.Api;
-using BurnForMoney.Functions.Strava.Functions.AddNewAthlete;
 using BurnForMoney.Functions.Strava.Functions.Dto;
+using BurnForMoney.Infrastructure.Commands;
 using Microsoft.Azure.KeyVault.Models;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
@@ -32,7 +32,7 @@ namespace BurnForMoney.Functions.Strava.Functions.AuthorizeNewAthlete
         }
 
         [FunctionName(FunctionsNames.A_ExchangeTokenAndGetAthleteSummary)]
-        public static async Task<Athlete> A_ExchangeTokenAndGetAthleteSummaryAsync([ActivityTrigger]A_ExchangeTokenAndGetAthleteSummaryInput input, ILogger log,
+        public static async Task<AthleteDto> A_ExchangeTokenAndGetAthleteSummaryAsync([ActivityTrigger]A_ExchangeTokenAndGetAthleteSummaryInput input, ILogger log,
             [Table("Athletes", Connection = "AppStorage")] CloudTable athletesTable,
             [Configuration] ConfigurationRoot configuration)
         {
@@ -65,7 +65,7 @@ namespace BurnForMoney.Functions.Strava.Functions.AuthorizeNewAthlete
             }
 
             log.LogFunctionEnd(FunctionsNames.A_ExchangeTokenAndGetAthleteSummary);
-            return new Athlete
+            return new AthleteDto
             {
                 Id = input.AthleteId,
                 ExternalId = response.Athlete.Id.ToString(),
@@ -113,12 +113,15 @@ namespace BurnForMoney.Functions.Strava.Functions.AuthorizeNewAthlete
 
         [FunctionName(FunctionsNames.A_ProcessNewAthleteRequest)]
         public static async Task A_ProcessNewAthleteRequest([ActivityTrigger]DurableActivityContext activityContext, ILogger log,
-            ExecutionContext context, [Queue(QueueNames.AddStravaAthleteRequests)] CloudQueue addAthleteRequestsQueue)
+            ExecutionContext context, [Queue(QueueNames.AddAthleteRequests)] CloudQueue addAthleteRequestsQueue)
         {
             log.LogFunctionStart(FunctionsNames.A_ProcessNewAthleteRequest);
 
-            var athlete = activityContext.GetInput<Athlete>();
-            var json = JsonConvert.SerializeObject(athlete);
+            var athlete = activityContext.GetInput<AthleteDto>();
+
+            var command = new CreateAthleteCommand(athlete.Id, athlete.ExternalId, athlete.FirstName, athlete.LastName,
+                athlete.ProfilePictureUrl);
+            var json = JsonConvert.SerializeObject(command);
             await addAthleteRequestsQueue.AddMessageAsync(new CloudQueueMessage(json));
 
             log.LogFunctionEnd(FunctionsNames.A_ProcessNewAthleteRequest);
@@ -171,5 +174,14 @@ namespace BurnForMoney.Functions.Strava.Functions.AuthorizeNewAthlete
             AthleteId = athleteId;
             AuthorizationCode = authorizationCode;
         }
+    }
+
+    public class AthleteEntity : TableEntity
+    {
+        public string ExternalId { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public string ProfilePictureUrl { get; set; }
+        public bool Active { get; set; } = true;
     }
 }

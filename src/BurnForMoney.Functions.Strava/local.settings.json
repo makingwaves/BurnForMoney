@@ -19,5 +19,8 @@
   },
   "Host": {
     "LocalHttpPort": 7072
+  },
+  "EventGrid": {
+    "TopicEndpoint": "https://bfmdomainEventsdev.westeurope-1.eventgrid.azure.net/api/events"
   }
 }

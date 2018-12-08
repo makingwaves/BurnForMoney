@@ -2,7 +2,7 @@
 
 namespace BurnForMoney.Functions.Strava.Functions.Dto
 {
-    public class Athlete
+    public class AthleteDto
     {
         public Guid Id { get; set; }
         public string ExternalId { get; set; }

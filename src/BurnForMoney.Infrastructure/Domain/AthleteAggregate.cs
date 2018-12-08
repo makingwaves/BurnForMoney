@@ -1,32 +1,29 @@
 ﻿using System;
-using BurnForMoney.Infrastructure;
 using System.Collections.Generic;
 using System.Linq;
+using BurnForMoney.Infrastructure.Events;
 
-namespace BurnForMoney.Domain
+namespace BurnForMoney.Infrastructure.Domain
 {
     public class Athlete : IAggregateRoot
     {
         private readonly List<DomainEvent> _changes = new List<DomainEvent>();
 
-        public Guid Id { get; }
+        public Guid Id { get; private set; }
 
-        public string ExternalId { get; }
+        public string ExternalId { get; private set; }
 
-        public string FirstName { get; }
+        public string FirstName { get; private set; }
 
-        public string LastName { get; }
+        public string LastName { get; private set; }
 
-        public string ProfilePictureUrl { get; }
+        public string ProfilePictureUrl { get; private set; }
 
-        public bool IsActive { get; }
+        public bool IsActive { get; private set; }
 
-        public int Version { get; internal set; }
+        public int Version { get; private set; }
 
-        public bool HasPendingChanges
-        {
-            get { return _changes.Any(); }
-        }
+        public bool HasPendingChanges => _changes.Any();
 
         public IEnumerable<DomainEvent> GetUncommittedEvents()
         {
@@ -38,9 +35,51 @@ namespace BurnForMoney.Domain
             _changes.Clear();
         }
 
+        public void Apply(AthleteCreatedEvent @event)
+        {
+            Id = @event.Id;
+            ExternalId = @event.ExternalId;
+            FirstName = @event.FirstName;
+            LastName = @event.LastName;
+            ProfilePictureUrl = @event.ProfilePictureUrl;
+            IsActive = true;
+        }
+
+        public Athlete()
+        {
+            
+        }
+
         public void LoadsFromHistory(IEnumerable<DomainEvent> history)
         {
             foreach (var e in history) ApplyChange(e, false);
+        }
+
+        protected void ApplyChange(DomainEvent @event)
+        {
+            ApplyChange(@event, true);
+        }
+
+        private void ApplyChange(DomainEvent @event, bool isNew)
+        {
+            ((dynamic)this).Apply((dynamic)@event);
+            if (isNew) _changes.Add(@event);
+            Version++;
+        }
+
+        public void Apply(DomainEvent e)
+        {
+            // no-op
+        }
+
+        public Athlete(Guid id, string externalId, string firstName, string lastName, string profilePictureUrl)
+        {
+            ApplyChange(new AthleteCreatedEvent(id, externalId, firstName, lastName, profilePictureUrl));
+        }
+
+        public void AddActivity(Guid id, string externalId, string activityType, double distanceInMeters, double movingTimeInMinutes, DateTime startDate, string source)
+        {
+            ApplyChange(new ActivityAdded(id, externalId, distanceInMeters, movingTimeInMinutes, activityType, startDate, source));
         }
     }
 }
