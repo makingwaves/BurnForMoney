@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using BurnForMoney.Functions.Shared.Persistence;
+using BurnForMoney.Functions.Shared.Repositories.Dto;
 using Dapper;
 
 namespace BurnForMoney.Functions.Shared.Repositories

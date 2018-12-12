@@ -1,6 +1,4 @@
-﻿using System.Data;
-
-namespace BurnForMoney.Functions.Exceptions
+﻿namespace BurnForMoney.Functions.Exceptions
 {
 
 }

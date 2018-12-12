@@ -84,5 +84,20 @@ namespace BurnForMoney.Infrastructure.Domain
         {
             ApplyChange(new ActivityAdded(id, this.Id, externalId, distanceInMeters, movingTimeInMinutes, activityType, startDate, source));
         }
+
+        public void UpdateActivity(Guid id, string activityType, double distanceInMeters, double movingTimeInMinutes, DateTime startDate)
+        {
+            ApplyChange(new ActivityUpdated(id, distanceInMeters, movingTimeInMinutes, activityType, startDate));
+        }
+
+        public void DeleteActivity(Guid id)
+        {
+            ApplyChange(new ActivityDeleted(id));
+        }
+
+        public void Deactivate()
+        {
+            ApplyChange(new AthleteDeactivated(this.Id));
+        }
     }
 }

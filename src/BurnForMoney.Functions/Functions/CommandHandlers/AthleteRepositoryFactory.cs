@@ -1,8 +1,8 @@
-﻿using BurnForMoney.Functions.Strava.Configuration;
+﻿using BurnForMoney.Functions.Configuration;
 using BurnForMoney.Infrastructure;
 using BurnForMoney.Infrastructure.Domain;
 
-namespace BurnForMoney.Functions.Strava
+namespace BurnForMoney.Functions.Functions.CommandHandlers
 {
     public static class AthleteRepositoryFactory
     {

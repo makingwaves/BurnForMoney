@@ -1,23 +1,19 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using BurnForMoney.Functions.Shared.Extensions;
 using BurnForMoney.Functions.Shared.Functions.Extensions;
 using BurnForMoney.Functions.Shared.Helpers;
 using BurnForMoney.Functions.Shared.Identity;
-using BurnForMoney.Functions.Shared.Persistence;
 using BurnForMoney.Functions.Shared.Queues;
 using BurnForMoney.Functions.Shared.Repositories;
+using BurnForMoney.Functions.Shared.Repositories.Dto;
 using BurnForMoney.Functions.Strava.Configuration;
 using BurnForMoney.Functions.Strava.Exceptions;
 using BurnForMoney.Functions.Strava.External.Strava.Api;
 using BurnForMoney.Functions.Strava.External.Strava.Api.Exceptions;
 using BurnForMoney.Functions.Strava.External.Strava.Api.Model;
-using BurnForMoney.Functions.Strava.Functions.AuthorizeNewAthlete;
 using BurnForMoney.Functions.Strava.Functions.EventsHub.Dto;
 using BurnForMoney.Infrastructure.Commands;
-using Dapper;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 using Microsoft.WindowsAzure.Storage.Queue;
@@ -44,18 +40,24 @@ namespace BurnForMoney.Functions.Strava.Functions.EventsHub
 
             var message = new ActivityData
             {
-                AthleteId = @event.OwnerId.ToString(),
-                ActivityId = @event.ObjectId.ToString()
+                StravaAthleteId = @event.OwnerId.ToString(),
+                StravaActivityId = @event.ObjectId.ToString()
             };
 
             var readModelFacade = new AthleteReadRepository(configuration.ConnectionStrings.SqlDbConnectionString);
-
-            var athleteExists = await readModelFacade.AthleteWithStravaIdExistsAsync(message.AthleteId);
-            if (athleteExists)
+            var athlete = await readModelFacade.GetAthleteByStravaIdAsync(message.StravaAthleteId);
+            if (athlete == null)
             {
                 // This can happen when the athlete is either deactivated (but authenticated) or has not yet been authorized.
-                log.LogInformation($"Athlete with id: {message.AthleteId} does not exists.");
-                throw new AthleteNotExistsException(null, message.AthleteId);
+                log.LogInformation($"Athlete with id: {message.StravaAthleteId} does not exists.");
+                throw new AthleteNotExistsException(null, message.StravaAthleteId);
+            }
+            message.AthleteId = athlete.Id;
+
+            if (athlete == AthleteRow.NonActive)
+            {
+                log.LogInformation($"Received an event from inactive athlete [{message.AthleteId}].");
+                return;
             }
 
             var json = JsonConvert.SerializeObject(message);
@@ -96,70 +98,49 @@ namespace BurnForMoney.Functions.Strava.Functions.EventsHub
         [FunctionName(FunctionsNames.Events_DeauthorizedAthlete)]
         public static async Task Events_DeauthorizedAthlete([QueueTrigger(QueueNames.StravaEventsAthleteDeauthorized)] ActivityData @event,
             ILogger log,
-            [Queue(AppQueueNames.NotificationsToSend, Connection = "AppQueuesStorage")] CloudQueue notificationsQueue,
+            [Queue(AppQueueNames.DeactivateAthleteRequests, Connection = "AppQueuesStorage")] CloudQueue deactivateAthleteRequestsQueue,
             [Configuration] ConfigurationRoot configuration)
         {
             log.LogFunctionStart(FunctionsNames.Events_DeauthorizedAthlete);
 
-            using (var conn = SqlConnectionFactory.Create(configuration.ConnectionStrings.SqlDbConnectionString))
-            {
-                await conn.OpenWithRetryAsync();
+            var command = new DeactivateAthleteCommand
+            { 
+                AthleteId = @event.AthleteId
+            };
+            var json = JsonConvert.SerializeObject(command);
+            var message = new CloudQueueMessage(json);
+            await deactivateAthleteRequestsQueue.AddMessageAsync(message);
 
-                var affectedRows = await conn.ExecuteAsync(@"UPDATE dbo.Athletes SET Active=0 WHERE ExternalId=@AthleteId", new { @event.AthleteId });
-
-                if (affectedRows == 1)
-                {
-                    log.LogInformation(FunctionsNames.Events_DeauthorizedAthlete, $"Successfully deauthorized athlete with id: {@event.AthleteId}.");
-
-                    (Guid Id, string FirstName, string LastName) athlete = await conn.QuerySingleAsync<ValueTuple<Guid, string, string>>(
-                        "SELECT Id, FirstName, LastName from dbo.Athletes WHERE ExternalId=@AthleteId", new { @event.AthleteId });
-
-                    var notification = new Notification
-                    {
-                        Recipients = new List<string> { configuration.Email.DefaultRecipient },
-                        Subject = "Athlete revoked authorization",
-                        HtmlContent = $@"
-<p>Hi there,</p>
-<p>Athlete: {athlete.FirstName} {athlete.LastName} [{@event.AthleteId}] revoked authorization.</p>"
-                    };
-                    await notificationsQueue.AddMessageAsync(new CloudQueueMessage(JsonConvert.SerializeObject(notification)));
-                    await AccessTokensStore.DeactivateAccessTokenOfAsync(athlete.Id, configuration.Strava.AccessTokensKeyVaultUrl);
-                }
-
-            }
-            log.LogFunctionEnd(FunctionsNames.Events_DeauthorizedAthlete);
+            await AccessTokensStore.DeactivateAccessTokenOfAsync(@event.AthleteId, configuration.Strava.AccessTokensKeyVaultUrl);
         }
 
         [FunctionName(FunctionsNames.Events_NewActivity)]
         public static async Task Events_NewActivity([QueueTrigger(QueueNames.StravaEventsActivityAdd)] ActivityData @event,
             ILogger log,
-            [Queue(AppQueueNames.AddActivityRequests, Connection = "AppQueuesStorage")] CloudQueue addActivitiesRequestesQueue,
+            [Queue(AppQueueNames.AddActivityRequests, Connection = "AppQueuesStorage")] CloudQueue addActivitiesRequestsQueue,
             [Table("Athletes", Connection = "AppStorage")] CloudTable athletesTable,
             [Configuration] ConfigurationRoot configuration)
         {
             log.LogFunctionStart(FunctionsNames.Events_NewActivity);
 
-            var readModelFacade = new AthleteReadRepository(configuration.ConnectionStrings.SqlDbConnectionString);
-            var athlete = await readModelFacade.GetAthleteByStravaIdAsync(@event.AthleteId);
-
-            var accessToken = await GetAccessTokenAsync(athlete.Id, configuration.Strava.AccessTokensKeyVaultUrl);
+            var accessToken = await GetAccessTokenAsync(@event.AthleteId, configuration.Strava.AccessTokensKeyVaultUrl);
 
             StravaActivity activity;
             try
             {
-                activity = StravaService.GetActivity(accessToken, @event.ActivityId);
+                activity = StravaService.GetActivity(accessToken, @event.StravaActivityId);
             }
             catch (ActivityNotFoundException ex)
             {
                 log.LogWarning(ex.Message);
                 return;
             }
-    
+
             var command = new AddActivityCommand
             {
                 Id = ActivityIdentity.Next(),
                 ExternalId = activity.Id.ToString(),
-                AthleteId = athlete.Id,
+                AthleteId = @event.AthleteId,
                 ActivityType = activity.Type.ToString(),
                 StartDate = activity.StartDate,
                 DistanceInMeters = activity.Distance,
@@ -169,7 +150,7 @@ namespace BurnForMoney.Functions.Strava.Functions.EventsHub
 
             var json = JsonConvert.SerializeObject(command);
             var message = new CloudQueueMessage(json);
-            await addActivitiesRequestesQueue.AddMessageAsync(message);
+            await addActivitiesRequestsQueue.AddMessageAsync(message);
             log.LogFunctionEnd(FunctionsNames.Events_NewActivity);
         }
 
@@ -182,16 +163,14 @@ namespace BurnForMoney.Functions.Strava.Functions.EventsHub
         {
             log.LogFunctionStart(FunctionsNames.Events_UpdateActivity);
 
-            var readModelFacade = new AthleteReadRepository(configuration.ConnectionStrings.SqlDbConnectionString);
-            var athlete = await readModelFacade.GetAthleteByStravaIdAsync(@event.AthleteId);
             var activityRepository = new ActivityReadRepository(configuration.ConnectionStrings.SqlDbConnectionString);
-            var activityRow = await activityRepository.GetByExternalIdAsync(@event.ActivityId);
+            var activityRow = await activityRepository.GetByExternalIdAsync(@event.StravaActivityId);
 
-            var accessToken = await GetAccessTokenAsync(athlete.Id, configuration.Strava.AccessTokensKeyVaultUrl);
+            var accessToken = await GetAccessTokenAsync(@event.AthleteId, configuration.Strava.AccessTokensKeyVaultUrl);
             StravaActivity activity;
             try
             {
-                activity = StravaService.GetActivity(accessToken, @event.ActivityId);
+                activity = StravaService.GetActivity(accessToken, @event.StravaActivityId);
             }
             catch (ActivityNotFoundException ex)
             {
@@ -202,6 +181,7 @@ namespace BurnForMoney.Functions.Strava.Functions.EventsHub
             var command = new UpdateActivityCommand
             {
                 Id = activityRow.Id,
+                AthleteId = @event.AthleteId,
                 ActivityType = activity.Type.ToString(),
                 StartDate = activity.StartDate,
                 DistanceInMeters = activity.Distance,
@@ -223,17 +203,17 @@ namespace BurnForMoney.Functions.Strava.Functions.EventsHub
         [FunctionName(FunctionsNames.Events_DeleteActivity)]
         public static async Task Events_DeleteActivity([QueueTrigger(QueueNames.StravaEventsActivityDelete)] ActivityData @event,
             ILogger log, ExecutionContext executionContext,
-            [Queue(AppQueueNames.DeleteActivityRequests, Connection = "AppQueuesStorage")] CloudQueue deleteActivtiesQueue,
+            [Queue(AppQueueNames.DeleteActivityRequests, Connection = "AppQueuesStorage")] CloudQueue deleteActivitiesQueue,
             [Configuration] ConfigurationRoot configuration)
         {
             log.LogFunctionStart(FunctionsNames.Events_DeleteActivity);
 
             var activityRepository = new ActivityReadRepository(configuration.ConnectionStrings.SqlDbConnectionString);
-            var activity = await activityRepository.GetByExternalIdAsync(@event.ActivityId);
+            var activity = await activityRepository.GetByExternalIdAsync(@event.StravaActivityId);
 
-            var json = JsonConvert.SerializeObject(new DeleteActivityCommand { Id = activity.Id, AthleteId = activity.AthleteId});
+            var json = JsonConvert.SerializeObject(new DeleteActivityCommand { Id = activity.Id, AthleteId = @event.AthleteId });
             var message = new CloudQueueMessage(json);
-            await deleteActivtiesQueue.AddMessageAsync(message);
+            await deleteActivitiesQueue.AddMessageAsync(message);
             log.LogFunctionEnd(FunctionsNames.Events_DeleteActivity);
         }
     }

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace BurnForMoney.Functions.Shared.Repositories
+namespace BurnForMoney.Functions.Shared.Repositories.Dto
 {
     public class Row
     {

@@ -1,5 +1,7 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using BurnForMoney.Functions.Shared.Persistence;
+using BurnForMoney.Functions.Shared.Repositories.Dto;
 using Dapper;
 
 namespace BurnForMoney.Functions.Shared.Repositories
@@ -27,6 +29,26 @@ namespace BurnForMoney.Functions.Shared.Repositories
             }
         }
 
+        public async Task<AthleteRow> GetAthleteByIdAsync(Guid id)
+        {
+            using (var conn = SqlConnectionFactory.Create(_connectionString))
+            {
+                await conn.OpenWithRetryAsync();
+
+                var athlete = await conn.QuerySingleOrDefaultAsync<AthleteRow>("SELECT Id, FirstName, LastName FROM dbo.Athletes WHERE Id=@ExternalId", new
+                {
+                    ExternalId = id
+                });
+
+                if (!athlete.Active)
+                {
+                    return AthleteRow.NonActive;
+                }
+
+                return athlete;
+            }
+        }
+
         public async Task<AthleteRow> GetAthleteByStravaIdAsync(string id)
         {
             using (var conn = SqlConnectionFactory.Create(_connectionString))
@@ -37,6 +59,12 @@ namespace BurnForMoney.Functions.Shared.Repositories
                 {
                     ExternalId = id
                 });
+
+                if (!athlete.Active)
+                {
+                    return AthleteRow.NonActive;
+                }
+
                 return athlete;
             }
         }

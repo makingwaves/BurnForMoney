@@ -4,6 +4,11 @@ namespace BurnForMoney.Infrastructure.Events
 {
     public class ActivityDeleted : DomainEvent
     {
-        public Guid ActivityId { get; set; }
+        public readonly Guid ActivityId;
+
+        public ActivityDeleted(Guid activityId)
+        {
+            ActivityId = activityId;
+        }
     }
 }

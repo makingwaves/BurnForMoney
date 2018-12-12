@@ -5,11 +5,12 @@ namespace BurnForMoney.Functions.Functions
     [SuppressMessage("ReSharper", "InconsistentNaming")]
     public static class FunctionsNames
     {
+        public const string Q_AddAthlete = "Q_AddAthlete";
+        public const string Q_DeactivateAthlete = "Q_DeactivateAthlete";
+
         public const string Q_AddActivity = "Q_AddActivity";
         public const string Q_UpdateActivity = "Q_UpdateActivity";
         public const string Q_DeleteActivity = "Q_DeleteActivity";
-        public const string Q_SubmitAthleteActivity = "Q_SubmitAthleteActivity";
-        public const string Q_UpdateAthleteActivity = "Q_UpdateAthleteActivity";
 
         public const string T_CalculateMonthlyAthleteResults = "T_CalculateMonthlyAthleteResults";
         public const string T_CalculateMonthlyAthleteResultsFromPreviousMonth = "T_CalculateMonthlyAthleteResultsFromPreviousMonth";

@@ -4,11 +4,20 @@ namespace BurnForMoney.Infrastructure.Events
 {
     public class ActivityUpdated : DomainEvent
     {
-        public Guid ActivityId { get; set; }
-        public double DistanceInMeters { get; set; }
-        public double MovingTimeInMinutes { get; set; }
+        public readonly Guid ActivityId;
+        public readonly double DistanceInMeters;
+        public readonly double MovingTimeInMinutes;
 
-        public string ActivityType { get; set; }
-        public DateTime StartDate { get; set; }
+        public readonly string ActivityType;
+        public readonly DateTime StartDate;
+
+        public ActivityUpdated(Guid activityId, double distanceInMeters, double movingTimeInMinutes, string activityType, DateTime startDate)
+        {
+            ActivityId = activityId;
+            DistanceInMeters = distanceInMeters;
+            MovingTimeInMinutes = movingTimeInMinutes;
+            ActivityType = activityType;
+            StartDate = startDate;
+        }
     }
 }

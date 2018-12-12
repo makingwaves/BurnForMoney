@@ -4,21 +4,21 @@ using BurnForMoney.Infrastructure.Domain;
 
 namespace BurnForMoney.Infrastructure.CommandHandlers
 {
-    public class AddActivityCommandHandler : ICommandHandler<AddActivityCommand>
+    public class UpdateActivityCommandHandler : ICommandHandler<UpdateActivityCommand>
     {
         private readonly IRepository<Athlete> _repository;
 
-        public AddActivityCommandHandler(IRepository<Athlete> repository)
+        public UpdateActivityCommandHandler(IRepository<Athlete> repository)
         {
             _repository = repository;
         }
 
-        public async Task HandleAsync(AddActivityCommand message)
+        public async Task HandleAsync(UpdateActivityCommand message)
         {
             var athlete = await _repository.GetByIdAsync(message.AthleteId);
 
-            athlete.AddActivity(message.Id, message.ExternalId, message.ActivityType, message.DistanceInMeters,
-                message.MovingTimeInMinutes, message.StartDate, message.Source);
+            athlete.UpdateActivity(message.Id, message.ActivityType, message.DistanceInMeters,
+                message.MovingTimeInMinutes, message.StartDate);
             await _repository.SaveAsync(athlete, athlete.Version);
         }
     }

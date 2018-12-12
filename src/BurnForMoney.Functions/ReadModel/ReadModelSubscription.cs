@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using BurnForMoney.Functions.Configuration;
 using BurnForMoney.Functions.Shared.Functions.Extensions;
 using BurnForMoney.Infrastructure;
-using BurnForMoney.Infrastructure.Events;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.EventGrid.Models;
 using Microsoft.Azure.WebJobs;
@@ -39,31 +38,6 @@ namespace BurnForMoney.Functions.ReadModel
             await handler.HandleAsync(receivedEvent);
 
             return new OkResult();
-        }
-    }
-
-    public class ViewFactory
-    {
-        private readonly ConfigurationRoot _configuration;
-
-        public ViewFactory(ConfigurationRoot configuration)
-        {
-            _configuration = configuration;
-        }
-
-        public IHandles<T> GetFor<T>(T domainEvent) where T: DomainEvent
-        {
-            IHandles<T> handler = null;
-            if (domainEvent is AthleteCreated)
-            {
-                handler = (IHandles<T>)new AthleteView(_configuration.ConnectionStrings.SqlDbConnectionString);
-            }
-            else if (domainEvent is ActivityAdded || domainEvent is ActivityUpdated || domainEvent is ActivityDeleted)
-            {
-                handler = (IHandles<T>)new ActivityView(_configuration.ConnectionStrings.SqlDbConnectionString);
-            }
-
-            return handler;
         }
     }
 }

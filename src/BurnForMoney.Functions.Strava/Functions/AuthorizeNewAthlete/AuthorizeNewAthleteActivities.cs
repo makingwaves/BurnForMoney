@@ -113,7 +113,7 @@ namespace BurnForMoney.Functions.Strava.Functions.AuthorizeNewAthlete
 
         [FunctionName(FunctionsNames.A_ProcessNewAthleteRequest)]
         public static async Task A_ProcessNewAthleteRequest([ActivityTrigger]DurableActivityContext activityContext, ILogger log,
-            ExecutionContext context, [Queue(QueueNames.AddAthleteRequests)] CloudQueue addAthleteRequestsQueue)
+            ExecutionContext context, [Queue(AppQueueNames.AddAthleteRequests)] CloudQueue addAthleteRequestsQueue)
         {
             log.LogFunctionStart(FunctionsNames.A_ProcessNewAthleteRequest);
 
