@@ -9,7 +9,7 @@ using BurnForMoney.Infrastructure.Events;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 
-namespace BurnForMoney.Functions.Functions
+namespace BurnForMoney.Functions.Functions.CommandHandlers
 {
     public static class AddActivityCommandHandler
     {
@@ -23,12 +23,12 @@ namespace BurnForMoney.Functions.Functions
             var eventStore = EventStore.Create(configuration.ConnectionStrings.AzureWebJobsStorage,
                 new EventsDispatcher(configuration.EventGrid.SasKey, configuration.EventGrid.TopicEndpoint));
 
-            var @event = new ActivityAdded(message.Id, message.ExternalId, message.DistanceInMeters,
+            var @event = new ActivityAdded(message.Id, message.AthleteId, message.ExternalId, message.DistanceInMeters,
                 message.MovingTimeInMinutes, message.ActivityType, message.StartDate, message.Source);
 
             await eventStore.SaveAsync(message.AthleteId, new DomainEvent[] { @event }, @event.Version);
             log.LogInformation(nameof(FunctionsNames.Q_AddActivity), "Logged event.");
-            ;
+            
             log.LogFunctionEnd(FunctionsNames.Q_AddActivity);
         }
     }

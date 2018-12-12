@@ -1,7 +1,7 @@
 ﻿using System;
 using BurnForMoney.Functions.Shared;
 
-namespace BurnForMoney.Functions.Functions.ActivityOperations.ActivityMappers
+namespace BurnForMoney.Functions.Functions.ActivityMappers
 {
     public static class ManualActivityMapper
     {

@@ -1,7 +1,9 @@
-﻿namespace BurnForMoney.Infrastructure.Events
+﻿using System;
+
+namespace BurnForMoney.Infrastructure.Events
 {
     public class ActivityDeleted : DomainEvent
     {
-        public string ActivityId { get; set; }
+        public Guid ActivityId { get; set; }
     }
 }

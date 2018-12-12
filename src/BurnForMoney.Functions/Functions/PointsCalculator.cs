@@ -1,7 +1,7 @@
 ﻿using System;
 using BurnForMoney.Functions.Shared;
 
-namespace BurnForMoney.Functions.Functions.ActivityOperations.Points
+namespace BurnForMoney.Functions.Functions
 {
     internal class PointsCalculator
     {

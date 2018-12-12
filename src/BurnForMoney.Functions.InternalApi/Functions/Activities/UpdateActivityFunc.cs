@@ -16,7 +16,7 @@ namespace BurnForMoney.Functions.InternalApi.Functions.Activities
     public static class UpdateActivityFunc
     {
         [FunctionName(FunctionsNames.UpdateActivity)]
-        public static async Task<IActionResult> Async([HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "athlete/{athleteId:length(32)}/activities/{activityId:length(32)}")] HttpRequest req, ExecutionContext executionContext,
+        public static async Task<IActionResult> Async([HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "athlete/{athleteId:length(32)}/activities/{activityId:length(36)}")] HttpRequest req, ExecutionContext executionContext,
             string athleteId, Guid activityId,
             ILogger log,
             [Queue(AppQueueNames.UpdateActivityRequests, Connection = "AppQueuesStorage")] CloudQueue outputQueue)

@@ -2,7 +2,9 @@
 using System.Threading.Tasks;
 using BurnForMoney.Functions.Configuration;
 using BurnForMoney.Functions.Shared.Functions.Extensions;
+using BurnForMoney.Infrastructure;
 using BurnForMoney.Infrastructure.Events;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.EventGrid.Models;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.EventGrid;
@@ -14,10 +16,10 @@ namespace BurnForMoney.Functions.ReadModel
     public static class ReadModelSubscription
     {
         [FunctionName("EventGrid_ReadModelSubscription")]
-        public static async Task EventGrid_ReadModelSubscription([EventGridTrigger] EventGridEvent @event, ILogger log,
+        public static async Task<IActionResult> EventGrid_ReadModelSubscription([EventGridTrigger] EventGridEvent @event, ILogger log,
             [Configuration] ConfigurationRoot configuration)
         {
-            log.LogInformation("-------Event data reviewed-------\n");
+            log.LogInformation("-------Event data received-------\n");
             log.LogInformation($"Event => {@event.EventType} Subject => {@event.Subject}\n");
 
             if (!(@event.Data is JObject eventData))
@@ -26,20 +28,42 @@ namespace BurnForMoney.Functions.ReadModel
             }
 
             var eventType = Type.GetType(@event.EventType);
-            var receivedEvent = eventData.ToObject(eventType);
-            if (receivedEvent is AthleteCreated created)
+
+            if (!(eventData.ToObject(eventType) is DomainEvent receivedEvent))
             {
-                var handler = new AthleteView(configuration.ConnectionStrings.SqlDbConnectionString);
-                await handler.HandleAsync(created);
-                return;
+                throw new ArgumentException(@event.EventType);
             }
 
-            if (receivedEvent is ActivityAdded activityAdded)
+            var handler = new ViewFactory(configuration).GetFor(receivedEvent);
+
+            await handler.HandleAsync(receivedEvent);
+
+            return new OkResult();
+        }
+    }
+
+    public class ViewFactory
+    {
+        private readonly ConfigurationRoot _configuration;
+
+        public ViewFactory(ConfigurationRoot configuration)
+        {
+            _configuration = configuration;
+        }
+
+        public IHandles<T> GetFor<T>(T domainEvent) where T: DomainEvent
+        {
+            IHandles<T> handler = null;
+            if (domainEvent is AthleteCreated)
             {
-                var handler = new ActivityView(configuration.ConnectionStrings.SqlDbConnectionString);
-                await handler.HandleAsync(activityAdded);
-                return;
+                handler = (IHandles<T>)new AthleteView(_configuration.ConnectionStrings.SqlDbConnectionString);
             }
+            else if (domainEvent is ActivityAdded || domainEvent is ActivityUpdated || domainEvent is ActivityDeleted)
+            {
+                handler = (IHandles<T>)new ActivityView(_configuration.ConnectionStrings.SqlDbConnectionString);
+            }
+
+            return handler;
         }
     }
 }

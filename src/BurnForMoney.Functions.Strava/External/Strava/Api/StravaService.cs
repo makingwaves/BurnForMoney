@@ -74,7 +74,7 @@ namespace BurnForMoney.Functions.Strava.External.Strava.Api
                 var fault = JsonConvert.DeserializeObject<Fault>(response.Content);
                 if (fault.Errors.Any(error => error.Field.Equals("Id", StringComparison.InvariantCultureIgnoreCase) && 
                                               error.Code.Equals("invalid", StringComparison.InvariantCultureIgnoreCase) &&
-                                              error.Resource.Equals("Activity", StringComparison.InvariantCultureIgnoreCase)))
+                                              error.Resource.Equals("ActivityRow", StringComparison.InvariantCultureIgnoreCase)))
                 {
                     throw new ActivityNotFoundException(activityId);
                 }

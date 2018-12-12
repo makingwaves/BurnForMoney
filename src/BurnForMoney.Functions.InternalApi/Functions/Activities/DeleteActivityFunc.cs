@@ -16,8 +16,8 @@ namespace BurnForMoney.Functions.InternalApi.Functions.Activities
     public static class DeleteActivityFunc
     {
         [FunctionName(FunctionsNames.DeleteActivity)]
-        public static async Task<IActionResult> DeleteActivity([HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "athlete/{athleteId:length(32)}/activities/{activityId:length(32)}")] HttpRequest req,
-            ExecutionContext executionContext, Guid athleteId, string activityId,
+        public static async Task<IActionResult> DeleteActivity([HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "athlete/{athleteId:length(36)}/activities/{activityId:length(36)}")] HttpRequest req,
+            ExecutionContext executionContext, Guid athleteId, Guid activityId,
             ILogger log,
             [Queue(AppQueueNames.DeleteActivityRequests, Connection = "AppQueuesStorage")] CloudQueue outputQueue)
         {

@@ -82,7 +82,7 @@ namespace BurnForMoney.Infrastructure.Domain
 
         public void AddActivity(Guid id, string externalId, string activityType, double distanceInMeters, double movingTimeInMinutes, DateTime startDate, string source)
         {
-            ApplyChange(new ActivityAdded(id, externalId, distanceInMeters, movingTimeInMinutes, activityType, startDate, source));
+            ApplyChange(new ActivityAdded(id, this.Id, externalId, distanceInMeters, movingTimeInMinutes, activityType, startDate, source));
         }
     }
 }

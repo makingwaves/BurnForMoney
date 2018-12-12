@@ -9,7 +9,7 @@ using BurnForMoney.Infrastructure.Events;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 
-namespace BurnForMoney.Functions.Functions
+namespace BurnForMoney.Functions.Functions.CommandHandlers
 {
     public class DeleteActivityCommandHandler
     {
@@ -29,6 +29,9 @@ namespace BurnForMoney.Functions.Functions
             };
 
             await eventStore.SaveAsync(deleteActivityCommand.AthleteId, new DomainEvent[] { @event }, @event.Version);
+            log.LogInformation(nameof(FunctionsNames.Q_DeleteActivity), "Logged event.");
+
+            log.LogFunctionEnd(FunctionsNames.Q_DeleteActivity);
         }
     }
 }

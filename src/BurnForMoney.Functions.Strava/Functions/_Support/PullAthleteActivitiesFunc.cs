@@ -52,7 +52,7 @@ namespace BurnForMoney.Functions.Strava.Functions._Support
         }
 
         [FunctionName(SupportFunctionsNames.PullAthleteActivities)]
-        public static async Task<IActionResult> PullAthleteActivities([HttpTrigger(AuthorizationLevel.Admin, "post", Route = "support/athlete/{athleteId:length(32)}/activities/collect")]HttpRequest req, ILogger log,
+        public static async Task<IActionResult> PullAthleteActivities([HttpTrigger(AuthorizationLevel.Admin, "post", Route = "support/athlete/{athleteId:length(36)}/activities/collect")]HttpRequest req, ILogger log,
             [Queue(QueueNames.CollectAthleteActivities)] CloudQueue collectActivitiesQueues, Guid athleteId)
         {
             log.LogFunctionStart(SupportFunctionsNames.PullAthleteActivities);
