@@ -1,6 +1,6 @@
-﻿namespace BurnForMoney.Functions.Strava
+﻿namespace BurnForMoney.Functions.Shared.Queues
 {
-    public static class QueueNames
+    public static class StravaQueueNames
     {
         private const string PoisonQueueSuffix = "-poison";
 

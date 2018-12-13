@@ -9,7 +9,6 @@ using BurnForMoney.Functions.Shared.Queues;
 using BurnForMoney.Functions.Strava.Configuration;
 using BurnForMoney.Functions.Strava.External.Strava.Api;
 using BurnForMoney.Functions.Strava.External.Strava.Api.Exceptions;
-using BurnForMoney.Functions.Strava.Functions.CollectAthleteActivitiesFromStravaFunc.Dto;
 using BurnForMoney.Infrastructure.Commands;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
@@ -23,30 +22,30 @@ namespace BurnForMoney.Functions.Strava.Functions.CollectAthleteActivitiesFromSt
         private static readonly StravaService StravaService = new StravaService();
 
         [FunctionName(FunctionsNames.Q_CollectAthleteActivities)]
-        public static async Task Run([QueueTrigger(QueueNames.CollectAthleteActivities)] CollectAthleteActivitiesInput input,
-            [Queue(AppQueueNames.AddActivityRequests, Connection = "AppQueuesStorage")] CloudQueue pendingActivitiesQueue,
-            [Queue(QueueNames.UnauthorizedAthletes)] CloudQueue unauthorizedAthletesQueue,
+        public static async Task Run([QueueTrigger(StravaQueueNames.CollectAthleteActivities)] CollectStravaActivitiesRequestMessage request,
+            [Queue(AppQueueNames.AddActivityRequests, Connection = "AppQueuesStorage")] CloudQueue addActivitiesRequestsQueue,
+            [Queue(StravaQueueNames.UnauthorizedAthletes)] CloudQueue unauthorizedAthletesQueue,
             ILogger log,
             [Configuration] ConfigurationRoot configuration)
         {
             log.LogFunctionStart(FunctionsNames.Q_CollectAthleteActivities);
 
             var accessTokenSecret =
-                await AccessTokensStore.GetAccessTokenForAsync(input.AthleteId, configuration.Strava.AccessTokensKeyVaultUrl);
+                await AccessTokensStore.GetAccessTokenForAsync(request.AthleteId, configuration.Strava.AccessTokensKeyVaultUrl);
 
             try
             {
-                var getActivitiesFrom = input.From ?? GetFirstDayOfTheMonth(DateTime.UtcNow);
+                var getActivitiesFrom = request.From ?? GetFirstDayOfTheMonth(DateTime.UtcNow);
                 log.LogInformation(FunctionsNames.Q_CollectAthleteActivities, $"Looking for a new activities starting form: {getActivitiesFrom.ToString(CultureInfo.InvariantCulture)}");
                 var activities = StravaService.GetActivities(accessTokenSecret.Value, getActivitiesFrom);
-                log.LogInformation(FunctionsNames.Q_CollectAthleteActivities, $"Athlete: {input.AthleteId}. Found: {activities.Count} new activities.");
+                log.LogInformation(FunctionsNames.Q_CollectAthleteActivities, $"Athlete: {request.AthleteId}. Found: {activities.Count} new activities.");
 
                 foreach (var stravaActivity in activities)
                 {
-                    var pendingActivity = new AddActivityCommand
+                    var command = new AddActivityCommand
                     {
                         Id = ActivityIdentity.Next(),
-                        AthleteId = input.AthleteId,
+                        AthleteId = request.AthleteId,
                         ExternalId = stravaActivity.Id.ToString(),
                         ActivityType = stravaActivity.Type.ToString(),
                         StartDate = stravaActivity.StartDate,
@@ -55,15 +54,15 @@ namespace BurnForMoney.Functions.Strava.Functions.CollectAthleteActivitiesFromSt
                         Source = "Strava"
                     };
 
-                    var json = JsonConvert.SerializeObject(pendingActivity);
+                    var json = JsonConvert.SerializeObject(command);
                     var message = new CloudQueueMessage(json);
-                    await pendingActivitiesQueue.AddMessageAsync(message);
+                    await addActivitiesRequestsQueue.AddMessageAsync(message);
                 }
             }
             catch (UnauthorizedRequestException ex)
             {
                 log.LogError(ex, ex.Message);
-                await unauthorizedAthletesQueue.AddMessageAsync(new CloudQueueMessage(input.AthleteId.ToString()));
+                await unauthorizedAthletesQueue.AddMessageAsync(new CloudQueueMessage(request.AthleteId.ToString()));
             }
             log.LogFunctionEnd(FunctionsNames.Q_CollectAthleteActivities);
         }

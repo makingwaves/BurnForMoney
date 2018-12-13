@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using BurnForMoney.Functions.Functions.ResultsSnapshots.Dto;
 using BurnForMoney.Functions.Shared.Extensions;
+using BurnForMoney.Functions.Shared.Queues;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
@@ -15,7 +16,7 @@ namespace BurnForMoney.Functions.Functions._Support
     {
         [FunctionName(SupportFunctionsNames.CollectMonthlyStatistics)]
         public static async Task<IActionResult> CollectMonthlyStatistics([HttpTrigger(AuthorizationLevel.Admin, "get", Route = "support/activities/collectmonthlystatistics/{year:int:min(2018)}/{month:range(1,12)}")]HttpRequest req, ILogger log,
-            [Queue(QueueNames.CalculateMonthlyResults)] CloudQueue outputQueue, int year, int month)
+            [Queue(AppQueueNames.CalculateMonthlyResults)] CloudQueue outputQueue, int year, int month)
         {
             log.LogFunctionStart(SupportFunctionsNames.CollectMonthlyStatistics);
 

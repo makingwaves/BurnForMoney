@@ -4,8 +4,8 @@ using System.Threading.Tasks;
 using BurnForMoney.Functions.Shared.Extensions;
 using BurnForMoney.Functions.Shared.Functions.Extensions;
 using BurnForMoney.Functions.Shared.Persistence;
+using BurnForMoney.Functions.Shared.Queues;
 using BurnForMoney.Functions.Strava.Configuration;
-using BurnForMoney.Functions.Strava.Functions.CollectAthleteActivitiesFromStravaFunc.Dto;
 using Dapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -21,7 +21,7 @@ namespace BurnForMoney.Functions.Strava.Functions._Support
     {
         [FunctionName(SupportFunctionsNames.PullAllAthletesActivities)]
         public static async Task<IActionResult> PullAllAthletesActivities([HttpTrigger(AuthorizationLevel.Admin, "post", Route = "support/athlete/all/activities/collect")]HttpRequest req, ILogger log,
-            [Queue(QueueNames.CollectAthleteActivities)] CloudQueue collectActivitiesQueues,
+            [Queue(StravaQueueNames.CollectAthleteActivities)] CloudQueue collectActivitiesQueues,
             [Configuration] ConfigurationRoot configuration)
         {
             log.LogFunctionStart(SupportFunctionsNames.PullAllAthletesActivities);
@@ -38,7 +38,7 @@ namespace BurnForMoney.Functions.Strava.Functions._Support
 
             foreach (var athleteId in ids)
             {
-                var input = new CollectAthleteActivitiesInput
+                var input = new CollectStravaActivitiesRequestMessage
                 {
                     AthleteId = athleteId,
                     From = from
@@ -53,13 +53,13 @@ namespace BurnForMoney.Functions.Strava.Functions._Support
 
         [FunctionName(SupportFunctionsNames.PullAthleteActivities)]
         public static async Task<IActionResult> PullAthleteActivities([HttpTrigger(AuthorizationLevel.Admin, "post", Route = "support/athlete/{athleteId:guid}/activities/collect")]HttpRequest req, ILogger log,
-            [Queue(QueueNames.CollectAthleteActivities)] CloudQueue collectActivitiesQueues, string athleteId)
+            [Queue(StravaQueueNames.CollectAthleteActivities)] CloudQueue collectActivitiesQueues, string athleteId)
         {
             log.LogFunctionStart(SupportFunctionsNames.PullAthleteActivities);
 
             var from = DateTime.TryParse(req.Query["from"], out var date) ? date : (DateTime?)null;
 
-            var input = new CollectAthleteActivitiesInput
+            var input = new CollectStravaActivitiesRequestMessage
             {
                 AthleteId = Guid.Parse(athleteId),
                 From = from

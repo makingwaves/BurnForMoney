@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using BurnForMoney.Functions.Shared.Extensions;
 using BurnForMoney.Functions.Shared.Functions.Extensions;
 using BurnForMoney.Functions.Shared.Identity;
 using BurnForMoney.Functions.Shared.Queues;
+using BurnForMoney.Functions.Shared.Repositories;
 using BurnForMoney.Functions.Strava.Configuration;
 using BurnForMoney.Functions.Strava.Exceptions;
 using BurnForMoney.Functions.Strava.External.Strava.Api;
@@ -33,7 +33,6 @@ namespace BurnForMoney.Functions.Strava.Functions.AuthorizeNewAthlete
 
         [FunctionName(FunctionsNames.A_ExchangeTokenAndGetAthleteSummary)]
         public static async Task<AthleteDto> A_ExchangeTokenAndGetAthleteSummaryAsync([ActivityTrigger]A_ExchangeTokenAndGetAthleteSummaryInput input, ILogger log,
-            [Table("Athletes", Connection = "AppStorage")] CloudTable athletesTable,
             [Configuration] ConfigurationRoot configuration)
         {
             log.LogFunctionStart(FunctionsNames.A_ExchangeTokenAndGetAthleteSummary);
@@ -41,13 +40,9 @@ namespace BurnForMoney.Functions.Strava.Functions.AuthorizeNewAthlete
             log.LogInformation($"Requesting for access token using clientId: {configuration.Strava.ClientId}.");
             var response = StravaService.ExchangeToken(configuration.Strava.ClientId, configuration.Strava.ClientSecret, input.AuthorizationCode);
 
-            var query = new TableQuery<AthleteEntity>
-            {
-                FilterString =
-                    TableQuery.GenerateFilterCondition("RowKey", QueryComparisons.Equal, response.Athlete.Id.ToString())
-            };
-            var queryResult = await athletesTable.ExecuteQuerySegmentedAsync(query, null);
-            if (queryResult.Any())
+            var athleteReadRepository = new AthleteReadRepository(configuration.ConnectionStrings.SqlDbConnectionString);
+            var athleteExists = await athleteReadRepository.AthleteWithStravaIdExistsAsync(response.Athlete.Id.ToString());
+            if (athleteExists)
             {
                 throw new AthleteAlreadyExistsException(response.Athlete.Id.ToString());
             }
@@ -129,7 +124,7 @@ namespace BurnForMoney.Functions.Strava.Functions.AuthorizeNewAthlete
 
         [FunctionName(FunctionsNames.A_AuthorizeNewAthleteCompensation)]
         public static async Task A_AuthorizeNewAthleteCompensation([ActivityTrigger]DurableActivityContext activityContext, ILogger log,
-            ExecutionContext context, [Queue(QueueNames.AuthorizationCodesPoison)] CloudQueue authorizationCodePoisonQueue,
+            ExecutionContext context, [Queue(StravaQueueNames.AuthorizationCodesPoison)] CloudQueue authorizationCodePoisonQueue,
             [Configuration] ConfigurationRoot configuration)
         {
             log.LogFunctionStart(FunctionsNames.A_AuthorizeNewAthleteCompensation);

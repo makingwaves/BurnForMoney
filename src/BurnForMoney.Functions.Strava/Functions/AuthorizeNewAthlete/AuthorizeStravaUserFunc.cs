@@ -2,6 +2,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using BurnForMoney.Functions.Shared.Extensions;
 using BurnForMoney.Functions.Shared.Functions.Extensions;
+using BurnForMoney.Functions.Shared.Queues;
 using BurnForMoney.Functions.Strava.Configuration;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -20,7 +21,7 @@ namespace BurnForMoney.Functions.Strava.Functions.AuthorizeNewAthlete
 
         [FunctionName(FunctionsNames.AuthenticateUser)]
         public static async Task<IActionResult> RunAuthorizeStravaUser([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "strava/authenticate")]
-            HttpRequest req, ILogger log, [Queue(QueueNames.AuthorizationCodes)] CloudQueue authorizationCodesQueue,
+            HttpRequest req, ILogger log, [Queue(StravaQueueNames.AuthorizationCodes)] CloudQueue authorizationCodesQueue,
             [Configuration] ConfigurationRoot configuration)
         {
             log.LogFunctionStart(FunctionsNames.AuthenticateUser);
@@ -63,7 +64,7 @@ namespace BurnForMoney.Functions.Strava.Functions.AuthorizeNewAthlete
         {
             var message = new CloudQueueMessage(code);
             await queue.AddMessageAsync(message).ConfigureAwait(false);
-            log.LogInformation(FunctionsNames.AuthenticateUser, $"Inserted authorization code to {QueueNames.AuthorizationCodes} queue.");
+            log.LogInformation(FunctionsNames.AuthenticateUser, $"Inserted authorization code to {StravaQueueNames.AuthorizationCodes} queue.");
         }
 
         private static bool IsRequestRefererValid(string referer) => !string.IsNullOrEmpty(referer) && (referer.StartsWith(StravaAuthorizationUrl) || referer.StartsWith(AzureHostUrl));

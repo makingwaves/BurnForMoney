@@ -4,6 +4,7 @@
     "FUNCTIONS_WORKER_RUNTIME": "dotnet",
     "AzureWebJobsStorage": "UseDevelopmentStorage=true",
     "AzureWebJobsDashboard": "UseDevelopmentStorage=true",
+    "StravaQueuesStorage": "UseDevelopmentStorage=true",
     "StravaAppHostName": "http://localhost:7072",
     "KeyVaultName": "burnformoneykvdev",
     "ConnectionStrings:Sql": "Data Source=(LocalDB)\\.;Initial Catalog=BurnForMoney;Integrated Security=True;"

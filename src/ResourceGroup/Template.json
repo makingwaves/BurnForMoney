@@ -296,6 +296,10 @@
             {
               "name": "EventGrid:SasKey",
               "value": "[listKeys(resourceId('Microsoft.EventGrid/topics', variables('eventGridTopicName')), '2018-01-01').key1]"
+            },
+            {
+              "name": "StravaQueuesStorage",
+              "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('stravaFunctionAppName'), ';AccountKey=', listKeys(variables('stravaFunctionStorageAccountid'),'2015-05-01-preview').key1)]"
             }
           ]
         }

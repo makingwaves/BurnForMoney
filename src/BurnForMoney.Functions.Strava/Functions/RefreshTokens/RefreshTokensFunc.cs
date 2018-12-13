@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using BurnForMoney.Functions.Shared.Extensions;
 using BurnForMoney.Functions.Shared.Functions.Extensions;
+using BurnForMoney.Functions.Shared.Queues;
 using BurnForMoney.Functions.Strava.Configuration;
 using BurnForMoney.Functions.Strava.External.Strava.Api;
 using Microsoft.Azure.WebJobs;
@@ -19,7 +20,7 @@ namespace BurnForMoney.Functions.Strava.Functions.RefreshTokens
         [FunctionName(FunctionsNames.T_RefreshAccessTokens)]
         [Disable]
         public static async Task T_RefreshAccessTokens([TimerTrigger("0 50 * * * *")] TimerInfo timer, ILogger log,
-            [Queue(QueueNames.RefreshStravaToken)] CloudQueue refreshTokensQueue,
+            [Queue(StravaQueueNames.RefreshStravaToken)] CloudQueue refreshTokensQueue,
             [Configuration] ConfigurationRoot configuration)
         {
             log.LogFunctionStart(FunctionsNames.T_RefreshAccessTokens);
@@ -46,7 +47,7 @@ namespace BurnForMoney.Functions.Strava.Functions.RefreshTokens
 
 
         [FunctionName(FunctionsNames.Q_RefreshAccessTokens)]
-        public static async Task Q_RefreshAccessTokens([QueueTrigger(QueueNames.RefreshStravaToken)] Guid athleteId, ILogger log,
+        public static async Task Q_RefreshAccessTokens([QueueTrigger(StravaQueueNames.RefreshStravaToken)] Guid athleteId, ILogger log,
             [Configuration] ConfigurationRoot configuration)
         {
             log.LogFunctionStart(FunctionsNames.Q_RefreshAccessTokens);

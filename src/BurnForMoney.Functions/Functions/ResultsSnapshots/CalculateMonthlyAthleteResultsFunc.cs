@@ -8,6 +8,7 @@ using BurnForMoney.Functions.Functions.ResultsSnapshots.Dto;
 using BurnForMoney.Functions.Shared.Extensions;
 using BurnForMoney.Functions.Shared.Functions.Extensions;
 using BurnForMoney.Functions.Shared.Persistence;
+using BurnForMoney.Functions.Shared.Queues;
 using Dapper;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
@@ -18,7 +19,7 @@ namespace BurnForMoney.Functions.Functions.ResultsSnapshots
     public static class CalculateMonthlyAthleteResultsFunc
     {
         [FunctionName(FunctionsNames.Q_CalculateMonthlyAthleteResults)]
-        public static async Task Q_CalculateMonthlyAthleteResults([QueueTrigger(QueueNames.CalculateMonthlyResults)] CalculateMonthlyResultsRequest request, 
+        public static async Task Q_CalculateMonthlyAthleteResults([QueueTrigger(AppQueueNames.CalculateMonthlyResults)] CalculateMonthlyResultsRequest request, 
             ILogger log,
             [Configuration] ConfigurationRoot configuration)
         {
