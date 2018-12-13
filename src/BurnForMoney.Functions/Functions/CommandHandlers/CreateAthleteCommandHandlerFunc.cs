@@ -37,7 +37,7 @@ namespace BurnForMoney.Functions.Functions.CommandHandlers
             var message = new CollectStravaActivitiesRequestMessage
             {
                 AthleteId = athleteId,
-                From = DateTime.UtcNow.AddMonths(-5)
+                From = DateTime.UtcNow.AddMonths(-2)
                 //From = new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, 1)
             };
 

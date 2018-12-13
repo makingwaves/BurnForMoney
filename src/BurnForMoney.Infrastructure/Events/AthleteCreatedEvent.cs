@@ -9,9 +9,9 @@ namespace BurnForMoney.Infrastructure.Events
         public readonly string FirstName;
         public readonly string LastName;
         public readonly string ProfilePictureUrl;
-        public readonly Domain.System System;
+        public readonly Domain.Source System;
 
-        public AthleteCreated(Guid id, string externalId, string firstName, string lastName, string profilePictureUrl, Domain.System system = Domain.System.None)
+        public AthleteCreated(Guid id, string externalId, string firstName, string lastName, string profilePictureUrl, Domain.Source system = Domain.Source.None)
         {
             Id = id;
             ExternalId = externalId;

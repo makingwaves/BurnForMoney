@@ -4,6 +4,7 @@ using BurnForMoney.Functions.Shared.Extensions;
 using BurnForMoney.Functions.Shared.Identity;
 using BurnForMoney.Functions.Shared.Queues;
 using BurnForMoney.Infrastructure.Commands;
+using BurnForMoney.Infrastructure.Domain;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
@@ -44,7 +45,7 @@ namespace BurnForMoney.Functions.InternalApi.Functions.Activities
                 StartDate = model.StartDate.Value,
                 DistanceInMeters = model.DistanceInMeters ?? 0,
                 MovingTimeInMinutes = model.MovingTimeInMinutes,
-                Source = "Manual"
+                Source = Source.None
             };
 
             var output = JsonConvert.SerializeObject(addActivityCommand);

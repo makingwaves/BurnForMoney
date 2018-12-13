@@ -21,17 +21,18 @@ namespace BurnForMoney.Functions.ReadModel
                 await conn.OpenWithRetryAsync();
 
                 await conn.ExecuteAsync(@"INSERT INTO dbo.Activities 
-(Id, AthleteId, ExternalId, ActivityTime, ActivityType, Distance, MovingTime, Source) 
-VALUES (@Id, @AthleteId, @ExternalId, @ActivityTime, @ActivityType, @Distance, @MovingTime, @Source)", new
+(Id, AthleteId, ExternalId, ActivityTime, ActivityType, Category, Distance, MovingTime, Source) 
+VALUES (@Id, @AthleteId, @ExternalId, @ActivityTime, @ActivityType, @ActivityCategory, @Distance, @MovingTime, @Source)", new
                 {
                     Id = message.ActivityId,
                     AthleteId = message.AthleteId,
                     ExternalId = message.ExternalId,
                     ActivityTime = message.StartDate,
                     ActivityType = message.ActivityType,
+                    ActivityCategory = message.ActivityCategory.ToString(),
                     Distance = message.DistanceInMeters,
                     MovingTime = message.MovingTimeInMinutes,
-                    Source = message.Source
+                    Source = message.Source.ToString()
                 });
             }
         }
@@ -43,12 +44,13 @@ VALUES (@Id, @AthleteId, @ExternalId, @ActivityTime, @ActivityType, @Distance, @
                 await conn.OpenWithRetryAsync();
 
                 await conn.ExecuteAsync(@"UPDATE dbo.Activities
-SET ActivityTime=@ActivityTime, ActivityType=@ActivityType, Distance=@Distance, MovingTime=@MovingTime
+SET ActivityTime=@ActivityTime, ActivityType=@ActivityType, Category=@ActivityCategory, Distance=@Distance, MovingTime=@MovingTime
 WHERE Id=@Id", new
                 {
                     Id = message.ActivityId,
                     ActivityTime = message.StartDate,
                     ActivityType = message.ActivityType,
+                    ActivityCategory = message.ActivityCategory.ToString(),
                     Distance = message.DistanceInMeters,
                     MovingTime = message.MovingTimeInMinutes
                 });

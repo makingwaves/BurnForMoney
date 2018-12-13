@@ -4,6 +4,7 @@ using BurnForMoney.Functions.InternalApi.Configuration;
 using BurnForMoney.Functions.Shared.Extensions;
 using BurnForMoney.Functions.Shared.Functions.Extensions;
 using BurnForMoney.Functions.Shared.Persistence;
+using BurnForMoney.Infrastructure.Domain;
 using Dapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -30,7 +31,7 @@ FROM dbo.Activities WHERE AthleteId=@AthleteId AND Source=@Source AND MONTH(Acti
                     new
                     {
                         AthleteId = athleteId,
-                        Source = "Manual",
+                        Source = Source.None.ToString(),
                         DateTime.UtcNow.Month,
                         DateTime.UtcNow.Year
                     });

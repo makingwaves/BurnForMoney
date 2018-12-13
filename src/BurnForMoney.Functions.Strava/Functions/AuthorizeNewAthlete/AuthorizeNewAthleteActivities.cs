@@ -12,6 +12,7 @@ using BurnForMoney.Functions.Strava.Exceptions;
 using BurnForMoney.Functions.Strava.External.Strava.Api;
 using BurnForMoney.Functions.Strava.Functions.Dto;
 using BurnForMoney.Infrastructure.Commands;
+using BurnForMoney.Infrastructure.Domain;
 using Microsoft.Azure.KeyVault.Models;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
@@ -115,7 +116,7 @@ namespace BurnForMoney.Functions.Strava.Functions.AuthorizeNewAthlete
             var athlete = activityContext.GetInput<AthleteDto>();
 
             var command = new CreateAthleteCommand(athlete.Id, athlete.ExternalId, athlete.FirstName, athlete.LastName,
-                athlete.ProfilePictureUrl, Infrastructure.Domain.System.Strava);
+                athlete.ProfilePictureUrl, Source.Strava);
             var json = JsonConvert.SerializeObject(command);
             await addAthleteRequestsQueue.AddMessageAsync(new CloudQueueMessage(json));
 

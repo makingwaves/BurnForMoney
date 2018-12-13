@@ -9,10 +9,10 @@ namespace BurnForMoney.Infrastructure.Commands
         public readonly string FirstName;
         public readonly string LastName;
         public readonly string ProfilePictureUrl;
-        public readonly Domain.System System;
+        public readonly Domain.Source System;
 
         public CreateAthleteCommand(Guid id, string externalId, string firstName, string lastName, string profilePictureUrl,
-            Domain.System system)
+            Domain.Source system)
         {
             Id = id;
             ExternalId = externalId;

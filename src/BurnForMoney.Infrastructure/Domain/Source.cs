@@ -1,6 +1,6 @@
 ﻿namespace BurnForMoney.Infrastructure.Domain
 {
-    public enum System
+    public enum Source
     {
         None,
         Strava

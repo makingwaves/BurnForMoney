@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using BurnForMoney.Infrastructure.Domain.ActivityMappers;
 using BurnForMoney.Infrastructure.Events;
 
 namespace BurnForMoney.Infrastructure.Domain
@@ -21,7 +22,7 @@ namespace BurnForMoney.Infrastructure.Domain
 
         public bool IsActive { get; private set; }
 
-        public System System { get; private set; }
+        public Source Source { get; private set; }
 
         public int Version { get; private set; }
 
@@ -49,7 +50,7 @@ namespace BurnForMoney.Infrastructure.Domain
             LastName = @event.LastName;
             ProfilePictureUrl = @event.ProfilePictureUrl;
             IsActive = true;
-            System = @event.System;
+            Source = @event.System;
         }
 
         public void Apply(AthleteDeactivated @event)
@@ -59,13 +60,13 @@ namespace BurnForMoney.Infrastructure.Domain
 
         public void Apply(ActivityAdded @event)
         {
-            Activities.Add(new Activity(@event.ActivityId, @event.ExternalId, @event.DistanceInMeters, @event.MovingTimeInMinutes, @event.ActivityType, @event.StartDate, @event.Source));
+            Activities.Add(new Activity(@event.ActivityId, @event.ExternalId, @event.DistanceInMeters, @event.MovingTimeInMinutes, @event.ActivityType, @event.ActivityCategory, @event.StartDate, @event.Source));
         }
 
         public void Apply(ActivityUpdated @event)
         {
             var activity = Activities.Single(a => a.Id.Equals(@event.ActivityId));
-            activity.Update(@event.DistanceInMeters, @event.MovingTimeInMinutes, @event.ActivityType, @event.StartDate);
+            activity.Update(@event.DistanceInMeters, @event.MovingTimeInMinutes, @event.ActivityType, @event.ActivityCategory, @event.StartDate);
         }
 
         public void Apply(ActivityDeleted @event)
@@ -108,7 +109,7 @@ namespace BurnForMoney.Infrastructure.Domain
             // no-op
         }
 
-        public Athlete(Guid id, string externalId, string firstName, string lastName, string profilePictureUrl, System system)
+        public Athlete(Guid id, string externalId, string firstName, string lastName, string profilePictureUrl, Source source)
         {
             if (string.IsNullOrWhiteSpace(firstName))
             {
@@ -119,10 +120,10 @@ namespace BurnForMoney.Infrastructure.Domain
                 throw new ArgumentNullException(nameof(lastName));
             }
 
-            ApplyChange(new AthleteCreated(id, externalId, firstName, lastName, profilePictureUrl, system));
+            ApplyChange(new AthleteCreated(id, externalId, firstName, lastName, profilePictureUrl, source));
         }
 
-        public void AddActivity(Guid id, string externalId, string activityType, double distanceInMeters, double movingTimeInMinutes, DateTime startDate, string source)
+        public void AddActivity(Guid id, string externalId, string activityType, double distanceInMeters, double movingTimeInMinutes, DateTime startDate, Source source)
         {
             if (string.IsNullOrWhiteSpace(activityType))
             {
@@ -146,7 +147,9 @@ namespace BurnForMoney.Infrastructure.Domain
                 throw new InvalidOperationException("Cannot add the same activity twice.");
             }
 
-            ApplyChange(new ActivityAdded(id, this.Id, externalId, distanceInMeters, movingTimeInMinutes, activityType, startDate, source));
+            var category = MapToActivityCategory(activityType, source);
+
+            ApplyChange(new ActivityAdded(id, this.Id, externalId, distanceInMeters, movingTimeInMinutes, activityType, category, startDate, source));
         }
 
         public void UpdateActivity(Guid id, string activityType, double distanceInMeters, double movingTimeInMinutes, DateTime startDate)
@@ -176,7 +179,6 @@ namespace BurnForMoney.Infrastructure.Domain
 
             if (activity.Id == id &&
                 activity.ActivityType == activityType &&
-                activity.ActivityType == activityType &&
                 activity.DistanceInMeters == distanceInMeters &&
                 activity.MovingTimeInMinutes == movingTimeInMinutes &&
                 activity.StartDate == startDate)
@@ -184,8 +186,9 @@ namespace BurnForMoney.Infrastructure.Domain
                 throw new InvalidOperationException("Update operation must change at least one field. No changes detected.");
             }
 
+            var category = MapToActivityCategory(activityType, activity.Source);
 
-            ApplyChange(new ActivityUpdated(id, distanceInMeters, movingTimeInMinutes, activityType, startDate));
+            ApplyChange(new ActivityUpdated(id, distanceInMeters, movingTimeInMinutes, activityType, category, startDate));
         }
 
         public void DeleteActivity(Guid id)
@@ -208,6 +211,17 @@ namespace BurnForMoney.Infrastructure.Domain
 
             ApplyChange(new AthleteDeactivated(this.Id));
         }
+
+        private ActivityCategory MapToActivityCategory(string activityType, Source source)
+        {
+            switch (source)
+            {
+                case Source.Strava:
+                    return StravaActivityMapper.MapToActivityCategory(activityType);
+                default:
+                    return ManualActivityMapper.MapToActivityCategory(activityType);
+            }
+        }
     }
 
     public class Activity
@@ -219,24 +233,27 @@ namespace BurnForMoney.Infrastructure.Domain
 
         public string ActivityType { get; private set; }
         public DateTime StartDate { get; private set; }
-        public string Source { get; }
+        public Source Source { get; }
+        public ActivityCategory Category { get; private set; }
 
-        public Activity(Guid activityId, string externalId, double distanceInMeters, double movingTimeInMinutes, string activityType, DateTime startDate, string source)
+        public Activity(Guid activityId, string externalId, double distanceInMeters, double movingTimeInMinutes, string activityType, ActivityCategory category, DateTime startDate, Source source)
         {
             Id = activityId;
             ExternalId = externalId;
             DistanceInMeters = distanceInMeters;
             MovingTimeInMinutes = movingTimeInMinutes;
             ActivityType = activityType;
+            Category = category;
             StartDate = startDate;
             Source = source;
         }
 
-        public void Update(double distanceInMeters, double movingTimeInMinutes, string activityType, DateTime startDate)
+        public void Update(double distanceInMeters, double movingTimeInMinutes, string activityType, ActivityCategory category, DateTime startDate)
         {
             DistanceInMeters = distanceInMeters;
             MovingTimeInMinutes = movingTimeInMinutes;
             ActivityType = activityType;
+            Category = category;
             StartDate = startDate;
         }
     }

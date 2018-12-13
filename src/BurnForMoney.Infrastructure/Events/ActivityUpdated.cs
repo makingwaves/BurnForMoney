@@ -1,4 +1,5 @@
 ﻿using System;
+using BurnForMoney.Infrastructure.Domain;
 
 namespace BurnForMoney.Infrastructure.Events
 {
@@ -9,14 +10,16 @@ namespace BurnForMoney.Infrastructure.Events
         public readonly double MovingTimeInMinutes;
 
         public readonly string ActivityType;
+        public readonly ActivityCategory ActivityCategory;
         public readonly DateTime StartDate;
 
-        public ActivityUpdated(Guid activityId, double distanceInMeters, double movingTimeInMinutes, string activityType, DateTime startDate)
+        public ActivityUpdated(Guid activityId, double distanceInMeters, double movingTimeInMinutes, string activityType, ActivityCategory activityCategory, DateTime startDate)
         {
             ActivityId = activityId;
             DistanceInMeters = distanceInMeters;
             MovingTimeInMinutes = movingTimeInMinutes;
             ActivityType = activityType;
+            ActivityCategory = activityCategory;
             StartDate = startDate;
         }
     }

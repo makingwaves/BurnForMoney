@@ -1,4 +1,5 @@
 ﻿using System;
+using BurnForMoney.Infrastructure.Domain;
 
 namespace BurnForMoney.Infrastructure.Commands
 {
@@ -13,6 +14,6 @@ namespace BurnForMoney.Infrastructure.Commands
         public string ActivityType { get; set; }
         public double DistanceInMeters { get; set; }
         public double MovingTimeInMinutes { get; set; }
-        public string Source { get; set; }
+        public Source Source { get; set; }
     }
 }

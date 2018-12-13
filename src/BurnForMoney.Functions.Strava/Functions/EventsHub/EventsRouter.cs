@@ -14,6 +14,7 @@ using BurnForMoney.Functions.Strava.External.Strava.Api.Exceptions;
 using BurnForMoney.Functions.Strava.External.Strava.Api.Model;
 using BurnForMoney.Functions.Strava.Functions.EventsHub.Dto;
 using BurnForMoney.Infrastructure.Commands;
+using BurnForMoney.Infrastructure.Domain;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 using Microsoft.WindowsAzure.Storage.Queue;
@@ -145,7 +146,7 @@ namespace BurnForMoney.Functions.Strava.Functions.EventsHub
                 StartDate = activity.StartDate,
                 DistanceInMeters = activity.Distance,
                 MovingTimeInMinutes = UnitsConverter.ConvertSecondsToMinutes(activity.MovingTime),
-                Source = "Strava"
+                Source = Source.None
             };
 
             var json = JsonConvert.SerializeObject(command);
