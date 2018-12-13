@@ -25,10 +25,10 @@ namespace BurnForMoney.Functions.ReadModel
 VALUES (@Id, @AthleteId, @ExternalId, @ActivityTime, @ActivityType, @ActivityCategory, @Distance, @MovingTime, @Source)", new
                 {
                     Id = message.ActivityId,
-                    AthleteId = message.AthleteId,
-                    ExternalId = message.ExternalId,
+                    message.AthleteId,
+                    message.ExternalId,
                     ActivityTime = message.StartDate,
-                    ActivityType = message.ActivityType,
+                    message.ActivityType,
                     ActivityCategory = message.ActivityCategory.ToString(),
                     Distance = message.DistanceInMeters,
                     MovingTime = message.MovingTimeInMinutes,
@@ -49,7 +49,7 @@ WHERE Id=@Id", new
                 {
                     Id = message.ActivityId,
                     ActivityTime = message.StartDate,
-                    ActivityType = message.ActivityType,
+                    message.ActivityType,
                     ActivityCategory = message.ActivityCategory.ToString(),
                     Distance = message.DistanceInMeters,
                     MovingTime = message.MovingTimeInMinutes

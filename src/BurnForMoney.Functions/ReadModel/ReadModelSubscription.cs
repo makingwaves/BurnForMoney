@@ -49,6 +49,9 @@ namespace BurnForMoney.Functions.ReadModel
                 case ActivityDeleted activityDeleted:
                     await new ActivityView(configuration.ConnectionStrings.SqlDbConnectionString).HandleAsync(activityDeleted);
                     break;
+                case PointsGranted pointsGranted:
+                case PointsLost pointsLost:
+                    break;
                 default:
                     throw new NotSupportedException($"Event type: {receivedEvent.GetType()} is not supported.");
             }

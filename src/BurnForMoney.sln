@@ -17,7 +17,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BurnForMoney.Functions.Inte
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BurnForMoney.Functions.Achievements", "BurnForMoney.Functions.Achievements\BurnForMoney.Functions.Achievements.csproj", "{FECB8F17-690D-4FD1-8B0B-045005B65AEA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BurnForMoney.Infrastructure", "BurnForMoney.Infrastructure\BurnForMoney.Infrastructure.csproj", "{9E03A6DB-2674-40B2-A876-961D2FB3CD9E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BurnForMoney.Infrastructure", "BurnForMoney.Infrastructure\BurnForMoney.Infrastructure.csproj", "{9E03A6DB-2674-40B2-A876-961D2FB3CD9E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

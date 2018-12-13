@@ -30,7 +30,7 @@ namespace BurnForMoney.Infrastructure
             await _eventGridClient.PublishEventsAsync(_topicHostname, eventsList);
         }
 
-        static IList<EventGridEvent> GetEventsList(IEnumerable<DomainEvent> @events)
+        static IList<EventGridEvent> GetEventsList(IEnumerable<DomainEvent> events)
         {
             var eventsList = new List<EventGridEvent>();
 

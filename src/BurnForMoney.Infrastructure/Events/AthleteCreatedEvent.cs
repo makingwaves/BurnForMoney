@@ -1,4 +1,7 @@
 ﻿using System;
+using BurnForMoney.Infrastructure.Domain;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace BurnForMoney.Infrastructure.Events
 {
@@ -9,9 +12,10 @@ namespace BurnForMoney.Infrastructure.Events
         public readonly string FirstName;
         public readonly string LastName;
         public readonly string ProfilePictureUrl;
-        public readonly Domain.Source System;
+        [JsonConverter(typeof(StringEnumConverter))]
+        public readonly Source System;
 
-        public AthleteCreated(Guid id, string externalId, string firstName, string lastName, string profilePictureUrl, Domain.Source system = Domain.Source.None)
+        public AthleteCreated(Guid id, string externalId, string firstName, string lastName, string profilePictureUrl, Source system = Source.None)
         {
             Id = id;
             ExternalId = externalId;

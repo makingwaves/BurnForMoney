@@ -1,5 +1,7 @@
 ﻿using System;
 using BurnForMoney.Infrastructure.Domain;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace BurnForMoney.Infrastructure.Events
 {
@@ -10,6 +12,7 @@ namespace BurnForMoney.Infrastructure.Events
         public readonly double MovingTimeInMinutes;
 
         public readonly string ActivityType;
+        [JsonConverter(typeof(StringEnumConverter))]
         public readonly ActivityCategory ActivityCategory;
         public readonly DateTime StartDate;
 
