@@ -18,7 +18,7 @@ namespace BurnForMoney.Functions.Functions.CommandHandlers
     {
         [FunctionName(FunctionsNames.Q_DeactivateAthlete)]
         public static async Task Q_DeactivateAthleteAsync(ILogger log, ExecutionContext executionContext,
-            [Queue(AppQueueNames.NotificationsToSend, Connection = "AppQueuesStorage")] CloudQueue notificationsQueue,
+            [Queue(AppQueueNames.NotificationsToSend)] CloudQueue notificationsQueue,
             [QueueTrigger(AppQueueNames.DeactivateAthleteRequests)] DeactivateAthleteCommand message,
             [Configuration] ConfigurationRoot configuration)
         {

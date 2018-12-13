@@ -86,7 +86,7 @@ namespace BurnForMoney.Infrastructure
             var paritionKey = aggregateId.ToString("D");
             var partition = new Partition(_domainEventsTable, paritionKey);
 
-            if ((await Stream.ExistsAsync(partition)))
+            if (!await Stream.ExistsAsync(partition))
             {
                 throw new AggregateNotFoundException();
             }

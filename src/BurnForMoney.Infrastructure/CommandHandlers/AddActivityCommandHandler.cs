@@ -19,7 +19,7 @@ namespace BurnForMoney.Infrastructure.CommandHandlers
 
             athlete.AddActivity(message.Id, message.ExternalId, message.ActivityType, message.DistanceInMeters,
                 message.MovingTimeInMinutes, message.StartDate, message.Source);
-            await _repository.SaveAsync(athlete, athlete.Version);
+            await _repository.SaveAsync(athlete, athlete.OriginalVersion);
         }
     }
 }

@@ -17,16 +17,16 @@ namespace BurnForMoney.Functions.Functions._Support
     public static class AthleteOperationsFunc
     {
         [FunctionName(SupportFunctionsNames.DeactivateAthlete)]
-        public static async Task<IActionResult> DeactivateAthlete([HttpTrigger(AuthorizationLevel.Admin, "post", Route = "support/athlete/{athleteId:length(36)}/deactivate")]HttpRequest req, ILogger log,
+        public static async Task<IActionResult> DeactivateAthlete([HttpTrigger(AuthorizationLevel.Admin, "post", Route = "support/athlete/{athleteId:guid}/deactivate")]HttpRequest req, ILogger log,
             [Configuration] ConfigurationRoot configuration,
-            Guid athleteId)
+            string athleteId)
         {
             log.LogFunctionStart(SupportFunctionsNames.DeactivateAthlete);
 
             var connectionString = configuration.ConnectionStrings
                 .SqlDbConnectionString;
 
-            var deactivationResult = await DeactivateAthleteAsync(athleteId, connectionString);
+            var deactivationResult = await DeactivateAthleteAsync(Guid.Parse(athleteId), connectionString);
             if (deactivationResult)
             {
                 return new OkObjectResult($"Athlete with id: {athleteId} has been deactivated.");
@@ -37,16 +37,16 @@ namespace BurnForMoney.Functions.Functions._Support
         }
 
         [FunctionName(SupportFunctionsNames.ActivateAthlete)]
-        public static async Task<IActionResult> ActivateAthlete([HttpTrigger(AuthorizationLevel.Admin, "post", Route = "support/athlete/{athleteId:length(36)}/activate")]HttpRequest req, ILogger log,
+        public static async Task<IActionResult> ActivateAthlete([HttpTrigger(AuthorizationLevel.Admin, "post", Route = "support/athlete/{athleteId:guid}/activate")]HttpRequest req, ILogger log,
             [Configuration] ConfigurationRoot configuration,
-            Guid athleteId)
+            string athleteId)
         {
             log.LogFunctionStart(SupportFunctionsNames.ActivateAthlete);
 
             var connectionString = configuration.ConnectionStrings
                 .SqlDbConnectionString;
 
-            var activationResult = await ActivateAthleteAsync(athleteId, connectionString);
+            var activationResult = await ActivateAthleteAsync(Guid.Parse(athleteId), connectionString);
             if (activationResult)
             {
                 return new OkObjectResult($"Athlete with id: {athleteId} has been activated.");
@@ -58,9 +58,9 @@ namespace BurnForMoney.Functions.Functions._Support
 
         [Disable("Should be executed from Strava context, add support for access tokens.")]
         [FunctionName(SupportFunctionsNames.DeleteAthlete)]
-        public static async Task<IActionResult> DeleteAthlete([HttpTrigger(AuthorizationLevel.Admin, "delete", Route = "support/athlete/{athleteId:length(36}")]HttpRequest req, ILogger log,
+        public static async Task<IActionResult> DeleteAthlete([HttpTrigger(AuthorizationLevel.Admin, "delete", Route = "support/athlete/{athleteId:guid}")]HttpRequest req, ILogger log,
             [Configuration] ConfigurationRoot configuration,
-            Guid athleteId)
+            string athleteId)
         {
             log.LogFunctionStart(SupportFunctionsNames.DeleteAthlete);
 
@@ -69,7 +69,7 @@ namespace BurnForMoney.Functions.Functions._Support
 
             try
             {
-                await DeleteAthleteAsync(athleteId, connectionString, log);
+                await DeleteAthleteAsync(Guid.Parse(athleteId), connectionString, log);
                 log.LogFunctionEnd(SupportFunctionsNames.DeleteAthlete);
                 return new OkObjectResult($"Athlete with id: {athleteId} has been deleted.");
             }

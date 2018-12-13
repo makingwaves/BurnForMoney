@@ -16,8 +16,8 @@ namespace BurnForMoney.Functions.InternalApi.Functions.Activities
     public static class GetAthleteActivitiesFunc
     {
         [FunctionName(FunctionsNames.GetAthleteActivities)]
-        public static async Task<IActionResult> GetAthleteActivities([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "athlete/{athleteId:length(36)}/activities")] HttpRequest req,
-            ILogger log, [Configuration] ConfigurationRoot configuration, Guid athleteId)
+        public static async Task<IActionResult> GetAthleteActivities([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "athlete/{athleteId:guid}/activities")] HttpRequest req,
+            ILogger log, [Configuration] ConfigurationRoot configuration, string athleteId)
         {
             log.LogFunctionStart(FunctionsNames.GetAthleteActivities);
 

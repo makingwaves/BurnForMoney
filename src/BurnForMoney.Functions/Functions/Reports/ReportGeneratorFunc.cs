@@ -102,7 +102,7 @@ namespace BurnForMoney.Functions.Functions.Reports
             log.LogFunctionStart(FunctionsNames.B_SendNotificationWithLinkToTheReport);
 
             var blobSasToken = GetBlobSasToken(cloudBlob, SharedAccessBlobPermissions.Read);
-            log.LogInformation(FunctionsNames.B_SendNotificationWithLinkToTheReport, "Fenerated SAS token.");
+            log.LogInformation(FunctionsNames.B_SendNotificationWithLinkToTheReport, "Generated SAS token.");
             var link = cloudBlob.Uri + blobSasToken;
 
             var notification = new Notification

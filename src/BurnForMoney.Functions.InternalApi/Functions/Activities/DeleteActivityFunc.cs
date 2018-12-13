@@ -16,14 +16,14 @@ namespace BurnForMoney.Functions.InternalApi.Functions.Activities
     public static class DeleteActivityFunc
     {
         [FunctionName(FunctionsNames.DeleteActivity)]
-        public static async Task<IActionResult> DeleteActivity([HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "athlete/{athleteId:length(36)}/activities/{activityId:length(36)}")] HttpRequest req,
-            ExecutionContext executionContext, Guid athleteId, Guid activityId,
+        public static async Task<IActionResult> DeleteActivity([HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "athlete/{athleteId:guid}/activities/{activityId:guid}")] HttpRequest req,
+            ExecutionContext executionContext, string athleteId, string activityId,
             ILogger log,
             [Queue(AppQueueNames.DeleteActivityRequests, Connection = "AppQueuesStorage")] CloudQueue outputQueue)
         {
             log.LogFunctionStart(FunctionsNames.DeleteActivity);
 
-            var json = JsonConvert.SerializeObject(new DeleteActivityCommand { Id = activityId, AthleteId = athleteId});
+            var json = JsonConvert.SerializeObject(new DeleteActivityCommand { Id = Guid.Parse(activityId), AthleteId = Guid.Parse(athleteId) });
             await outputQueue.AddMessageAsync(new CloudQueueMessage(json));
             log.LogFunctionEnd(FunctionsNames.DeleteActivity);
             return new OkObjectResult("Request received.");

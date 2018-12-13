@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using BurnForMoney.Functions.Configuration;
 using BurnForMoney.Functions.Shared.Functions.Extensions;
 using BurnForMoney.Infrastructure;
-using Microsoft.AspNetCore.Mvc;
+using BurnForMoney.Infrastructure.Events;
 using Microsoft.Azure.EventGrid.Models;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.EventGrid;
@@ -15,7 +15,7 @@ namespace BurnForMoney.Functions.ReadModel
     public static class ReadModelSubscription
     {
         [FunctionName("EventGrid_ReadModelSubscription")]
-        public static async Task<IActionResult> EventGrid_ReadModelSubscription([EventGridTrigger] EventGridEvent @event, ILogger log,
+        public static async Task EventGrid_ReadModelSubscription([EventGridTrigger] EventGridEvent @event, ILogger log,
             [Configuration] ConfigurationRoot configuration)
         {
             log.LogInformation("-------Event data received-------\n");
@@ -27,17 +27,31 @@ namespace BurnForMoney.Functions.ReadModel
             }
 
             var eventType = Type.GetType(@event.EventType);
-
             if (!(eventData.ToObject(eventType) is DomainEvent receivedEvent))
             {
                 throw new ArgumentException(@event.EventType);
             }
 
-            var handler = new ViewFactory(configuration).GetFor(receivedEvent);
-
-            await handler.HandleAsync(receivedEvent);
-
-            return new OkResult();
+            switch (receivedEvent)
+            {
+                case AthleteCreated created:
+                    await new AthleteView(configuration.ConnectionStrings.SqlDbConnectionString).HandleAsync(created);
+                    break;
+                case AthleteDeactivated deactivated:
+                    await new AthleteView(configuration.ConnectionStrings.SqlDbConnectionString).HandleAsync(deactivated);
+                    break;
+                case ActivityAdded activityAdded:
+                    await new ActivityView(configuration.ConnectionStrings.SqlDbConnectionString).HandleAsync(activityAdded);
+                    break;
+                case ActivityUpdated activityUpdated:
+                    await new ActivityView(configuration.ConnectionStrings.SqlDbConnectionString).HandleAsync(activityUpdated);
+                    break;
+                case ActivityDeleted activityDeleted:
+                    await new ActivityView(configuration.ConnectionStrings.SqlDbConnectionString).HandleAsync(activityDeleted);
+                    break;
+                default:
+                    throw new NotSupportedException($"Event type: {receivedEvent.GetType()} is not supported.");
+            }
         }
     }
 }

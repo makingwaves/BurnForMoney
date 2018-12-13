@@ -52,8 +52,8 @@ namespace BurnForMoney.Functions.Strava.Functions._Support
         }
 
         [FunctionName(SupportFunctionsNames.PullAthleteActivities)]
-        public static async Task<IActionResult> PullAthleteActivities([HttpTrigger(AuthorizationLevel.Admin, "post", Route = "support/athlete/{athleteId:length(36)}/activities/collect")]HttpRequest req, ILogger log,
-            [Queue(QueueNames.CollectAthleteActivities)] CloudQueue collectActivitiesQueues, Guid athleteId)
+        public static async Task<IActionResult> PullAthleteActivities([HttpTrigger(AuthorizationLevel.Admin, "post", Route = "support/athlete/{athleteId:guid}/activities/collect")]HttpRequest req, ILogger log,
+            [Queue(QueueNames.CollectAthleteActivities)] CloudQueue collectActivitiesQueues, string athleteId)
         {
             log.LogFunctionStart(SupportFunctionsNames.PullAthleteActivities);
 
@@ -61,7 +61,7 @@ namespace BurnForMoney.Functions.Strava.Functions._Support
 
             var input = new CollectAthleteActivitiesInput
             {
-                AthleteId = athleteId,
+                AthleteId = Guid.Parse(athleteId),
                 From = from
             };
             var json = JsonConvert.SerializeObject(input);

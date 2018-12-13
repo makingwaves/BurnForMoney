@@ -18,7 +18,7 @@ namespace BurnForMoney.Infrastructure.CommandHandlers
             var athlete = await _repository.GetByIdAsync(message.AthleteId);
 
             athlete.DeleteActivity(message.Id);
-            await _repository.SaveAsync(athlete, athlete.Version);
+            await _repository.SaveAsync(athlete, athlete.OriginalVersion);
         }
     }
 }

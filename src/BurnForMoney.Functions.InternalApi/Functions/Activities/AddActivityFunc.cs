@@ -17,9 +17,9 @@ namespace BurnForMoney.Functions.InternalApi.Functions.Activities
     public static class AddActivityFunc
     {
         [FunctionName(FunctionsNames.AddActivity)]
-        public static async Task<IActionResult> AddActivityAsync([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "athlete/{athleteId:length(36)}/activities")] HttpRequest req, ExecutionContext executionContext,
+        public static async Task<IActionResult> AddActivityAsync([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "athlete/{athleteId:guid}/activities")] HttpRequest req, ExecutionContext executionContext,
             ILogger log,
-            Guid athleteId,
+            string athleteId,
             [Queue(AppQueueNames.AddActivityRequests, Connection = "AppQueuesStorage")] CloudQueue outputQueue)
         {
             log.LogFunctionStart(FunctionsNames.AddActivity);
@@ -39,7 +39,7 @@ namespace BurnForMoney.Functions.InternalApi.Functions.Activities
             var addActivityCommand = new AddActivityCommand
             {
                 Id = ActivityIdentity.Next(),
-                AthleteId = athleteId,
+                AthleteId = Guid.Parse(athleteId),
                 ActivityType = model.Category,
                 StartDate = model.StartDate.Value,
                 DistanceInMeters = model.DistanceInMeters ?? 0,

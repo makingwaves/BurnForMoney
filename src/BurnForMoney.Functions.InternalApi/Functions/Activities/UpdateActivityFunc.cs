@@ -16,8 +16,8 @@ namespace BurnForMoney.Functions.InternalApi.Functions.Activities
     public static class UpdateActivityFunc
     {
         [FunctionName(FunctionsNames.UpdateActivity)]
-        public static async Task<IActionResult> Async([HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "athlete/{athleteId:length(32)}/activities/{activityId:length(36)}")] HttpRequest req, ExecutionContext executionContext,
-            string athleteId, Guid activityId,
+        public static async Task<IActionResult> Async([HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "athlete/{athleteId:guid}/activities/{activityId:guid}")] HttpRequest req, ExecutionContext executionContext,
+            string athleteId, string activityId,
             ILogger log,
             [Queue(AppQueueNames.UpdateActivityRequests, Connection = "AppQueuesStorage")] CloudQueue outputQueue)
         {
@@ -35,9 +35,10 @@ namespace BurnForMoney.Functions.InternalApi.Functions.Activities
                 return new BadRequestObjectResult($"Validation failed. {ex.Message}.");
             }
 
-            var pendingActivity = new AddActivityCommand
+            var command = new AddActivityCommand
             {
-                Id = activityId,
+                Id = Guid.Parse(activityId),
+                AthleteId = Guid.Parse(athleteId),
                 ExternalId = model.ExternalId,
                 ActivityType = model.ActivityCategory,
                 StartDate = model.StartDate.Value,
@@ -46,10 +47,10 @@ namespace BurnForMoney.Functions.InternalApi.Functions.Activities
                 Source = "Manual"
             };
 
-            var output = JsonConvert.SerializeObject(pendingActivity);
+            var output = JsonConvert.SerializeObject(command);
             await outputQueue.AddMessageAsync(new CloudQueueMessage(output));
             log.LogFunctionEnd(FunctionsNames.UpdateActivity);
-            return new OkObjectResult(pendingActivity.Id);
+            return new OkObjectResult(command.Id);
         }
 
         private static void ValidateRequest(UpdateActivityRequest request)
