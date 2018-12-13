@@ -110,11 +110,37 @@ namespace BurnForMoney.Infrastructure.Domain
 
         public Athlete(Guid id, string externalId, string firstName, string lastName, string profilePictureUrl, System system)
         {
+            if (string.IsNullOrWhiteSpace(firstName))
+            {
+                throw new ArgumentNullException(nameof(firstName));
+            }
+            if (string.IsNullOrWhiteSpace(lastName))
+            {
+                throw new ArgumentNullException(nameof(lastName));
+            }
+
             ApplyChange(new AthleteCreated(id, externalId, firstName, lastName, profilePictureUrl, system));
         }
 
         public void AddActivity(Guid id, string externalId, string activityType, double distanceInMeters, double movingTimeInMinutes, DateTime startDate, string source)
         {
+            if (string.IsNullOrWhiteSpace(activityType))
+            {
+                throw new ArgumentNullException(nameof(activityType));
+            }
+            if (distanceInMeters < 0)
+            {
+                throw new InvalidOperationException("Distance must be greater or equal to 0.");
+            }
+            if (movingTimeInMinutes <= 0)
+            {
+                throw new InvalidOperationException("Moving time must be greater than 0.");
+            }
+            if (startDate.Year < 2018)
+            {
+                throw new InvalidOperationException("Year must be greater than 2017.");
+            }
+
             if (Activities.Any(activity => activity.Id.Equals(id)))
             {
                 throw new InvalidOperationException("Cannot add the same activity twice.");
@@ -125,6 +151,23 @@ namespace BurnForMoney.Infrastructure.Domain
 
         public void UpdateActivity(Guid id, string activityType, double distanceInMeters, double movingTimeInMinutes, DateTime startDate)
         {
+            if (string.IsNullOrWhiteSpace(activityType))
+            {
+                throw new ArgumentNullException(nameof(activityType));
+            }
+            if (distanceInMeters < 0)
+            {
+                throw new InvalidOperationException("Distance must be greater or equal to 0.");
+            }
+            if (movingTimeInMinutes <= 0)
+            {
+                throw new InvalidOperationException("Moving time must be greater than 0.");
+            }
+            if (startDate.Year < 2018)
+            {
+                throw new InvalidOperationException("Year must be greater than 2017.");
+            }
+
             var activity = Activities.SingleOrDefault(a => a.Id == id);
             if (activity == null)
             {
