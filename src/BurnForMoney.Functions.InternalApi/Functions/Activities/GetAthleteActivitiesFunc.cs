@@ -26,7 +26,7 @@ namespace BurnForMoney.Functions.InternalApi.Functions.Activities
             {
                 await conn.OpenWithRetryAsync();
 
-                var activities = conn.Query<ActivityDto>(@"SELECT Id, ActivityTime, Distance AS DistanceInMeters, MovingTime AS MovingTimeInMinutes, Category 
+                var activities = conn.Query<ActivityDto>(@"SELECT Id, ActivityTime as StartDate, Distance AS DistanceInMeters, MovingTime AS MovingTimeInMinutes, ActivityType as Type 
 FROM dbo.Activities WHERE AthleteId=@AthleteId AND Source=@Source AND MONTH(ActivityTime)=@Month AND YEAR(ActivityTime)=@Year",
                     new
                     {
@@ -45,8 +45,8 @@ FROM dbo.Activities WHERE AthleteId=@AthleteId AND Source=@Source AND MONTH(Acti
     public class ActivityDto
     {
         public string Id { get; set; }
-        public DateTime ActivityTime { get; set; }
-        public string Category { get; set; }
+        public DateTime StartDate { get; set; }
+        public string Type { get; set; }
         public double DistanceInMeters { get; set; }
         public double MovingTimeInMinutes { get; set; }
     }

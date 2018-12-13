@@ -41,7 +41,7 @@ namespace BurnForMoney.Functions.InternalApi.Functions.Activities
             {
                 Id = ActivityIdentity.Next(),
                 AthleteId = Guid.Parse(athleteId),
-                ActivityType = model.Category,
+                ActivityType = model.Type,
                 StartDate = model.StartDate.Value,
                 DistanceInMeters = model.DistanceInMeters ?? 0,
                 MovingTimeInMinutes = model.MovingTimeInMinutes,
@@ -60,9 +60,9 @@ namespace BurnForMoney.Functions.InternalApi.Functions.Activities
             {
                 throw new ArgumentNullException(nameof(request.StartDate));
             }
-            if (string.IsNullOrWhiteSpace(request.Category))
+            if (string.IsNullOrWhiteSpace(request.Type))
             {
-                throw new ArgumentNullException(nameof(request.Category));
+                throw new ArgumentNullException(nameof(request.Type));
             }
             if (request.MovingTimeInMinutes <= 0)
             {
@@ -74,7 +74,7 @@ namespace BurnForMoney.Functions.InternalApi.Functions.Activities
     public class AddActivityRequest
     {
         public DateTime? StartDate { get; set; }
-        public string Category { get; set; }
+        public string Type { get; set; }
         public double? DistanceInMeters { get; set; }
         public double MovingTimeInMinutes { get; set; }
     }
