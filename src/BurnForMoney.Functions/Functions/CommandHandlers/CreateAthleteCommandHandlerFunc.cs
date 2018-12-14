@@ -27,12 +27,12 @@ namespace BurnForMoney.Functions.Functions.CommandHandlers
             var commandHandler = new CreateAthleteCommandHandler(repository);
 
             await commandHandler.HandleAsync(message);
-            await ScheduleCollectionOfHistoriclaActivitiesAsync(message.Id, outputQueue);
+            await ScheduleCollectionOfHistoricalActivitiesAsync(message.Id, outputQueue);
 
             log.LogFunctionEnd(FunctionsNames.Q_AddAthlete);
         }
 
-        private static async Task ScheduleCollectionOfHistoriclaActivitiesAsync(Guid athleteId, CloudQueue outputQueue)
+        private static async Task ScheduleCollectionOfHistoricalActivitiesAsync(Guid athleteId, CloudQueue outputQueue)
         {
             var message = new CollectStravaActivitiesRequestMessage
             {

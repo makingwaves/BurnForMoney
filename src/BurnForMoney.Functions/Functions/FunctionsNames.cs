@@ -7,6 +7,7 @@ namespace BurnForMoney.Functions.Functions
     {
         public const string Q_AddAthlete = "Q_AddAthlete";
         public const string Q_DeactivateAthlete = "Q_DeactivateAthlete";
+        public const string Q_ActivateAthlete = "Q_ActivateAthlete";
 
         public const string Q_AddActivity = "Q_AddActivity";
         public const string Q_UpdateActivity = "Q_UpdateActivity";

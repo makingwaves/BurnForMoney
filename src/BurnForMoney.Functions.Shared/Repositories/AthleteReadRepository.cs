@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using BurnForMoney.Functions.Shared.Persistence;
 using BurnForMoney.Functions.Shared.Repositories.Dto;
@@ -13,6 +14,20 @@ namespace BurnForMoney.Functions.Shared.Repositories
         public AthleteReadRepository(string connectionString)
         {
             _connectionString = connectionString;
+        }
+
+
+        public async Task<IEnumerable<AthleteRow>> GetAllActiveAsync()
+        {
+            using (var conn = SqlConnectionFactory.Create(_connectionString))
+            {
+                await conn.OpenWithRetryAsync();
+
+                var athletes = await conn.QueryAsync<AthleteRow>(
+                        "SELECT Id, FirstName, LastName FROM dbo.Athletes WHERE Active=1");
+
+                return athletes;
+            }
         }
 
         public async Task<bool> AthleteWithStravaIdExistsAsync(string id)

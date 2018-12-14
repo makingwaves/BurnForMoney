@@ -58,6 +58,11 @@ namespace BurnForMoney.Infrastructure.Domain
             IsActive = false;
         }
 
+        public void Apply(AthleteActivated @event)
+        {
+            IsActive = true;
+        }
+
         public void Apply(ActivityAdded @event)
         {
             Activities.Add(new Activity(@event.ActivityId, @event.ExternalId, @event.DistanceInMeters, @event.MovingTimeInMinutes, @event.ActivityType, @event.ActivityCategory, @event.StartDate, @event.Source, @event.Points));
@@ -135,6 +140,11 @@ namespace BurnForMoney.Infrastructure.Domain
 
         public void AddActivity(Guid id, string externalId, string activityType, double distanceInMeters, double movingTimeInMinutes, DateTime startDate, Source source)
         {
+            if (!IsActive)
+            {
+                throw new InvalidOperationException("Athlete is deactivated.");
+            }
+
             if (string.IsNullOrWhiteSpace(activityType))
             {
                 throw new ArgumentNullException(nameof(activityType));
@@ -166,6 +176,11 @@ namespace BurnForMoney.Infrastructure.Domain
 
         public void UpdateActivity(Guid id, string activityType, double distanceInMeters, double movingTimeInMinutes, DateTime startDate)
         {
+            if (!IsActive)
+            {
+                throw new InvalidOperationException("Athlete is deactivated.");
+            }
+
             if (string.IsNullOrWhiteSpace(activityType))
             {
                 throw new ArgumentNullException(nameof(activityType));
@@ -218,6 +233,11 @@ namespace BurnForMoney.Infrastructure.Domain
 
         public void DeleteActivity(Guid id)
         {
+            if (!IsActive)
+            {
+                throw new InvalidOperationException("Athlete is deactivated.");
+            }
+
             var activity = Activities.SingleOrDefault(a => a.Id == id);
             if (activity == null)
             {
@@ -229,6 +249,17 @@ namespace BurnForMoney.Infrastructure.Domain
             var originalPoints = Activities.Where(p => p.Id == id).Sum(l => l.Points);
             ApplyChange(new PointsLost(this.Id, originalPoints, PointsSource.Activity, id));
         }
+
+        public void Activate()
+        {
+            if (IsActive)
+            {
+                throw new InvalidOperationException("Athlete is already activated.");
+            }
+
+            ApplyChange(new AthleteActivated(this.Id));
+        }
+
 
         public void Deactivate()
         {

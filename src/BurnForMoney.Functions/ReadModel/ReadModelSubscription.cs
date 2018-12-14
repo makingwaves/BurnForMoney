@@ -40,6 +40,9 @@ namespace BurnForMoney.Functions.ReadModel
                 case AthleteDeactivated deactivated:
                     await new AthleteView(configuration.ConnectionStrings.SqlDbConnectionString).HandleAsync(deactivated);
                     break;
+                case AthleteActivated activated:
+                    await new AthleteView(configuration.ConnectionStrings.SqlDbConnectionString).HandleAsync(activated);
+                    break;
                 case ActivityAdded activityAdded:
                     await new ActivityView(configuration.ConnectionStrings.SqlDbConnectionString).HandleAsync(activityAdded);
                     break;

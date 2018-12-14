@@ -6,7 +6,7 @@ using Dapper;
 
 namespace BurnForMoney.Functions.ReadModel
 {
-    public class AthleteView : IHandles<AthleteCreated>, IHandles<AthleteDeactivated>
+    public class AthleteView : IHandles<AthleteCreated>, IHandles<AthleteDeactivated>, IHandles<AthleteActivated>
     {
         private readonly string _sqlConnectionString;
 
@@ -51,6 +51,21 @@ VALUES (@Id, @ExternalId, @FirstName, @LastName, @ProfilePictureUrl, @Active, @S
                 if (affectedRows != 1)
                 {
                     throw new FailedToDeactivateAthleteException(message.AthleteId.ToString());
+                }
+            }
+        }
+
+        public async Task HandleAsync(AthleteActivated message)
+        {
+            using (var conn = SqlConnectionFactory.Create(_sqlConnectionString))
+            {
+                await conn.OpenWithRetryAsync();
+
+                var affectedRows = await conn.ExecuteAsync(@"UPDATE dbo.Athletes SET Active=1 WHERE Id=@Id", new { Id = message.AthleteId });
+
+                if (affectedRows != 1)
+                {
+                    throw new FailedToActivateAthleteException(message.AthleteId.ToString());
                 }
             }
         }

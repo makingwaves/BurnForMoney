@@ -308,6 +308,16 @@ namespace BurnForMoney.Functions.Functions._Support
                     Distance = UnitsConverter.ConvertKilometersToMeters(2474),
                     Time = UnitsConverter.ConvertHoursToMinutes(181)
                 }
+            },
+            new Data
+            {
+                Date = "2018/11",
+                Results = new AthleteMonthlyResult
+                {
+                    Points = 2020,
+                    Distance = 1662676,
+                    Time = 19046
+                }
             }
         };
     }

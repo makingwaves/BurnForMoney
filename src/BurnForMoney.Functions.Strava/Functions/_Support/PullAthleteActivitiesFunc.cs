@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using BurnForMoney.Functions.Shared.Extensions;
 using BurnForMoney.Functions.Shared.Functions.Extensions;
-using BurnForMoney.Functions.Shared.Persistence;
 using BurnForMoney.Functions.Shared.Queues;
+using BurnForMoney.Functions.Shared.Repositories;
 using BurnForMoney.Functions.Strava.Configuration;
-using Dapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
@@ -28,13 +28,9 @@ namespace BurnForMoney.Functions.Strava.Functions._Support
 
             var from = DateTime.TryParse(req.Query["from"], out var date) ? date : (DateTime?)null;
 
-            IEnumerable<Guid> ids;
-            using (var conn = SqlConnectionFactory.Create(configuration.ConnectionStrings.SqlDbConnectionString))
-            {
-                await conn.OpenWithRetryAsync();
-
-                ids = await conn.QueryAsync<Guid>("SELECT Id FROM dbo.Athletes WHERE Active=1");
-            }
+            var allActiveAthletes = await new AthleteReadRepository(configuration.ConnectionStrings.SqlDbConnectionString)
+                .GetAllActiveAsync();
+            var ids = allActiveAthletes.Select(a => a.Id);
 
             foreach (var athleteId in ids)
             {
