@@ -105,7 +105,7 @@ WHERE MONTH(ActivityTime)=@Month AND YEAR(ActivityTime)=@Year", new
 
     public class Activity
     {
-        public string AthleteId { get; set; }
+        public Guid AthleteId { get; set; }
         public string AthleteFirstName { get; set; }
         public string AthleteLastName { get; set; }
         public int Distance { get; set; }

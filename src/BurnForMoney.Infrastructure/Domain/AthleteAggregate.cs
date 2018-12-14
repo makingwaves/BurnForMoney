@@ -30,8 +30,6 @@ namespace BurnForMoney.Infrastructure.Domain
 
         public List<Activity> Activities { get; } = new List<Activity>();
 
-        public List<PointsLog> PointsLog { get; } = new List<PointsLog>();
-
         public bool HasPendingChanges => _changes.Any();
 
         public IEnumerable<DomainEvent> GetUncommittedEvents()
@@ -62,13 +60,13 @@ namespace BurnForMoney.Infrastructure.Domain
 
         public void Apply(ActivityAdded @event)
         {
-            Activities.Add(new Activity(@event.ActivityId, @event.ExternalId, @event.DistanceInMeters, @event.MovingTimeInMinutes, @event.ActivityType, @event.ActivityCategory, @event.StartDate, @event.Source));
+            Activities.Add(new Activity(@event.ActivityId, @event.ExternalId, @event.DistanceInMeters, @event.MovingTimeInMinutes, @event.ActivityType, @event.ActivityCategory, @event.StartDate, @event.Source, @event.Points));
         }
 
         public void Apply(ActivityUpdated @event)
         {
             var activity = Activities.Single(a => a.Id.Equals(@event.ActivityId));
-            activity.Update(@event.DistanceInMeters, @event.MovingTimeInMinutes, @event.ActivityType, @event.ActivityCategory, @event.StartDate);
+            activity.Update(@event.DistanceInMeters, @event.MovingTimeInMinutes, @event.ActivityType, @event.ActivityCategory, @event.StartDate, @event.Points);
         }
 
         public void Apply(ActivityDeleted @event)
@@ -79,12 +77,12 @@ namespace BurnForMoney.Infrastructure.Domain
 
         public void Apply(PointsGranted @event)
         {
-            PointsLog.Add(new PointsLog(@event.Points, @event.CorellationId, @event.Source));
+            // no-op
         }
 
         public void Apply(PointsLost @event)
         {
-            PointsLog.Add(new PointsLog(@event.Points, @event.CorellationId, @event.Source));
+            // no-op
         }
 
         public Athlete()
@@ -160,9 +158,10 @@ namespace BurnForMoney.Infrastructure.Domain
             }
 
             var category = MapToActivityCategory(activityType, source);
+            var points = PointsCalculator.Calculate(category, distanceInMeters, movingTimeInMinutes);
 
-            ApplyChange(new ActivityAdded(id, this.Id, externalId, distanceInMeters, movingTimeInMinutes, activityType, category, startDate, source));
-            ApplyChange(new PointsGranted(this.Id, PointsCalculator.Calculate(category, distanceInMeters, movingTimeInMinutes), PointsSource.Activity, id));
+            ApplyChange(new ActivityAdded(id, this.Id, externalId, distanceInMeters, movingTimeInMinutes, activityType, category, startDate, source, points));
+            ApplyChange(new PointsGranted(this.Id, points, PointsSource.Activity, id));
         }
 
         public void UpdateActivity(Guid id, string activityType, double distanceInMeters, double movingTimeInMinutes, DateTime startDate)
@@ -200,11 +199,11 @@ namespace BurnForMoney.Infrastructure.Domain
             }
 
             var category = MapToActivityCategory(activityType, activity.Source);
-
-            ApplyChange(new ActivityUpdated(id, distanceInMeters, movingTimeInMinutes, activityType, category, startDate));
-
-            var originalPoints = PointsLog.Where(p => p.CorellationId == id).Sum(l => l.Points);
             var points = PointsCalculator.Calculate(category, distanceInMeters, movingTimeInMinutes);
+
+            ApplyChange(new ActivityUpdated(id, distanceInMeters, movingTimeInMinutes, activityType, category, startDate, points));
+
+            var originalPoints = Activities.Where(p => p.Id == id).Sum(l => l.Points);
             var receivedPoints = points - originalPoints;
 
             if (receivedPoints > 0)
@@ -227,7 +226,7 @@ namespace BurnForMoney.Infrastructure.Domain
 
             ApplyChange(new ActivityDeleted(id));
 
-            var originalPoints = PointsLog.Where(p => p.CorellationId == id).Sum(l => l.Points);
+            var originalPoints = Activities.Where(p => p.Id == id).Sum(l => l.Points);
             ApplyChange(new PointsLost(this.Id, originalPoints, PointsSource.Activity, id));
         }
 
@@ -241,7 +240,7 @@ namespace BurnForMoney.Infrastructure.Domain
             ApplyChange(new AthleteDeactivated(this.Id));
         }
 
-        private ActivityCategory MapToActivityCategory(string activityType, Source source)
+        private static ActivityCategory MapToActivityCategory(string activityType, Source source)
         {
             switch (source)
             {
@@ -265,7 +264,9 @@ namespace BurnForMoney.Infrastructure.Domain
         public Source Source { get; }
         public ActivityCategory Category { get; private set; }
 
-        public Activity(Guid activityId, string externalId, double distanceInMeters, double movingTimeInMinutes, string activityType, ActivityCategory category, DateTime startDate, Source source)
+        public double Points { get; set; }
+
+        public Activity(Guid activityId, string externalId, double distanceInMeters, double movingTimeInMinutes, string activityType, ActivityCategory category, DateTime startDate, Source source, double points)
         {
             Id = activityId;
             ExternalId = externalId;
@@ -275,29 +276,17 @@ namespace BurnForMoney.Infrastructure.Domain
             Category = category;
             StartDate = startDate;
             Source = source;
+            Points = points;
         }
 
-        public void Update(double distanceInMeters, double movingTimeInMinutes, string activityType, ActivityCategory category, DateTime startDate)
+        public void Update(double distanceInMeters, double movingTimeInMinutes, string activityType, ActivityCategory category, DateTime startDate, double points)
         {
             DistanceInMeters = distanceInMeters;
             MovingTimeInMinutes = movingTimeInMinutes;
             ActivityType = activityType;
             Category = category;
             StartDate = startDate;
-        }
-    }
-
-    public class PointsLog
-    {
-        public double Points { get; }
-        public Guid CorellationId { get; }
-        public PointsSource Source { get; }
-
-        public PointsLog(double points, Guid corellationId, PointsSource source)
-        {
             Points = points;
-            CorellationId = corellationId;
-            Source = source;
         }
     }
 }

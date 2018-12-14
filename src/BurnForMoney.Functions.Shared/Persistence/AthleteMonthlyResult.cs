@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace BurnForMoney.Functions.Shared.Persistence
 {
@@ -12,7 +13,7 @@ namespace BurnForMoney.Functions.Shared.Persistence
 
     public class AthleteResult
     {
-        public string Id { get; set; }
+        public Guid Id { get; set; }
         public string AthleteName { get; set; }
         public double Distance { get; set; }
         public double Time { get; set; }

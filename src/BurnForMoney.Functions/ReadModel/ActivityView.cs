@@ -21,8 +21,8 @@ namespace BurnForMoney.Functions.ReadModel
                 await conn.OpenWithRetryAsync();
 
                 await conn.ExecuteAsync(@"INSERT INTO dbo.Activities 
-(Id, AthleteId, ExternalId, ActivityTime, ActivityType, Category, Distance, MovingTime, Source) 
-VALUES (@Id, @AthleteId, @ExternalId, @ActivityTime, @ActivityType, @ActivityCategory, @Distance, @MovingTime, @Source)", new
+(Id, AthleteId, ExternalId, ActivityTime, ActivityType, Category, Distance, MovingTime, Source, Points) 
+VALUES (@Id, @AthleteId, @ExternalId, @ActivityTime, @ActivityType, @ActivityCategory, @Distance, @MovingTime, @Source, @Points)", new
                 {
                     Id = message.ActivityId,
                     message.AthleteId,
@@ -32,7 +32,8 @@ VALUES (@Id, @AthleteId, @ExternalId, @ActivityTime, @ActivityType, @ActivityCat
                     ActivityCategory = message.ActivityCategory.ToString(),
                     Distance = message.DistanceInMeters,
                     MovingTime = message.MovingTimeInMinutes,
-                    Source = message.Source.ToString()
+                    Source = message.Source.ToString(),
+                    message.Points
                 });
             }
         }
@@ -44,7 +45,7 @@ VALUES (@Id, @AthleteId, @ExternalId, @ActivityTime, @ActivityType, @ActivityCat
                 await conn.OpenWithRetryAsync();
 
                 await conn.ExecuteAsync(@"UPDATE dbo.Activities
-SET ActivityTime=@ActivityTime, ActivityType=@ActivityType, Category=@ActivityCategory, Distance=@Distance, MovingTime=@MovingTime
+SET ActivityTime=@ActivityTime, ActivityType=@ActivityType, Category=@ActivityCategory, Distance=@Distance, MovingTime=@MovingTime, Points=@Points
 WHERE Id=@Id", new
                 {
                     Id = message.ActivityId,
@@ -52,7 +53,8 @@ WHERE Id=@Id", new
                     message.ActivityType,
                     ActivityCategory = message.ActivityCategory.ToString(),
                     Distance = message.DistanceInMeters,
-                    MovingTime = message.MovingTimeInMinutes
+                    MovingTime = message.MovingTimeInMinutes,
+                    message.Points
                 });
             }
         }

@@ -18,7 +18,6 @@ namespace BurnForMoney.Functions.Strava.Functions.RefreshTokens
         private static readonly StravaService StravaService = new StravaService();
 
         [FunctionName(FunctionsNames.T_RefreshAccessTokens)]
-        [Disable]
         public static async Task T_RefreshAccessTokens([TimerTrigger("0 50 * * * *")] TimerInfo timer, ILogger log,
             [Queue(StravaQueueNames.RefreshStravaToken)] CloudQueue refreshTokensQueue,
             [Configuration] ConfigurationRoot configuration)

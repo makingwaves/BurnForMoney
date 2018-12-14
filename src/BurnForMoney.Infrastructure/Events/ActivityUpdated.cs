@@ -15,8 +15,9 @@ namespace BurnForMoney.Infrastructure.Events
         [JsonConverter(typeof(StringEnumConverter))]
         public readonly ActivityCategory ActivityCategory;
         public readonly DateTime StartDate;
+        public readonly double Points;
 
-        public ActivityUpdated(Guid activityId, double distanceInMeters, double movingTimeInMinutes, string activityType, ActivityCategory activityCategory, DateTime startDate)
+        public ActivityUpdated(Guid activityId, double distanceInMeters, double movingTimeInMinutes, string activityType, ActivityCategory activityCategory, DateTime startDate, double points)
         {
             ActivityId = activityId;
             DistanceInMeters = distanceInMeters;
@@ -24,6 +25,7 @@ namespace BurnForMoney.Infrastructure.Events
             ActivityType = activityType;
             ActivityCategory = activityCategory;
             StartDate = startDate;
+            Points = points;
         }
     }
 }

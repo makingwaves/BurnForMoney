@@ -54,7 +54,7 @@ namespace BurnForMoney.Infrastructure
                 var eventsData = events.Select(ToEventData);
                 await Stream.WriteAsync(stream, eventsData.ToArray());
             }
-            catch (ConcurrencyConflictException e)
+            catch (ConcurrencyConflictException)
             {
                 throw new ConcurrencyException();
             }

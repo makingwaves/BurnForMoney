@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using BurnForMoney.Functions.Configuration;
+using BurnForMoney.Functions.Shared;
 using BurnForMoney.Functions.Shared.Extensions;
 using BurnForMoney.Functions.Shared.Functions.Extensions;
 using BurnForMoney.Functions.Shared.Helpers;
@@ -50,14 +52,17 @@ namespace BurnForMoney.Functions.Functions.Reports
                 return;
             }
 
-            var results = JsonConvert.DeserializeObject<List<AthleteMonthlyResult>>(json)
+            var results = JsonConvert.DeserializeObject<List<AthleteMonthlyResult>>(json, new SingleOrArrayConverter<AthleteMonthlyResult>())
                 .SelectMany(s => s.AthleteResults)
                 .OrderBy(r => r.Id)
-                .Select(r =>
+                .Select(r => new
                 {
-                    r.Distance = UnitsConverter.ConvertMetersToKilometers(r.Distance);
-                    r.Time = UnitsConverter.ConvertMinutesToHours(r.Time);
-                    return r;
+                    r.Id,
+                    r.AthleteName,
+                    Distance = UnitsConverter.ConvertMetersToKilometers(r.Distance).ToString(CultureInfo.InvariantCulture),
+                    Time = UnitsConverter.ConvertMinutesToHours(r.Time).ToString(CultureInfo.InvariantCulture),
+                    Points = r.Points.ToString(),
+                    NumberOfTrainings = r.NumberOfTrainings.ToString()
                 });
 
             using (var memoryStream = new MemoryStream())

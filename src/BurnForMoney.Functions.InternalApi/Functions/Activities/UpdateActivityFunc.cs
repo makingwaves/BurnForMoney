@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using BurnForMoney.Functions.Shared.Extensions;
 using BurnForMoney.Functions.Shared.Queues;
 using BurnForMoney.Infrastructure.Commands;
-using BurnForMoney.Infrastructure.Domain;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
@@ -36,16 +35,14 @@ namespace BurnForMoney.Functions.InternalApi.Functions.Activities
                 return new BadRequestObjectResult($"Validation failed. {ex.Message}.");
             }
 
-            var command = new AddActivityCommand
+            var command = new UpdateActivityCommand
             {
                 Id = Guid.Parse(activityId),
                 AthleteId = Guid.Parse(athleteId),
-                ExternalId = model.ExternalId,
                 ActivityType = model.Type,
                 StartDate = model.StartDate.Value,
                 DistanceInMeters = model.DistanceInMeters,
                 MovingTimeInMinutes = model.MovingTimeInMinutes,
-                Source = Source.None
             };
 
             var output = JsonConvert.SerializeObject(command);

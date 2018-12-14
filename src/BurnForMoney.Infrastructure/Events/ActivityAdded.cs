@@ -19,8 +19,9 @@ namespace BurnForMoney.Infrastructure.Events
         public readonly DateTime StartDate;
         [JsonConverter(typeof(StringEnumConverter))]
         public readonly Source Source;
+        public readonly double Points;
 
-        public ActivityAdded(Guid activityId, Guid athleteId, string externalId, double distanceInMeters, double movingTimeInMinutes, string activityType, ActivityCategory activityCategory, DateTime startDate, Source source)
+        public ActivityAdded(Guid activityId, Guid athleteId, string externalId, double distanceInMeters, double movingTimeInMinutes, string activityType, ActivityCategory activityCategory, DateTime startDate, Source source, double points)
         {
             ActivityId = activityId;
             AthleteId = athleteId;
@@ -31,6 +32,7 @@ namespace BurnForMoney.Infrastructure.Events
             ActivityCategory = activityCategory;
             StartDate = startDate;
             Source = source;
+            Points = points;
         }
     }
 }
