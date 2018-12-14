@@ -146,7 +146,7 @@ namespace BurnForMoney.Functions.Strava.Functions.EventsHub
                 StartDate = activity.StartDate,
                 DistanceInMeters = activity.Distance,
                 MovingTimeInMinutes = UnitsConverter.ConvertSecondsToMinutes(activity.MovingTime),
-                Source = Source.None
+                Source = Source.Strava
             };
 
             var json = JsonConvert.SerializeObject(command);

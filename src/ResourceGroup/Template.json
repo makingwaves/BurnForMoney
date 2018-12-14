@@ -50,9 +50,6 @@
     },
     "cors.allowedOrigins": {
       "type": "array"
-    },
-    "eventgrid.readModelSubscriptionUrl": {
-      "type": "string"
     }
   },
   "variables": {
@@ -302,7 +299,7 @@
             },
             {
               "name": "StravaQueuesStorage",
-              "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('stravaFunctionAppName'), ';AccountKey=', listKeys(variables('stravaFunctionStorageAccountid'),'2015-05-01-preview').key1)]"
+              "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('stravaFunctionStorageAccountName'), ';AccountKey=', listKeys(variables('stravaFunctionStorageAccountid'),'2015-05-01-preview').key1)]"
             }
           ]
         }
@@ -726,28 +723,6 @@
       "type": "Microsoft.EventGrid/topics",
       "location": "[resourceGroup().location]",
       "apiVersion": "2018-01-01"
-    },
-    {
-      "name": "[concat(variables('eventGridTopicName'), '/Microsoft.EventGrid/', 'ReadModelSubscription')]",
-      "type": "Microsoft.EventGrid/topics/providers/eventSubscriptions",
-      "location": "[resourceGroup().location]",
-      "apiVersion": "2018-01-01",
-      "properties": {
-        "destination": {
-          "endpointType": "WebHook",
-          "properties": {
-            "endpointUrl": "[parameters('eventgrid.readModelSubscriptionUrl')]"
-          }
-        },
-        "filter": {
-          "includedEventTypes": [
-            "All"
-          ]
-        }
-      },
-      "dependsOn": [
-        "[variables('eventGridTopicName')]"
-      ]
     }
   ]
 }

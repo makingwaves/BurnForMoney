@@ -46,19 +46,19 @@ namespace BurnForMoney.Functions.Strava.Functions.RefreshTokens
 
 
         [FunctionName(FunctionsNames.Q_RefreshAccessTokens)]
-        public static async Task Q_RefreshAccessTokens([QueueTrigger(StravaQueueNames.RefreshStravaToken)] Guid athleteId, ILogger log,
+        public static async Task Q_RefreshAccessTokens([QueueTrigger(StravaQueueNames.RefreshStravaToken)] string athleteId, ILogger log,
             [Configuration] ConfigurationRoot configuration)
         {
             log.LogFunctionStart(FunctionsNames.Q_RefreshAccessTokens);
 
             var refreshTokenSecret =
-                await AccessTokensStore.GetRefreshTokenForAsync(athleteId, configuration.Strava.AccessTokensKeyVaultUrl);
+                await AccessTokensStore.GetRefreshTokenForAsync(Guid.Parse(athleteId), configuration.Strava.AccessTokensKeyVaultUrl);
             var refreshToken = refreshTokenSecret.Value;
 
             var response = StravaService.RefreshToken(configuration.Strava.ClientId, configuration.Strava.ClientSecret,
                 refreshToken);
 
-            await AccessTokensStore.AddAsync(athleteId, response.AccessToken, response.RefreshToken, response.ExpiresAt,
+            await AccessTokensStore.AddAsync(Guid.Parse(athleteId), response.AccessToken, response.RefreshToken, response.ExpiresAt,
                 configuration.Strava.AccessTokensKeyVaultUrl);
             log.LogInformation(nameof(FunctionsNames.Q_RefreshAccessTokens), $"Updated tokens for athlete with id: {configuration.Strava.ClientId}.");
 

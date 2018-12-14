@@ -40,7 +40,7 @@
       "value": "http://bfm.makingwaves.com/strava-confirmation"
     },
     "eventgrid.readModelSubscriptionUrl": {
-      "value": "https://burnformoney-prod.azurewebsites.net/runtime/webhooks/eventgrid?functionName=EventGrid_ReadModelSubscription"
+      "value": "https://bfmfunc-prod.azurewebsites.net/runtime/webhooks/EventGrid?functionName=EventGrid_ReadModelSubscription"
     }
   }
 }

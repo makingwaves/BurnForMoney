@@ -15,7 +15,7 @@ namespace BurnForMoney.Infrastructure.Events
         [JsonConverter(typeof(StringEnumConverter))]
         public readonly Source System;
 
-        public AthleteCreated(Guid id, string externalId, string firstName, string lastName, string profilePictureUrl, Source system = Source.None)
+        public AthleteCreated(Guid id, string externalId, string firstName, string lastName, string profilePictureUrl, Source system)
         {
             Id = id;
             ExternalId = externalId;

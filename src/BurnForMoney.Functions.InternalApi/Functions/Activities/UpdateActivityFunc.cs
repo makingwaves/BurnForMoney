@@ -69,7 +69,6 @@ namespace BurnForMoney.Functions.InternalApi.Functions.Activities
 
         public class UpdateActivityRequest
         {
-            public string ExternalId { get; set; }
             public DateTime? StartDate { get; set; }
             public string Type { get; set; }
             public double DistanceInMeters { get; set; }

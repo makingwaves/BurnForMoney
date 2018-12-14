@@ -52,7 +52,7 @@ namespace BurnForMoney.Functions.Strava.Functions.CollectAthleteActivitiesFromSt
                         StartDate = stravaActivity.StartDate,
                         DistanceInMeters = stravaActivity.Distance,
                         MovingTimeInMinutes = UnitsConverter.ConvertSecondsToMinutes(stravaActivity.MovingTime),
-                        Source = Source.None
+                        Source = Source.Strava
                     };
 
                     var json = JsonConvert.SerializeObject(command);
