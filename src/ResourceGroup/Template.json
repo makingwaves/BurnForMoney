@@ -50,6 +50,9 @@
     },
     "cors.allowedOrigins": {
       "type": "array"
+    },
+    "eventgrid.readModelSubscriptionUrl": {
+      "type": "string"
     }
   },
   "variables": {
@@ -723,6 +726,28 @@
       "type": "Microsoft.EventGrid/topics",
       "location": "[resourceGroup().location]",
       "apiVersion": "2018-01-01"
+    },
+    {
+      "name": "[concat(variables('eventGridTopicName'), '/Microsoft.EventGrid/', 'ReadModelSubscription')]",
+      "type": "Microsoft.EventGrid/topics/providers/eventSubscriptions",
+      "location": "[resourceGroup().location]",
+      "apiVersion": "2018-01-01",
+      "properties": {
+        "destination": {
+          "endpointType": "WebHook",
+          "properties": {
+            "endpointUrl": "[parameters('eventgrid.readModelSubscriptionUrl')]"
+          }
+        },
+        "filter": {
+          "includedEventTypes": [
+            "All"
+          ]
+        }
+      },
+      "dependsOn": [
+        "[variables('eventGridTopicName')]"
+      ]
     }
   ]
 }

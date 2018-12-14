@@ -35,6 +35,9 @@
     },
     "strava.confirmationPageUrl": {
       "value": "https://burnformoney-test.azurewebsites.net/strava-confirmation"
+    },
+    "eventgrid.readModelSubscriptionUrl": {
+      "value": "https://burnformoney-test.azurewebsites.net/runtime/webhooks/eventgrid?functionName=EventGrid_ReadModelSubscription"
     }
   }
 }
