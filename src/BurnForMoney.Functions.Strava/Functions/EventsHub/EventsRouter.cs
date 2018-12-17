@@ -18,7 +18,6 @@ using BurnForMoney.Infrastructure.Domain;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 using Microsoft.WindowsAzure.Storage.Queue;
-using Microsoft.WindowsAzure.Storage.Table;
 using Newtonsoft.Json;
 
 namespace BurnForMoney.Functions.Strava.Functions.EventsHub

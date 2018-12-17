@@ -25,7 +25,7 @@ namespace BurnForMoney.Functions.Shared.Repositories
 
                 var activity = await conn.QuerySingleAsync<ActivityRow>(
                     @"SELECT Id, AthleteId, ExternalId, Distance AS DistanceInMeters, MovingTime AS MovingTimeInMinutes, ActivityType, ActivityTime as StartDate, Source 
-FROM dbo.Activites WHERE ExternalId=@ExternalId", new
+FROM dbo.Activities WHERE ExternalId=@ExternalId", new
                     {
                         ExternalId = externalId
                     });
