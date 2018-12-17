@@ -130,10 +130,6 @@ namespace BurnForMoney.Infrastructure.Domain
             {
                 throw new ArgumentNullException(nameof(firstName));
             }
-            if (string.IsNullOrWhiteSpace(lastName))
-            {
-                throw new ArgumentNullException(nameof(lastName));
-            }
 
             ApplyChange(new AthleteCreated(id, externalId, firstName, lastName, profilePictureUrl, source));
         }

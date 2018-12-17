@@ -30,7 +30,6 @@ namespace BurnForMoney.Functions.Strava.Functions.EventsHub
         [FunctionName(FunctionsNames.EventsRouter)]
         public static async Task EventsHub([QueueTrigger(StravaQueueNames.StravaEvents)] StravaWebhookEvent @event,
             ILogger log, ExecutionContext executionContext,
-            [Table("Athletes", Connection = "AppStorage")] CloudTable athletesTable,
             [Queue(StravaQueueNames.StravaEventsActivityAdd)] CloudQueue addActivityQueue,
             [Queue(StravaQueueNames.StravaEventsActivityUpdate)] CloudQueue updateActivityQueue,
             [Queue(StravaQueueNames.StravaEventsActivityDelete)] CloudQueue deleteActivityQueue,
@@ -119,7 +118,6 @@ namespace BurnForMoney.Functions.Strava.Functions.EventsHub
         public static async Task Events_NewActivity([QueueTrigger(StravaQueueNames.StravaEventsActivityAdd)] ActivityData @event,
             ILogger log,
             [Queue(AppQueueNames.AddActivityRequests, Connection = "AppQueuesStorage")] CloudQueue addActivitiesRequestsQueue,
-            [Table("Athletes", Connection = "AppStorage")] CloudTable athletesTable,
             [Configuration] ConfigurationRoot configuration)
         {
             log.LogFunctionStart(FunctionsNames.Events_NewActivity);
@@ -159,7 +157,6 @@ namespace BurnForMoney.Functions.Strava.Functions.EventsHub
         public static async Task Events_UpdateActivity([QueueTrigger(StravaQueueNames.StravaEventsActivityUpdate)] ActivityData @event,
             ILogger log,
             [Queue(AppQueueNames.UpdateActivityRequests, Connection = "AppQueuesStorage")] CloudQueue updateActivityRequestsQueue,
-            [Table("Athletes", Connection = "AppStorage")] CloudTable athletesTable,
             [Configuration] ConfigurationRoot configuration)
         {
             log.LogFunctionStart(FunctionsNames.Events_UpdateActivity);
