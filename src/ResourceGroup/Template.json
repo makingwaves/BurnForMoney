@@ -178,7 +178,17 @@
       "kind": "Storage",
       "sku": {
         "name": "Standard_LRS"
-      }
+      },
+      "resources": [
+        {
+          "name": "[concat('default/', 'eventgrid-deadletter')]",
+          "type": "blobServices/containers",
+          "apiVersion": "2018-03-01-preview",
+          "dependsOn": [
+            "[variables('functionStorageAccountName')]"
+          ]
+        }
+      ]
     },
     {
       "apiVersion": "2016-01-01",

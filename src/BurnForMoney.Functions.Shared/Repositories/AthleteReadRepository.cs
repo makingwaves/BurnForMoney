@@ -50,9 +50,9 @@ namespace BurnForMoney.Functions.Shared.Repositories
             {
                 await conn.OpenWithRetryAsync();
 
-                var athlete = await conn.QuerySingleOrDefaultAsync<AthleteRow>("SELECT Id, FirstName, LastName FROM dbo.Athletes WHERE Id=@ExternalId", new
+                var athlete = await conn.QuerySingleOrDefaultAsync<AthleteRow>("SELECT Id, FirstName, LastName, Active FROM dbo.Athletes WHERE Id=@Id", new
                 {
-                    ExternalId = id
+                    Id = id
                 });
 
                 if (!athlete.Active)
@@ -70,7 +70,7 @@ namespace BurnForMoney.Functions.Shared.Repositories
             {
                 await conn.OpenWithRetryAsync();
 
-                var athlete = await conn.QuerySingleOrDefaultAsync<AthleteRow>("SELECT Id FROM dbo.Athletes WHERE ExternalId=@ExternalId", new
+                var athlete = await conn.QuerySingleOrDefaultAsync<AthleteRow>("SELECT Id, FirstName, LastName, Active FROM dbo.Athletes WHERE ExternalId=@ExternalId", new
                 {
                     ExternalId = id
                 });
