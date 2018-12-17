@@ -38,9 +38,6 @@
     },
     "strava.confirmationPageUrl": {
       "value": "http://bfm.makingwaves.com/strava-confirmation"
-    },
-    "eventgrid.readModelSubscriptionUrl": {
-      "value": "https://bfmfunc-prod.azurewebsites.net/runtime/webhooks/EventGrid?functionName=EventGrid_ReadModelSubscription"
     }
   }
 }
