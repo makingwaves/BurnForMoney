@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using BurnForMoney.Functions.Shared.Exceptions;
 using BurnForMoney.Functions.Shared.Persistence;
 using BurnForMoney.Functions.Shared.Repositories.Dto;
 using BurnForMoney.Infrastructure.Domain;
@@ -23,12 +24,18 @@ namespace BurnForMoney.Functions.Shared.Repositories
             {
                 await conn.OpenWithRetryAsync();
 
-                var activity = await conn.QuerySingleAsync<ActivityRow>(
+                var activity = await conn.QuerySingleOrDefaultAsync<ActivityRow>(
                     @"SELECT Id, AthleteId, ExternalId, Distance AS DistanceInMeters, MovingTime AS MovingTimeInMinutes, ActivityType, ActivityTime as StartDate, Source 
 FROM dbo.Activities WHERE ExternalId=@ExternalId", new
                     {
                         ExternalId = externalId
                     });
+
+                if (activity == null)
+                {
+                    throw new ActivityNotFoundException(externalId);
+                }
+
                 return activity;
             }
         }

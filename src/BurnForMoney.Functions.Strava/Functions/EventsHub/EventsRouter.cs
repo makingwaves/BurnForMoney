@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using BurnForMoney.Functions.Shared.Exceptions;
 using BurnForMoney.Functions.Shared.Extensions;
 using BurnForMoney.Functions.Shared.Functions.Extensions;
 using BurnForMoney.Functions.Shared.Helpers;
@@ -67,11 +68,11 @@ namespace BurnForMoney.Functions.Strava.Functions.EventsHub
                         break;
                     case AspectType.Update:
                         log.LogInformation(FunctionsNames.EventsRouter, $"Adding message to {StravaQueueNames.StravaEventsActivityUpdate} queue.");
-                        await updateActivityQueue.AddMessageAsync(new CloudQueueMessage(json), TimeSpan.FromDays(7), TimeSpan.FromMinutes(1), null, null); // Handle quick add->update operation. An event informing about the addition of activity may appear later.
+                        await updateActivityQueue.AddMessageAsync(new CloudQueueMessage(json), TimeSpan.FromDays(7), TimeSpan.FromMinutes(2), null, null); // Handle quick add->update operation. An event informing about the addition of activity may appear later.
                         break;
                     case AspectType.Delete:
                         log.LogInformation(FunctionsNames.EventsRouter, $"Adding message to {StravaQueueNames.StravaEventsActivityDelete} queue.");
-                        await deleteActivityQueue.AddMessageAsync(new CloudQueueMessage(json), TimeSpan.FromDays(7), TimeSpan.FromMinutes(1), null, null); // Handle quick add->delete operation. An event informing about the addition of activity may appear later.
+                        await deleteActivityQueue.AddMessageAsync(new CloudQueueMessage(json), TimeSpan.FromDays(7), TimeSpan.FromMinutes(2), null, null); // Handle quick add->delete operation. An event informing about the addition of activity may appear later.
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using BurnForMoney.Functions.Shared.Exceptions;
 using BurnForMoney.Functions.Shared.Helpers;
 using BurnForMoney.Functions.Shared.Web;
 using BurnForMoney.Functions.Strava.Configuration;
@@ -74,7 +75,7 @@ namespace BurnForMoney.Functions.Strava.External.Strava.Api
                 var fault = JsonConvert.DeserializeObject<Fault>(response.Content);
                 if (fault.Errors.Any(error => error.Field.Equals("Id", StringComparison.InvariantCultureIgnoreCase) && 
                                               error.Code.Equals("invalid", StringComparison.InvariantCultureIgnoreCase) &&
-                                              error.Resource.Equals("ActivityRow", StringComparison.InvariantCultureIgnoreCase)))
+                                              error.Resource.Equals("Activity", StringComparison.InvariantCultureIgnoreCase)))
                 {
                     throw new ActivityNotFoundException(activityId);
                 }
