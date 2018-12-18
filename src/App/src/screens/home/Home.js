@@ -18,13 +18,20 @@ import { withNamespaces } from 'react-i18next';
 
 class Home extends Component {
   client: null;
+  setContentfulEntries = function(){
+    this.client.getEntries({locale:this.state.contentfulLang}).then(entries => {
+      this.setState({
+        contentfulEntries: entries.items
+      });
+    })
+  }
 
   constructor(props) {
     super(props);
 
     this.state = {
       bfmStats: '',
-      contentful: '',
+      contentfulEntries: '',
       contentfulLang: localStorage.getItem('contentfulLang') || 'en-US',
       lang: localStorage.getItem('language') || 'en'
     };
@@ -53,7 +60,7 @@ class Home extends Component {
         <VideoHeader/>
         <TotalNumbers data={this.state.bfmStats}/>
         <CurrentCharts data={this.state.bfmStats}/>
-        <CharitySlider data={this.state.contentful}/>
+        <CharitySlider data={this.state.contentfulEntries}/>
         <TeamGoals/>
         <HowItWorks/>
         <InstaGallery/>
@@ -70,6 +77,7 @@ class Home extends Component {
       accessToken: "0cfdeec874152c24de8109da60c0bd09630fd3e4efdeddf9223652a433927fc4",
       host: "preview.contentful.com"
     });
+    this.setContentfulEntries();
 
     // internal api_url
     const api_url = process.env.REACT_APP_API_URL;
@@ -77,28 +85,14 @@ class Home extends Component {
     fetch(api_url+"api/totalnumbers")
       .then(res => res.json())
       .then(
-        (result) => {
-          this.setState({
-            bfmStats: result
-          });
-        },
-        (error) => {
-          this.setState({
-            bfmStats: null,
-          });
-          console.error('Error:', error);
-        }
+        (result) => { this.setState({ bfmStats: result}); },
+        (error) => { this.setState({ bfmStats: null,}); console.error('Error:', error); }
       );
   }
   componentDidUpdate(prevProps, prevState){
     if(this.state.contentfulLang !== prevState.contentfulLang){
-      this.client.getEntries({locale:this.state.contentfulLang}).then(entries => {
-        this.setState({
-          contentful: entries.items
-        });
-      })
+      this.setContentfulEntries();
     }
-
   }
 }
 

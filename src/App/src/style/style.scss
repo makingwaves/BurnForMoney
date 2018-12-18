@@ -24,6 +24,11 @@ button{
 }
 @font-face {
     font-family: 'Volte2';
+    font-weight: 500;
+    src: url('../font/Volte-Medium.otf') format('opentype');
+}
+@font-face {
+    font-family: 'Volte2';
     font-weight: 600;
     src: url('../font/Volte-Semibold.otf') format('opentype');
 }

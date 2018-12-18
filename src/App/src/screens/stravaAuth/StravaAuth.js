@@ -9,14 +9,14 @@ import bigButtonBottom from './img/bigButton_bottom.svg';
 
 class StravaAuth extends Component {
   constructor(props) {
-      super(props);
-      this.state = { stravaLink: undefined } ;
-    }
+    super(props);
+    this.state = { stravaLink: undefined } ;
+  }
 
-    componentWillMount() {
-      let stravaLink = process.env.REACT_APP_STRAVA_AUTH_PAGE;
-      this.setState({ stravaLink });
-    }
+  componentWillMount() {
+    const stravaLink = process.env.REACT_APP_STRAVA_AUTH_PAGE;
+    this.setState({ stravaLink });
+  }
 
   render() {
     return (

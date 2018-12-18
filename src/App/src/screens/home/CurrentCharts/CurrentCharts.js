@@ -17,7 +17,7 @@ import { withNamespaces, Trans } from 'react-i18next';
 class CurrentCharts extends Component {
 
   setIcon(category){
-    let icon = iconOther;
+    let icon;
     switch(category){
       case 'Ride':
         icon = iconRide;
@@ -49,7 +49,9 @@ class CurrentCharts extends Component {
       case 'Other':
         icon = iconOther;
         break;
-
+      default:
+        icon = iconOther;
+        break;
     }
     return icon;
   }
