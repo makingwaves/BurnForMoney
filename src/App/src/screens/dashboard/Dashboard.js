@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Route, Link, Switch } from 'react-router-dom';
 
 import './Dashboard.css';
-import logo from 'img/logo.svg';
+import logo from 'img/logo-white.svg';
 import iconRun from 'img/icon-run.svg';
 import iconRide from 'img/icon-bike.svg';
 import iconWalk from 'img/icon-walk.svg';
@@ -111,20 +111,24 @@ class Dashboard extends Component {
   render() {
     return (
       <div className="Dashboard">
+        <aside className="Dashboard-side">
+
+        </aside>
+        <section className="Dashboard-main">
+
+        </section>
+
         <div className="Header">
           <img src={logo} alt="Burn for Money" />
           <Link exact="true" to="/dashboard/new-activity">New Activity</Link>
           <Link to="/dashboard/athletes-list">Athletes List</Link>
         </div>
         <Switch>
-
           <Route exact path="/dashboard/new-activity" render={(props) => (
             <NewActivity {...props} categories={this.state.categories}/>
           )} />
-
           <Route path="/dashboard/athletes-list" component={AthletesList} />
           <Route path="/dashboard/athlete/:athleteId" component={AthleteProfile} />
-
         </Switch>
 
       </div>

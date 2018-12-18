@@ -3,14 +3,14 @@
   "intro line2": "pomagamy",
   "intro line3": "innym",
   "watch in action": "Zobacz nas w akcji",
-  "is a CSR internal initiative that connects charity with fit lifestyle.": "to wewnętrzna inicjatywa CSR łącząca sport <1>i działalność</1> charytatywną",
+  "is an internal CSR": "to wewnętrzna inicjatywa CSR łącząca sport <1>i działalność</1> charytatywną",
   "Our achievements so far": "Nasze dotychczasowe osiągnięcia:",
   "On route": "Na trasie",
   "Of training": "Treningów",
   "Given to help": "Darowizny",
   "We do sports": "Trenujemy",
   "Current month": "Obecny miesiąc",
-  "Trainings": "Treningów",
+  "Training sessions": "Treningów",
   "Making Wavers engaged": "Zespołu<1></1>Making<3></3>Waves",
   "This month So far": "Z uzyskanych punktów",
   "for charity": "i wspieramy dobroczynność",
@@ -30,6 +30,7 @@
   "Conferences, employees support, events sponsorship and other charity programmes": "Konferencje, wsparcie dla pracowników, sponsorowanie <1></1>wydarzeń branżowych i akcje charytatywne",
   "See our initiatives": "Zobacz pozostałe inicjatywy",
   "Our initiatives": "Nasze inicjatywy",
-  "Contact us": "Kontakt"
+  "Contact us": "Kontakt",
+  "praca.makingwaves.com/initiatives": "http://praca.makingwaves.com/#initiatives"
 
 }
