@@ -89,7 +89,7 @@ class CurrentCharts extends Component {
             <div className="CurrentCharts__stats-overall">
               <div className="CurrentCharts__stats-trainings CurrentCharts__stats-block">
                 <div className="CurrentCharts__stats-trainings__value CurrentCharts__stats-block__value">{(this.props.data ? this.props.data.thisMonth.numberOfTrainings : 0)}</div>
-                <div className="CurrentCharts__stats-trainings__text CurrentCharts__stats-block__text">{t('Trainings')}</div>
+                <div className="CurrentCharts__stats-trainings__text CurrentCharts__stats-block__text"><Trans i18nKey="Training sessions">Training<br/>sessions</Trans></div>
               </div>
               <div className="CurrentCharts__stats-engagement CurrentCharts__stats-block">
                 <div className="CurrentCharts__stats-engagement__value CurrentCharts__stats-block__value">{(this.props.data ? this.props.data.thisMonth.percentOfEngagedEmployees : 0)}%</div>
