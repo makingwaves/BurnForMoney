@@ -1,8 +1,9 @@
-﻿namespace BurnForMoney.Infrastructure.Domain
+﻿namespace BurnForMoney.Domain.Domain
 {
     public enum PointsSource
     {
         Activity,
+        Challenge,
         Achievement
     }
 }

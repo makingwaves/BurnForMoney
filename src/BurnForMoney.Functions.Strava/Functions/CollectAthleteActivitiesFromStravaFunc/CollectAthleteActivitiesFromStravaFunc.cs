@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Globalization;
 using System.Threading.Tasks;
+using BurnForMoney.Domain.Commands;
+using BurnForMoney.Domain.Domain;
 using BurnForMoney.Functions.Shared.Extensions;
 using BurnForMoney.Functions.Shared.Functions.Extensions;
 using BurnForMoney.Functions.Shared.Helpers;
@@ -10,8 +12,6 @@ using BurnForMoney.Functions.Strava.Configuration;
 using BurnForMoney.Functions.Strava.External.Strava.Api;
 using BurnForMoney.Functions.Strava.External.Strava.Api.Exceptions;
 using BurnForMoney.Functions.Strava.Security;
-using BurnForMoney.Infrastructure.Commands;
-using BurnForMoney.Infrastructure.Domain;
 using Microsoft.Azure.KeyVault.Models;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;

@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using BurnForMoney.Infrastructure;
+using BurnForMoney.Domain;
 
 namespace BurnForMoney.Functions.ReadModel
 {

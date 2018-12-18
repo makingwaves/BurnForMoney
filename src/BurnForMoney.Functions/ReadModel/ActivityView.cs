@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
+using BurnForMoney.Domain.Events;
 using BurnForMoney.Functions.Shared.Persistence;
-using BurnForMoney.Infrastructure.Events;
 using Dapper;
 
 namespace BurnForMoney.Functions.ReadModel

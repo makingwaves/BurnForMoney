@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using BurnForMoney.Domain.Domain;
 using BurnForMoney.Functions.Shared.Exceptions;
 using BurnForMoney.Functions.Shared.Persistence;
 using BurnForMoney.Functions.Shared.Repositories.Dto;
-using BurnForMoney.Infrastructure.Domain;
 using Dapper;
 
 namespace BurnForMoney.Functions.Shared.Repositories

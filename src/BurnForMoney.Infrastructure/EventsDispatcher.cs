@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.Azure.EventGrid;
 using Microsoft.Azure.EventGrid.Models;
 
-namespace BurnForMoney.Infrastructure
+namespace BurnForMoney.Domain
 {
     public interface IEventPublisher
     {

@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
+using BurnForMoney.Domain.Commands;
+using BurnForMoney.Domain.Domain;
 using BurnForMoney.Functions.Shared.Extensions;
 using BurnForMoney.Functions.Shared.Functions.Extensions;
 using BurnForMoney.Functions.Shared.Identity;
@@ -12,8 +14,6 @@ using BurnForMoney.Functions.Strava.Exceptions;
 using BurnForMoney.Functions.Strava.External.Strava.Api;
 using BurnForMoney.Functions.Strava.Functions.AuthorizeNewAthlete.Dto;
 using BurnForMoney.Functions.Strava.Security;
-using BurnForMoney.Infrastructure.Commands;
-using BurnForMoney.Infrastructure.Domain;
 using Microsoft.Azure.KeyVault.Models;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;

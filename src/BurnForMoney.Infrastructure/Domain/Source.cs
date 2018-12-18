@@ -1,4 +1,4 @@
-﻿namespace BurnForMoney.Infrastructure.Domain
+﻿namespace BurnForMoney.Domain.Domain
 {
     public enum Source
     {

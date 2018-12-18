@@ -1,8 +1,8 @@
 ﻿using System.Threading.Tasks;
-using BurnForMoney.Infrastructure.Commands;
-using BurnForMoney.Infrastructure.Domain;
+using BurnForMoney.Domain.Commands;
+using BurnForMoney.Domain.Domain;
 
-namespace BurnForMoney.Infrastructure.CommandHandlers
+namespace BurnForMoney.Domain.CommandHandlers
 {
     public class AddActivityCommandHandler : ICommandHandler<AddActivityCommand>
     {

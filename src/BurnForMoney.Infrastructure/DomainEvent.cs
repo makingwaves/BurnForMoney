@@ -1,4 +1,4 @@
-﻿namespace BurnForMoney.Infrastructure
+﻿namespace BurnForMoney.Domain
 {
     public abstract class DomainEvent : IMessage
     {

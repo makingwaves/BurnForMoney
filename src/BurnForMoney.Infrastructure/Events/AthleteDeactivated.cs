@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace BurnForMoney.Infrastructure.Events
+namespace BurnForMoney.Domain.Events
 {
     public class AthleteDeactivated : DomainEvent
     {
