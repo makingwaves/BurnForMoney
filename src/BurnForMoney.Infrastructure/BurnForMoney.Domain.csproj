@@ -2,6 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <AssemblyName>BurnForMoney.Domain</AssemblyName>
+    <RootNamespace>BurnForMoney.Domain</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

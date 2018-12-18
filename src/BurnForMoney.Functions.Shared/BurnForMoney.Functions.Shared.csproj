@@ -17,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\BurnForMoney.Infrastructure\BurnForMoney.Infrastructure.csproj" />
+    <ProjectReference Include="..\BurnForMoney.Infrastructure\BurnForMoney.Domain.csproj" />
   </ItemGroup>
 
 </Project>
