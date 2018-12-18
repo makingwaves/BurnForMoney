@@ -9,6 +9,7 @@ using BurnForMoney.Functions.Shared.Queues;
 using BurnForMoney.Functions.Strava.Configuration;
 using BurnForMoney.Functions.Strava.External.Strava.Api;
 using BurnForMoney.Functions.Strava.External.Strava.Api.Exceptions;
+using BurnForMoney.Functions.Strava.Security;
 using BurnForMoney.Infrastructure.Commands;
 using BurnForMoney.Infrastructure.Domain;
 using Microsoft.Azure.KeyVault.Models;

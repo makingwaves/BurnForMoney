@@ -14,6 +14,7 @@ using BurnForMoney.Functions.Strava.External.Strava.Api;
 using BurnForMoney.Functions.Strava.External.Strava.Api.Exceptions;
 using BurnForMoney.Functions.Strava.External.Strava.Api.Model;
 using BurnForMoney.Functions.Strava.Functions.EventsHub.Dto;
+using BurnForMoney.Functions.Strava.Security;
 using BurnForMoney.Infrastructure.Commands;
 using BurnForMoney.Infrastructure.Domain;
 using Microsoft.Azure.WebJobs;

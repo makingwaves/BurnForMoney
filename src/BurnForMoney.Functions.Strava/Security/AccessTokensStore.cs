@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.Serialization;
 using System.Threading.Tasks;
 using BurnForMoney.Functions.Shared;
 using Microsoft.Azure.KeyVault;
@@ -9,7 +8,7 @@ using Microsoft.Azure.KeyVault.Models;
 using Microsoft.Extensions.Caching.Memory;
 using Newtonsoft.Json;
 
-namespace BurnForMoney.Functions.Strava.Functions
+namespace BurnForMoney.Functions.Strava.Security
 {
     public class AccessTokensStore
     {
