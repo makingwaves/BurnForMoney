@@ -4,6 +4,7 @@
     "FUNCTIONS_WORKER_RUNTIME": "dotnet",
     "AzureWebJobsStorage": "UseDevelopmentStorage=true",
     "AzureWebJobsDashboard": "UseDevelopmentStorage=true",
+    "StravaQueuesStorage": "UseDevelopmentStorage=true",
     "StravaAppHostName": "http://localhost:7072",
     "KeyVaultName": "burnformoneykvdev",
     "ConnectionStrings:Sql": "Data Source=(LocalDB)\\.;Initial Catalog=BurnForMoney;Integrated Security=True;"
@@ -12,6 +13,9 @@
     "SenderEmail": "burnformoney@makingwaves.com",
     "ReportsReceiver": "pawel.maga@makingwaves.com",
     "DefaultRecipient": "pawel.maga@makingwaves.com"
+  },
+  "EventGrid": {
+    "TopicEndpoint": "https://bfmdomainEventsdev.westeurope-1.eventgrid.azure.net/api/events"
   },
   "Host": {
     "LocalHttpPort": 7071

@@ -15,5 +15,6 @@ namespace BurnForMoney.Functions.Functions._Support
         public const string EncryptText = Prefix + "EncryptText";
         public const string DecryptText = Prefix + "DecryptText";
         public const string ReprocessPoisonQueueMessages = Prefix + "ReprocessPoisonQueueMessages";
+        public const string ReplayAggregateEvents = Prefix + "ReplayAggregateEvents";
     }
 }

@@ -30,7 +30,8 @@ namespace BurnForMoney.Functions.Configuration
                     },
                     Email = config.Get<EmailSection>("Email"),
                     ApplicationInsightsInstrumentationKey = config["APPINSIGHTS_INSTRUMENTATIONKEY"],
-                    SendGridApiKey = config["SendGrid:ApiKey"]
+                    SendGridApiKey = config["SendGrid:ApiKey"],
+                    EventGrid = config.Get<EventGridSection>("EventGrid")
                 };
 
                 if (!_settings.IsValid())

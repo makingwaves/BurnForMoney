@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using BurnForMoney.Functions.Shared.Extensions;
+using BurnForMoney.Functions.Shared.Queues;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
@@ -11,7 +12,7 @@ namespace BurnForMoney.Functions.Strava.Functions.AuthorizeNewAthlete
     public static class AuthorizeNewAthleteStarter
     {
         [FunctionName(FunctionsNames.AuthorizeNewAthleteStarter)]
-        public static async Task Start([QueueTrigger(QueueNames.AuthorizationCodes)]string authorizationCode, [OrchestrationClient]DurableOrchestrationClient starter, ILogger log, ExecutionContext executionContext)
+        public static async Task Start([QueueTrigger(StravaQueueNames.AuthorizationCodes)]string authorizationCode, [OrchestrationClient]DurableOrchestrationClient starter, ILogger log, ExecutionContext executionContext)
         {
             log.LogFunctionStart(FunctionsNames.AuthorizeNewAthleteStarter);
 

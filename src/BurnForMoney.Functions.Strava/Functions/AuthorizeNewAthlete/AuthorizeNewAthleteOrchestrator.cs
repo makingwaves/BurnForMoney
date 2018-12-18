@@ -3,7 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using BurnForMoney.Functions.Shared.Extensions;
 using BurnForMoney.Functions.Strava.Exceptions;
-using BurnForMoney.Functions.Strava.Functions.AuthorizeNewAthlete.Dto;
+using BurnForMoney.Functions.Strava.Functions.Dto;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 using ExecutionContext = Microsoft.Azure.WebJobs.ExecutionContext;
@@ -22,17 +22,25 @@ namespace BurnForMoney.Functions.Strava.Functions.AuthorizeNewAthlete
 
             var authorizationCode = context.GetInput<string>();
 
+            var athleteId = Guid.Empty;
             try
             {
-                // 1. Exchange and authorize athlete
-                var athlete = await context.CallActivityWithRetryAsync<StravaAthlete>(FunctionsNames.A_ExchangeTokenAndGetAthleteSummary,
-                    new RetryOptions(TimeSpan.FromSeconds(5), 3), authorizationCode);
+                // 1. Generate athlete id
+                athleteId = await context.CallActivityAsync<Guid>(FunctionsNames.A_GenerateAthleteId, null);
+
+                // 2. Exchange and authorize athlete
+                var athlete = await context.CallActivityWithRetryAsync<AthleteDto>(FunctionsNames.A_ExchangeTokenAndGetAthleteSummary,
+                    new RetryOptions(TimeSpan.FromSeconds(5), 3)
+                    {
+                        //Handle = ex => !(ex.InnerException is AthleteAlreadyExistsException)
+                        Handle = ex => !ex.InnerException.Message.StartsWith(nameof(AthleteAlreadyExistsException)) // temp fix: https://github.com/Azure/azure-functions-durable-extension/issues/84
+                    }, new A_ExchangeTokenAndGetAthleteSummaryInput(athleteId, authorizationCode));
                 if (!context.IsReplaying)
                 {
                     log.LogInformation(FunctionsNames.O_AuthorizeNewAthlete, $"Exchanged token for user {athlete.FirstName} {athlete.LastName}.");
                 }
 
-                // 2. Send approval request
+                // 3. Send approval request
                 if (!context.IsReplaying)
                 {
                     log.LogInformation(FunctionsNames.O_AuthorizeNewAthlete, "Sending approval email...");
@@ -43,7 +51,7 @@ namespace BurnForMoney.Functions.Strava.Functions.AuthorizeNewAthlete
                     log.LogInformation(FunctionsNames.O_AuthorizeNewAthlete, "Sent approval email.");
                 }
 
-                // 3. Wait for approval
+                // 4. Wait for approval
                 string approvalResult;
                 using (var cts = new CancellationTokenSource())
                 {
@@ -60,7 +68,7 @@ namespace BurnForMoney.Functions.Strava.Functions.AuthorizeNewAthlete
                     }
                     else
                     {
-                        throw new FailedToApproveAthleteTimeoutException(athlete.AthleteId, timeoutTaskDuration);
+                        throw new FailedToApproveAthleteTimeoutException(athlete.Id, athlete.ExternalId, timeoutTaskDuration);
                     }
                 }
 
@@ -69,27 +77,35 @@ namespace BurnForMoney.Functions.Strava.Functions.AuthorizeNewAthlete
                     log.LogInformation(FunctionsNames.O_AuthorizeNewAthlete, $"Athlete: {athlete.FirstName} {athlete.LastName} has been {approvalResult}.");
                 }
 
-                // 4. Process a new athlete request
+                // 5. Process a new athlete request
                 await context.CallActivityAsync(FunctionsNames.A_ProcessNewAthleteRequest, athlete);
                 if (!context.IsReplaying)
                 {
                     log.LogInformation(FunctionsNames.O_AuthorizeNewAthlete, "Processed athlete's data.");
-                    log.LogFunctionEnd(FunctionsNames.O_AuthorizeNewAthlete);
                 }
-
             }
             catch (Exception ex)
             {
                 var errorMessage = $"[{FunctionsNames.O_AuthorizeNewAthlete}] failed to authorize a new athlete in the system. {ex}";
                 log.LogError(errorMessage);
-                await context.CallActivityAsync(FunctionsNames.A_AuthorizeNewAthleteCompensation, new AuthorizeNewAthleteCompensation { AuthorizationCode = authorizationCode, ErrorMessage = errorMessage });
+                await context.CallActivityAsync(FunctionsNames.A_AuthorizeNewAthleteCompensation, new AuthorizeNewAthleteCompensation(athleteId, authorizationCode) { ErrorMessage = errorMessage });
+
+                throw;
             }
+            log.LogFunctionEnd(FunctionsNames.O_AuthorizeNewAthlete);
         }
     }
 
     public class AuthorizeNewAthleteCompensation
     {
+        public Guid AthleteId { get; set; }
         public string AuthorizationCode { get; set; }
         public string ErrorMessage { get; set; }
+
+        public AuthorizeNewAthleteCompensation(Guid athleteId, string authorizationCode)
+        {
+            AthleteId = athleteId;
+            AuthorizationCode = authorizationCode;
+        }
     }
 }

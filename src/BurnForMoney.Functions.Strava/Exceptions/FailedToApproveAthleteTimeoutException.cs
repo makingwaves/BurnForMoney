@@ -5,8 +5,8 @@ namespace BurnForMoney.Functions.Strava.Exceptions
 {
     public class FailedToApproveAthleteTimeoutException : TimeoutException
     {
-        public FailedToApproveAthleteTimeoutException(int athleteId, DateTime dateTime)
-            : base($"Failed to approve athlete: <{athleteId}> in the allotted time period: [{dateTime.ToString(CultureInfo.InvariantCulture)}].")
+        public FailedToApproveAthleteTimeoutException(Guid athleteId, string stravaId, DateTime dateTime)
+            : base($"Failed to approve athlete: <{athleteId}, <{stravaId}> in the allotted time period: [{dateTime.ToString(CultureInfo.InvariantCulture)}].")
         {
         }
     }

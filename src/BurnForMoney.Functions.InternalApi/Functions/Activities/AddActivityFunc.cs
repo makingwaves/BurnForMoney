@@ -3,6 +3,8 @@ using System.Threading.Tasks;
 using BurnForMoney.Functions.Shared.Extensions;
 using BurnForMoney.Functions.Shared.Identity;
 using BurnForMoney.Functions.Shared.Queues;
+using BurnForMoney.Infrastructure.Commands;
+using BurnForMoney.Infrastructure.Domain;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
@@ -16,10 +18,10 @@ namespace BurnForMoney.Functions.InternalApi.Functions.Activities
     public static class AddActivityFunc
     {
         [FunctionName(FunctionsNames.AddActivity)]
-        public static async Task<IActionResult> AddActivityAsync([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "athlete/{athleteId:length(32)}/activities")] HttpRequest req, ExecutionContext executionContext,
+        public static async Task<IActionResult> AddActivityAsync([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "athlete/{athleteId:guid}/activities")] HttpRequest req, ExecutionContext executionContext,
             ILogger log,
             string athleteId,
-            [Queue(AppQueueNames.AddActivityRequests)] CloudQueue outputQueue)
+            [Queue(AppQueueNames.AddActivityRequests, Connection = "AppQueuesStorage")] CloudQueue outputQueue)
         {
             log.LogFunctionStart(FunctionsNames.AddActivity);
 
@@ -35,21 +37,21 @@ namespace BurnForMoney.Functions.InternalApi.Functions.Activities
                 return new BadRequestObjectResult($"Validation failed. {ex.Message}.");
             }
 
-            var pendingActivity = new PendingRawActivity
+            var addActivityCommand = new AddActivityCommand
             {
                 Id = ActivityIdentity.Next(),
-                AthleteId = athleteId,
-                ActivityType = model.Category,
+                AthleteId = Guid.Parse(athleteId),
+                ActivityType = model.Type,
                 StartDate = model.StartDate.Value,
-                DistanceInMeters = model.DistanceInMeters,
+                DistanceInMeters = model.DistanceInMeters ?? 0,
                 MovingTimeInMinutes = model.MovingTimeInMinutes,
-                Source = "Manual"
+                Source = Source.None
             };
 
-            var output = JsonConvert.SerializeObject(pendingActivity);
+            var output = JsonConvert.SerializeObject(addActivityCommand);
             await outputQueue.AddMessageAsync(new CloudQueueMessage(output));
             log.LogFunctionEnd(FunctionsNames.AddActivity);
-            return new OkObjectResult(pendingActivity.Id);
+            return new OkObjectResult(addActivityCommand.Id);
         }
 
         private static void ValidateRequest(AddActivityRequest request)
@@ -58,9 +60,9 @@ namespace BurnForMoney.Functions.InternalApi.Functions.Activities
             {
                 throw new ArgumentNullException(nameof(request.StartDate));
             }
-            if (string.IsNullOrWhiteSpace(request.Category))
+            if (string.IsNullOrWhiteSpace(request.Type))
             {
-                throw new ArgumentNullException(nameof(request.Category));
+                throw new ArgumentNullException(nameof(request.Type));
             }
             if (request.MovingTimeInMinutes <= 0)
             {
@@ -72,8 +74,8 @@ namespace BurnForMoney.Functions.InternalApi.Functions.Activities
     public class AddActivityRequest
     {
         public DateTime? StartDate { get; set; }
-        public string Category { get; set; }
-        public double DistanceInMeters { get; set; }
+        public string Type { get; set; }
+        public double? DistanceInMeters { get; set; }
         public double MovingTimeInMinutes { get; set; }
     }
 }

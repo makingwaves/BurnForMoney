@@ -1,18 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using BurnForMoney.Functions.Shared.Extensions;
 using BurnForMoney.Functions.Shared.Functions.Extensions;
-using BurnForMoney.Functions.Shared.Persistence;
+using BurnForMoney.Functions.Shared.Queues;
 using BurnForMoney.Functions.Strava.Configuration;
-using BurnForMoney.Functions.Strava.Exceptions;
 using BurnForMoney.Functions.Strava.External.Strava.Api;
-using BurnForMoney.Functions.Strava.Functions.RefreshTokens.Dto;
-using Dapper;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 using Microsoft.WindowsAzure.Storage.Queue;
-using Newtonsoft.Json;
 
 namespace BurnForMoney.Functions.Strava.Functions.RefreshTokens
 {
@@ -22,69 +19,49 @@ namespace BurnForMoney.Functions.Strava.Functions.RefreshTokens
 
         [FunctionName(FunctionsNames.T_RefreshAccessTokens)]
         public static async Task T_RefreshAccessTokens([TimerTrigger("0 50 * * * *")] TimerInfo timer, ILogger log,
-            [Queue(QueueNames.RefreshStravaToken)] CloudQueue refreshTokensQueue,
+            [Queue(StravaQueueNames.RefreshStravaToken)] CloudQueue refreshTokensQueue,
             [Configuration] ConfigurationRoot configuration)
         {
             log.LogFunctionStart(FunctionsNames.T_RefreshAccessTokens);
 
-            IEnumerable<(string AthleteId, string EncryptedRefreshToken)> expiringTokens;
-            using (var conn = SqlConnectionFactory.Create(configuration.ConnectionStrings.SqlDbConnectionString))
-            {
-                await conn.OpenWithRetryAsync();
+            var secrets = await AccessTokensStore.GetAllSecretsAsync(configuration.Strava.AccessTokensKeyVaultUrl);
 
-                expiringTokens = await conn.QueryAsync<(string, string)>(@"SELECT AthleteId, RefreshToken as EncryptedRefreshToken
-FROM dbo.[Strava.AccessTokens] AS Tokens
-INNER JOIN dbo.Athletes AS Athletes ON (Athletes.Id = Tokens.AthleteId)
-WHERE Tokens.ExpiresAt < @DateTo AND Athletes.Active=1",
-                    new
-                    {
-                        DateTo = DateTime.UtcNow.AddHours(1)
-                    });
-            }
+            var expiringSecretsMetadata = secrets.Where(secret =>
+                secret.Id.EndsWith(AccessTokensSecretNameConvention.AccessTokenSufix) &&
+                secret.Attributes.Enabled.HasValue && secret.Attributes.Enabled.Value &&
+                secret.Attributes.Expires.HasValue && secret.Attributes.Expires <= DateTime.UtcNow.AddHours(1));
+
+            var athleteIdsWithExpiringTokens =
+                expiringSecretsMetadata.Select(metadata => metadata.Tags[AccessTokensTag.AthleteId]);
 
             var tasks = new List<Task>();
-            foreach (var (athleteId, encryptedRefreshToken) in expiringTokens)
+            foreach (var athleteId in athleteIdsWithExpiringTokens)
             {
-                var request = new TokenRefreshRequest
-                {
-                    AthleteId = athleteId,
-                    EncryptedRefreshToken = encryptedRefreshToken
-                };
-                var json = JsonConvert.SerializeObject(request);
-                tasks.Add(refreshTokensQueue.AddMessageAsync(new CloudQueueMessage(json)));
+                tasks.Add(refreshTokensQueue.AddMessageAsync(new CloudQueueMessage(Guid.Parse(athleteId).ToString())));
             }
 
             await Task.WhenAll(tasks);
             log.LogFunctionEnd(FunctionsNames.T_RefreshAccessTokens);
         }
 
+
         [FunctionName(FunctionsNames.Q_RefreshAccessTokens)]
-        public static async Task Q_RefreshAccessTokens([QueueTrigger(QueueNames.RefreshStravaToken)] TokenRefreshRequest request, ILogger log,
+        public static async Task Q_RefreshAccessTokens([QueueTrigger(StravaQueueNames.RefreshStravaToken)] string athleteId, ILogger log,
             [Configuration] ConfigurationRoot configuration)
         {
             log.LogFunctionStart(FunctionsNames.Q_RefreshAccessTokens);
 
-            var refreshToken = AccessTokensEncryptionService.Decrypt(request.EncryptedRefreshToken, configuration.Strava.AccessTokensEncryptionKey);
+            var refreshTokenSecret =
+                await AccessTokensStore.GetRefreshTokenForAsync(Guid.Parse(athleteId), configuration.Strava.AccessTokensKeyVaultUrl);
+            var refreshToken = refreshTokenSecret.Value;
 
             var response = StravaService.RefreshToken(configuration.Strava.ClientId, configuration.Strava.ClientSecret,
                 refreshToken);
 
-            using (var conn = SqlConnectionFactory.Create(configuration.ConnectionStrings.SqlDbConnectionString))
-            {
-                await conn.OpenWithRetryAsync();
+            await AccessTokensStore.AddAsync(Guid.Parse(athleteId), response.AccessToken, response.RefreshToken, response.ExpiresAt,
+                configuration.Strava.AccessTokensKeyVaultUrl);
+            log.LogInformation(nameof(FunctionsNames.Q_RefreshAccessTokens), $"Updated tokens for athlete with id: {configuration.Strava.ClientId}.");
 
-                var affectedRows = await conn.ExecuteAsync("UPDATE dbo.[Strava.AccessTokens] SET AccessToken=@AccessToken, RefreshToken=@RefreshToken, ExpiresAt=@ExpiresAt, IsValid=1 WHERE AthleteId=@AthleteId", new
-                {
-                    AccessToken = AccessTokensEncryptionService.Encrypt(response.AccessToken, configuration.Strava.AccessTokensEncryptionKey),
-                    RefreshToken = AccessTokensEncryptionService.Encrypt(response.RefreshToken, configuration.Strava.AccessTokensEncryptionKey),
-                    response.ExpiresAt,
-                    request.AthleteId
-                });
-                if (affectedRows != 1)
-                {
-                    throw new FailedToRefreshAccessTokenException(request.AthleteId);
-                }
-            }
             log.LogFunctionEnd(FunctionsNames.Q_RefreshAccessTokens);
         }
     }

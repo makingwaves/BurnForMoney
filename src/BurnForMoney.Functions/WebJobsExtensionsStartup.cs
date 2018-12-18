@@ -5,6 +5,7 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.WindowsAzure.Storage;
 
 [assembly: WebJobsStartup(typeof(BurnForMoney.Functions.WebJobsExtensionStartup))]
 namespace BurnForMoney.Functions
@@ -23,6 +24,16 @@ namespace BurnForMoney.Functions
             builder.Services.AddSingleton<IConfiguration>(config);
             builder.AddExtension(new ConfigurationExtensionConfigProvider<Configuration.ConfigurationRoot>(
                 ApplicationConfiguration.GetSettings()));
+
+            InitEventSource(config);
+        }
+
+        private static void InitEventSource(IConfigurationRoot config)
+        {
+            var storageAccount = CloudStorageAccount.Parse(config["AzureWebJobsStorage"]);
+            var tableClient = storageAccount.CreateCloudTableClient();
+            var domainEventsTable = tableClient.GetTableReference("DomainEvents");
+            domainEventsTable.CreateIfNotExistsAsync().GetAwaiter().GetResult();
         }
     }
 }

@@ -8,11 +8,18 @@ namespace BurnForMoney.Functions.Strava.Configuration
         public bool IsLocalEnvironment { get; set; }
         public string HostName { get; set; }
         public string ApplicationInsightsInstrumentationKey { get; set; }
+        public EventGridSection EventGrid { get; set; }
 
         public bool IsValid()
         {
             return Strava != null && ConnectionStrings != null;
         }
+    }
+
+    public class EventGridSection
+    {
+        public string SasKey { get; set; }
+        public string TopicEndpoint { get; set; }
     }
 
     public class EmailSection
@@ -31,7 +38,8 @@ namespace BurnForMoney.Functions.Strava.Configuration
     {
         public int ClientId { get; set; }
         public string ClientSecret { get; set; }
-        public string AccessTokensEncryptionKey { get; set; }
         public string ConfirmationPageUrl { get; set; }
+        public string AccessTokensKeyVaultName { get; set; }
+        public string AccessTokensKeyVaultUrl => $"https://{AccessTokensKeyVaultName}.vault.azure.net/";
     }
 }

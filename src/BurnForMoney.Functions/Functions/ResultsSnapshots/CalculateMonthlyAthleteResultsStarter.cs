@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using BurnForMoney.Functions.Functions.ResultsSnapshots.Dto;
 using BurnForMoney.Functions.Shared.Extensions;
+using BurnForMoney.Functions.Shared.Queues;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 using Microsoft.WindowsAzure.Storage.Queue;
@@ -13,7 +14,7 @@ namespace BurnForMoney.Functions.Functions.ResultsSnapshots
     {
         // every hour
         [FunctionName(FunctionsNames.T_CalculateMonthlyAthleteResults)]
-        public static async Task CalculateMonthlyAthleteResults([TimerTrigger("0 0 * * * *")]TimerInfo timer, [Queue(QueueNames.CalculateMonthlyResults)] CloudQueue outputQueue, ILogger log, ExecutionContext context)
+        public static async Task CalculateMonthlyAthleteResults([TimerTrigger("0 0 * * * *")]TimerInfo timer, [Queue(AppQueueNames.CalculateMonthlyResults)] CloudQueue outputQueue, ILogger log, ExecutionContext context)
         {
             log.LogFunctionStart(FunctionsNames.T_CalculateMonthlyAthleteResults);
 
@@ -31,7 +32,7 @@ namespace BurnForMoney.Functions.Functions.ResultsSnapshots
 
         // first day of the month at 1:00
         [FunctionName(FunctionsNames.T_CalculateMonthlyAthleteResultsFromPreviousMonth)]
-        public static async Task CalculateMonthlyAthleteResultsFromPreviousMonth([TimerTrigger("0 0 1 1 * *")]TimerInfo timer, [Queue(QueueNames.CalculateMonthlyResults)] CloudQueue outputQueue, ILogger log, ExecutionContext context)
+        public static async Task CalculateMonthlyAthleteResultsFromPreviousMonth([TimerTrigger("0 0 1 1 * *")]TimerInfo timer, [Queue(AppQueueNames.CalculateMonthlyResults)] CloudQueue outputQueue, ILogger log, ExecutionContext context)
         {
             log.LogFunctionStart(FunctionsNames.T_CalculateMonthlyAthleteResultsFromPreviousMonth);
 

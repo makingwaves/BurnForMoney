@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using BurnForMoney.Functions.InternalApi;
 using BurnForMoney.Functions.InternalApi.Configuration;
 using BurnForMoney.Functions.Shared.Functions.Extensions;
 using Microsoft.Azure.WebJobs;
@@ -6,8 +7,8 @@ using Microsoft.Azure.WebJobs.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-[assembly: WebJobsStartup(typeof(BurnForMoney.Functions.InternalAPi.WebJobsExtensionStartup))]
-namespace BurnForMoney.Functions.InternalAPi
+[assembly: WebJobsStartup(typeof(WebJobsExtensionStartup))]
+namespace BurnForMoney.Functions.InternalApi
 {
     public class WebJobsExtensionStartup : IWebJobsStartup
     {

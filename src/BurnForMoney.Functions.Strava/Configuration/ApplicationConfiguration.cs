@@ -32,12 +32,13 @@ namespace BurnForMoney.Functions.Strava.Configuration
                     {
                         ClientId = int.Parse(config["Strava:ClientId"]),
                         ClientSecret = config["Strava:ClientSecret"],
-                        AccessTokensEncryptionKey = config["strava:AccessTokensEncryptionKey"],
-                        ConfirmationPageUrl = config["Strava:ConfirmationPageUrl"]
+                        ConfirmationPageUrl = config["Strava:ConfirmationPageUrl"],
+                        AccessTokensKeyVaultName = config["Strava:AccessTokensKeyVaultName"]
                     },
                     Email = config.Get<EmailSection>("Email"),
                     HostName = config["WEB_HOST"],
-                    ApplicationInsightsInstrumentationKey = config["APPINSIGHTS_INSTRUMENTATIONKEY"]
+                    ApplicationInsightsInstrumentationKey = config["APPINSIGHTS_INSTRUMENTATIONKEY"],
+                    EventGrid = config.Get<EventGridSection>("EventGrid")
                 };
 
                 if (!_settings.IsValid())

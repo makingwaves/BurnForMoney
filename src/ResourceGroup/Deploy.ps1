@@ -34,13 +34,27 @@ Write-Succeed
 $ResourceGroupName = "BurnForMoney-$Environment";
 $KeyVaultName = "burnformoneykv" + $Environment.ToLower();
 $ResourceGroupLocation= 'West Europe';
-$TemplateFile = [System.IO.Path]::GetFullPath([System.IO.Path]::Combine($PSScriptRoot, "Template.json"))
+
+$TemplateFileName = "Template.json";
+if ($Environment -eq "Dev")
+{
+	$TemplateFileName = "Template.Dev.json";
+}
+
+
+$TemplateFile = [System.IO.Path]::GetFullPath([System.IO.Path]::Combine($PSScriptRoot, $TemplateFileName))
 $TemplateParametersFile = [System.IO.Path]::GetFullPath([System.IO.Path]::Combine($PSScriptRoot, "Template.$Environment.parameters.json"))
 
 New-AzureRmResourceGroup -Name $ResourceGroupName -Location $ResourceGroupLocation -Verbose -Force
 
 if ($DeployCredentials)
 {
+	$StravaKeyVaultName = "bfmkvstravatokens" + $Environment.ToLower();
+	CreateKeyVault -Environment $Environment `
+					-ResourceGroupName $ResourceGroupName `
+					-ResourceGroupLocation $ResourceGroupLocation `
+					-KeyVaultName $StravaKeyVaultName
+
 	DeployCredentials -Environment $Environment `
 		-ResourceGroupName $ResourceGroupName `
 		-ResourceGroupLocation $ResourceGroupLocation `
