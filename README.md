@@ -8,18 +8,18 @@ GitHub wiki: https://github.com/makingwaves/BurnForMoney/wiki
 
 ## Supported systems
 
-|                 |  Strava  | Endomondo | Runkeeper |
-| :-------------: | :------: | :-------: | :-------: |
-|       Run       | &#x2714; | &#x2718;  | &#x2718;  |
-|      Ride       | &#x2714; | &#x2718;  | &#x2718;  |
-|      Walk       | &#x2714; | &#x2718;  | &#x2718;  |
-|  Winter sports  | &#x2714; | &#x2718;  | &#x2718;  |
-|  Water sports   | &#x2714; | &#x2718;  | &#x2718;  |
-|   Team sports   | &#x2718; | &#x2718;  | &#x2718;  |
-|       Gym       | &#x2714; | &#x2718;  | &#x2718;  |
-|      Hike       | &#x2714; | &#x2718;  | &#x2718;  |
-| Fitness / Dance | &#x2714; | &#x2718;  | &#x2718;  |
-|      Other      | &#x2714; | &#x2718;  | &#x2718;  |
+|                 |  Strava  | Endomondo | Runkeeper |  Manual  |
+| :-------------: | :------: | :-------: | :-------: | :------: |
+|       Run       | &#x2714; | &#x2718;  | &#x2718;  | &#x2714; |
+|      Ride       | &#x2714; | &#x2718;  | &#x2718;  | &#x2714; |
+|      Walk       | &#x2714; | &#x2718;  | &#x2718;  | &#x2714; |
+|  Winter sports  | &#x2714; | &#x2718;  | &#x2718;  | &#x2714; |
+|  Water sports   | &#x2714; | &#x2718;  | &#x2718;  | &#x2714; |
+|   Team sports   | &#x2718; | &#x2718;  | &#x2718;  | &#x2714; |
+|       Gym       | &#x2714; | &#x2718;  | &#x2718;  | &#x2714; |
+|      Hike       | &#x2714; | &#x2718;  | &#x2718;  | &#x2714; |
+| Fitness / Dance | &#x2714; | &#x2718;  | &#x2718;  | &#x2714; |
+|      Other      | &#x2714; | &#x2718;  | &#x2718;  | &#x2714; |
 
 ### Environments
 
