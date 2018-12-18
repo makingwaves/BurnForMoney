@@ -28,7 +28,10 @@ namespace BurnForMoney.Functions.Strava.Functions
         public const string Events_NewActivity = "Webhooks_Events_NewActivity";
         public const string Events_UpdateActivity = "Webhooks_Events_UpdateActivity";
         public const string Events_DeleteActivity = "Webhooks_Events_DeleteActivity";
-        public const string Events_DeauthorizedAthlete = "Events_DeauthorizedAthlete";
+
+
+        public const string Q_DeactivateAthlete = "Q_DeactivateAthlete";
+        public const string Q_ActivateAthlete = "Q_ActivateAthlete";
 
 
         public const string T_RefreshAccessTokens = "T_RefreshAccessTokens";

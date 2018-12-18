@@ -4,6 +4,11 @@ namespace BurnForMoney.Infrastructure.Commands
 {
     public class ActivateAthleteCommand : Command
     {
-        public Guid AthleteId { get; set; }
+        public readonly Guid AthleteId;
+
+        public ActivateAthleteCommand(Guid athleteId)
+        {
+            AthleteId = athleteId;
+        }
     }
 }

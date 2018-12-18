@@ -11,6 +11,7 @@ using BurnForMoney.Functions.Strava.External.Strava.Api;
 using BurnForMoney.Functions.Strava.External.Strava.Api.Exceptions;
 using BurnForMoney.Infrastructure.Commands;
 using BurnForMoney.Infrastructure.Domain;
+using Microsoft.Azure.KeyVault.Models;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 using Microsoft.WindowsAzure.Storage.Queue;
@@ -31,8 +32,16 @@ namespace BurnForMoney.Functions.Strava.Functions.CollectAthleteActivitiesFromSt
         {
             log.LogFunctionStart(FunctionsNames.Q_CollectAthleteActivities);
 
-            var accessTokenSecret =
-                await AccessTokensStore.GetAccessTokenForAsync(request.AthleteId, configuration.Strava.AccessTokensKeyVaultUrl);
+            SecretBundle accessTokenSecret;
+            try
+            {
+                accessTokenSecret =
+                    await AccessTokensStore.GetAccessTokenForAsync(request.AthleteId, configuration.Strava.AccessTokensKeyVaultUrl);
+            }
+            catch (SecretDisabledException)
+            {
+                return;
+            }
 
             try
             {
