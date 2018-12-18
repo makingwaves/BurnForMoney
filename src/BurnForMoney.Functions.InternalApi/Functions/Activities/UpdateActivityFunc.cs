@@ -24,7 +24,17 @@ namespace BurnForMoney.Functions.InternalApi.Functions.Activities
             log.LogFunctionStart(FunctionsNames.UpdateActivity);
 
             var requestData = await req.ReadAsStringAsync();
-            var model = JsonConvert.DeserializeObject<UpdateActivityRequest>(requestData);
+
+            UpdateActivityRequest model;
+            try
+            {
+                model = JsonConvert.DeserializeObject<UpdateActivityRequest>(requestData);
+            }
+            catch (Exception ex)
+            {
+                return new BadRequestObjectResult($"Failed to deserialize data. {ex.Message}");
+            }
+
             try
             {
                 ValidateRequest(model);

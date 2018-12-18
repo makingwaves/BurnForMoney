@@ -21,7 +21,6 @@ namespace BurnForMoney.Functions.InternalApi.Functions.Activities
         {
             log.LogFunctionStart(FunctionsNames.GetAthleteActivities);
 
-
             var repository = new ActivityReadRepository(configuration.ConnectionStrings.SqlDbConnectionString);
             var activities = await repository.GetAthleteActivitiesAsync(Guid.Parse(athleteId), Source.None, DateTime.UtcNow.Month,
                 DateTime.UtcNow.Year);
