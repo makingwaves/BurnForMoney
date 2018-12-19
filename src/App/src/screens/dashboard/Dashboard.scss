@@ -2,6 +2,71 @@
 
 .Dashboard {
   background-color: #F5F6FA;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 185px 1fr;
+  grid-template-areas: "side main";
+  &-side{
+    grid-area: side;
+    height: 100vh;
+    background-color: #122833;
+    padding: 25px 15px;
+    box-sizing: border-box;;
+  }
+  &-main{
+    grid-area: main;
+  }
+  &-logo{
+
+  }
+  &-navigation{
+    color: $light-gray;
+    list-style: none;
+    margin: 40px 0 0;
+    padding: 0;
+    &Item{
+      margin-bottom: 30px;
+      &-link{
+        color: $light-gray;
+        text-decoration: none;
+        font-family: "Volte2";
+        font-weight: 500;
+        font-size: 14px;
+      }
+    }
+    &-addActivity{
+      background-color: #EDA697;
+      color: #122833;
+      font-size: 16px;
+      font-family: 'Volte2';
+      font-weight: bold;
+      width: 160px;
+      height: 45px;
+      line-height: 45px;
+      display: block;
+      text-align: center;
+      text-decoration: none;
+    }
+  }
+  &-content{
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 50px 30px
+  }
+
+  &__header{
+    background-color: #fff;
+    padding: 0 30px;
+
+    &-title{
+      font-weight: 500;
+      font-size:24px;
+      margin: 0;
+      padding: 0;
+    }
+  }
+  &
+
   .Button{
     border-radius:25px;
     border: none;
@@ -13,7 +78,7 @@
       color:#000;
       font-family:'AftenScreen', sans-serif;
       font-size: 16px;
-      
+
       box-sizing: border-box;
       background-color: #fff;
       width:230px;
@@ -25,7 +90,7 @@
       outline: none;
 
       &:focus{
-        border-color:#000;
+        border-color:$pink-salmon;
       }
     }
 
@@ -56,7 +121,7 @@
         border-left: 1px solid $lighter-gray;
       }
       &:focus:after{
-        border-left-color: #000;
+        border-left-color: $pink-salmon;
       }
     }
 

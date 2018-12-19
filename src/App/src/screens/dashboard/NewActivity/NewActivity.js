@@ -1,8 +1,11 @@
 import React, { Component } from 'react';
+import DashboardHeader from '../DashboardHeader.js';
 
 import './NewActivity.css';
 import iconDistance from 'img/icon-distance.svg';
 import iconDuration from 'img/icon-duration.svg';
+
+
 
 class NewActivity extends Component {
   api_url = process.env.REACT_APP_DASHBOARD_API_URL;
@@ -59,8 +62,8 @@ class NewActivity extends Component {
 
     return (
       <div className="NewActivity">
-        <h3 className="NewActivity__header">New activity entry</h3>
-        <div className="NewActivity__form">
+        <DashboardHeader header="Add activity" />
+        <div className="Dashboard-content NewActivity__form">
           <div className="NewActivity__form-row">
             <label htmlFor="activityDate" className="NewActivity__form-label">Date</label>
             <input id="activityDate" type="date" required value={this.state.startDate} onChange={(e) => this.setState({startDate: e.target.value})}/>
@@ -76,6 +79,13 @@ class NewActivity extends Component {
               </div>)}
           </div>
 
+          <div className="NewActivity__form-row">
+            <label htmlFor="activityDuration" className="NewActivity__form-label">
+              <img src={iconDuration} alt="duration" className="NewActivity__form-labelImg" />Duration
+            </label>
+            <input id="activityDuration" type="text" className="NewActivity__form-input" placeholder="Time in minutes" step="600" value={this.state.movingTimeInMinutes} onChange={(e) => this.setState({movingTimeInMinutes: e.target.value })} />
+          </div>
+
           {this.state.showDistance && (
           <div className="NewActivity__form-row">
             <label htmlFor="activityDistance" className="NewActivity__form-label">
@@ -84,13 +94,6 @@ class NewActivity extends Component {
             <input id="activityDistance" type="number" className="NewActivity__form-input" placeholder="Distance in km" value={this.state.distanceInKiloMeteres} onChange={(e) => this.setState({distanceInKiloMeteres: e.target.value })} />
           </div>
           )}
-
-          <div className="NewActivity__form-row">
-            <label htmlFor="activityDuration" className="NewActivity__form-label">
-              <img src={iconDuration} alt="duration" className="NewActivity__form-labelImg" />Duration
-            </label>
-            <input id="activityDuration" type="text" className="NewActivity__form-input" placeholder="Time in minutes" step="600" value={this.state.movingTimeInMinutes} onChange={(e) => this.setState({movingTimeInMinutes: e.target.value })} />
-          </div>
 
           <div className="NewActivity__form-row">
             <input type="button" value="Save" className="Button NewActivity__form-save" onClick={this.addNewActivity}/>

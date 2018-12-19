@@ -28,10 +28,13 @@
 
   &__tiles{
     display:grid;
-    grid-template-columns:110px 110px 110px;
+    grid-template-columns:repeat(5, 110px);
     grid-column-gap: 10px;
     grid-row-gap: 10px;
     margin-bottom: 10px;
+    @media only screen and (max-width: 834px) {
+      grid-template-columns:repeat(3, 110px);
+    }
 
     &Item{
       width:110px;
@@ -48,9 +51,6 @@
 
       > *{
         pointer-events: none;
-      }
-      &:hover{
-        border-color: #000;
       }
       &.active{
         border-color: $pink-salmon;
