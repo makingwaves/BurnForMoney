@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Threading.Tasks;
+using BurnForMoney.Domain;
+using BurnForMoney.Domain.Events;
 using BurnForMoney.Functions.Configuration;
 using BurnForMoney.Functions.Shared.Functions.Extensions;
-using BurnForMoney.Infrastructure;
-using BurnForMoney.Infrastructure.Events;
 using Microsoft.Azure.EventGrid.Models;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.EventGrid;

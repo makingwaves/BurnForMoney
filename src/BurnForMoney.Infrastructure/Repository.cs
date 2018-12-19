@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using BurnForMoney.Infrastructure.Domain;
+using BurnForMoney.Domain.Domain;
 
-namespace BurnForMoney.Infrastructure
+namespace BurnForMoney.Domain
 {
     public interface IRepository<T> where T : IAggregateRoot, new()
     {

@@ -1,9 +1,14 @@
 ﻿using System;
 
-namespace BurnForMoney.Infrastructure.Commands
+namespace BurnForMoney.Domain.Commands
 {
     public class ActivateAthleteCommand : Command
     {
-        public Guid AthleteId { get; set; }
+        public readonly Guid AthleteId;
+
+        public ActivateAthleteCommand(Guid athleteId)
+        {
+            AthleteId = athleteId;
+        }
     }
 }

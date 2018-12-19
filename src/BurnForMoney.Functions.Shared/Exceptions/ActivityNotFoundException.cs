@@ -1,11 +1,11 @@
 using System;
 
-namespace BurnForMoney.Functions.Strava.External.Strava.Api.Exceptions
+namespace BurnForMoney.Functions.Shared.Exceptions
 {
     public class ActivityNotFoundException : Exception 
     {
         public ActivityNotFoundException(string id)
-            : base($"ActivityRow with id: {id} does not exists.")
+            : base($"Activity with id: {id} does not exists.")
         {
 
         }

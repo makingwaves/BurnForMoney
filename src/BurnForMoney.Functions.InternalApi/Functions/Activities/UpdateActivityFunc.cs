@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
+using BurnForMoney.Domain.Commands;
 using BurnForMoney.Functions.Shared.Extensions;
 using BurnForMoney.Functions.Shared.Queues;
-using BurnForMoney.Infrastructure.Commands;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
@@ -24,7 +24,17 @@ namespace BurnForMoney.Functions.InternalApi.Functions.Activities
             log.LogFunctionStart(FunctionsNames.UpdateActivity);
 
             var requestData = await req.ReadAsStringAsync();
-            var model = JsonConvert.DeserializeObject<UpdateActivityRequest>(requestData);
+
+            UpdateActivityRequest model;
+            try
+            {
+                model = JsonConvert.DeserializeObject<UpdateActivityRequest>(requestData);
+            }
+            catch (Exception ex)
+            {
+                return new BadRequestObjectResult($"Failed to deserialize data. {ex.Message}");
+            }
+
             try
             {
                 ValidateRequest(model);

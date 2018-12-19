@@ -1,6 +1,6 @@
-﻿using BurnForMoney.Functions.Configuration;
-using BurnForMoney.Infrastructure;
-using BurnForMoney.Infrastructure.Domain;
+﻿using BurnForMoney.Domain;
+using BurnForMoney.Domain.Domain;
+using BurnForMoney.Functions.Configuration;
 
 namespace BurnForMoney.Functions.Functions.CommandHandlers
 {

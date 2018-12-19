@@ -1,9 +1,9 @@
 ﻿using System;
-using BurnForMoney.Infrastructure.Domain;
+using BurnForMoney.Domain.Domain;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
-namespace BurnForMoney.Infrastructure.Events
+namespace BurnForMoney.Domain.Events
 {
     public class PointsGranted : DomainEvent
     {

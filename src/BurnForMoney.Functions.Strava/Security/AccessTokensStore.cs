@@ -6,8 +6,9 @@ using BurnForMoney.Functions.Shared;
 using Microsoft.Azure.KeyVault;
 using Microsoft.Azure.KeyVault.Models;
 using Microsoft.Extensions.Caching.Memory;
+using Newtonsoft.Json;
 
-namespace BurnForMoney.Functions.Strava.Functions
+namespace BurnForMoney.Functions.Strava.Security
 {
     public class AccessTokensStore
     {
@@ -27,9 +28,21 @@ namespace BurnForMoney.Functions.Strava.Functions
                 return accessToken;
             }
 
-            accessToken = await KeyVault.GetSecretAsync(keyVaultBaseUrl,
-                AccessTokensSecretNameConvention.AccessToken(athleteId));
+            try
+            {
+                accessToken = await KeyVault.GetSecretAsync(keyVaultBaseUrl,
+                    AccessTokensSecretNameConvention.AccessToken(athleteId));
+            }
+            catch (KeyVaultErrorException ex)
+            {
+                var error = JsonConvert.DeserializeObject<KeyVaultError>(ex.Response.Content);
+                if (error.Error.InnerError.Code == "SecretDisabled")
+                {
+                    throw new SecretDisabledException(athleteId, ex);
+                }
 
+                throw;
+            }
 
             AccessTokensCache.Set(athleteId, accessToken, CacheEntryOptions);
             return accessToken;
@@ -109,6 +122,24 @@ namespace BurnForMoney.Functions.Strava.Functions
             await KeyVault.UpdateSecretAsync(secretIdentifier.Identifier,
                 secretAttributes: new SecretAttributes(enabled: false));
             AccessTokensCache.Remove(athleteId);
+        }
+
+        public static async Task ActivateAccessTokenOfAsync(Guid athleteId, string keyVaultBaseUrl)
+        {
+            var secretIdentifier = new SecretIdentifier(keyVaultBaseUrl, AccessTokensSecretNameConvention.AccessToken(athleteId));
+
+            await KeyVault.UpdateSecretAsync(secretIdentifier.Identifier,
+                secretAttributes: new SecretAttributes(enabled: true));
+        }
+    }
+
+    [Serializable]
+    public class SecretDisabledException : KeyVaultErrorException
+    {
+        public SecretDisabledException(Guid athleteId, Exception inner)
+            :base($"Access token for athlete with id: {athleteId} is disabled.", inner)
+        {
+            
         }
     }
 }

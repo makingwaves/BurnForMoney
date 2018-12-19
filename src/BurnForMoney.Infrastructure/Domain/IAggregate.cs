@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace BurnForMoney.Infrastructure.Domain
+namespace BurnForMoney.Domain.Domain
 {
     public interface IAggregateRoot
     {

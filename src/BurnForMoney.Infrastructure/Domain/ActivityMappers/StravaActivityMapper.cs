@@ -1,4 +1,4 @@
-﻿namespace BurnForMoney.Infrastructure.Domain.ActivityMappers
+﻿namespace BurnForMoney.Domain.Domain.ActivityMappers
 {
     public static class StravaActivityMapper
     {

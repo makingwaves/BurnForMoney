@@ -7,7 +7,7 @@ using Microsoft.WindowsAzure.Storage.Table;
 using Newtonsoft.Json;
 using Streamstone;
 
-namespace BurnForMoney.Infrastructure
+namespace BurnForMoney.Domain
 {
     public interface IEventStore
     {

@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Threading.Tasks;
+using BurnForMoney.Domain.Domain;
 using BurnForMoney.Functions.InternalApi.Configuration;
 using BurnForMoney.Functions.Shared.Extensions;
 using BurnForMoney.Functions.Shared.Functions.Extensions;
 using BurnForMoney.Functions.Shared.Repositories;
-using BurnForMoney.Infrastructure.Domain;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
@@ -20,7 +20,6 @@ namespace BurnForMoney.Functions.InternalApi.Functions.Activities
             ILogger log, [Configuration] ConfigurationRoot configuration, string athleteId)
         {
             log.LogFunctionStart(FunctionsNames.GetAthleteActivities);
-
 
             var repository = new ActivityReadRepository(configuration.ConnectionStrings.SqlDbConnectionString);
             var activities = await repository.GetAthleteActivitiesAsync(Guid.Parse(athleteId), Source.None, DateTime.UtcNow.Month,

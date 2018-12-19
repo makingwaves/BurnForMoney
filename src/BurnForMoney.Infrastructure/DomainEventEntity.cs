@@ -1,6 +1,6 @@
 ﻿using Microsoft.WindowsAzure.Storage.Table;
 
-namespace BurnForMoney.Infrastructure
+namespace BurnForMoney.Domain
 {
     public class DomainEventEntity : TableEntity
     {

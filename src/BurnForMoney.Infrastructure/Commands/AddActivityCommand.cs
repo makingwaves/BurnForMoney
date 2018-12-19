@@ -1,7 +1,7 @@
 ﻿using System;
-using BurnForMoney.Infrastructure.Domain;
+using BurnForMoney.Domain.Domain;
 
-namespace BurnForMoney.Infrastructure.Commands
+namespace BurnForMoney.Domain.Commands
 {
     public class AddActivityCommand : Command
     {

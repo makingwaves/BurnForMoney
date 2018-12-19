@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
-using BurnForMoney.Infrastructure.Commands;
+using BurnForMoney.Domain.Commands;
 
-namespace BurnForMoney.Infrastructure.CommandHandlers
+namespace BurnForMoney.Domain.CommandHandlers
 {
     public interface ICommandHandler<in T> where T: Command
     {

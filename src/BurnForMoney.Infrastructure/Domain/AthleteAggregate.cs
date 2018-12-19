@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using BurnForMoney.Infrastructure.Domain.ActivityMappers;
-using BurnForMoney.Infrastructure.Events;
+using BurnForMoney.Domain.Domain.ActivityMappers;
+using BurnForMoney.Domain.Events;
 
-namespace BurnForMoney.Infrastructure.Domain
+namespace BurnForMoney.Domain.Domain
 {
     public class Athlete : IAggregateRoot
     {
@@ -65,13 +65,16 @@ namespace BurnForMoney.Infrastructure.Domain
 
         public void Apply(ActivityAdded @event)
         {
-            Activities.Add(new Activity(@event.ActivityId, @event.ExternalId, @event.DistanceInMeters, @event.MovingTimeInMinutes, @event.ActivityType, @event.ActivityCategory, @event.StartDate, @event.Source, @event.Points));
+            Activities.Add(new Activity(@event.ActivityId, @event.ExternalId, @event.DistanceInMeters,
+                @event.MovingTimeInMinutes, @event.ActivityType, @event.ActivityCategory, @event.StartDate,
+                @event.Source, @event.Points));
         }
 
         public void Apply(ActivityUpdated @event)
         {
             var activity = Activities.Single(a => a.Id.Equals(@event.ActivityId));
-            activity.Update(@event.DistanceInMeters, @event.MovingTimeInMinutes, @event.ActivityType, @event.ActivityCategory, @event.StartDate, @event.Points);
+            activity.Update(@event.DistanceInMeters, @event.MovingTimeInMinutes, @event.ActivityType,
+                @event.ActivityCategory, @event.StartDate, @event.Points);
         }
 
         public void Apply(ActivityDeleted @event)
@@ -80,19 +83,9 @@ namespace BurnForMoney.Infrastructure.Domain
             Activities.Remove(activity);
         }
 
-        public void Apply(PointsGranted @event)
-        {
-            // no-op
-        }
-
-        public void Apply(PointsLost @event)
-        {
-            // no-op
-        }
-
         public Athlete()
         {
-            
+
         }
 
         public void LoadsFromHistory(IEnumerable<DomainEvent> history)
@@ -107,7 +100,7 @@ namespace BurnForMoney.Infrastructure.Domain
 
         private void ApplyChange(DomainEvent @event, bool isNew)
         {
-            ((dynamic)this).Apply((dynamic)@event);
+            ((dynamic) this).Apply((dynamic) @event);
             if (isNew)
             {
                 _changes.Add(@event);
@@ -116,6 +109,7 @@ namespace BurnForMoney.Infrastructure.Domain
             {
                 OriginalVersion++;
             }
+
             Version++;
         }
 
@@ -124,7 +118,8 @@ namespace BurnForMoney.Infrastructure.Domain
             // no-op
         }
 
-        public Athlete(Guid id, string externalId, string firstName, string lastName, string profilePictureUrl, Source source)
+        public Athlete(Guid id, string externalId, string firstName, string lastName, string profilePictureUrl,
+            Source source)
         {
             if (string.IsNullOrWhiteSpace(firstName))
             {
@@ -134,7 +129,8 @@ namespace BurnForMoney.Infrastructure.Domain
             ApplyChange(new AthleteCreated(id, externalId, firstName, lastName, profilePictureUrl, source));
         }
 
-        public void AddActivity(Guid id, string externalId, string activityType, double distanceInMeters, double movingTimeInMinutes, DateTime startDate, Source source)
+        public void AddActivity(Guid id, string externalId, string activityType, double distanceInMeters,
+            double movingTimeInMinutes, DateTime startDate, Source source)
         {
             if (!IsActive)
             {
@@ -145,14 +141,17 @@ namespace BurnForMoney.Infrastructure.Domain
             {
                 throw new ArgumentNullException(nameof(activityType));
             }
+
             if (distanceInMeters < 0)
             {
                 throw new InvalidOperationException("Distance must be greater or equal to 0.");
             }
+
             if (movingTimeInMinutes <= 0)
             {
                 throw new InvalidOperationException("Moving time must be greater than 0.");
             }
+
             if (startDate.Year < 2018)
             {
                 throw new InvalidOperationException("Year must be greater than 2017.");
@@ -166,11 +165,13 @@ namespace BurnForMoney.Infrastructure.Domain
             var category = MapToActivityCategory(activityType, source);
             var points = PointsCalculator.Calculate(category, distanceInMeters, movingTimeInMinutes);
 
-            ApplyChange(new ActivityAdded(id, this.Id, externalId, distanceInMeters, movingTimeInMinutes, activityType, category, startDate, source, points));
+            ApplyChange(new ActivityAdded(id, this.Id, externalId, distanceInMeters, movingTimeInMinutes, activityType,
+                category, startDate, source, points));
             ApplyChange(new PointsGranted(this.Id, points, PointsSource.Activity, id));
         }
 
-        public void UpdateActivity(Guid id, string activityType, double distanceInMeters, double movingTimeInMinutes, DateTime startDate)
+        public void UpdateActivity(Guid id, string activityType, double distanceInMeters, double movingTimeInMinutes,
+            DateTime startDate)
         {
             if (!IsActive)
             {
@@ -181,14 +182,17 @@ namespace BurnForMoney.Infrastructure.Domain
             {
                 throw new ArgumentNullException(nameof(activityType));
             }
+
             if (distanceInMeters < 0)
             {
                 throw new InvalidOperationException("Distance must be greater or equal to 0.");
             }
+
             if (movingTimeInMinutes <= 0)
             {
                 throw new InvalidOperationException("Moving time must be greater than 0.");
             }
+
             if (startDate.Year < 2018)
             {
                 throw new InvalidOperationException("Year must be greater than 2017.");
@@ -206,24 +210,27 @@ namespace BurnForMoney.Infrastructure.Domain
                 activity.MovingTimeInMinutes == movingTimeInMinutes &&
                 activity.StartDate == startDate)
             {
-                throw new InvalidOperationException("Update operation must change at least one field. No changes detected.");
+                throw new InvalidOperationException(
+                    "Update operation must change at least one field. No changes detected.");
             }
 
             var category = MapToActivityCategory(activityType, activity.Source);
             var points = PointsCalculator.Calculate(category, distanceInMeters, movingTimeInMinutes);
 
-            ApplyChange(new ActivityUpdated(id, distanceInMeters, movingTimeInMinutes, activityType, category, startDate, points));
+            ApplyChange(new ActivityUpdated(id, distanceInMeters, movingTimeInMinutes, activityType, category,
+                startDate, points));
 
             var originalPoints = Activities.Where(p => p.Id == id).Sum(l => l.Points);
-            var receivedPoints = points - originalPoints;
+            var pointsDelta = points - originalPoints;
 
-            if (receivedPoints > 0)
+            if (pointsDelta > 0)
             {
-                ApplyChange(new PointsGranted(this.Id, receivedPoints, PointsSource.Activity, id));
+                ApplyChange(new PointsGranted(this.Id, pointsDelta, PointsSource.Activity, id));
             }
-            if (receivedPoints < 0)
+
+            if (pointsDelta < 0)
             {
-                ApplyChange(new PointsLost(this.Id, receivedPoints, PointsSource.Activity, id));
+                ApplyChange(new PointsLost(this.Id, pointsDelta, PointsSource.Activity, id));
             }
         }
 
@@ -293,7 +300,8 @@ namespace BurnForMoney.Infrastructure.Domain
 
         public double Points { get; set; }
 
-        public Activity(Guid activityId, string externalId, double distanceInMeters, double movingTimeInMinutes, string activityType, ActivityCategory category, DateTime startDate, Source source, double points)
+        public Activity(Guid activityId, string externalId, double distanceInMeters, double movingTimeInMinutes,
+            string activityType, ActivityCategory category, DateTime startDate, Source source, double points)
         {
             Id = activityId;
             ExternalId = externalId;
@@ -306,7 +314,8 @@ namespace BurnForMoney.Infrastructure.Domain
             Points = points;
         }
 
-        public void Update(double distanceInMeters, double movingTimeInMinutes, string activityType, ActivityCategory category, DateTime startDate, double points)
+        public void Update(double distanceInMeters, double movingTimeInMinutes, string activityType,
+            ActivityCategory category, DateTime startDate, double points)
         {
             DistanceInMeters = distanceInMeters;
             MovingTimeInMinutes = movingTimeInMinutes;

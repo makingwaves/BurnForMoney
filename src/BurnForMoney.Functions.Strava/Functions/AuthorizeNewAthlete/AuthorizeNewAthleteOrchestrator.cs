@@ -3,7 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using BurnForMoney.Functions.Shared.Extensions;
 using BurnForMoney.Functions.Strava.Exceptions;
-using BurnForMoney.Functions.Strava.Functions.Dto;
+using BurnForMoney.Functions.Strava.Functions.AuthorizeNewAthlete.Dto;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 using ExecutionContext = Microsoft.Azure.WebJobs.ExecutionContext;
