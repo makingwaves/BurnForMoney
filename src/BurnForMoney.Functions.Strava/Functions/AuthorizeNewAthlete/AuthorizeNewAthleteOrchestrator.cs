@@ -34,7 +34,7 @@ namespace BurnForMoney.Functions.Strava.Functions.AuthorizeNewAthlete
                     {
                         //Handle = ex => !(ex.InnerException is AthleteAlreadyExistsException)
                         Handle = ex => !ex.InnerException.Message.StartsWith(nameof(AthleteAlreadyExistsException)) // temp fix: https://github.com/Azure/azure-functions-durable-extension/issues/84
-                    }, new A_ExchangeTokenAndGetAthleteSummaryInput(athleteId, authorizationCode));
+                    }, new ExchangeTokenAndGetAthleteSummaryInput(athleteId, authorizationCode));
                 if (!context.IsReplaying)
                 {
                     log.LogInformation(FunctionsNames.O_AuthorizeNewAthlete, $"Exchanged token for user {athlete.FirstName} {athlete.LastName}.");

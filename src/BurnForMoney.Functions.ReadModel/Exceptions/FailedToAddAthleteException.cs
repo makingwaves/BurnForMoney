@@ -1,6 +1,6 @@
 ﻿using System.Data;
 
-namespace BurnForMoney.Functions.Strava.Exceptions
+namespace BurnForMoney.Functions.ReadModel.Exceptions
 {
     public class FailedToAddAthleteException : DataException
     {

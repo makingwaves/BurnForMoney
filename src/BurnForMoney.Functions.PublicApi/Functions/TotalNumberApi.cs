@@ -137,6 +137,15 @@ namespace BurnForMoney.Functions.PublicApi.Functions
     {
         public int Compare(string x, string y)
         {
+            if (x == null)
+            {
+                throw new ArgumentNullException(nameof(x));
+            }
+            if (y == null)
+            {
+                throw new ArgumentNullException(nameof(y));
+            }
+
             var xSplit = x.Split('/');
             var xDate = new DateTime(int.Parse(xSplit[0]), int.Parse(xSplit[1]), 1, 0, 0, 0);
             var ySplit = y.Split('/');

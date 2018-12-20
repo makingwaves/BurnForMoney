@@ -15,6 +15,7 @@ namespace BurnForMoney.Functions.InternalApi
         public void Configure(IWebJobsBuilder builder)
         {
             var serviceConfig = builder.Services.FirstOrDefault(s => s.ServiceType == typeof(IConfiguration));
+            // ReSharper disable once PossibleNullReferenceException
             var rootConfig = (IConfiguration)serviceConfig.ImplementationInstance;
 
             var keyvaultName = rootConfig["KeyVaultName"];
@@ -22,7 +23,7 @@ namespace BurnForMoney.Functions.InternalApi
                 .AddConfiguration(rootConfig).AddAzureKeyVault($"https://{keyvaultName}.vault.azure.net/").Build();
 
             builder.Services.AddSingleton<IConfiguration>(config);
-            builder.AddExtension(new ConfigurationExtensionConfigProvider<InternalApi.Configuration.ConfigurationRoot>(
+            builder.AddExtension(new ConfigurationExtensionConfigProvider<Configuration.ConfigurationRoot>(
                 ApplicationConfiguration.GetSettings()));
         }
     }

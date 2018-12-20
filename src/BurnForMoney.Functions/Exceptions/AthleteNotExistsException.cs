@@ -1,4 +1,0 @@
-﻿namespace BurnForMoney.Functions.Exceptions
-{
-
-}

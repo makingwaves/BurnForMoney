@@ -1,4 +1,5 @@
 ﻿using System;
+using BurnForMoney.Functions.Shared.Configuration;
 using BurnForMoney.Functions.Shared.Extensions;
 using Microsoft.Extensions.Configuration;
 

@@ -31,9 +31,6 @@ namespace BurnForMoney.Functions.InternalApi.Functions.Athletes
             }
 
             throw new NotImplementedException();
-
-            log.LogFunctionEnd(FunctionsNames.AddAthlete);
-            return new OkObjectResult("Request received");
         }
 
         private static void ValidateRequest(CreateAthleteRequest request)

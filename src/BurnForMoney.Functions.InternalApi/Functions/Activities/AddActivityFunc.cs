@@ -52,6 +52,7 @@ namespace BurnForMoney.Functions.InternalApi.Functions.Activities
                 Id = ActivityIdentity.Next(),
                 AthleteId = Guid.Parse(athleteId),
                 ActivityType = model.Type,
+                // ReSharper disable once PossibleInvalidOperationException
                 StartDate = model.StartDate.Value,
                 DistanceInMeters = model.DistanceInMeters ?? 0,
                 MovingTimeInMinutes = model.MovingTimeInMinutes,

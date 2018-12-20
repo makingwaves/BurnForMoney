@@ -15,6 +15,7 @@ namespace BurnForMoney.Functions
         public void Configure(IWebJobsBuilder builder)
         {
             var serviceConfig = builder.Services.FirstOrDefault(s => s.ServiceType == typeof(IConfiguration));
+            // ReSharper disable once PossibleNullReferenceException
             var rootConfig = (IConfiguration)serviceConfig.ImplementationInstance;
 
             var keyvaultName = rootConfig["KeyVaultName"];

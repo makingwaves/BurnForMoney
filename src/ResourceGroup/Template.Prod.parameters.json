@@ -23,7 +23,7 @@
     "sqlServerPassword": {
       "reference": {
         "keyVault": {
-          "id": "/subscriptions/4920733c-19cb-4434-819c-176ee48f6453/resourceGroups/BurnForMoney-Prod/providers/Microsoft.KeyVault/vaults/burnformoneykvprod"
+          "id": "/subscriptions/ac42506f-03e1-43af-a32b-75306324c356/resourceGroups/BurnForMoney_Prod/providers/Microsoft.KeyVault/vaults/burnformoneykvprod"
         },
         "secretName": "sqlServerPassword"
       }
@@ -31,7 +31,7 @@
     "strava.clientId": {
       "reference": {
         "keyVault": {
-          "id": "/subscriptions/4920733c-19cb-4434-819c-176ee48f6453/resourceGroups/BurnForMoney-Prod/providers/Microsoft.KeyVault/vaults/burnformoneykvprod"
+          "id": "/subscriptions/ac42506f-03e1-43af-a32b-75306324c356/resourceGroups/BurnForMoney_Prod/providers/Microsoft.KeyVault/vaults/burnformoneykvprod"
         },
         "secretName": "strava--ClientId"
       }
