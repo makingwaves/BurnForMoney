@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
+import './NewActivity.css';
+
 import DashboardHeader from '../DashboardHeader.js';
 
-import './NewActivity.css';
 import iconDistance from 'img/icon-distance.svg';
 import iconDuration from 'img/icon-duration.svg';
 
@@ -18,11 +19,11 @@ class NewActivity extends Component {
       startDate: new Date().toISOString().substr(0, 10),
       category: '',
       distanceInKiloMeteres: '',
-      movingTimeInMinutes: ''
+      movingTimeInHours: 0,
+      movingTimeInMinutes: 0
     };
   }
   setCategory = (e) => {
-    console.log('SETCategory:', e.target);
     if(this.categoriesWithDistance.includes(e.target.getAttribute('data-category'))){
       this.setState({
         category: e.target.getAttribute('data-category'),
@@ -37,18 +38,21 @@ class NewActivity extends Component {
   }
 
   addNewActivity = () => {
-    const hhmm = this.state.movingTimeInMinutes;
-    const t = hhmm.split(':');
-    let timeInMinutes = (+t[0]) * 60 + (+t[1]);
-
+    let timeInMinutes = (this.state.movingTimeInHours) * 60 + (this.state.movingTimeInMinutes)*1;
+    console.log('timeInMinutes', timeInMinutes)
+    if(isNaN(timeInMinutes) || timeInMinutes <= 0){
+      this.showError('Type correct time');
+      return false;
+    }
     let newEntry = {
       "StartDate": this.state.startDate, // "yyyy-mm-dd",
-      "Category": this.state.category,
+      "Type": this.state.category,
       "DistanceInMeters": parseFloat(this.state.distanceInKiloMeteres, 10)*1000,
       "MovingTimeInMinutes": timeInMinutes
     };
     console.log("Adding new ENTRY: ",newEntry);
-    fetch(this.api_url+"api/athlete/"+"3bf4898750c14f519bf7eee3027b3700"+"/activities", {
+
+    fetch(this.api_url+"api/athlete/"+"675f8926-12ed-499a-b4af-0a9f975c50c0"+"/activities", {
         method: 'POST',
         body: JSON.stringify(newEntry)
     }).then(
@@ -57,49 +61,65 @@ class NewActivity extends Component {
     );
   };
 
+  showError = (errorMsg) => {
+    console.log('----errorMsg', errorMsg);
+  }
+
   render() {
     console.log('category: '+ this.state.category, 'show:'+ this.state.showDistance);
 
     return (
-      <div className="NewActivity">
+      <React.Fragment>
         <DashboardHeader header="Add activity" />
-        <div className="Dashboard-content NewActivity__form">
-          <div className="NewActivity__form-row">
-            <label htmlFor="activityDate" className="NewActivity__form-label">Date</label>
-            <input id="activityDate" type="date" required value={this.state.startDate} onChange={(e) => this.setState({startDate: e.target.value})}/>
-          </div>
+        <div className="Dashboard-content NewActivity">
+          <div className=" NewActivity__form">
+            <div className="NewActivity__form-row">
+              <label htmlFor="activityDate" className="NewActivity__form-label">Date</label>
+              <input id="activityDate" type="date" required value={this.state.startDate} onChange={(e) => this.setState({startDate: e.target.value})}/>
+            </div>
 
-          <div className="NewActivity__tiles">
-            {this.props.categories.map( (i) =>
-              <div key={i.category} data-category={i.category} onClick={(e) => this.setCategory(e)} className={`NewActivity__tilesItem ${this.state.category === i.category ? 'active' : ''}`}>
-                <i.categoryIconComponent className="NewActivity__tilesItem-iconComponent" />
-                {/* <img src={i.categoryIcon} alt={i.category} className="NewActivity__tilesItem-icon" /> */}
-                <h6 className="NewActivity__tilesItem-category">{i.category}</h6>
-                <p className="NewActivity__tilesItem-description">{i.categoryDescription}</p>
-              </div>)}
-          </div>
+            <div className="NewActivity__tiles">
+              {this.props.categories.map( (i) =>
+                <div key={i.category} data-category={i.category} onClick={(e) => this.setCategory(e)} className={`NewActivity__tilesItem ${this.state.category === i.category ? 'active' : ''}`}>
+                  <i.categoryIconComponent className="NewActivity__tilesItem-iconComponent" />
+                  {/* <img src={i.categoryIcon} alt={i.category} className="NewActivity__tilesItem-icon" /> */}
+                  <h6 className="NewActivity__tilesItem-category">{i.category}</h6>
+                  <p className="NewActivity__tilesItem-description">{i.categoryDescription}</p>
+                </div>)}
+            </div>
 
-          <div className="NewActivity__form-row">
-            <label htmlFor="activityDuration" className="NewActivity__form-label">
-              <img src={iconDuration} alt="duration" className="NewActivity__form-labelImg" />Duration
-            </label>
-            <input id="activityDuration" type="text" className="NewActivity__form-input" placeholder="Time in minutes" step="600" value={this.state.movingTimeInMinutes} onChange={(e) => this.setState({movingTimeInMinutes: e.target.value })} />
-          </div>
+            <div className="NewActivity__form-row">
+              <label htmlFor="activityDurationHours" className="NewActivity__form-label">
+                <img src={iconDuration} alt="duration" className="NewActivity__form-labelImg" />Duration
+              </label>
+              <div className="NewActivity__form-input Duration">
+                <input id="activityDurationHours" type="number" min="0" max="24" className="NewActivity__form-inputHours" placeholder="00" step="1" value={this.state.movingTimeInHours} onChange={(e) => this.setState({movingTimeInHours: e.target.value })} />
+                <div className="NewActivity__form-inputUnit">hr</div>
+              </div>
+              <div className="NewActivity__form-input Duration">
+                <input id="activityDurationMinutes" type="number" min="0" max="59" className="NewActivity__form-inputMinutes" placeholder="00" step="10" value={this.state.movingTimeInMinutes} onChange={(e) => this.setState({movingTimeInMinutes: e.target.value })} />
+                <div className="NewActivity__form-inputUnit">min</div>
+              </div>
+            </div>
 
-          {this.state.showDistance && (
-          <div className="NewActivity__form-row">
-            <label htmlFor="activityDistance" className="NewActivity__form-label">
-              <img src={iconDistance} alt="distance" className="NewActivity__form-labelImg" />Distance
-            </label>
-            <input id="activityDistance" type="number" className="NewActivity__form-input" placeholder="Distance in km" value={this.state.distanceInKiloMeteres} onChange={(e) => this.setState({distanceInKiloMeteres: e.target.value })} />
-          </div>
-          )}
+            {this.state.showDistance && (
+            <div className="NewActivity__form-row">
+              <label htmlFor="activityDistance" className="NewActivity__form-label">
+                <img src={iconDistance} alt="distance" className="NewActivity__form-labelImg" />Distance
+              </label>
+              <div className="NewActivity__form-input Distance">
+                <input id="activityDistance" type="number" className="NewActivity__form-inputKilometeres" placeholder="Enter distance" value={this.state.distanceInKiloMeteres} onChange={(e) => this.setState({distanceInKiloMeteres: e.target.value })} />
+                <div className="NewActivity__form-inputUnit">kilometers</div>
+              </div>
+            </div>
+            )}
 
-          <div className="NewActivity__form-row">
-            <input type="button" value="Save" className="Button NewActivity__form-save" onClick={this.addNewActivity}/>
+            <div className="NewActivity__form-row">
+              <input type="button" value="Save" className="Button NewActivity__form-save" onClick={this.addNewActivity}/>
+            </div>
           </div>
         </div>
-      </div>
+      </React.Fragment>
     );
   }
 

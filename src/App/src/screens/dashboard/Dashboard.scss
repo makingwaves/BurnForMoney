@@ -65,65 +65,62 @@
       padding: 0;
     }
   }
-  &
+}
 
-  .Button{
-    border-radius:25px;
-    border: none;
+.Button{
+  border-radius:25px;
+  border: none;
+}
+input {
+  &[type="date"],
+  &[type="text"],
+  &[type="number"]{
+    color:#000;
+    font-family:'AftenScreen', sans-serif;
+    font-size: 16px;
+    box-sizing: border-box;
+    background-color: #fff;
+    height: 45px;
+    border: 1px solid $lighter-gray;
+    border-radius: 5px;
+    padding: 5px 5px 5px 20px;
+    position: relative;
+    outline: none;
+
+    &:focus{
+      border-color:$pink-salmon;
+    }
   }
-  input {
-    &[type="date"],
-    &[type="text"],
-    &[type="number"]{
-      color:#000;
-      font-family:'AftenScreen', sans-serif;
-      font-size: 16px;
 
-      box-sizing: border-box;
-      background-color: #fff;
-      width:230px;
+  &[type="date"]{
+    padding-right: 0px;
+
+    &::-webkit-calendar-picker-indicator{
+      width:45px;
       height: 45px;
-      border: 1px solid $lighter-gray;
-      border-radius: 5px;
-      padding: 5px 5px 5px 20px;
-      position: relative;
-      outline: none;
-
-      &:focus{
-        border-color:$pink-salmon;
-      }
+      color: rgba(0,0,0,0);
+      background-color: #fff;
     }
-
-    &[type="date"]{
-      padding-right: 0px;
-
-      &::-webkit-calendar-picker-indicator{
-        width:45px;
-        height: 45px;
-        color: rgba(0,0,0,0);
-        background-color: #fff;
-      }
-      &::-webkit-inner-spin-button {
-        -webkit-appearance: none;
-        margin: 0;
-      }
-      &:after{
-        content:'';
-        width:45px;
-        height:45px;
-        position: absolute;
-        right: 0;
-        top:0;
-        background:url('~img/icon-calendar.svg') no-repeat center center;
-        background-size: auto;
-        cursor: pointer;
-        pointer-events: none;
-        border-left: 1px solid $lighter-gray;
-      }
-      &:focus:after{
-        border-left-color: $pink-salmon;
-      }
+    &::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
     }
-
+    &:after{
+      content:'';
+      width:45px;
+      height:45px;
+      position: absolute;
+      right: 0;
+      top:0;
+      background:url('~img/icon-calendar.svg') no-repeat center center;
+      background-size: auto;
+      cursor: pointer;
+      pointer-events: none;
+      border-left: 1px solid $lighter-gray;
+    }
+    &:focus:after{
+      border-left-color: $pink-salmon;
+    }
   }
+
 }
