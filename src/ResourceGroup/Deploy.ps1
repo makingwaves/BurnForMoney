@@ -31,7 +31,7 @@ catch{
 }
 Write-Succeed
 
-$ResourceGroupName = "BurnForMoney-$Environment";
+$ResourceGroupName = "BurnForMoney_$Environment";
 $KeyVaultName = "burnformoneykv" + $Environment.ToLower();
 $ResourceGroupLocation= 'West Europe';
 
