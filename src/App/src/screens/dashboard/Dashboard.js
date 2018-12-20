@@ -112,25 +112,22 @@ class Dashboard extends Component {
     return (
       <div className="Dashboard">
         <aside className="Dashboard-side">
+          <img className="Dashboard-logo" src={logo} alt="Burn for Money" />
+          <ul className="Dashboard-navigation">
 
+            <li className="Dashboard-navigationItem"><Link to="/dashboard/athletes-list" className="Dashboard-navigationItem-link">Athletes List</Link></li>
+          </ul>
+          <Link exact="true" to="/dashboard/new-activity" className="Button Dashboard-navigation-addActivity">Add activity</Link>
         </aside>
         <section className="Dashboard-main">
-
+          <Switch>
+            <Route exact path="/dashboard/new-activity" render={(props) => (
+              <NewActivity {...props} categories={this.state.categories}/>
+            )} />
+            <Route path="/dashboard/athletes-list" component={AthletesList} />
+            <Route path="/dashboard/athlete/:athleteId" component={AthleteProfile} />
+          </Switch>
         </section>
-
-        <div className="Header">
-          <img src={logo} alt="Burn for Money" />
-          <Link exact="true" to="/dashboard/new-activity">New Activity</Link>
-          <Link to="/dashboard/athletes-list">Athletes List</Link>
-        </div>
-        <Switch>
-          <Route exact path="/dashboard/new-activity" render={(props) => (
-            <NewActivity {...props} categories={this.state.categories}/>
-          )} />
-          <Route path="/dashboard/athletes-list" component={AthletesList} />
-          <Route path="/dashboard/athlete/:athleteId" component={AthleteProfile} />
-        </Switch>
-
       </div>
     )
   }
