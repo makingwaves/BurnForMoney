@@ -12,7 +12,7 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
-namespace BurnForMoney.Functions.Functions._Support
+namespace BurnForMoney.Functions.ReadModel.Functions._Support
 {
     public static class ArchivalDataFunc
     {
