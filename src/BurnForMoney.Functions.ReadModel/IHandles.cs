@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using BurnForMoney.Domain;
 
-namespace BurnForMoney.ReadModel
+namespace BurnForMoney.Functions.ReadModel
 {
     public interface IHandles<in T> where T: DomainEvent
     {

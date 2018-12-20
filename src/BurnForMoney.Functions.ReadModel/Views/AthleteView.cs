@@ -1,10 +1,10 @@
 ﻿using System.Threading.Tasks;
 using BurnForMoney.Domain.Events;
+using BurnForMoney.Functions.ReadModel.Exceptions;
 using BurnForMoney.Functions.Shared.Persistence;
-using BurnForMoney.ReadModel.Exceptions;
 using Dapper;
 
-namespace BurnForMoney.ReadModel.Views
+namespace BurnForMoney.Functions.ReadModel.Views
 {
     public class AthleteView : IHandles<AthleteCreated>, IHandles<AthleteDeactivated>, IHandles<AthleteActivated>
     {

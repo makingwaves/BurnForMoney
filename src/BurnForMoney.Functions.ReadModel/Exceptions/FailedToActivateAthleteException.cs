@@ -1,6 +1,6 @@
 ﻿using System.Data;
 
-namespace BurnForMoney.ReadModel.Exceptions
+namespace BurnForMoney.Functions.ReadModel.Exceptions
 {
     public class FailedToActivateAthleteException : DataException
     {

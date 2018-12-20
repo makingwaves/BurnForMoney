@@ -7,7 +7,6 @@ using BurnForMoney.Functions.Shared.Helpers;
 using BurnForMoney.Functions.Shared.Web;
 using BurnForMoney.Functions.Strava.Configuration;
 using BurnForMoney.Functions.Strava.External.Strava.Api.Auth;
-using BurnForMoney.Functions.Strava.External.Strava.Api.Exceptions;
 using BurnForMoney.Functions.Strava.External.Strava.Api.Model;
 using Newtonsoft.Json;
 using RestSharp;

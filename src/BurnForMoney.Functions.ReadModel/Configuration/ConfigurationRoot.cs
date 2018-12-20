@@ -1,4 +1,4 @@
-namespace BurnForMoney.ReadModel.Configuration
+namespace BurnForMoney.Functions.ReadModel.Configuration
 {
     public class ConfigurationRoot
     {

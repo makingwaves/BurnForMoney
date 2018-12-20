@@ -34,7 +34,7 @@ namespace BurnForMoney.Functions.Strava.Functions.AuthorizeNewAthlete
         }
 
         [FunctionName(FunctionsNames.A_ExchangeTokenAndGetAthleteSummary)]
-        public static async Task<AthleteDto> A_ExchangeTokenAndGetAthleteSummaryAsync([ActivityTrigger]A_ExchangeTokenAndGetAthleteSummaryInput input, ILogger log,
+        public static async Task<AthleteDto> A_ExchangeTokenAndGetAthleteSummaryAsync([ActivityTrigger]ExchangeTokenAndGetAthleteSummaryInput input, ILogger log,
             [Configuration] ConfigurationRoot configuration)
         {
             log.LogFunctionStart(FunctionsNames.A_ExchangeTokenAndGetAthleteSummary);
@@ -161,12 +161,12 @@ namespace BurnForMoney.Functions.Strava.Functions.AuthorizeNewAthlete
         public string OrchestrationId { get; set; }
     }
 
-    public class A_ExchangeTokenAndGetAthleteSummaryInput
+    public class ExchangeTokenAndGetAthleteSummaryInput
     {
         public Guid AthleteId { get; set; }
         public string AuthorizationCode { get; set; }
 
-        public A_ExchangeTokenAndGetAthleteSummaryInput(Guid athleteId, string authorizationCode)
+        public ExchangeTokenAndGetAthleteSummaryInput(Guid athleteId, string authorizationCode)
         {
             AthleteId = athleteId;
             AuthorizationCode = authorizationCode;

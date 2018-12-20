@@ -165,9 +165,9 @@ namespace BurnForMoney.Domain.Domain
             var category = MapToActivityCategory(activityType, source);
             var points = PointsCalculator.Calculate(category, distanceInMeters, movingTimeInMinutes);
 
-            ApplyChange(new ActivityAdded(id, this.Id, externalId, distanceInMeters, movingTimeInMinutes, activityType,
+            ApplyChange(new ActivityAdded(id, Id, externalId, distanceInMeters, movingTimeInMinutes, activityType,
                 category, startDate, source, points));
-            ApplyChange(new PointsGranted(this.Id, points, PointsSource.Activity, id));
+            ApplyChange(new PointsGranted(Id, points, PointsSource.Activity, id));
         }
 
         public void UpdateActivity(Guid id, string activityType, double distanceInMeters, double movingTimeInMinutes,
@@ -206,8 +206,8 @@ namespace BurnForMoney.Domain.Domain
 
             if (activity.Id == id &&
                 activity.ActivityType == activityType &&
-                activity.DistanceInMeters == distanceInMeters &&
-                activity.MovingTimeInMinutes == movingTimeInMinutes &&
+                Math.Abs(activity.DistanceInMeters - distanceInMeters) < 0.05 &&
+                Math.Abs(activity.MovingTimeInMinutes - movingTimeInMinutes) < 0.05 &&
                 activity.StartDate == startDate)
             {
                 throw new InvalidOperationException(
@@ -225,12 +225,12 @@ namespace BurnForMoney.Domain.Domain
 
             if (pointsDelta > 0)
             {
-                ApplyChange(new PointsGranted(this.Id, pointsDelta, PointsSource.Activity, id));
+                ApplyChange(new PointsGranted(Id, pointsDelta, PointsSource.Activity, id));
             }
 
             if (pointsDelta < 0)
             {
-                ApplyChange(new PointsLost(this.Id, pointsDelta, PointsSource.Activity, id));
+                ApplyChange(new PointsLost(Id, pointsDelta, PointsSource.Activity, id));
             }
         }
 
@@ -250,7 +250,7 @@ namespace BurnForMoney.Domain.Domain
             ApplyChange(new ActivityDeleted(id));
 
             var originalPoints = Activities.Where(p => p.Id == id).Sum(l => l.Points);
-            ApplyChange(new PointsLost(this.Id, originalPoints, PointsSource.Activity, id));
+            ApplyChange(new PointsLost(Id, originalPoints, PointsSource.Activity, id));
         }
 
         public void Activate()
@@ -260,7 +260,7 @@ namespace BurnForMoney.Domain.Domain
                 throw new InvalidOperationException("Athlete is already activated.");
             }
 
-            ApplyChange(new AthleteActivated(this.Id));
+            ApplyChange(new AthleteActivated(Id));
         }
 
 
@@ -271,7 +271,7 @@ namespace BurnForMoney.Domain.Domain
                 throw new InvalidOperationException("Athlete is already deactivated.");
             }
 
-            ApplyChange(new AthleteDeactivated(this.Id));
+            ApplyChange(new AthleteDeactivated(Id));
         }
 
         private static ActivityCategory MapToActivityCategory(string activityType, Source source)
