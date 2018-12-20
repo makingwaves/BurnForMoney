@@ -11,7 +11,7 @@ using Microsoft.Azure.WebJobs.Extensions.EventGrid;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 
-namespace BurnForMoney.Functions.ReadModel
+namespace BurnForMoney.Functions.ReadModel.Functions
 {
     public static class ReadModelSubscription
     {

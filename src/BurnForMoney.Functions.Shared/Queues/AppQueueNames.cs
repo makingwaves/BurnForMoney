@@ -11,7 +11,5 @@
         public const string DeleteActivityRequests = "delete-activity-requests";
 
         public const string NotificationsToSend = "notifications-to-send";
-
-        public const string CalculateMonthlyResults = "calculate-monthly-results";
     }
 }

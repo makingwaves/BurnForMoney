@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
-using BurnForMoney.Functions.Functions.ResultsSnapshots.Dto;
+using BurnForMoney.Functions.ReadModel.Functions.ResultsSnapshots;
+using BurnForMoney.Functions.ReadModel.Functions.ResultsSnapshots.Dto;
 using BurnForMoney.Functions.Shared.Extensions;
-using BurnForMoney.Functions.Shared.Queues;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
@@ -10,15 +10,18 @@ using Microsoft.Extensions.Logging;
 using Microsoft.WindowsAzure.Storage.Queue;
 using Newtonsoft.Json;
 
-namespace BurnForMoney.Functions.Functions._Support
+namespace BurnForMoney.Functions.ReadModel.Functions._Support
 {
     public static class ActivitiesOperationsFunc
     {
-        [FunctionName(SupportFunctionsNames.CollectMonthlyStatistics)]
+        public const string FUNCTIONNAME_CollectMonthlyStatistics =
+            "CollectMonthlyStatistics";
+
+        [FunctionName(FUNCTIONNAME_CollectMonthlyStatistics)]
         public static async Task<IActionResult> CollectMonthlyStatistics([HttpTrigger(AuthorizationLevel.Admin, "get", Route = "support/activities/collectmonthlystatistics/{year:int:min(2018)}/{month:range(1,12)}")]HttpRequest req, ILogger log,
-            [Queue(AppQueueNames.CalculateMonthlyResults)] CloudQueue outputQueue, int year, int month)
+            [Queue(QueueNames.CalculateMonthlyResults)] CloudQueue outputQueue, int year, int month)
         {
-            log.LogFunctionStart(SupportFunctionsNames.CollectMonthlyStatistics);
+            log.LogFunctionStart(FUNCTIONNAME_CollectMonthlyStatistics);
 
             if (month < 1 || month > 12)
             {
@@ -42,9 +45,9 @@ namespace BurnForMoney.Functions.Functions._Support
 
             var json = JsonConvert.SerializeObject(request);
             await outputQueue.AddMessageAsync(new CloudQueueMessage(json));
-            log.LogInformation(SupportFunctionsNames.CollectMonthlyStatistics, $"Put a message to the queue `{request.Month} / {request.Year}`.");
+            log.LogInformation(FUNCTIONNAME_CollectMonthlyStatistics, $"Put a message to the queue `{request.Month} / {request.Year}`.");
 
-            log.LogFunctionEnd(SupportFunctionsNames.CollectMonthlyStatistics);
+            log.LogFunctionEnd(FUNCTIONNAME_CollectMonthlyStatistics);
             return new OkResult();
         }
     }

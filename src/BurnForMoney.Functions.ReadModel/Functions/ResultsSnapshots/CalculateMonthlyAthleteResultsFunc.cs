@@ -3,27 +3,29 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
-using BurnForMoney.Functions.Configuration;
-using BurnForMoney.Functions.Functions.ResultsSnapshots.Dto;
+using BurnForMoney.Functions.ReadModel.Configuration;
+using BurnForMoney.Functions.ReadModel.Functions.ResultsSnapshots.Dto;
 using BurnForMoney.Functions.Shared.Extensions;
 using BurnForMoney.Functions.Shared.Functions.Extensions;
 using BurnForMoney.Functions.Shared.Persistence;
-using BurnForMoney.Functions.Shared.Queues;
 using Dapper;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
-namespace BurnForMoney.Functions.Functions.ResultsSnapshots
+namespace BurnForMoney.Functions.ReadModel.Functions.ResultsSnapshots
 {
     public static class CalculateMonthlyAthleteResultsFunc
     {
-        [FunctionName(FunctionsNames.Q_CalculateMonthlyAthleteResults)]
-        public static async Task Q_CalculateMonthlyAthleteResults([QueueTrigger(AppQueueNames.CalculateMonthlyResults)] CalculateMonthlyResultsRequest request, 
+        // ReSharper disable once InconsistentNaming
+        public const string FUNCTIONNAME_Q_CalculateMonthlyAthleteResults = "Q_CalculateMonthlyAthleteResults";
+
+        [FunctionName(FUNCTIONNAME_Q_CalculateMonthlyAthleteResults)]
+        public static async Task Q_CalculateMonthlyAthleteResults([QueueTrigger(QueueNames.CalculateMonthlyResults)] CalculateMonthlyResultsRequest request, 
             ILogger log,
             [Configuration] ConfigurationRoot configuration)
         {
-            log.LogFunctionStart(FunctionsNames.Q_CalculateMonthlyAthleteResults);
+            log.LogFunctionStart(FUNCTIONNAME_Q_CalculateMonthlyAthleteResults);
             
             using (var conn = SqlConnectionFactory.Create(configuration.ConnectionStrings.SqlDbConnectionString))
             {
@@ -42,7 +44,7 @@ WHERE MONTH(ActivityTime)=@Month AND YEAR(ActivityTime)=@Year", new
 
                 if (!activities.Any())
                 {
-                    log.LogWarning(FunctionsNames.Q_CalculateMonthlyAthleteResults, $"Cannot find any activities from given date: {request.Month}/{request.Year}.");
+                    log.LogWarning(FUNCTIONNAME_Q_CalculateMonthlyAthleteResults, $"Cannot find any activities from given date: {request.Month}/{request.Year}.");
                     return;
                 }
 
@@ -64,10 +66,10 @@ WHERE MONTH(ActivityTime)=@Month AND YEAR(ActivityTime)=@Year", new
                     .ConfigureAwait(false);
                 if (affectedRows == 1)
                 {
-                    log.LogInformation(FunctionsNames.Q_CalculateMonthlyAthleteResults, "Updated snapshot.");
+                    log.LogInformation(FUNCTIONNAME_Q_CalculateMonthlyAthleteResults, "Updated snapshot.");
                 }
             }
-            log.LogFunctionEnd(FunctionsNames.Q_CalculateMonthlyAthleteResults);
+            log.LogFunctionEnd(FUNCTIONNAME_Q_CalculateMonthlyAthleteResults);
         }
 
         private static IEnumerable<AthleteResult> GroupActivitiesByAthlete(IEnumerable<Activity> activities)

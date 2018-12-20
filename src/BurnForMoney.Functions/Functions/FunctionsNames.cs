@@ -13,10 +13,6 @@ namespace BurnForMoney.Functions.Functions
         public const string Q_UpdateActivity = "Q_UpdateActivity";
         public const string Q_DeleteActivity = "Q_DeleteActivity";
 
-        public const string T_CalculateMonthlyAthleteResults = "T_CalculateMonthlyAthleteResults";
-        public const string T_CalculateMonthlyAthleteResultsFromPreviousMonth = "T_CalculateMonthlyAthleteResultsFromPreviousMonth";
-        public const string Q_CalculateMonthlyAthleteResults = "Q_CalculateMonthlyAthleteResults";
-
         public const string Q_NotificationsGateway = "Q_NotificationsGateway";
         public const string T_GenerateReport = "T_GenerateReport";
         public const string B_SendNotificationWithLinkToTheReport = "B_SendNotificationWithLinkToTheReport";
