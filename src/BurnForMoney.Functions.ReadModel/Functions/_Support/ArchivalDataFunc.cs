@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
-using BurnForMoney.Functions.Configuration;
+using BurnForMoney.Functions.ReadModel.Configuration;
 using BurnForMoney.Functions.Shared.Extensions;
 using BurnForMoney.Functions.Shared.Functions.Extensions;
 using BurnForMoney.Functions.Shared.Helpers;
@@ -16,7 +16,10 @@ namespace BurnForMoney.Functions.Functions._Support
 {
     public static class ArchivalDataFunc
     {
-        [FunctionName(SupportFunctionsNames.SeedHistoricalData)]
+        // ReSharper disable once InconsistentNaming
+        public const string FUNCTIONNAME_SeedHistoricalData = "SeedHistoricalData";
+
+        [FunctionName(FUNCTIONNAME_SeedHistoricalData)]
         [NoAutomaticTrigger]
         public static async Task SeedHistoricalData(ILogger log,
             string input, // workaround for invalid [NoAutomaticTrigger] binding https://github.com/Azure/azure-functions-vs-build-sdk/issues/168
@@ -43,7 +46,7 @@ namespace BurnForMoney.Functions.Functions._Support
 
                             if (affectedRows == 1)
                             {
-                                log.LogInformation(SupportFunctionsNames.SeedHistoricalData,
+                                log.LogInformation(FUNCTIONNAME_SeedHistoricalData,
                                     $"Archival data for month: {data.Date} have been added.");
                             }
                         }
