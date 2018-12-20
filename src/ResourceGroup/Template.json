@@ -73,6 +73,10 @@
     "internalFunctionHostingPlanName": "[concat(variables('applicationShortName'), 'func-internal-', parameters('environmentCode'))]",
     "internalFunctionStorageAccountName": "[concat(variables('applicationShortName'), 'funcinternal', parameters('environmentCode'))]",
     "internalFunctionStorageAccountId": "[concat(resourceGroup().id,'/providers/','Microsoft.Storage/storageAccounts/', variables('internalFunctionStorageAccountName'))]",
+    "readModelFunctionAppName": "[concat(variables('applicationShortName'), 'func-readm-', parameters('environmentCode'))]",
+    "readModelFunctionHostingPlanName": "[concat(variables('applicationShortName'), 'func-readm-', parameters('environmentCode'))]",
+    "readModelFunctionStorageAccountName": "[concat(variables('applicationShortName'), 'funcreadm', parameters('environmentCode'))]",
+    "readModelFunctionStorageAccountId": "[concat(resourceGroup().id,'/providers/','Microsoft.Storage/storageAccounts/', variables('readModelFunctionStorageAccountName'))]",
     "sqlDbName": "[concat(variables('applicationName'), 'sqldb', parameters('environmentCode'))]",
     "sqlServerName": "[concat(variables('applicationName'), 'sqlserver', parameters('environmentCode'))]",
     "keyVaultName": "[concat(variables('applicationName'), 'kv', parameters('environmentCode'))]",
@@ -154,6 +158,20 @@
       }
     },
     {
+      "apiVersion": "2015-04-01",
+      "name": "[variables('readModelFunctionHostingPlanName')]",
+      "type": "Microsoft.Web/serverfarms",
+      "location": "[resourceGroup().location]",
+      "tags": {
+        "displayName": "FunctionHostingPlan"
+      },
+      "properties": {
+        "name": "[variables('readModelFunctionHostingPlanName')]",
+        "computeMode": "Dynamic",
+        "sku": "Dynamic"
+      }
+    },
+    {
       "apiVersion": "2015-08-01",
       "name": "[variables('webSiteName')]",
       "type": "Microsoft.Web/sites",
@@ -213,6 +231,16 @@
     {
       "apiVersion": "2016-01-01",
       "name": "[variables('internalFunctionStorageAccountName')]",
+      "type": "Microsoft.Storage/storageAccounts",
+      "location": "[resourceGroup().location]",
+      "kind": "Storage",
+      "sku": {
+        "name": "Standard_LRS"
+      }
+    },
+    {
+      "apiVersion": "2016-01-01",
+      "name": "[variables('readModelFunctionStorageAccountName')]",
       "type": "Microsoft.Storage/storageAccounts",
       "location": "[resourceGroup().location]",
       "kind": "Storage",
@@ -402,10 +430,6 @@
             {
               "name": "AppStorage",
               "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('functionStorageAccountName'), ';AccountKey=', listKeys(variables('functionStorageAccountid'),'2015-05-01-preview').key1)]"
-            },
-            {
-              "name": "EventGrid:TopicEndpoint",
-              "value": "[reference(variables('eventGridTopicName')).endpoint]"
             }
           ]
         }
@@ -532,6 +556,65 @@
             {
               "name": "AppQueuesStorage",
               "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('functionStorageAccountName'), ';AccountKey=', listKeys(variables('functionStorageAccountid'),'2015-05-01-preview').key1)]"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "apiVersion": "2015-08-01",
+      "type": "Microsoft.Web/sites",
+      "name": "[variables('readModelFunctionAppName')]",
+      "location": "[resourceGroup().location]",
+      "kind": "functionapp",
+      "identity": {
+        "type": "SystemAssigned"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/sites', variables('functionAppName'))]",
+        "[resourceId('Microsoft.Web/serverfarms', variables('readModelFunctionHostingPlanName'))]",
+        "[resourceId('Microsoft.Storage/storageAccounts', variables('readModelFunctionStorageAccountName'))]",
+        "[resourceId('microsoft.insights/components', variables('appInsightsName'))]"
+      ],
+      "properties": {
+        "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('readModelFunctionHostingPlanName'))]",
+        "siteConfig": {
+          "appSettings": [
+            {
+              "name": "AzureWebJobsDashboard",
+              "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('readModelFunctionStorageAccountName'), ';AccountKey=', listKeys(variables('readModelFunctionStorageAccountid'),'2015-05-01-preview').key1)]"
+            },
+            {
+              "name": "AzureWebJobsStorage",
+              "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('readModelFunctionStorageAccountName'), ';AccountKey=', listKeys(variables('readModelFunctionStorageAccountid'),'2015-05-01-preview').key1)]"
+            },
+            {
+              "name": "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING",
+              "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('readModelFunctionStorageAccountName'), ';AccountKey=', listKeys(variables('readModelFunctionStorageAccountid'),'2015-05-01-preview').key1)]"
+            },
+            {
+              "name": "WEBSITE_CONTENTSHARE",
+              "value": "[toLower(variables('readModelFunctionAppName'))]"
+            },
+            {
+              "name": "FUNCTIONS_EXTENSION_VERSION",
+              "value": "beta"
+            },
+            {
+              "name": "WEBSITE_NODE_DEFAULT_VERSION",
+              "value": "6.5.0"
+            },
+            {
+              "name": "MSDEPLOY_RENAME_LOCKED_FILES",
+              "value": "1"
+            },
+            {
+              "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
+              "value": "[reference(concat('microsoft.insights/components/', variables('appInsightsName'))).InstrumentationKey]"
+            },
+            {
+              "name": "KeyVaultName",
+              "value": "[variables('keyVaultName')]"
             }
           ]
         }
@@ -677,6 +760,14 @@
           {
             "tenantId": "[reference(concat('Microsoft.Web/sites/', variables('internalFunctionAppName')), '2015-08-01', 'Full').identity.tenantId]",
             "objectId": "[reference(concat('Microsoft.Web/sites/', variables('internalFunctionAppName')), '2015-08-01', 'Full').identity.principalId]",
+            "permissions": {
+              "keys": [ "get", "list" ],
+              "secrets": [ "get", "list" ]
+            }
+          },
+          {
+            "tenantId": "[reference(concat('Microsoft.Web/sites/', variables('readModelFunctionAppName')), '2015-08-01', 'Full').identity.tenantId]",
+            "objectId": "[reference(concat('Microsoft.Web/sites/', variables('readModelFunctionAppName')), '2015-08-01', 'Full').identity.principalId]",
             "permissions": {
               "keys": [ "get", "list" ],
               "secrets": [ "get", "list" ]

@@ -1,4 +1,4 @@
-﻿namespace BurnForMoney.Functions.Strava.Configuration
+﻿namespace BurnForMoney.Functions.Shared.Configuration
 {
     public static class EnvironmentSettingNames
     {

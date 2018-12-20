@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "BurnForMoney.ReadModel": {
+      "commandName": "Project",
+      "commandLineArgs": "host start -p 7075"
+    }
+  }
+}

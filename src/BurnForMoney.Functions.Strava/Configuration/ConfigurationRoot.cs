@@ -8,18 +8,11 @@ namespace BurnForMoney.Functions.Strava.Configuration
         public bool IsLocalEnvironment { get; set; }
         public string HostName { get; set; }
         public string ApplicationInsightsInstrumentationKey { get; set; }
-        public EventGridSection EventGrid { get; set; }
 
         public bool IsValid()
         {
             return Strava != null && ConnectionStrings != null;
         }
-    }
-
-    public class EventGridSection
-    {
-        public string SasKey { get; set; }
-        public string TopicEndpoint { get; set; }
     }
 
     public class EmailSection

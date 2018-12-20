@@ -1,9 +1,7 @@
 ﻿using System;
-using BurnForMoney.Functions.Shared.Configuration;
-using BurnForMoney.Functions.Shared.Extensions;
 using Microsoft.Extensions.Configuration;
 
-namespace BurnForMoney.Functions.Strava.Configuration
+namespace BurnForMoney.ReadModel.Configuration
 {
     public class ApplicationConfiguration
     {
@@ -20,25 +18,13 @@ namespace BurnForMoney.Functions.Strava.Configuration
             {
                 var config = GetApplicationConfiguration(functionAppDirectory);
 
-                var isLocal = string.IsNullOrEmpty(GetEnvironmentVariable(EnvironmentSettingNames.AzureWebsiteInstanceId));
                 _settings = new ConfigurationRoot
                 {
-                    IsLocalEnvironment = isLocal,
                     ConnectionStrings = new ConnectionStringsSection
                     {
                         SqlDbConnectionString = config["ConnectionStrings:Sql"],
                         AzureWebJobsStorage = config["AzureWebJobsStorage"]
-                    },
-                    Strava = new StravaConfigurationSection
-                    {
-                        ClientId = int.Parse(config["Strava:ClientId"]),
-                        ClientSecret = config["Strava:ClientSecret"],
-                        ConfirmationPageUrl = config["Strava:ConfirmationPageUrl"],
-                        AccessTokensKeyVaultName = config["Strava:AccessTokensKeyVaultName"]
-                    },
-                    Email = config.Get<EmailSection>("Email"),
-                    HostName = config["WEB_HOST"],
-                    ApplicationInsightsInstrumentationKey = config["APPINSIGHTS_INSTRUMENTATIONKEY"]
+                    }
                 };
 
                 if (!_settings.IsValid())
@@ -61,17 +47,6 @@ namespace BurnForMoney.Functions.Strava.Configuration
             config.AddAzureKeyVault($"https://{builtConfig["KeyVaultName"]}.vault.azure.net/");
 
             return config.Build();
-        }
-
-        public static string GetEnvironmentVariable(string settingKey)
-        {
-            string settingValue = null;
-            if (!string.IsNullOrEmpty(settingKey))
-            {
-                settingValue = Environment.GetEnvironmentVariable(settingKey);
-            }
-
-            return settingValue;
         }
     }
 }

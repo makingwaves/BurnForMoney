@@ -3,14 +3,8 @@
   "Values": {
     "FUNCTIONS_WORKER_RUNTIME": "dotnet",
     "AzureWebJobsStorage": "UseDevelopmentStorage=true",
-    "AppQueuesStorage": "UseDevelopmentStorage=true",
     "AzureWebJobsDashboard": "UseDevelopmentStorage=true",
-    "AppStorage": "UseDevelopmentStorage=true",
-    "WEB_HOST": "http://localhost:7072",
-    "Strava:ClientId": 28597,
-    "Strava:ConfirmationPageUrl": "http://localhost:3000/strava-confirmation",
     "KeyVaultName": "burnformoneykvdev",
-    "Strava:AccessTokensKeyVaultName": "bfmkvstravatokensdev",
     "ConnectionStrings:Sql": "Data Source=(LocalDB)\\.;Initial Catalog=BurnForMoney;Integrated Security=True;"
   },
   "Email": {
@@ -18,6 +12,9 @@
     "DefaultRecipient": "pawel.maga@makingwaves.com"
   },
   "Host": {
-    "LocalHttpPort": 7072
+    "LocalHttpPort": 7075
+  },
+  "EventGrid": {
+    "TopicEndpoint": "https://bfmdomainEventsdev.westeurope-1.eventgrid.azure.net/api/events"
   }
 }
