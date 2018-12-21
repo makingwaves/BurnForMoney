@@ -6,12 +6,8 @@ using BurnForMoney.Domain.Events;
 
 namespace BurnForMoney.Domain.Domain
 {
-    public class Athlete : IAggregateRoot
+    public class Athlete : AggregateRoot
     {
-        private readonly List<DomainEvent> _changes = new List<DomainEvent>();
-
-        public Guid Id { get; private set; }
-
         public string ExternalId { get; private set; }
 
         public string FirstName { get; private set; }
@@ -24,23 +20,7 @@ namespace BurnForMoney.Domain.Domain
 
         public Source Source { get; private set; }
 
-        public int Version { get; private set; }
-
-        public int OriginalVersion { get; private set; }
-
         public List<Activity> Activities { get; } = new List<Activity>();
-
-        public bool HasPendingChanges => _changes.Any();
-
-        public IEnumerable<DomainEvent> GetUncommittedEvents()
-        {
-            return _changes;
-        }
-
-        public void MarkChangesAsCommitted()
-        {
-            _changes.Clear();
-        }
 
         public void Apply(AthleteCreated @event)
         {
@@ -86,36 +66,6 @@ namespace BurnForMoney.Domain.Domain
         public Athlete()
         {
 
-        }
-
-        public void LoadsFromHistory(IEnumerable<DomainEvent> history)
-        {
-            foreach (var e in history) ApplyChange(e, false);
-        }
-
-        protected void ApplyChange(DomainEvent @event)
-        {
-            ApplyChange(@event, true);
-        }
-
-        private void ApplyChange(DomainEvent @event, bool isNew)
-        {
-            ((dynamic) this).Apply((dynamic) @event);
-            if (isNew)
-            {
-                _changes.Add(@event);
-            }
-            else
-            {
-                OriginalVersion++;
-            }
-
-            Version++;
-        }
-
-        public void Apply(DomainEvent e)
-        {
-            // no-op
         }
 
         public Athlete(Guid id, string externalId, string firstName, string lastName, string profilePictureUrl,
