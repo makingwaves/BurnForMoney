@@ -1,6 +1,7 @@
 @import "style/variables.scss";
 
 .NewActivity{
+  max-width:590px;
   &__form{
     &-row{
       margin-bottom: 10px;
@@ -23,6 +24,59 @@
       font-weight: bold;
       width: 315px;
       height: 50px;
+      cursor:pointer;
+    }
+    &-input{
+      display: inline-block;
+      margin-right: 10px;
+
+      &.Duration,
+      &.Distance{
+        input[type="number"]{
+          padding: 5px 5px 5px 20px;
+          vertical-align: middle;
+        }
+      }
+      &.Duration{
+        input[type="number"]{
+          width: 140px;
+          padding-right: 75px;
+        }
+      }
+      &.Distance{
+        input[type="number"]{
+          width: 290px;
+          padding-right: 150px;
+        }
+      }
+
+      &Unit{
+        display: inline-block;
+        vertical-align: middle;
+        color:#000;
+        font-family:'AftenScreen', sans-serif;
+        font-size: 16px;
+        text-align: center;
+        box-sizing: border-box;
+        height: 45px;
+        line-height: 45px;
+        border-left: 1px solid $lighter-gray;
+        position: relative;
+        pointer-events: none;
+
+        input:focus + &{
+          border-color: $pink-salmon;
+        }
+        .Duration & {
+          width:70px;
+          margin-left: -71px;
+        }
+        .Distance & {
+          width:145px;
+          margin-left: -146px;
+        }
+
+      }
     }
   }
 

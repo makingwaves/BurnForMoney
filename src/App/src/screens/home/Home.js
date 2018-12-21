@@ -77,6 +77,7 @@ class Home extends Component {
       accessToken: "0cfdeec874152c24de8109da60c0bd09630fd3e4efdeddf9223652a433927fc4",
       host: "preview.contentful.com"
     });
+    console.log(this.client)
     this.setContentfulEntries();
 
     // internal api_url
