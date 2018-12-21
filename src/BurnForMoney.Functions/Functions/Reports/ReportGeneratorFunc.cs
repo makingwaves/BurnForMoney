@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
+using System.Dynamic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -53,17 +53,25 @@ namespace BurnForMoney.Functions.Functions.Reports
             }
 
             var results = JsonConvert.DeserializeObject<List<AthleteMonthlyResult>>(json, new SingleOrArrayConverter<AthleteMonthlyResult>())
+                .Where(r => r.AthleteResults != null)
                 .SelectMany(s => s.AthleteResults)
                 .OrderBy(r => r.Id)
                 .Select(r => new
                 {
                     r.Id,
                     r.AthleteName,
-                    Distance = UnitsConverter.ConvertMetersToKilometers(r.Distance).ToString(CultureInfo.InvariantCulture),
-                    Time = UnitsConverter.ConvertMinutesToHours(r.Time).ToString(CultureInfo.InvariantCulture),
-                    Points = r.Points.ToString(),
-                    NumberOfTrainings = r.NumberOfTrainings.ToString()
-                });
+                    Distance = UnitsConverter.ConvertMetersToKilometers(r.Distance),
+                    Time = UnitsConverter.ConvertMinutesToHours(r.Time),
+                    r.Points,
+                    r.NumberOfTrainings
+                })
+                .ToList();
+
+            if (!results.Any())
+            {
+                log.LogWarning("Detailed statistic from last month cannot be found.");
+                return;
+            }
 
             using (var memoryStream = new MemoryStream())
             {
@@ -75,6 +83,19 @@ namespace BurnForMoney.Functions.Functions.Reports
                         csv.WriteComment($"{lastMonth:MM/yyyy}");
                         csv.NextRecord();
                         csv.WriteRecords(results);
+
+                        csv.NextRecord();
+
+                        csv.WriteComment("Sum");
+                        dynamic record = new ExpandoObject();
+                        record.Empty = null;
+                        record.Empty = null;
+                        record.Distance = results.Sum(r => r.Distance);
+                        record.Time = results.Sum(r => r.Time);
+                        record.Points = results.Sum(r => r.Points);
+                        record.NumberOfTrainings = results.Sum(r => r.NumberOfTrainings);
+                        csv.WriteRecord(record);
+
                         csv.Flush();
                         streamWriter.Flush();
 
