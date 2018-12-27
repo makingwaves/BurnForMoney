@@ -39,30 +39,62 @@ class NewActivity extends Component {
 
   addNewActivity = () => {
     let timeInMinutes = (this.state.movingTimeInHours) * 60 + (this.state.movingTimeInMinutes)*1;
-    console.log('timeInMinutes', timeInMinutes)
-    if(isNaN(timeInMinutes) || timeInMinutes <= 0){
-      this.showError('Type correct time');
-      return false;
-    }
+    let distanceInMeters = parseFloat(this.state.distanceInKiloMeteres, 10)*1000;
+
     let newEntry = {
       "StartDate": this.state.startDate, // "yyyy-mm-dd",
       "Type": this.state.category,
-      "DistanceInMeters": parseFloat(this.state.distanceInKiloMeteres, 10)*1000,
+      "DistanceInMeters": distanceInMeters,
       "MovingTimeInMinutes": timeInMinutes
     };
     console.log("Adding new ENTRY: ",newEntry);
 
-    fetch(this.api_url+"api/athlete/"+"675f8926-12ed-499a-b4af-0a9f975c50c0"+"/activities", {
-        method: 'POST',
-        body: JSON.stringify(newEntry)
-    }).then(
-        (result) => { console.log('Result:', result)},
-        (error) => { console.error('Error:', error) }
-    );
+    if(this.validate() ){
+      fetch(this.api_url+"api/athlete/"+"675f8926-12ed-499a-b4af-0a9f975c50c0"+"/activities", {
+          method: 'POST',
+          body: JSON.stringify(newEntry)
+      }).then(
+          (result) => { console.log('RESULT:', result)},
+          (error) => { console.error('Error:', error) }
+      );
+    }
   };
+  validate = () => {
+    let timeInMinutes = (this.state.movingTimeInHours) * 60 + (this.state.movingTimeInMinutes)*1;
+    let distanceInMeters = parseFloat(this.state.distanceInKiloMeteres, 10)*1000;
+    let isValid = true;
 
-  showError = (errorMsg) => {
+    var elements = document.getElementsByClassName('error');
+    while(elements.length > 0){
+        elements[0].parentNode.removeChild(elements[0]);
+    }
+
+    if(this.state.startDate === ''){
+      this.showError('Type correct date', 'activityDateDiv');
+      isValid = false;
+    }
+    if(this.state.category === ''){
+      this.showError('Choose one category', 'activityCategoryDiv');
+      isValid = false;
+    }
+    if(isNaN(timeInMinutes) || timeInMinutes <= 0){
+      this.showError('Type correct time', 'activityDurationDiv');
+      isValid = false;
+    }
+    if(this.categoriesWithDistance.includes(this.state.category) && (isNaN(distanceInMeters) || distanceInMeters <= 0) ){
+      this.showError('Type correct distance', 'activityDistanceDiv');
+      isValid = false;
+    }
+
+    return isValid;
+  }
+
+  showError = (errorMsg, where) => {
     console.log('----errorMsg', errorMsg);
+    var errorDiv = document.createElement('div');
+    errorDiv.className = 'error';
+    errorDiv.innerHTML = errorMsg;
+    document.getElementById(where).appendChild(errorDiv);
   }
 
   render() {
@@ -72,23 +104,24 @@ class NewActivity extends Component {
       <React.Fragment>
         <DashboardHeader header="Add activity" />
         <div className="Dashboard-content NewActivity">
-          <div className=" NewActivity__form">
-            <div className="NewActivity__form-row">
+          <div className="NewActivity__form">
+            <div className="NewActivity__form-row" id="activityDateDiv">
               <label htmlFor="activityDate" className="NewActivity__form-label">Date</label>
               <input id="activityDate" type="date" required value={this.state.startDate} onChange={(e) => this.setState({startDate: e.target.value})}/>
             </div>
 
-            <div className="NewActivity__tiles">
-              {this.props.categories.map( (i) =>
-                <div key={i.category} data-category={i.category} onClick={(e) => this.setCategory(e)} className={`NewActivity__tilesItem ${this.state.category === i.category ? 'active' : ''}`}>
-                  <i.categoryIconComponent className="NewActivity__tilesItem-iconComponent" />
-                  {/* <img src={i.categoryIcon} alt={i.category} className="NewActivity__tilesItem-icon" /> */}
-                  <h6 className="NewActivity__tilesItem-category">{i.category}</h6>
-                  <p className="NewActivity__tilesItem-description">{i.categoryDescription}</p>
-                </div>)}
+            <div className="NewActivity__form-row" id="activityCategoryDiv">
+              <div className="NewActivity__tiles" >
+                {this.props.categories.map( (i) =>
+                  <div key={i.category} data-category={i.category} onClick={(e) => this.setCategory(e)} className={`NewActivity__tilesItem ${this.state.category === i.category ? 'active' : ''}`}>
+                    <i.categoryIconComponent className="NewActivity__tilesItem-iconComponent" />
+                    <h6 className="NewActivity__tilesItem-category">{i.category}</h6>
+                    <p className="NewActivity__tilesItem-description">{i.categoryDescription}</p>
+                  </div>)}
+              </div>
             </div>
 
-            <div className="NewActivity__form-row">
+            <div className="NewActivity__form-row" id="activityDurationDiv">
               <label htmlFor="activityDurationHours" className="NewActivity__form-label">
                 <img src={iconDuration} alt="duration" className="NewActivity__form-labelImg" />Duration
               </label>
@@ -103,12 +136,12 @@ class NewActivity extends Component {
             </div>
 
             {this.state.showDistance && (
-            <div className="NewActivity__form-row">
+            <div className="NewActivity__form-row" id="activityDistanceDiv">
               <label htmlFor="activityDistance" className="NewActivity__form-label">
                 <img src={iconDistance} alt="distance" className="NewActivity__form-labelImg" />Distance
               </label>
               <div className="NewActivity__form-input Distance">
-                <input id="activityDistance" type="number" className="NewActivity__form-inputKilometeres" placeholder="Enter distance" value={this.state.distanceInKiloMeteres} onChange={(e) => this.setState({distanceInKiloMeteres: e.target.value })} />
+                <input id="activityDistance" type="number" min="0" max="300" className="NewActivity__form-inputKilometeres" placeholder="Enter distance" value={this.state.distanceInKiloMeteres} onChange={(e) => this.setState({distanceInKiloMeteres: e.target.value })} />
                 <div className="NewActivity__form-inputUnit">kilometers</div>
               </div>
             </div>
