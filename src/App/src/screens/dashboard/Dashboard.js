@@ -104,7 +104,8 @@ class Dashboard extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      categories: []
+      categories: [],
+      athletes: []
     }
   }
 
@@ -122,9 +123,11 @@ class Dashboard extends Component {
         <section className="Dashboard-main">
           <Switch>
             <Route exact path="/dashboard/new-activity" render={(props) => (
-              <NewActivity {...props} categories={this.state.categories}/>
+              <NewActivity {...props} categories={this.state.categories} athletes={this.state.athletes} />
             )} />
-            <Route path="/dashboard/athletes-list" component={AthletesList} />
+            <Route path="/dashboard/athletes-list" render={(props) => (
+              <AthletesList {...props} athletes={this.state.athletes} />
+            )} />
             <Route path="/dashboard/athlete/:athleteId" component={AthleteProfile} />
           </Switch>
         </section>
@@ -139,6 +142,13 @@ class Dashboard extends Component {
       .then(
         (result) => { let categories = result.map( (i) => { return this.setCategoryDetails(i)}); this.setState({categories: categories }); console.log('STATE', this.state.categories)/**/},
         (error) => {this.setState({categories: null}); console.error('Error:', error); }
+      );
+
+    fetch(this.api_url+"api/athletes")
+      .then(res => res.json())
+      .then(
+        (result) => {this.setState({athletes: result }); console.log('athletes', this.state.athletes)},
+        (error) => {this.setState({athletes: null}); console.error('Error:', error); }
       );
   }
 }

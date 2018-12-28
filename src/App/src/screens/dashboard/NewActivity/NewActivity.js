@@ -6,8 +6,6 @@ import DashboardHeader from '../DashboardHeader.js';
 import iconDistance from 'img/icon-distance.svg';
 import iconDuration from 'img/icon-duration.svg';
 
-
-
 class NewActivity extends Component {
   api_url = process.env.REACT_APP_DASHBOARD_API_URL;
   categoriesWithDistance = ['Run', 'Ride', 'Walk'];
@@ -16,6 +14,7 @@ class NewActivity extends Component {
     super(props);
     this.state = {
       showDistance: false,
+      athleteId: localStorage.getItem('athleteId') || '',
       startDate: new Date().toISOString().substr(0, 10),
       category: '',
       distanceInKiloMeteres: '',
@@ -48,9 +47,10 @@ class NewActivity extends Component {
       "MovingTimeInMinutes": timeInMinutes
     };
     console.log("Adding new ENTRY: ",newEntry);
+    console.log("AthleteId: ", this.state.athleteId);
 
     if(this.validate() ){
-      fetch(this.api_url+"api/athlete/"+"675f8926-12ed-499a-b4af-0a9f975c50c0"+"/activities", {
+      fetch(this.api_url+"api/athlete/"+this.state.athleteId+"/activities", {
           method: 'POST',
           body: JSON.stringify(newEntry)
       }).then(
@@ -68,7 +68,10 @@ class NewActivity extends Component {
     while(elements.length > 0){
         elements[0].parentNode.removeChild(elements[0]);
     }
-
+    if(this.state.athleteId === ''){
+      this.showError('Choose who You are', 'activityAthlete');
+      isValid = false;
+    }
     if(this.state.startDate === ''){
       this.showError('Type correct date', 'activityDateDiv');
       isValid = false;
@@ -98,16 +101,26 @@ class NewActivity extends Component {
   }
 
   render() {
-    console.log('category: '+ this.state.category, 'show:'+ this.state.showDistance);
-
     return (
       <React.Fragment>
         <DashboardHeader header="Add activity" />
         <div className="Dashboard-content NewActivity">
           <div className="NewActivity__form">
+            <div className="NewActivity__form-row" id="activityAthlete">
+              <label htmlFor="activityAthletesName" className="NewActivity__form-label">I am</label>
+              <div className="NewActivity__form-selectAthlete">
+                <select id="activityAthletesName" required value={this.state.athleteId} onChange={(e) => {this.setState({athleteId: e.target.value}); localStorage.setItem('athleteId', e.target.value); console.log('--->',localStorage.getItem('athleteId')) } }>
+                  <option value=''>no one...</option>
+                  {this.props.athletes.map( (i) =>
+                    <option key={i.externalId} value={i.id}>{`${i.firstName} ${i.lastName}`}</option>
+                  )}
+                </select>
+              </div>
+            </div>
+
             <div className="NewActivity__form-row" id="activityDateDiv">
               <label htmlFor="activityDate" className="NewActivity__form-label">Date</label>
-              <input id="activityDate" type="date" required value={this.state.startDate} onChange={(e) => this.setState({startDate: e.target.value})}/>
+              <input id="activityDate" type="date" required value={this.state.startDate} onChange={(e) => this.setState({startDate: e.target.value})} className="NewActivity__form-inputDate" />
             </div>
 
             <div className="NewActivity__form-row" id="activityCategoryDiv">
@@ -117,7 +130,8 @@ class NewActivity extends Component {
                     <i.categoryIconComponent className="NewActivity__tilesItem-iconComponent" />
                     <h6 className="NewActivity__tilesItem-category">{i.category}</h6>
                     <p className="NewActivity__tilesItem-description">{i.categoryDescription}</p>
-                  </div>)}
+                  </div>
+                )}
               </div>
             </div>
 

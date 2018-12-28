@@ -27,6 +27,32 @@
       cursor:pointer;
       outline: none;
     }
+    &-selectAthlete{
+      display: inline-block;
+      box-sizing: border-box;
+      background-color: #fff;
+      width: 230px;
+      height: 45px;
+      border: 1px solid #DCDCE1;
+      border-radius: 5px;
+      padding: 0;
+      position: relative;
+      & select{
+        width: 100%;
+        height: 100%;
+        font-family: 'AftenScreen', sans-serif;
+        font-size: 16px;
+        color: #000;
+        background: transparent;
+        border: none;
+        outline: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        text-indent: 20px;
+      }
+    }
+
     &-input{
       display: inline-block;
       margin-right: 10px;
@@ -50,7 +76,9 @@
           padding-right: 150px;
         }
       }
-
+      &Date{
+        width:230px;
+      }
       &Unit{
         display: inline-block;
         vertical-align: middle;
@@ -92,7 +120,6 @@
     grid-template-columns:repeat(5, 110px);
     grid-column-gap: 10px;
     grid-row-gap: 10px;
-    margin-bottom: 10px;
     @media only screen and (max-width: 834px) {
       grid-template-columns:repeat(3, 110px);
     }
