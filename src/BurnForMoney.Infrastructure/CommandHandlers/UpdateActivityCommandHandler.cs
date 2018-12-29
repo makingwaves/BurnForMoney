@@ -16,10 +16,17 @@ namespace BurnForMoney.Domain.CommandHandlers
         public async Task HandleAsync(UpdateActivityCommand message)
         {
             var athlete = await _repository.GetByIdAsync(message.AthleteId);
-
-            athlete.UpdateActivity(message.Id, message.ActivityType, message.DistanceInMeters,
-                message.MovingTimeInMinutes, message.StartDate);
-            await _repository.SaveAsync(athlete, athlete.OriginalVersion);
+            
+            try
+            {
+                athlete.UpdateActivity(message.Id, message.ActivityType, message.DistanceInMeters,
+                    message.MovingTimeInMinutes, message.StartDate);
+                await _repository.SaveAsync(athlete, athlete.OriginalVersion);
+            } 
+            catch (NoChangesDetectedException) when (athlete.Source == Source.Strava)
+            {
+                // do nothing, it can signal an irrelevant update (distance, time, type and date remain unchanged).
+            }
         }
     }
 }

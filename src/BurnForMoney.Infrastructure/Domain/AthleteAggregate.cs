@@ -160,8 +160,7 @@ namespace BurnForMoney.Domain.Domain
                 Math.Abs(activity.MovingTimeInMinutes - movingTimeInMinutes) < 0.05 &&
                 activity.StartDate == startDate)
             {
-                throw new InvalidOperationException(
-                    "Update operation must change at least one field. No changes detected.");
+                throw new NoChangesDetectedException();
             }
 
             var category = MapToActivityCategory(activityType, activity.Source);
