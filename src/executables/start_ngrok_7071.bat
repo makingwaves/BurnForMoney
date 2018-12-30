@@ -1,1 +1,0 @@
-ngrok http -host-header="localhost:7071" 7071

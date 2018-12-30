@@ -1,0 +1,1 @@
+./ngrok authtoken $1
