@@ -268,3 +268,4 @@ src/**/*.css
 /src/ResourceGroup/dll/*
 *.pubxml
 .vscode/settings.json
+azurite/data/
