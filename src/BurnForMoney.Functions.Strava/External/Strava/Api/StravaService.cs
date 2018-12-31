@@ -18,6 +18,7 @@ namespace BurnForMoney.Functions.Strava.External.Strava.Api
         private const string StravaBaseUrl = "https://www.strava.com";
         private const int ActivitiesPerPage = 50;
         private readonly RestClient _restClient;
+        private string[] _notFoundActivityCodes = new[] { "invalid", "not found" };
 
         public StravaService()
         {
@@ -72,8 +73,7 @@ namespace BurnForMoney.Functions.Strava.External.Strava.Api
             if (response.StatusCode == HttpStatusCode.NotFound)
             {
                 var fault = JsonConvert.DeserializeObject<Fault>(response.Content);
-                if (fault.Errors.Any(error => error.Field.Equals("Id", StringComparison.InvariantCultureIgnoreCase) && 
-                                              error.Code.Equals("invalid", StringComparison.InvariantCultureIgnoreCase) &&
+                if (fault.Errors.Any(error => _notFoundActivityCodes.Any(code => code.Equals(error.Code, StringComparison.InvariantCultureIgnoreCase)) &&
                                               error.Resource.Equals("Activity", StringComparison.InvariantCultureIgnoreCase)))
                 {
                     throw new ActivityNotFoundException(activityId);
