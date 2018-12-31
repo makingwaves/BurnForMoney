@@ -1,1 +1,0 @@
-azurite -l data/
