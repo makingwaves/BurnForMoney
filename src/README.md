@@ -1,4 +1,4 @@
-#### Project structure
+### Project structure
 
 * **App** - client side application, covers both public and internal website.
 * **BurnForMoney.Functions** - main function app, handles all operations related to athletes and activities.
@@ -10,5 +10,7 @@
 * **BurnForMoney.Infrastructure** - domain logic.
 * **ResourceGroup** - consists of ARM templates and Powershell scripts used to automatically create an environment.
 
+### Build
 
+Run `init_build.sh` script to build all the functions.
 
