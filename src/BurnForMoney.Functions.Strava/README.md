@@ -10,3 +10,13 @@ Webhook Events API requires active subscription with publicly available address 
 
 First, authenticate ngrok account (`~/addons/executables/auth_ngrok.sh`) using authentication token stored in the KeyVault (`burnformoneykvdev`). And then start ngrok tunnel (`~/addons/executables/start_ngrok_7072.sh`).
 
+The last operation requires to create a new subscription. Copy forwarding url from ngrok process (it changes every time when you start up ngrok) and call function:
+
+```
+curl -X POST \
+  http://localhost:7072/api/strava/subscription/create \
+  -d '{
+	"hostname": "https://{code}.ngrok.io"
+}'
+```
+
