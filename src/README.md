@@ -12,5 +12,5 @@
 
 ### Build
 
-Run `init_build.sh` script to build all the functions.
+Run `run.sh` script to build and run all the functions.
 
