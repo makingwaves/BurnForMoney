@@ -5,6 +5,7 @@ using BurnForMoney.Domain;
 using BurnForMoney.Domain.Domain;
 using BurnForMoney.Domain.Events;
 using BurnForMoney.Functions.Domain.ActivityMappers;
+using BurnForMoney.Functions.Exceptions;
 
 namespace BurnForMoney.Functions.Domain
 {
