@@ -12,5 +12,5 @@
 
 ### Build
 
-Run `run.sh` script to build and run all the functions.
+Run `func_start_all.sh` script to build and run all the functions.
 
