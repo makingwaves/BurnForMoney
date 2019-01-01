@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using BurnForMoney.Domain.Domain.ActivityMappers;
+using BurnForMoney.Domain;
+using BurnForMoney.Domain.Domain;
 using BurnForMoney.Domain.Events;
+using BurnForMoney.Functions.Domain.ActivityMappers;
 
-namespace BurnForMoney.Domain.Domain
+namespace BurnForMoney.Functions.Domain
 {
     public class Athlete : AggregateRoot
     {

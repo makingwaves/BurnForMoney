@@ -269,3 +269,4 @@ src/**/*.css
 *.pubxml
 .vscode/settings.json
 addons/azurite/data/
+.vscode

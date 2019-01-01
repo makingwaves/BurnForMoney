@@ -1,6 +1,7 @@
 ﻿using System;
+using BurnForMoney.Domain.Domain;
 
-namespace BurnForMoney.Domain.Domain.ActivityMappers
+namespace BurnForMoney.Functions.Domain.ActivityMappers
 {
     public static class ManualActivityMapper
     {

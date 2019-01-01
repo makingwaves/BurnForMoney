@@ -1,6 +1,7 @@
 ﻿using System;
+using BurnForMoney.Domain.Domain;
 
-namespace BurnForMoney.Domain.Domain
+namespace BurnForMoney.Functions.Domain
 {
     internal class PointsCalculator
     {

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using BurnForMoney.Domain;
 using BurnForMoney.Domain.Commands;
 using BurnForMoney.Domain.Domain;
 using BurnForMoney.Functions.Shared.Extensions;

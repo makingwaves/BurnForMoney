@@ -1,8 +1,9 @@
 ﻿using BurnForMoney.Domain;
 using BurnForMoney.Domain.Domain;
 using BurnForMoney.Functions.Configuration;
+using BurnForMoney.Functions.Domain;
 
-namespace BurnForMoney.Functions.Functions.CommandHandlers
+namespace BurnForMoney.Functions.Repositories
 {
     public static class AthleteRepositoryFactory
     {

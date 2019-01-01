@@ -1,8 +1,11 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading.Tasks;
+using BurnForMoney.Domain;
 using BurnForMoney.Domain.Commands;
 using BurnForMoney.Domain.Domain;
+using BurnForMoney.Functions.Domain;
 
-namespace BurnForMoney.Domain.CommandHandlers
+namespace BurnForMoney.Functions.CommandHandlers
 {
     public class UpdateActivityCommandHandler : ICommandHandler<UpdateActivityCommand>
     {
@@ -17,13 +20,14 @@ namespace BurnForMoney.Domain.CommandHandlers
         {
             var athlete = await _repository.GetByIdAsync(message.AthleteId);
             
+            Activity activityToUpdate = athlete.Activities.FirstOrDefault(a => a.Id == message.Id);
             try
             {
                 athlete.UpdateActivity(message.Id, message.ActivityType, message.DistanceInMeters,
                     message.MovingTimeInMinutes, message.StartDate);
                 await _repository.SaveAsync(athlete, athlete.OriginalVersion);
             } 
-            catch (NoChangesDetectedException) when (athlete.Source == Source.Strava)
+            catch (NoChangesDetectedException) when (activityToUpdate.Source == Source.Strava)
             {
                 // do nothing, it can signal an irrelevant update (distance, time, type and date remain unchanged).
             }
