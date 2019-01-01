@@ -7,7 +7,7 @@
 * **BurnForMoney.Functions.InternalApi** - api for internal website.
 * **BurnForMoney.Functions.ReadModel** - manages readonly data, creates projections using EventGrid subscription model.
 * **BurnForMoney.Functions.Shared** - shared code.
-* **BurnForMoney.Infrastructure** - domain logic.
+* **BurnForMoney.Domain** - shared domain.
 * **ResourceGroup** - consists of ARM templates and Powershell scripts used to automatically create an environment.
 
 ### Build
