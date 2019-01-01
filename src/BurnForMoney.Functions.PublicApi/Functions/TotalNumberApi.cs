@@ -47,6 +47,8 @@ namespace BurnForMoney.Functions.PublicApi.Functions
 
         private static async Task<object> GetTotalNumbersAsync(string connectionString)
         {
+            var today = DateTime.UtcNow;
+
             using (var conn = SqlConnectionFactory.Create(connectionString))
             {
                 await conn.OpenWithRetryAsync();
@@ -67,12 +69,14 @@ namespace BurnForMoney.Functions.PublicApi.Functions
                 var totalTime = results.Sum(r => r.Results.Time);
                 var totalPoints = results.Sum(r => r.Results.Points);
 
+                var thisMonth = results.SingleOrDefault(r => r.Date.Equals($"{today.Year}/{today.Month}"));
+
                 var result = new
                 {
                     Distance = (int)UnitsConverter.ConvertMetersToKilometers(totalDistance, 0),
                     Time = (int)UnitsConverter.ConvertMinutesToHours(totalTime, 0),
                     Money = PointsToMoneyConverter.Convert(totalPoints),
-                    ThisMonth = GetThisMonthStatistics(results.Last().Results)
+                    ThisMonth = thisMonth == null ? ThisMonth.NoResults : GetThisMonthStatistics(thisMonth.Results)
                 };
 
                 return result;
@@ -125,6 +129,14 @@ namespace BurnForMoney.Functions.PublicApi.Functions
 
         public class ThisMonth
         {
+            public static ThisMonth NoResults = new ThisMonth
+            {
+                NumberOfTrainings = 0,
+                PercentOfEngagedEmployees = 0,
+                Points = 0,
+                Money = 0,
+                MostFrequentActivities = new List<object>()
+            };
             public int NumberOfTrainings { get; set; }
             public int PercentOfEngagedEmployees { get; set; }
             public int Points { get; set; }
