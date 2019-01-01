@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading.Tasks;
 using BurnForMoney.Functions.InternalApi.Configuration;
 using BurnForMoney.Functions.Shared.Extensions;
 using BurnForMoney.Functions.Shared.Functions.Extensions;
@@ -23,7 +24,13 @@ namespace BurnForMoney.Functions.InternalApi.Functions.Athletes
             var athletes = await repository.GetAllActiveAsync();
        
             log.LogFunctionEnd(FunctionsNames.GetAthletes);
-            return new OkObjectResult(athletes);
+            return new OkObjectResult(athletes.Select(athlete => new {
+                    athlete.Id,
+                    athlete.FirstName,
+                    athlete.LastName,
+                    athlete.ProfilePictureUrl,
+                    athlete.System
+                }));
         }
     }
 }
