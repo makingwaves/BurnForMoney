@@ -28,10 +28,16 @@ import IconGym from "img/IconGym";
 import IconHike from "img/IconHike";
 import IconFitness from "img/IconFitness";
 import IconOther from "img/IconOther";
-
+import IconNewActivity from 'img/IconNewActivity';
+import IconParticipants from 'img/IconParticipants';
+import IconDashboard from 'img/IconDashboard';
+import IconBeneficiaries from 'img/IconBeneficiaries';
+import IconRules from 'img/IconRules';
 
 class Dashboard extends Component {
   api_url = process.env.REACT_APP_DASHBOARD_API_URL;
+  mobileViewport = window.matchMedia("screen and (max-width: 600px)");
+  resizeTimeout;
 
   setCategoryDetails(category){
     let icon, iconComponent, description;
@@ -100,12 +106,24 @@ class Dashboard extends Component {
     };
     return obj;
   }
+  handleResize = () => {
+    clearTimeout(this.resizeTimeout);
+    this.resizeTimeout = setTimeout(() => {
+      this.setState({
+        windowHeight: window.innerHeight,
+        windowWidth: window.innerWidth
+      });
+      console.log('windowWidth', this.state.windowWidth);
+    }, 300);
+  }
 
   constructor(props) {
     super(props);
     this.state = {
       categories: [],
-      athletes: []
+      athletes: [],
+      windowHeight: undefined,
+      windowWidth: undefined
     }
   }
 
@@ -114,12 +132,40 @@ class Dashboard extends Component {
       <div className="Dashboard">
         <aside className="Dashboard-side">
           <img className="Dashboard-logo" src={logo} alt="Burn for Money" />
-          <ul className="Dashboard-navigation">
-
-            <li className="Dashboard-navigationItem"><Link to="/dashboard/athletes-list" className="Dashboard-navigationItem-link">Athletes List</Link></li>
+          <ul className="Navigation">
+            <li className="NavigationItem NavigationItem__dashboard">
+              <Link to="/dashboard/" className="NavigationItem-link">
+                <IconDashboard className="NavigationItem-icon" />
+                <span className="NavigationItem-text">Dashboard</span>
+              </Link>
+            </li>
+            <li className="NavigationItem NavigationItem__athletesList">
+              <Link to="/dashboard/athletes-list" className="NavigationItem-link">
+                <IconParticipants className="NavigationItem-icon" />
+                <span className="NavigationItem-text">Participants</span>
+              </Link>
+            </li>
+            <li className="NavigationItem NavigationItem__beneficiaries">
+              <Link to="/dashboard/athletes-list" className="NavigationItem-link">
+                <IconBeneficiaries className="NavigationItem-icon" />
+                <span className="NavigationItem-text">Beneficiaries</span>
+              </Link>
+            </li>
+            <li className="NavigationItem NavigationItem__rules">
+              <Link to="/dashboard/athletes-list" className="NavigationItem-link">
+                <IconRules className="NavigationItem-icon" />
+                <span className="NavigationItem-text">Rules</span>
+              </Link>
+            </li>
+            <li className="NavigationItem NavigationItem__addActivity">
+              <Link exact="true" to="/dashboard/new-activity" className="Button NavigationItem-link">
+                <IconNewActivity className="NavigationItem-icon" {...(this.state.windowWidth <= 600 && {fill: '#EDA697'})} />
+                <span className="NavigationItem-text">Add activity</span>
+              </Link>
+            </li>
           </ul>
-          <Link exact="true" to="/dashboard/new-activity" className="Button Dashboard-navigation-addActivity">Add activity</Link>
         </aside>
+
         <section className="Dashboard-main">
           <Switch>
             <Route exact path="/dashboard/new-activity" render={(props) => (
@@ -136,11 +182,14 @@ class Dashboard extends Component {
   }
 
   componentDidMount(){
+    this.handleResize();
+    window.addEventListener("resize", this.handleResize);
+
     // internal api_url
     fetch(this.api_url+"api/activities/categories")
       .then(res => res.json())
       .then(
-        (result) => { let categories = result.map( (i) => { return this.setCategoryDetails(i)}); this.setState({categories: categories }); console.log('STATE', this.state.categories)/**/},
+        (result) => { let categories = result.map( (i) => { return this.setCategoryDetails(i)}); this.setState({categories: categories }); console.log('STATE', this.state.categories, 'THIS', this)/**/},
         (error) => {this.setState({categories: null}); console.error('Error:', error); }
       );
 
@@ -150,6 +199,9 @@ class Dashboard extends Component {
         (result) => {this.setState({athletes: result }); console.log('athletes', this.state.athletes)},
         (error) => {this.setState({athletes: null}); console.error('Error:', error); }
       );
+  }
+  componentWillUnmount() {
+    window.removeEventListener("resize", this.handleResize);
   }
 }
 

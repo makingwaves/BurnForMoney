@@ -155,7 +155,7 @@ class NewActivity extends Component {
                 <img src={iconDistance} alt="distance" className="NewActivity__form-labelImg" />Distance
               </label>
               <div className="NewActivity__form-input Distance">
-                <input id="activityDistance" type="number" min="0" max="300" className="NewActivity__form-inputKilometeres" placeholder="Enter distance" value={this.state.distanceInKiloMeteres} onChange={(e) => this.setState({distanceInKiloMeteres: e.target.value })} />
+                <input id="activityDistance" type="number" min="0" max="300" className="NewActivity__form-inputKilometeres" placeholder="Distance in" value={this.state.distanceInKiloMeteres} onChange={(e) => this.setState({distanceInKiloMeteres: e.target.value })} />
                 <div className="NewActivity__form-inputUnit">kilometers</div>
               </div>
             </div>
