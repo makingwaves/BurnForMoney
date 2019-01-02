@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using BurnForMoney.Domain.Domain;
 using BurnForMoney.Functions.InternalApi.Configuration;
@@ -26,7 +27,15 @@ namespace BurnForMoney.Functions.InternalApi.Functions.Activities
                 DateTime.UtcNow.Year);
 
             log.LogFunctionEnd(FunctionsNames.GetAthleteActivities);
-            return new OkObjectResult(activities);
+            return new OkObjectResult(activities
+                .Select(activity => new {
+                    activity.Id,
+                    activity.ActivityType,
+                    activity.DistanceInMeters,
+                    activity.MovingTimeInMinutes,
+                    activity.Source,
+                    activity.StartDate
+                }));
         }
     }
 }

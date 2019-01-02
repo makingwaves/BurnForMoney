@@ -267,3 +267,6 @@ __pycache__/
 src/**/*.css
 /src/ResourceGroup/dll/*
 *.pubxml
+.vscode/settings.json
+addons/azurite/data/
+.vscode

@@ -1,0 +1,16 @@
+### Project structure
+
+* **App** - client side application, covers both public and internal website.
+* **BurnForMoney.Functions** - main function app, handles all operations related to athletes and activities.
+* **BurnForMoney.Functions.Strava** - function app integrated with the Strava API, responsible for athletes registration and basic CRUD operations on the activities from Strava (via webhooks).
+* **BurnForMoney.Functions.PublicApi** - api for public website.
+* **BurnForMoney.Functions.InternalApi** - api for internal website.
+* **BurnForMoney.Functions.ReadModel** - manages readonly data, creates projections using EventGrid subscription model.
+* **BurnForMoney.Functions.Shared** - shared code.
+* **BurnForMoney.Domain** - shared domain.
+* **ResourceGroup** - consists of ARM templates and Powershell scripts used to automatically create an environment.
+
+### Build
+
+Run `func_start_all.sh` script to build and run all the functions.
+

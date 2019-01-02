@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Threading.Tasks;
-using BurnForMoney.Domain.CommandHandlers;
 using BurnForMoney.Domain.Commands;
 using BurnForMoney.Functions.Configuration;
 using BurnForMoney.Functions.Shared.Extensions;
@@ -10,6 +9,8 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 using Microsoft.WindowsAzure.Storage.Queue;
 using Newtonsoft.Json;
+using BurnForMoney.Functions.CommandHandlers;
+using BurnForMoney.Functions.Repositories;
 
 namespace BurnForMoney.Functions.Functions.CommandHandlers
 {

@@ -139,7 +139,6 @@ namespace BurnForMoney.Functions.Strava.Functions.EventsHub
             log.LogFunctionStart(FunctionsNames.Events_UpdateActivity);
 
             var activityRepository = new ActivityReadRepository(configuration.ConnectionStrings.SqlDbConnectionString);
-            var activityRow = await activityRepository.GetByExternalIdAsync(activityData.StravaActivityId);
 
             var accessToken = await GetAccessTokenAsync(activityData.AthleteId, configuration.Strava.AccessTokensKeyVaultUrl);
             StravaActivity activity;
@@ -153,6 +152,7 @@ namespace BurnForMoney.Functions.Strava.Functions.EventsHub
                 return;
             }
 
+            var activityRow = await activityRepository.GetByExternalIdAsync(activityData.StravaActivityId);
             var command = new UpdateActivityCommand
             {
                 Id = activityRow.Id,

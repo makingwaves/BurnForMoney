@@ -24,7 +24,7 @@ namespace BurnForMoney.Functions.Shared.Repositories
                 await conn.OpenWithRetryAsync();
 
                 var athletes = await conn.QueryAsync<AthleteRow>(
-                        "SELECT Id, ExternalId, FirstName, LastName, ProfilePictureUrl, System FROM dbo.Athletes WHERE Active=1");
+                        "SELECT Id, ExternalId, FirstName, LastName, ProfilePictureUrl, System, Active FROM dbo.Athletes WHERE Active=1");
 
                 return athletes;
             }
