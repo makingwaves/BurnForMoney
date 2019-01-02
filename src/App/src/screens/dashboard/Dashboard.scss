@@ -6,52 +6,43 @@
   display: grid;
   grid-template-columns: 185px 1fr;
   grid-template-areas: "side main";
+  @media only screen and (max-width: 600px) {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+    "main"
+    "side";
+  }
+
   &-side{
     grid-area: side;
     height: 100vh;
     background-color: #122833;
     padding: 25px 15px;
     box-sizing: border-box;;
+    @media only screen and (max-width: 600px) {
+      height:50px;
+      width: 100%;
+      padding: 0;
+      position: fixed;
+      bottom: 0;
+    }
   }
   &-main{
     grid-area: main;
   }
   &-logo{
+    @media only screen and (max-width: 600px) {
+      display: none;
+    }
+  }
 
-  }
-  &-navigation{
-    color: $light-gray;
-    list-style: none;
-    margin: 40px 0 0;
-    padding: 0;
-    &Item{
-      margin-bottom: 30px;
-      &-link{
-        color: $light-gray;
-        text-decoration: none;
-        font-family: "Volte2";
-        font-weight: 500;
-        font-size: 14px;
-      }
-    }
-    &-addActivity{
-      background-color: #EDA697;
-      color: #122833;
-      font-size: 16px;
-      font-family: 'Volte2';
-      font-weight: bold;
-      width: 160px;
-      height: 45px;
-      line-height: 45px;
-      display: block;
-      text-align: center;
-      text-decoration: none;
-    }
-  }
   &-content{
     max-width: 1180px;
     margin: 0 auto;
-    padding: 50px 30px
+    padding: 50px 30px;
+    @media only screen and (max-width: 600px) {
+      padding: 30px 10px;
+    }
   }
 
   &__header{
@@ -64,6 +55,97 @@
       margin: 0;
       padding: 0;
     }
+  }
+  .Navigation{
+    color: $light-gray;
+    list-style: none;
+    width: 100%;
+    margin: 40px 0 0;
+    padding: 0;
+    @media only screen and (max-width: 600px) {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      grid-template-areas: "dashboard participants newActivity beneficiaries rules";
+      margin: 0;
+      padding-top: 3px;
+      height: 47px;
+    }
+
+    &Item{
+      margin-bottom: 30px;
+      &-link{
+        color: $light-gray;
+        text-decoration: none;
+        font-family: "Volte2";
+        font-weight: 500;
+        font-size: 14px;
+        @media only screen and (max-width: 600px) {
+          text-align: center;;
+        }
+      }
+      &-icon{
+        vertical-align: middle;
+        display: inline-block;
+        @media only screen and (max-width: 600px) {
+          width:100%;
+        }
+      }
+      &-text{
+        margin-left: 5px;
+        display: inline-block;
+        vertical-align: middle;
+        @media only screen and (max-width: 600px) {
+          width:100%;
+          font-size: 10px;
+          margin-left: 0;
+        }
+
+      }
+      &__dashboard{
+        grid-area: dashboard;
+      }
+      &__participants{
+        grid-area: participants;
+      }
+      &__beneficiaries{
+        grid-area: beneficiaries;
+      }
+      &__rules{
+        grid-area: rules;
+      }
+      &__addActivity{
+        grid-area: newActivity;
+        position: absolute;
+        bottom: 50px;
+        @media only screen and (max-width: 600px) {
+          position: static;
+          bottom: auto;
+        }
+        a {
+          background-color: $pink-salmon;
+          color: #122833;
+          font-size: 16px;
+          font-weight: bold;
+          width: 155px;
+          height: 45px;
+          line-height: 45px;
+          display: block;
+          text-align: center;
+          text-decoration: none;
+
+          @media only screen and (max-width: 600px){
+            background-color: transparent;
+            width: auto;
+            color: $pink-salmon;
+            font-size: 12px;
+            height: auto;
+            line-height: initial;
+            font-weight: 500;
+          }
+        }
+      }
+    }
+
   }
 }
 
@@ -122,5 +204,4 @@ input {
       border-left-color: $pink-salmon;
     }
   }
-
 }
