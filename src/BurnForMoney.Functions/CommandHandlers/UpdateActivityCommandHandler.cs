@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using BurnForMoney.Domain;
 using BurnForMoney.Domain.Commands;
 using BurnForMoney.Domain.Domain;
+using BurnForMoney.Functions.Commands;
 using BurnForMoney.Functions.Domain;
 using BurnForMoney.Functions.Exceptions;
 

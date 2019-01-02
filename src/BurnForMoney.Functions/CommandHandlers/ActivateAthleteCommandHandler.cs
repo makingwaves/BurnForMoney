@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using BurnForMoney.Domain;
 using BurnForMoney.Domain.Commands;
+using BurnForMoney.Functions.Commands;
 using BurnForMoney.Functions.Domain;
 
 namespace BurnForMoney.Functions.CommandHandlers

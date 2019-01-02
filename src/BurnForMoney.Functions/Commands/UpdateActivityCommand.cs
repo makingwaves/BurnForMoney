@@ -1,6 +1,7 @@
 ﻿using System;
+using BurnForMoney.Domain.Commands;
 
-namespace BurnForMoney.Domain.Commands
+namespace BurnForMoney.Functions.Commands
 {
     public class UpdateActivityCommand : Command
     {

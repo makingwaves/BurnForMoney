@@ -11,6 +11,7 @@ using Microsoft.WindowsAzure.Storage.Queue;
 using Newtonsoft.Json;
 using BurnForMoney.Functions.CommandHandlers;
 using BurnForMoney.Functions.Repositories;
+using BurnForMoney.Functions.Commands;
 
 namespace BurnForMoney.Functions.Functions.CommandHandlers
 {

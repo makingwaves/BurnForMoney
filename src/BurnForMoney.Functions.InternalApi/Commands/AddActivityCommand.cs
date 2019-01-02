@@ -1,7 +1,8 @@
-﻿using System;
+using System;
+using BurnForMoney.Domain.Commands;
 using BurnForMoney.Domain.Domain;
 
-namespace BurnForMoney.Domain.Commands
+namespace BurnForMoney.Functions.InternalApi.Commands
 {
     public class AddActivityCommand : Command
     {

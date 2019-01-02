@@ -1,6 +1,8 @@
-﻿using System;
+using System;
+using BurnForMoney.Domain.Commands;
+using BurnForMoney.Domain.Domain;
 
-namespace BurnForMoney.Domain.Commands
+namespace BurnForMoney.Functions.Strava.Commands
 {
     public class CreateAthleteCommand : Command
     {
@@ -9,10 +11,10 @@ namespace BurnForMoney.Domain.Commands
         public readonly string FirstName;
         public readonly string LastName;
         public readonly string ProfilePictureUrl;
-        public readonly Domain.Source System;
+        public readonly Source System;
 
         public CreateAthleteCommand(Guid id, string externalId, string firstName, string lastName, string profilePictureUrl,
-            Domain.Source system)
+            Source system)
         {
             Id = id;
             ExternalId = externalId;
