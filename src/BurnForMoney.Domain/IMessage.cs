@@ -1,7 +1,7 @@
-﻿namespace BurnForMoney.Domain
+namespace BurnForMoney.Domain
 {
     public interface IMessage
     {
-        
+
     }
 }

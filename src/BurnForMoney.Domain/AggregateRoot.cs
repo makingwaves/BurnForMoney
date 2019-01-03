@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -27,7 +27,10 @@ namespace BurnForMoney.Domain
 
         public void LoadsFromHistory(IEnumerable<DomainEvent> history)
         {
-            foreach (var e in history) ApplyChange(e, false);
+            foreach (var e in history)
+            {
+                ApplyChange(e, false);
+            }
         }
 
         protected void ApplyChange(DomainEvent @event)
@@ -37,7 +40,7 @@ namespace BurnForMoney.Domain
 
         private void ApplyChange(DomainEvent @event, bool isNew)
         {
-            ((dynamic)this).Apply((dynamic)@event);
+            ((dynamic)this).Apply((dynamic) @event);
             if (isNew)
             {
                 _changes.Add(@event);
