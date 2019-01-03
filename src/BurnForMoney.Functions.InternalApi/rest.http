@@ -56,3 +56,16 @@ GET {{baseUrl}}/athlete/{{athleteId}}/activities
 GET {{baseUrl}}/activities/categories
 
 
+
+###### ------------------------- RANKING 
+
+### Get ranking (all)
+GET {{baseUrl}}/ranking
+
+### Get ranking (category)
+@category = Ride
+GET {{baseUrl}}/ranking/{{category}}
+
+### Get ranking, top 5
+@take = 5
+GET {{baseUrl}}/ranking?take={{take}}
