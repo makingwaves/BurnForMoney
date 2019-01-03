@@ -17,12 +17,8 @@ namespace BurnForMoney.Functions.Strava.Functions.HandleExpiredTokens
             [QueueTrigger(StravaQueueNames.UnauthorizedAthletes)] Guid athleteId,
             [Configuration] ConfigurationRoot configuration)
         {
-            log.LogFunctionStart(FunctionsNames.Q_DeactivateExpiredAccessTokens);
-
             await AccessTokensStore.DeactivateAccessTokenOfAsync(athleteId, configuration.Strava.AccessTokensKeyVaultUrl);
             log.LogInformation(nameof(FunctionsNames.Q_DeactivateExpiredAccessTokens), $"Disabled access token for athlete: {athleteId}.");
-
-            log.LogFunctionEnd(FunctionsNames.Q_DeactivateExpiredAccessTokens);
         }
     }
 }

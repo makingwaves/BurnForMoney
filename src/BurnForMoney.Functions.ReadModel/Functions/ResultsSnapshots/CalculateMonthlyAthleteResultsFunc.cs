@@ -26,8 +26,6 @@ namespace BurnForMoney.Functions.ReadModel.Functions.ResultsSnapshots
             ILogger log,
             [Configuration] ConfigurationRoot configuration)
         {
-            log.LogFunctionStart(FUNCTIONNAME_Q_CalculateMonthlyAthleteResults);
-            
             using (var conn = SqlConnectionFactory.Create(configuration.ConnectionStrings.SqlDbConnectionString))
             {
                 await conn.OpenWithRetryAsync();
@@ -70,7 +68,6 @@ WHERE MONTH(ActivityTime)=@Month AND YEAR(ActivityTime)=@Year", new
                     log.LogInformation(FUNCTIONNAME_Q_CalculateMonthlyAthleteResults, "Updated snapshot.");
                 }
             }
-            log.LogFunctionEnd(FUNCTIONNAME_Q_CalculateMonthlyAthleteResults);
         }
 
         private static IEnumerable<AthleteResult> GroupActivitiesByAthlete(IEnumerable<Activity> activities)

@@ -21,8 +21,6 @@ namespace BurnForMoney.Functions.InternalApi.Functions.Activities
             ILogger log,
             [Queue(AppQueueNames.UpdateActivityRequests, Connection = "AppQueuesStorage")] CloudQueue outputQueue)
         {
-            log.LogFunctionStart(FunctionsNames.UpdateActivity);
-
             var requestData = await req.ReadAsStringAsync();
 
             UpdateActivityRequest model;
@@ -58,7 +56,6 @@ namespace BurnForMoney.Functions.InternalApi.Functions.Activities
 
             var output = JsonConvert.SerializeObject(command);
             await outputQueue.AddMessageAsync(new CloudQueueMessage(output));
-            log.LogFunctionEnd(FunctionsNames.UpdateActivity);
             return new OkObjectResult(command.Id);
         }
 

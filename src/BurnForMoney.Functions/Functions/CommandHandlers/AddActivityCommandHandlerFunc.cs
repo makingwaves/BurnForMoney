@@ -15,13 +15,9 @@ namespace BurnForMoney.Functions.Functions.CommandHandlers
         public static async Task Q_AddActivity(ILogger log, ExecutionContext executionContext,
             [QueueTrigger(AppQueueNames.AddActivityRequests)] AddActivityCommand message)
         {
-            log.LogFunctionStart(FunctionsNames.Q_AddActivity);
-
             var repository = AthleteRepositoryFactory.Create();
             var commandHandler = new AddActivityCommandHandler(repository);
             await commandHandler.HandleAsync(message);
-
-            log.LogFunctionEnd(FunctionsNames.Q_AddActivity);
         }
     }
 }

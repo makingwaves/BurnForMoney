@@ -35,8 +35,6 @@ namespace BurnForMoney.Functions.Strava.Functions.EventsHub
             [Queue(FunctionsNames.DeactivateAthleteRequests)] CloudQueue deauthorizationQueue,
             [Configuration] ConfigurationRoot configuration)
         {
-            log.LogFunctionStart(FunctionsNames.EventsRouter);
-
             var stravaAthleteId = @event.OwnerId.ToString();
             
             var readModelFacade = new AthleteReadRepository(configuration.ConnectionStrings.SqlDbConnectionString);
@@ -87,7 +85,6 @@ namespace BurnForMoney.Functions.Strava.Functions.EventsHub
             {
                 throw new Exception($"Unknown event type: {@event.ObjectType}");
             }
-            log.LogFunctionEnd(FunctionsNames.EventsRouter);
         }
 
         [FunctionName(FunctionsNames.Events_NewActivity)]
@@ -96,8 +93,6 @@ namespace BurnForMoney.Functions.Strava.Functions.EventsHub
             [Queue(AppQueueNames.AddActivityRequests, Connection = "AppQueuesStorage")] CloudQueue addActivitiesRequestsQueue,
             [Configuration] ConfigurationRoot configuration)
         {
-            log.LogFunctionStart(FunctionsNames.Events_NewActivity);
-
             var accessToken = await GetAccessTokenAsync(activityData.AthleteId, configuration.Strava.AccessTokensKeyVaultUrl);
 
             StravaActivity activity;
@@ -126,7 +121,6 @@ namespace BurnForMoney.Functions.Strava.Functions.EventsHub
             var json = JsonConvert.SerializeObject(command);
             var message = new CloudQueueMessage(json);
             await addActivitiesRequestsQueue.AddMessageAsync(message);
-            log.LogFunctionEnd(FunctionsNames.Events_NewActivity);
         }
 
         [FunctionName(FunctionsNames.Events_UpdateActivity)]
@@ -135,8 +129,6 @@ namespace BurnForMoney.Functions.Strava.Functions.EventsHub
             [Queue(AppQueueNames.UpdateActivityRequests, Connection = "AppQueuesStorage")] CloudQueue updateActivityRequestsQueue,
             [Configuration] ConfigurationRoot configuration)
         {
-            log.LogFunctionStart(FunctionsNames.Events_UpdateActivity);
-
             var activityRepository = new ActivityReadRepository(configuration.ConnectionStrings.SqlDbConnectionString);
 
             var accessToken = await GetAccessTokenAsync(activityData.AthleteId, configuration.Strava.AccessTokensKeyVaultUrl);
@@ -165,7 +157,6 @@ namespace BurnForMoney.Functions.Strava.Functions.EventsHub
             var json = JsonConvert.SerializeObject(command);
             var message = new CloudQueueMessage(json);
             await updateActivityRequestsQueue.AddMessageAsync(message);
-            log.LogFunctionEnd(FunctionsNames.Events_UpdateActivity);
         }
 
         private static async Task<string> GetAccessTokenAsync(Guid athleteId, string keyVaultBaseUrl)
@@ -180,15 +171,12 @@ namespace BurnForMoney.Functions.Strava.Functions.EventsHub
             [Queue(AppQueueNames.DeleteActivityRequests, Connection = "AppQueuesStorage")] CloudQueue deleteActivitiesQueue,
             [Configuration] ConfigurationRoot configuration)
         {
-            log.LogFunctionStart(FunctionsNames.Events_DeleteActivity);
-
             var activityRepository = new ActivityReadRepository(configuration.ConnectionStrings.SqlDbConnectionString);
             var activity = await activityRepository.GetByExternalIdAsync(@event.StravaActivityId);
 
             var json = JsonConvert.SerializeObject(new DeleteActivityCommand { Id = activity.Id, AthleteId = @event.AthleteId });
             var message = new CloudQueueMessage(json);
             await deleteActivitiesQueue.AddMessageAsync(message);
-            log.LogFunctionEnd(FunctionsNames.Events_DeleteActivity);
         }
     }
 }

@@ -23,8 +23,6 @@ namespace BurnForMoney.Functions.Functions.CommandHandlers
             [QueueTrigger(AppQueueNames.DeactivateAthleteRequests)] DeactivateAthleteCommand message,
             [Configuration] ConfigurationRoot configuration)
         {
-            log.LogFunctionStart(FunctionsNames.Q_DeactivateAthlete);
-
             var repository = AthleteRepositoryFactory.Create();
             var commandHandler = new DeactivateAthleteCommandHandler(repository);
             await commandHandler.HandleAsync(message);
@@ -41,8 +39,6 @@ namespace BurnForMoney.Functions.Functions.CommandHandlers
             <p>Athlete: {athlete.FirstName} {athlete.LastName} [{message.AthleteId}] revoked authorization.</p>"
             };
             await notificationsQueue.AddMessageAsync(new CloudQueueMessage(JsonConvert.SerializeObject(notification)));
-
-            log.LogFunctionEnd(FunctionsNames.Q_DeactivateAthlete);
         }
     }
 }

@@ -21,8 +21,6 @@ namespace BurnForMoney.Functions.Strava.Functions.ActivateAthlete
             [Queue(AppQueueNames.ActivateAthleteRequests, Connection = "AppQueuesStorage")] CloudQueue activateAthleteRequestsQueue,
             [Configuration] ConfigurationRoot configuration)
         {
-            log.LogFunctionStart(FunctionsNames.Q_ActivateAthlete);
-
             var id = Guid.Parse(athleteId);
 
             var command = new ActivateAthleteCommand(id);

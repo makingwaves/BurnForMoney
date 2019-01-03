@@ -16,8 +16,6 @@ namespace BurnForMoney.Functions.Strava.Functions._Support
             [Queue("{queueName}")] CloudQueue queue,
             [Queue("{queueName}-poison")] CloudQueue poisonQueue, string queueName)
         {
-            log.LogFunctionStart(SupportFunctionsNames.ReprocessPoisonQueueMessages);
-
             int.TryParse(req.Query["messageCount"], out var messageCountParameter);
             var messageCount = messageCountParameter == 0 ? 10 : messageCountParameter;
 
@@ -36,7 +34,6 @@ namespace BurnForMoney.Functions.Strava.Functions._Support
                 processedMessages++;
             }
 
-            log.LogFunctionEnd(SupportFunctionsNames.ReprocessPoisonQueueMessages);
             return new OkObjectResult($"Reprocessed {processedMessages} messages from the {poisonQueue.Name} queue.");
         }
     }

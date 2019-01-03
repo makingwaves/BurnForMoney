@@ -21,8 +21,6 @@ namespace BurnForMoney.Functions.ReadModel.Functions._Support
         public static async Task<IActionResult> CollectMonthlyStatistics([HttpTrigger(AuthorizationLevel.Admin, "get", Route = "support/activities/collectmonthlystatistics/{year:int:min(2018)}/{month:range(1,12)}")]HttpRequest req, ILogger log,
             [Queue(QueueNames.CalculateMonthlyResults)] CloudQueue outputQueue, int year, int month)
         {
-            log.LogFunctionStart(FUNCTIONNAME_CollectMonthlyStatistics);
-
             if (month < 1 || month > 12)
             {
                 const string errorMessage = "Function invoked with incorrect parameters. [month] must be in the range [1, 12].";
@@ -46,8 +44,6 @@ namespace BurnForMoney.Functions.ReadModel.Functions._Support
             var json = JsonConvert.SerializeObject(request);
             await outputQueue.AddMessageAsync(new CloudQueueMessage(json));
             log.LogInformation(FUNCTIONNAME_CollectMonthlyStatistics, $"Put a message to the queue `{request.Month} / {request.Year}`.");
-
-            log.LogFunctionEnd(FUNCTIONNAME_CollectMonthlyStatistics);
             return new OkResult();
         }
     }

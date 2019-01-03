@@ -21,8 +21,6 @@ namespace BurnForMoney.Functions.Strava.Functions._Support
             [OrchestrationClient]DurableOrchestrationClient starter,
             ILogger log, [Configuration] ConfigurationRoot configuration)
         {
-            log.LogFunctionStart(SupportFunctionsNames.PurgeDurableHubHistory);
-
             var settings = new AzureStorageOrchestrationServiceSettings
             {
                 StorageConnectionString = configuration.ConnectionStrings.AzureWebJobsStorage,
@@ -32,7 +30,6 @@ namespace BurnForMoney.Functions.Strava.Functions._Support
             var service = new AzureStorageOrchestrationService(settings);
             await service.PurgeOrchestrationHistoryAsync(DateTime.UtcNow.AddDays(-1), OrchestrationStateTimeRangeFilterType.OrchestrationLastUpdatedTimeFilter);
 
-            log.LogFunctionEnd(SupportFunctionsNames.PurgeDurableHubHistory);
             return new OkObjectResult("Purge operation has been scheduled.");
         }
     }

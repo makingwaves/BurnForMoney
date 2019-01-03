@@ -20,13 +20,10 @@ namespace BurnForMoney.Functions.InternalApi.Functions.Activities
         public static async Task<IActionResult> GetAthleteActivitiesAsync([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "athlete/{athleteId:guid}/activities")] HttpRequest req,
             ILogger log, [Configuration] ConfigurationRoot configuration, string athleteId)
         {
-            log.LogFunctionStart(FunctionsNames.GetAthleteActivities);
-
             var repository = new ActivityReadRepository(configuration.ConnectionStrings.SqlDbConnectionString);
             var activities = await repository.GetAthleteActivitiesAsync(Guid.Parse(athleteId), Source.None, DateTime.UtcNow.Month,
                 DateTime.UtcNow.Year);
 
-            log.LogFunctionEnd(FunctionsNames.GetAthleteActivities);
             return new OkObjectResult(activities
                 .Select(activity => new {
                     activity.Id,

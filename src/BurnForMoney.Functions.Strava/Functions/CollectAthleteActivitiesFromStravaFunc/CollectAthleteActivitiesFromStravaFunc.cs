@@ -31,8 +31,6 @@ namespace BurnForMoney.Functions.Strava.Functions.CollectAthleteActivitiesFromSt
             ILogger log,
             [Configuration] ConfigurationRoot configuration)
         {
-            log.LogFunctionStart(FunctionsNames.Q_CollectAthleteActivities);
-
             SecretBundle accessTokenSecret;
             try
             {
@@ -75,7 +73,6 @@ namespace BurnForMoney.Functions.Strava.Functions.CollectAthleteActivitiesFromSt
                 log.LogError(ex, ex.Message);
                 await unauthorizedAthletesQueue.AddMessageAsync(new CloudQueueMessage(request.AthleteId.ToString()));
             }
-            log.LogFunctionEnd(FunctionsNames.Q_CollectAthleteActivities);
         }
 
         private static DateTime GetFirstDayOfTheMonth(DateTime dateTime)

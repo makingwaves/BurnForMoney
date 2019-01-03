@@ -19,8 +19,6 @@ namespace BurnForMoney.Functions.Strava.Functions._Support
             [Queue(FunctionsNames.DeactivateAthleteRequests)] CloudQueue outputQueue,
             [Configuration] ConfigurationRoot configuration)
         {
-            log.LogFunctionStart(SupportFunctionsNames.DeactivateAthlete);
-
             await outputQueue.AddMessageAsync(new CloudQueueMessage(athleteId));
 
             return new OkObjectResult("Request received.");
@@ -31,8 +29,6 @@ namespace BurnForMoney.Functions.Strava.Functions._Support
             [Queue(FunctionsNames.ActivateAthleteRequests)] CloudQueue outputQueue,
             [Configuration] ConfigurationRoot configuration)
         {
-            log.LogFunctionStart(SupportFunctionsNames.ActivateAthlete);
-
             await outputQueue.AddMessageAsync(new CloudQueueMessage(athleteId));
 
             return new OkObjectResult("Request received.");

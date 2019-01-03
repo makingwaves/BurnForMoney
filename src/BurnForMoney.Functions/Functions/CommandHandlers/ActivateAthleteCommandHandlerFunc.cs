@@ -18,13 +18,9 @@ namespace BurnForMoney.Functions.Functions.CommandHandlers
             [QueueTrigger(AppQueueNames.ActivateAthleteRequests)] ActivateAthleteCommand message,
             [Configuration] ConfigurationRoot configuration)
         {
-            log.LogFunctionStart(FunctionsNames.Q_ActivateAthlete);
-
             var repository = AthleteRepositoryFactory.Create();
             var commandHandler = new ActivateAthleteCommandHandler(repository);
             await commandHandler.HandleAsync(message);
-   
-            log.LogFunctionEnd(FunctionsNames.Q_ActivateAthlete);
         }
     }
 }

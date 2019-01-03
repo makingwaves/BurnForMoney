@@ -24,8 +24,6 @@ namespace BurnForMoney.Functions.Functions.Notifications
             ILogger log, ExecutionContext context,
             [Configuration] ConfigurationRoot configuration)
         {
-            log.LogFunctionStart(FunctionsNames.Q_NotificationsGateway);
-
             if (_sendGridClient == null)
             {
                 _sendGridClient = new SendGridClient(configuration.SendGridApiKey);
@@ -51,7 +49,6 @@ namespace BurnForMoney.Functions.Functions.Notifications
             {
                 throw new EmailException(string.Join(", ", notification.Recipients), response.StatusCode.ToString());
             }
-            log.LogFunctionEnd(FunctionsNames.Q_NotificationsGateway);
         }
 
         private static string ApplyTemplate(string content, ExecutionContext context)

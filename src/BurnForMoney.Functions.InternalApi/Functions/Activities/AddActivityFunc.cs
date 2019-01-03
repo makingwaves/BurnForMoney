@@ -23,8 +23,6 @@ namespace BurnForMoney.Functions.InternalApi.Functions.Activities
             string athleteId,
             [Queue(AppQueueNames.AddActivityRequests, Connection = "AppQueuesStorage")] CloudQueue outputQueue)
         {
-            log.LogFunctionStart(FunctionsNames.AddActivity);
-
             var requestData = await req.ReadAsStringAsync();
 
             AddActivityRequest model;
@@ -61,7 +59,6 @@ namespace BurnForMoney.Functions.InternalApi.Functions.Activities
 
             var output = JsonConvert.SerializeObject(addActivityCommand);
             await outputQueue.AddMessageAsync(new CloudQueueMessage(output));
-            log.LogFunctionEnd(FunctionsNames.AddActivity);
             return new OkObjectResult(addActivityCommand.Id);
         }
 

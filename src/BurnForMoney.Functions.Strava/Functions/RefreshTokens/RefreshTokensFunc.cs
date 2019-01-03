@@ -23,8 +23,6 @@ namespace BurnForMoney.Functions.Strava.Functions.RefreshTokens
             [Queue(StravaQueueNames.RefreshStravaToken)] CloudQueue refreshTokensQueue,
             [Configuration] ConfigurationRoot configuration)
         {
-            log.LogFunctionStart(FunctionsNames.T_RefreshAccessTokens);
-
             var secrets = await AccessTokensStore.GetAllSecretsAsync(configuration.Strava.AccessTokensKeyVaultUrl);
 
             var expiringSecretsMetadata = secrets.Where(secret =>
@@ -42,7 +40,6 @@ namespace BurnForMoney.Functions.Strava.Functions.RefreshTokens
             }
 
             await Task.WhenAll(tasks);
-            log.LogFunctionEnd(FunctionsNames.T_RefreshAccessTokens);
         }
 
 
@@ -50,8 +47,6 @@ namespace BurnForMoney.Functions.Strava.Functions.RefreshTokens
         public static async Task Q_RefreshAccessTokens([QueueTrigger(StravaQueueNames.RefreshStravaToken)] string athleteId, ILogger log,
             [Configuration] ConfigurationRoot configuration)
         {
-            log.LogFunctionStart(FunctionsNames.Q_RefreshAccessTokens);
-
             var refreshTokenSecret =
                 await AccessTokensStore.GetRefreshTokenForAsync(Guid.Parse(athleteId), configuration.Strava.AccessTokensKeyVaultUrl);
             var refreshToken = refreshTokenSecret.Value;
@@ -62,8 +57,6 @@ namespace BurnForMoney.Functions.Strava.Functions.RefreshTokens
             await AccessTokensStore.AddAsync(Guid.Parse(athleteId), response.AccessToken, response.RefreshToken, response.ExpiresAt,
                 configuration.Strava.AccessTokensKeyVaultUrl);
             log.LogInformation(nameof(FunctionsNames.Q_RefreshAccessTokens), $"Updated tokens for athlete with id: {configuration.Strava.ClientId}.");
-
-            log.LogFunctionEnd(FunctionsNames.Q_RefreshAccessTokens);
         }
     }
 }

@@ -17,8 +17,6 @@ namespace BurnForMoney.Functions.Strava.Functions.EventsHub
             ILogger log, ExecutionContext executionContext,
             [Queue(FunctionsNames.StravaEvents)] CloudQueue outputQueue)
         {
-            log.LogFunctionStart(FunctionsNames.EventsHub);
-
             var eventData = await req.ReadAsStringAsync();
             if (string.IsNullOrWhiteSpace(eventData))
             {
@@ -27,8 +25,6 @@ namespace BurnForMoney.Functions.Strava.Functions.EventsHub
 
             await outputQueue.AddMessageAsync(new CloudQueueMessage(eventData));
             log.LogInformation(FunctionsNames.EventsHub, $"Added a message to queue: {FunctionsNames.StravaEvents}.");
-
-            log.LogFunctionEnd(FunctionsNames.EventsHub);
             return new OkResult();
         }
     }

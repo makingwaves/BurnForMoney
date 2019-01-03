@@ -22,15 +22,11 @@ namespace BurnForMoney.Functions.Functions.CommandHandlers
             [Configuration] ConfigurationRoot configuration,
             [Queue(StravaQueueNames.CollectAthleteActivities, Connection = "StravaQueuesStorage")] CloudQueue outputQueue)
         {
-            log.LogFunctionStart(FunctionsNames.Q_AddAthlete);
-
             var repository = AthleteRepositoryFactory.Create();
             var commandHandler = new CreateAthleteCommandHandler(repository);
 
             await commandHandler.HandleAsync(message);
             await ScheduleCollectionOfHistoricalActivitiesAsync(message.Id, outputQueue);
-
-            log.LogFunctionEnd(FunctionsNames.Q_AddAthlete);
         }
 
         private static async Task ScheduleCollectionOfHistoricalActivitiesAsync(Guid athleteId, CloudQueue outputQueue)

@@ -16,8 +16,6 @@ namespace BurnForMoney.Functions.InternalApi.Functions.Activities
         [FunctionName(FunctionsNames.GetActivityCategories)]
         public static IActionResult GetActivityCategories([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "activities/categories")] HttpRequest req, ILogger log, ExecutionContext executionContext)
         {
-            log.LogFunctionStart(FunctionsNames.GetActivityCategories);
-            log.LogFunctionEnd(FunctionsNames.GetActivityCategories);
             return new OkObjectResult(ActivityCategories);
         }
     }

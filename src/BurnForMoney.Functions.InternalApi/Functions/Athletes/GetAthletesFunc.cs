@@ -18,12 +18,9 @@ namespace BurnForMoney.Functions.InternalApi.Functions.Athletes
         public static async Task<IActionResult> GetAthletesAsync([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "athletes")] HttpRequest req,  
             ILogger log, [Configuration] ConfigurationRoot configuration)
         {
-            log.LogFunctionStart(FunctionsNames.GetAthletes);
-
             var repository = new AthleteReadRepository(configuration.ConnectionStrings.SqlDbConnectionString);
             var athletes = await repository.GetAllActiveAsync();
        
-            log.LogFunctionEnd(FunctionsNames.GetAthletes);
             return new OkObjectResult(athletes.Select(athlete => new {
                     athlete.Id,
                     athlete.FirstName,

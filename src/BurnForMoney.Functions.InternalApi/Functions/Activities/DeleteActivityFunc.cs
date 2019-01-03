@@ -21,11 +21,8 @@ namespace BurnForMoney.Functions.InternalApi.Functions.Activities
             ILogger log,
             [Queue(AppQueueNames.DeleteActivityRequests, Connection = "AppQueuesStorage")] CloudQueue outputQueue)
         {
-            log.LogFunctionStart(FunctionsNames.DeleteActivity);
-
             var json = JsonConvert.SerializeObject(new DeleteActivityCommand { Id = Guid.Parse(activityId), AthleteId = Guid.Parse(athleteId) });
             await outputQueue.AddMessageAsync(new CloudQueueMessage(json));
-            log.LogFunctionEnd(FunctionsNames.DeleteActivity);
             return new OkObjectResult("Request received.");
         }
     }

@@ -28,7 +28,6 @@ namespace BurnForMoney.Functions.PublicApi.Functions
         public static async Task<IActionResult> TotalNumbers([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "totalnumbers")] HttpRequest req, 
             ILogger log, [Configuration] ConfigurationRoot configuration)
         {
-            log.LogFunctionStart("TotalNumbers");
             if (!Cache.TryGetValue(CacheKey, out var totalNumbers))
             {
                 totalNumbers = await GetTotalNumbersAsync(configuration.ConnectionStrings.SqlDbConnectionString);
@@ -42,7 +41,6 @@ namespace BurnForMoney.Functions.PublicApi.Functions
                 Cache.Set(CacheKey, totalNumbers, cacheEntryOptions);
             }
 
-            log.LogFunctionEnd("TotalNumbers");
             return new OkObjectResult(totalNumbers);
         }
 

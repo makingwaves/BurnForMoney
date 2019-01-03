@@ -21,8 +21,6 @@ namespace BurnForMoney.Functions.Strava.Functions.DeactivateAthlete
             [Queue(AppQueueNames.DeactivateAthleteRequests, Connection = "AppQueuesStorage")] CloudQueue deactivateAthleteRequestsQueue,
             [Configuration] ConfigurationRoot configuration)
         {
-            log.LogFunctionStart(FunctionsNames.Q_DeactivateAthlete);
-
             var id = Guid.Parse(athleteId);
 
             var command = new DeactivateAthleteCommand(id);
