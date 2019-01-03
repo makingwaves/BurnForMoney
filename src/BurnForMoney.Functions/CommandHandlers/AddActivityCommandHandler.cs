@@ -1,8 +1,8 @@
 ﻿using System.Threading.Tasks;
 using BurnForMoney.Domain;
-using BurnForMoney.Domain.Commands;
 using BurnForMoney.Functions.Commands;
 using BurnForMoney.Functions.Domain;
+using BurnForMoney.Infrastructure.Persistence;
 
 namespace BurnForMoney.Functions.CommandHandlers
 {

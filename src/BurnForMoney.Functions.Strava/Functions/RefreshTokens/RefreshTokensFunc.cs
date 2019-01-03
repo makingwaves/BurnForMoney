@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using BurnForMoney.Functions.Infrastructure.Queues;
 using BurnForMoney.Functions.Shared.Extensions;
 using BurnForMoney.Functions.Shared.Functions.Extensions;
-using BurnForMoney.Functions.Shared.Queues;
 using BurnForMoney.Functions.Strava.Configuration;
 using BurnForMoney.Functions.Strava.External.Strava.Api;
 using BurnForMoney.Functions.Strava.Security;

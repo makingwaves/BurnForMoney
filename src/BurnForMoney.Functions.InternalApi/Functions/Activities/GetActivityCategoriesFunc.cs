@@ -1,5 +1,5 @@
 ﻿using System;
-using BurnForMoney.Domain.Domain;
+using BurnForMoney.Domain;
 using BurnForMoney.Functions.Shared.Extensions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

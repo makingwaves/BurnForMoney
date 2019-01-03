@@ -1,5 +1,5 @@
 using System;
-using BurnForMoney.Domain.Commands;
+using BurnForMoney.Infrastructure.Messages;
 
 namespace BurnForMoney.Functions.Strava.Commands
 {

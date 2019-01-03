@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
+using BurnForMoney.Functions.Infrastructure.Queues;
 using BurnForMoney.Functions.Shared.Extensions;
-using BurnForMoney.Functions.Shared.Queues;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
@@ -15,7 +15,7 @@ namespace BurnForMoney.Functions.Strava.Functions.EventsHub
         [FunctionName(FunctionsNames.EventsHub)]
         public static async Task<IActionResult> EventsHubAsync([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "strava/events/hub")] HttpRequest req,
             ILogger log, ExecutionContext executionContext,
-            [Queue(StravaQueueNames.StravaEvents)] CloudQueue outputQueue)
+            [Queue(FunctionsNames.StravaEvents)] CloudQueue outputQueue)
         {
             log.LogFunctionStart(FunctionsNames.EventsHub);
 
@@ -26,7 +26,7 @@ namespace BurnForMoney.Functions.Strava.Functions.EventsHub
             }
 
             await outputQueue.AddMessageAsync(new CloudQueueMessage(eventData));
-            log.LogInformation(FunctionsNames.EventsHub, $"Added a message to queue: {StravaQueueNames.StravaEvents}.");
+            log.LogInformation(FunctionsNames.EventsHub, $"Added a message to queue: {FunctionsNames.StravaEvents}.");
 
             log.LogFunctionEnd(FunctionsNames.EventsHub);
             return new OkResult();

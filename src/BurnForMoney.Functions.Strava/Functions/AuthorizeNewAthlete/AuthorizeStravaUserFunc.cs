@@ -1,8 +1,8 @@
 using System.Linq;
 using System.Threading.Tasks;
+using BurnForMoney.Functions.Infrastructure.Queues;
 using BurnForMoney.Functions.Shared.Extensions;
 using BurnForMoney.Functions.Shared.Functions.Extensions;
-using BurnForMoney.Functions.Shared.Queues;
 using BurnForMoney.Functions.Strava.Configuration;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using BurnForMoney.Functions.InternalApi.Configuration;
 using BurnForMoney.Functions.Shared.Extensions;
 using BurnForMoney.Functions.Shared.Functions.Extensions;
-using BurnForMoney.Functions.Shared.Repositories;
+using BurnForMoney.Infrastructure.Persistence.Repositories;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;

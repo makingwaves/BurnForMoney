@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 using BurnForMoney.Domain.Events;
-using BurnForMoney.Functions.Shared.Persistence;
+using BurnForMoney.Infrastructure.Persistence.Sql;
 using Dapper;
 
 namespace BurnForMoney.Functions.ReadModel.Views
@@ -16,7 +16,7 @@ namespace BurnForMoney.Functions.ReadModel.Views
 
         public async Task HandleAsync(ActivityAdded message)
         {
-            using (var conn = SqlConnectionFactory.Create(_sqlConnectionString))
+            using (var conn = BurnForMoney.Infrastructure.Persistence.Sql.SqlConnectionFactory.Create(_sqlConnectionString))
             {
                 await conn.OpenWithRetryAsync();
 

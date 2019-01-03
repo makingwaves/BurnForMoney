@@ -56,7 +56,6 @@ GET {{baseUrl}}/athlete/{{athleteId}}/activities
 GET {{baseUrl}}/activities/categories
 
 
-
 ###### ------------------------- RANKING 
 
 ### Get ranking (all)

@@ -1,5 +1,5 @@
 ﻿using System;
-using BurnForMoney.Domain.Domain;
+using BurnForMoney.Domain;
 
 namespace BurnForMoney.Functions.Domain.ActivityMappers
 {

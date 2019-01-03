@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Threading.Tasks;
 using BurnForMoney.Domain;
-using BurnForMoney.Domain.Commands;
-using BurnForMoney.Domain.Domain;
+using BurnForMoney.Functions.Infrastructure.Queues;
 using BurnForMoney.Functions.InternalApi.Commands;
 using BurnForMoney.Functions.Shared.Extensions;
-using BurnForMoney.Functions.Shared.Identity;
-using BurnForMoney.Functions.Shared.Queues;
+using BurnForMoney.Identity;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;

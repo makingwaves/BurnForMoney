@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using BurnForMoney.Functions.Infrastructure.Queues;
 using BurnForMoney.Functions.Shared.Extensions;
 using BurnForMoney.Functions.Shared.Functions.Extensions;
-using BurnForMoney.Functions.Shared.Queues;
-using BurnForMoney.Functions.Shared.Repositories;
 using BurnForMoney.Functions.Strava.Configuration;
+using BurnForMoney.Infrastructure.Persistence.Repositories;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;

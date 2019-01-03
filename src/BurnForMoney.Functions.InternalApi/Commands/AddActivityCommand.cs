@@ -1,6 +1,6 @@
 using System;
-using BurnForMoney.Domain.Commands;
-using BurnForMoney.Domain.Domain;
+using BurnForMoney.Domain;
+using BurnForMoney.Infrastructure.Messages;
 
 namespace BurnForMoney.Functions.InternalApi.Commands
 {

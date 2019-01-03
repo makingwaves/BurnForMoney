@@ -21,6 +21,7 @@
     <PackageReference Include="System.Data.SqlClient" Version="4.5.1" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\BurnForMoney.Infrastructure\BurnForMoney.Infrastructure.csproj" />
     <ProjectReference Include="..\BurnForMoney.Functions.Shared\BurnForMoney.Functions.Shared.csproj" />
     <ProjectReference Include="..\BurnForMoney.Domain\BurnForMoney.Domain.csproj" />
   </ItemGroup>
