@@ -15,7 +15,7 @@ namespace BurnForMoney.Functions.Strava.Functions.EventsHub
         [FunctionName(FunctionsNames.EventsHub)]
         public static async Task<IActionResult> EventsHubAsync([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "strava/events/hub")] HttpRequest req,
             ILogger log, ExecutionContext executionContext,
-            [Queue(FunctionsNames.StravaEvents)] CloudQueue outputQueue)
+            [Queue(QueueNames.StravaEvents)] CloudQueue outputQueue)
         {
             var eventData = await req.ReadAsStringAsync();
             if (string.IsNullOrWhiteSpace(eventData))
@@ -24,7 +24,7 @@ namespace BurnForMoney.Functions.Strava.Functions.EventsHub
             }
 
             await outputQueue.AddMessageAsync(new CloudQueueMessage(eventData));
-            log.LogInformation(FunctionsNames.EventsHub, $"Added a message to queue: {FunctionsNames.StravaEvents}.");
+            log.LogInformation(FunctionsNames.EventsHub, $"Added a message to queue: {QueueNames.StravaEvents}.");
             return new OkResult();
         }
     }

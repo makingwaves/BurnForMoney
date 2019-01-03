@@ -16,7 +16,7 @@ namespace BurnForMoney.Functions.Strava.Functions._Support
     {
         [FunctionName(SupportFunctionsNames.DeactivateAthlete)]
         public static async Task<IActionResult> DeactivateAthlete([HttpTrigger(AuthorizationLevel.Admin, "post", Route = "support/athlete/{athleteId:guid}/deactivate")] HttpRequest req, ILogger log, string athleteId,
-            [Queue(FunctionsNames.DeactivateAthleteRequests)] CloudQueue outputQueue,
+            [Queue(QueueNames.DeactivateAthleteRequests)] CloudQueue outputQueue,
             [Configuration] ConfigurationRoot configuration)
         {
             await outputQueue.AddMessageAsync(new CloudQueueMessage(athleteId));
@@ -26,7 +26,7 @@ namespace BurnForMoney.Functions.Strava.Functions._Support
 
         [FunctionName(SupportFunctionsNames.ActivateAthlete)]
         public static async Task<IActionResult> ActivateAthlete([HttpTrigger(AuthorizationLevel.Admin, "post", Route = "support/athlete/{athleteId:guid}/activate")] HttpRequest req, ILogger log, string athleteId,
-            [Queue(FunctionsNames.ActivateAthleteRequests)] CloudQueue outputQueue,
+            [Queue(QueueNames.ActivateAthleteRequests)] CloudQueue outputQueue,
             [Configuration] ConfigurationRoot configuration)
         {
             await outputQueue.AddMessageAsync(new CloudQueueMessage(athleteId));

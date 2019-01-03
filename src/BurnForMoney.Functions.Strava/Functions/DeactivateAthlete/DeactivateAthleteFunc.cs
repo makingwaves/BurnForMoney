@@ -16,7 +16,7 @@ namespace BurnForMoney.Functions.Strava.Functions.DeactivateAthlete
     public static class DeactivateAthleteFunc
     {
         [FunctionName(FunctionsNames.Q_DeactivateAthlete)]
-        public static async Task Q_DeactivateAthlete([QueueTrigger(FunctionsNames.DeactivateAthleteRequests)] string athleteId,
+        public static async Task Q_DeactivateAthlete([QueueTrigger(QueueNames.DeactivateAthleteRequests)] string athleteId,
             ILogger log,
             [Queue(AppQueueNames.DeactivateAthleteRequests, Connection = "AppQueuesStorage")] CloudQueue deactivateAthleteRequestsQueue,
             [Configuration] ConfigurationRoot configuration)

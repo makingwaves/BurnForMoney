@@ -35,15 +35,5 @@ namespace BurnForMoney.Functions.Strava.Functions
 
         public const string T_RefreshAccessTokens = "T_RefreshAccessTokens";
         public const string Q_RefreshAccessTokens = "Q_RefreshAccessTokens";
-        public const string Q_DeactivateExpiredAccessTokens = "Q_DeactivateExpiredAccessTokens";
-    
-        public const string DeactivateAthleteRequests = "strava-deactivate-athlete-requests";
-        public const string ActivateAthleteRequests = "strava-activate-athlete-requests";    
-    
-    
-        public const string StravaEvents = "strava-events";
-        public const string StravaEventsActivityAdd = "strava-events-activity-add";
-        public const string StravaEventsActivityUpdate = "strava-events-activity-update";
-        public const string StravaEventsActivityDelete = "strava-events-activity-delete";
-    }
+        public const string Q_DeactivateExpiredAccessTokens = "Q_DeactivateExpiredAccessTokens";}
 }

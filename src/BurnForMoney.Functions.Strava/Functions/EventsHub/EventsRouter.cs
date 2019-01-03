@@ -27,12 +27,12 @@ namespace BurnForMoney.Functions.Strava.Functions.EventsHub
         private static readonly StravaService StravaService = new StravaService();
 
         [FunctionName(FunctionsNames.EventsRouter)]
-        public static async Task EventsHub([QueueTrigger(FunctionsNames.StravaEvents)] StravaWebhookEvent @event,
+        public static async Task EventsHub([QueueTrigger(QueueNames.StravaEvents)] StravaWebhookEvent @event,
             ILogger log, ExecutionContext executionContext,
-            [Queue(FunctionsNames.StravaEventsActivityAdd)] CloudQueue addActivityQueue,
-            [Queue(FunctionsNames.StravaEventsActivityUpdate)] CloudQueue updateActivityQueue,
-            [Queue(FunctionsNames.StravaEventsActivityDelete)] CloudQueue deleteActivityQueue,
-            [Queue(FunctionsNames.DeactivateAthleteRequests)] CloudQueue deauthorizationQueue,
+            [Queue(QueueNames.StravaEventsActivityAdd)] CloudQueue addActivityQueue,
+            [Queue(QueueNames.StravaEventsActivityUpdate)] CloudQueue updateActivityQueue,
+            [Queue(QueueNames.StravaEventsActivityDelete)] CloudQueue deleteActivityQueue,
+            [Queue(QueueNames.DeactivateAthleteRequests)] CloudQueue deauthorizationQueue,
             [Configuration] ConfigurationRoot configuration)
         {
             var stravaAthleteId = @event.OwnerId.ToString();
@@ -60,15 +60,15 @@ namespace BurnForMoney.Functions.Strava.Functions.EventsHub
                 switch (@event.AspectType)
                 {
                     case AspectType.Create:
-                        log.LogInformation(FunctionsNames.EventsRouter, $"Adding message to {FunctionsNames.StravaEventsActivityAdd} queue.");
+                        log.LogInformation(FunctionsNames.EventsRouter, $"Adding message to {QueueNames.StravaEventsActivityAdd} queue.");
                         await addActivityQueue.AddMessageAsync(new CloudQueueMessage(json));
                         break;
                     case AspectType.Update:
-                        log.LogInformation(FunctionsNames.EventsRouter, $"Adding message to {FunctionsNames.StravaEventsActivityUpdate} queue.");
+                        log.LogInformation(FunctionsNames.EventsRouter, $"Adding message to {QueueNames.StravaEventsActivityUpdate} queue.");
                         await updateActivityQueue.AddMessageAsync(new CloudQueueMessage(json), TimeSpan.FromDays(7), TimeSpan.FromMinutes(2), null, null); // Handle quick add->update operation. An event informing about the addition of activity may appear later.
                         break;
                     case AspectType.Delete:
-                        log.LogInformation(FunctionsNames.EventsRouter, $"Adding message to {FunctionsNames.StravaEventsActivityDelete} queue.");
+                        log.LogInformation(FunctionsNames.EventsRouter, $"Adding message to {QueueNames.StravaEventsActivityDelete} queue.");
                         await deleteActivityQueue.AddMessageAsync(new CloudQueueMessage(json), TimeSpan.FromDays(7), TimeSpan.FromMinutes(2), null, null); // Handle quick add->delete operation. An event informing about the addition of activity may appear later.
                         break;
                     default:
@@ -78,7 +78,7 @@ namespace BurnForMoney.Functions.Strava.Functions.EventsHub
             }
             else if (@event.ObjectType == ObjectType.Athlete)
             {
-                log.LogInformation(FunctionsNames.EventsRouter, $"Adding message to {FunctionsNames.DeactivateAthleteRequests} queue.");
+                log.LogInformation(FunctionsNames.EventsRouter, $"Adding message to {QueueNames.DeactivateAthleteRequests} queue.");
                 await deauthorizationQueue.AddMessageAsync(new CloudQueueMessage(message.AthleteId.ToString("D")));
             }
             else
@@ -88,7 +88,7 @@ namespace BurnForMoney.Functions.Strava.Functions.EventsHub
         }
 
         [FunctionName(FunctionsNames.Events_NewActivity)]
-        public static async Task Events_NewActivity([QueueTrigger(FunctionsNames.StravaEventsActivityAdd)] ActivityData activityData,
+        public static async Task Events_NewActivity([QueueTrigger(QueueNames.StravaEventsActivityAdd)] ActivityData activityData,
             ILogger log,
             [Queue(AppQueueNames.AddActivityRequests, Connection = "AppQueuesStorage")] CloudQueue addActivitiesRequestsQueue,
             [Configuration] ConfigurationRoot configuration)
@@ -124,7 +124,7 @@ namespace BurnForMoney.Functions.Strava.Functions.EventsHub
         }
 
         [FunctionName(FunctionsNames.Events_UpdateActivity)]
-        public static async Task Events_UpdateActivity([QueueTrigger(FunctionsNames.StravaEventsActivityUpdate)] ActivityData activityData,
+        public static async Task Events_UpdateActivity([QueueTrigger(QueueNames.StravaEventsActivityUpdate)] ActivityData activityData,
             ILogger log,
             [Queue(AppQueueNames.UpdateActivityRequests, Connection = "AppQueuesStorage")] CloudQueue updateActivityRequestsQueue,
             [Configuration] ConfigurationRoot configuration)
@@ -166,7 +166,7 @@ namespace BurnForMoney.Functions.Strava.Functions.EventsHub
         }
 
         [FunctionName(FunctionsNames.Events_DeleteActivity)]
-        public static async Task Events_DeleteActivity([QueueTrigger(FunctionsNames.StravaEventsActivityDelete)] ActivityData @event,
+        public static async Task Events_DeleteActivity([QueueTrigger(QueueNames.StravaEventsActivityDelete)] ActivityData @event,
             ILogger log, ExecutionContext executionContext,
             [Queue(AppQueueNames.DeleteActivityRequests, Connection = "AppQueuesStorage")] CloudQueue deleteActivitiesQueue,
             [Configuration] ConfigurationRoot configuration)
