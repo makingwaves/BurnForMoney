@@ -8,6 +8,6 @@ for Project in ${Projects[*]}
 do
     echo Cleaning and building project $Project
     cd $Project
-    dotnet clean & dotnet build &
+    dotnet clean & dotnet build
     cd ..
 done
