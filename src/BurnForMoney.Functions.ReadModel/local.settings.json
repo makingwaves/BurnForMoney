@@ -5,11 +5,11 @@
     "AzureWebJobsStorage": "UseDevelopmentStorage=true",
     "AzureWebJobsDashboard": "UseDevelopmentStorage=true",
     "KeyVaultName": "burnformoneykvdev",
-    "ConnectionStrings:Sql": "Data Source=(LocalDB)\\.;Initial Catalog=BurnForMoney;Integrated Security=True;"
+    "ConnectionStrings:Sql": "Data Source=localhost;Initial Catalog=BurnForMoney;User ID=sa; Password=strongPwd123!;"
   },
   "Email": {
-    "AthletesApprovalEmail": "pawel.maga@makingwaves.com",
-    "DefaultRecipient": "pawel.maga@makingwaves.com"
+    "AthletesApprovalEmail": "pawel.p.maga@gmail.com",
+    "DefaultRecipient": "pawel.p.maga@gmail.com"
   },
   "Host": {
     "LocalHttpPort": 7075

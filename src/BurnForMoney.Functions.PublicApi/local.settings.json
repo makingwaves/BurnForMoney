@@ -6,7 +6,7 @@
     "AzureWebJobsDashboard": "UseDevelopmentStorage=true",
     "StravaAppHostName": "http://localhost:7072",
     "KeyVaultName": "burnformoneykvdev",
-    "ConnectionStrings:Sql": "Data Source=(LocalDB)\\.;Initial Catalog=BurnForMoney;Integrated Security=True;",
+    "ConnectionStrings:Sql": "Data Source=localhost;Initial Catalog=BurnForMoney;User ID=sa; Password=strongPwd123!;",
     "AZURE_FUNCTION_PROXY_DISABLE_LOCAL_CALL": "true"
   },
   "Host": {

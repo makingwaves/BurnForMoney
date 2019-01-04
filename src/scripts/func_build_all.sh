@@ -7,6 +7,6 @@ for App in ${FunctionApps[*]}
 do
     echo Building function $App
     cd $App
-    dotnet build &
+    dotnet build
     cd ..
 done
