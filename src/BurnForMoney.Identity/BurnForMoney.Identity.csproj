@@ -4,6 +4,4 @@
     <AssemblyName>BurnForMoney.Identity</AssemblyName>
     <RootNamespace>BurnForMoney.Identity</RootNamespace>
   </PropertyGroup>
-  <ItemGroup>
-  </ItemGroup>
 </Project>
