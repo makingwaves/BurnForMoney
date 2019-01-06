@@ -10,7 +10,7 @@ Events are received through [Event Grid](https://azure.microsoft.com/en-us/servi
 
   > The function must have exactly the same name as the [FunctionName].
 
-* Create a subscription in Azure portal:
+* Create a subscription in the Azure portal:
   * Resource group: `BurnForMoney_{environment},`
   * EventGrid topic: `bfmDomainEvents{environment}`,
   * Add Event Grid subscription:
