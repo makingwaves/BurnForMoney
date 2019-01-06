@@ -17,7 +17,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BurnForMoney.Functions.Inte
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BurnForMoney.Domain", "BurnForMoney.Domain\BurnForMoney.Domain.csproj", "{9E03A6DB-2674-40B2-A876-961D2FB3CD9E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BurnForMoney.Functions.ReadModel", "BurnForMoney.Functions.ReadModel\BurnForMoney.Functions.ReadModel.csproj", "{0A49C366-358E-48EA-B413-A14AB98FEDEB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BurnForMoney.Functions.Presentation", "BurnForMoney.Functions.Presentation\BurnForMoney.Functions.Presentation.csproj", "{0A49C366-358E-48EA-B413-A14AB98FEDEB}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BurnForMoney.Infrastructure", "BurnForMoney.Infrastructure\BurnForMoney.Infrastructure.csproj", "{30D75787-549D-4166-969A-8270AA28252C}"
 EndProject

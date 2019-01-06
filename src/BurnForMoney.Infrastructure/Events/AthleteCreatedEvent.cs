@@ -1,12 +1,13 @@
 ﻿using System;
 using BurnForMoney.Domain;
+using BurnForMoney.Infrastructure.Events;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
 //namespace lock
 namespace BurnForMoney.Domain.Events
 {
-    public class AthleteCreated : DomainEvent
+    public class AthleteCreated : AthleteEvent
     {
         public readonly Guid Id;
         public readonly string ExternalId;

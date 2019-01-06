@@ -1,6 +1,6 @@
 ﻿using System.Data;
 
-namespace BurnForMoney.Functions.ReadModel.Exceptions
+namespace BurnForMoney.Functions.Presentation.Exceptions
 {
     public class FailedToDeactivateAthleteException : DataException
     {

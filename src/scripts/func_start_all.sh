@@ -1,6 +1,6 @@
 #!/bin/bash
 Namespace=BurnForMoney.Functions
-FunctionApps=($Namespace $Namespace.InternalApi $Namespace.PublicApi $Namespace.ReadModel $Namespace.Strava)
+FunctionApps=($Namespace $Namespace.InternalApi $Namespace.PublicApi $Namespace.Presentation $Namespace.Strava)
 
 cd ..
 for App in ${FunctionApps[*]}

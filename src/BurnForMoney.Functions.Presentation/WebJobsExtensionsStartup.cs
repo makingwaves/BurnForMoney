@@ -1,6 +1,6 @@
 ﻿using System.Linq;
-using BurnForMoney.Functions.ReadModel;
-using BurnForMoney.Functions.ReadModel.Configuration;
+using BurnForMoney.Functions.Presentation;
+using BurnForMoney.Functions.Presentation.Configuration;
 using BurnForMoney.Functions.Shared.Functions.Extensions;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Hosting;
@@ -8,7 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 [assembly: WebJobsStartup(typeof(WebJobsExtensionStartup))]
-namespace BurnForMoney.Functions.ReadModel
+namespace BurnForMoney.Functions.Presentation
 {
     public class WebJobsExtensionStartup : IWebJobsStartup
     {

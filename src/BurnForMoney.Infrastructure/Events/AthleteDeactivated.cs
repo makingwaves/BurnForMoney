@@ -1,10 +1,11 @@
 ﻿using System;
 using BurnForMoney.Domain;
+using BurnForMoney.Infrastructure.Events;
 
 //namespace lock
 namespace BurnForMoney.Domain.Events
 {
-    public class AthleteDeactivated : DomainEvent
+    public class AthleteDeactivated : AthleteEvent
     {
         public readonly Guid AthleteId;
 

@@ -3,7 +3,7 @@ using BurnForMoney.Domain.Events;
 using BurnForMoney.Infrastructure.Persistence.Sql;
 using Dapper;
 
-namespace BurnForMoney.Functions.ReadModel.Views
+namespace BurnForMoney.Functions.Presentation.Views
 {
     public class ActivityView : IHandles<ActivityAdded>, IHandles<ActivityDeleted>, IHandles<ActivityUpdated>
     {

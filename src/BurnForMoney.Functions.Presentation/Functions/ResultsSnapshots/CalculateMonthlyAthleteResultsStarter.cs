@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
-using BurnForMoney.Functions.ReadModel.Functions.ResultsSnapshots.Dto;
+using BurnForMoney.Functions.Presentation.Functions.ResultsSnapshots.Dto;
 using BurnForMoney.Functions.Shared.Extensions;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
@@ -9,7 +9,7 @@ using Newtonsoft.Json;
 
 // ReSharper disable InconsistentNaming
 
-namespace BurnForMoney.Functions.ReadModel.Functions.ResultsSnapshots
+namespace BurnForMoney.Functions.Presentation.Functions.ResultsSnapshots
 {
     public static class CalculateMonthlyAthleteResultsStarter
     {

@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
-using BurnForMoney.Functions.ReadModel.Functions.ResultsSnapshots;
-using BurnForMoney.Functions.ReadModel.Functions.ResultsSnapshots.Dto;
+using BurnForMoney.Functions.Presentation.Functions.ResultsSnapshots;
+using BurnForMoney.Functions.Presentation.Functions.ResultsSnapshots.Dto;
 using BurnForMoney.Functions.Shared.Extensions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -10,7 +10,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.WindowsAzure.Storage.Queue;
 using Newtonsoft.Json;
 
-namespace BurnForMoney.Functions.ReadModel.Functions._Support
+namespace BurnForMoney.Functions.Presentation.Functions._Support
 {
     public static class ActivitiesOperationsFunc
     {

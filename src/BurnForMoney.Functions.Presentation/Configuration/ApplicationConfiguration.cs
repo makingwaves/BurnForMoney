@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.Extensions.Configuration;
 
-namespace BurnForMoney.Functions.ReadModel.Configuration
+namespace BurnForMoney.Functions.Presentation.Configuration
 {
     public class ApplicationConfiguration
     {

@@ -1,12 +1,13 @@
 ﻿using System;
 using BurnForMoney.Domain;
+using BurnForMoney.Infrastructure.Events;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
 //namespace lock
 namespace BurnForMoney.Domain.Events
 {
-    public class ActivityUpdated : DomainEvent
+    public class ActivityUpdated : ActivityEvent
     {
         public readonly Guid ActivityId;
         public readonly double DistanceInMeters;

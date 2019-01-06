@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
-using BurnForMoney.Functions.ReadModel.Configuration;
+using BurnForMoney.Functions.Presentation.Configuration;
 using BurnForMoney.Functions.Shared.Extensions;
 using BurnForMoney.Functions.Shared.Functions.Extensions;
 using BurnForMoney.Functions.Shared.Helpers;
@@ -13,7 +13,7 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
-namespace BurnForMoney.Functions.ReadModel.Functions._Support
+namespace BurnForMoney.Functions.Presentation.Functions._Support
 {
     public static class ArchivalDataFunc
     {

@@ -37,8 +37,8 @@ namespace BurnForMoney.Functions.Strava.Functions.EventsHub
         {
             var stravaAthleteId = @event.OwnerId.ToString();
             
-            var readModelFacade = new AthleteReadRepository(configuration.ConnectionStrings.SqlDbConnectionString);
-            var athlete = await readModelFacade.GetAthleteByStravaIdAsync(stravaAthleteId);
+            var repository = new AthleteReadRepository(configuration.ConnectionStrings.SqlDbConnectionString);
+            var athlete = await repository.GetAthleteByStravaIdAsync(stravaAthleteId);
             if (athlete == null)
             {
                 // This can happen when the athlete is either deactivated (but authenticated) or has not yet been authorized.

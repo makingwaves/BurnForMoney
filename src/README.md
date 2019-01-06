@@ -5,7 +5,7 @@
 * **BurnForMoney.Functions.Strava** - function app integrated with the Strava API, responsible for athletes registration and basic CRUD operations on the activities from Strava (via webhooks).
 * **BurnForMoney.Functions.PublicApi** - api for public website.
 * **BurnForMoney.Functions.InternalApi** - api for internal website.
-* **BurnForMoney.Functions.ReadModel** - manages readonly data, creates projections using EventGrid subscription model.
+* **BurnForMoney.Functions.Presentation** - manages readonly data, creates projections using EventGrid subscription model.
 * **BurnForMoney.Functions.Shared** - shared code.
 * **BurnForMoney.Domain** - shared domain.
 * **ResourceGroup** - consists of ARM templates and Powershell scripts used to automatically create an environment.
