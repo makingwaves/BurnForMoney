@@ -53,7 +53,7 @@ function AddNewAccountSecret {
 		Write-Status "Adding a new secret [$SecretName]... "
 		$Credentials = Get-Credential -Message "Provide account credentials for $SecretName."
 
-		Set-AzureKeyVaultSecret -VaultName $KeyVaultName -Name $userNameSecretName -SecretValue (ConvertTo-SecureString –String $Credentials.UserName –AsPlainText -Force)
+		Set-AzureKeyVaultSecret -VaultName $KeyVaultName -Name $userNameSecretName -SecretValue (ConvertTo-SecureString ï¿½String $Credentials.UserName ï¿½AsPlainText -Force)
 		Set-AzureKeyVaultSecret -VaultName $KeyVaultName -Name $passwordSecretName -SecretValue $Credentials.Password
 		Write-Succeed
 	}
@@ -62,11 +62,11 @@ function AddNewAccountSecret {
 function GenerateEncryptionKey {
     param(
         $length = 32,
-        $characters = ‘ABCDEFGHKLMNPRSTUVWXYZ1234567890’
+        $characters = "ABCDEFGHKLMNPRSTUVWXYZ1234567890"
     )
     $random = 1..$length | ForEach-Object { Get-Random -Maximum $characters.length }
 
-    $private:ofs= “”
+    $private:ofs= ""
     $password = [String]$characters[$random]
     return $password
 }
@@ -114,11 +114,11 @@ function DeployCredentials {
 
 		AddNewSecret -SecretName "sqlServerPassword" `
 			-KeyVaultName $KeyVaultName `
-			-Password (ConvertTo-SecureString –String ([System.Web.Security.Membership]::GeneratePassword(20,5)) –AsPlainText -Force)
+			-Password (ConvertTo-SecureString ï¿½String ([System.Web.Security.Membership]::GeneratePassword(20,5)) ï¿½AsPlainText -Force)
 
 		AddNewSecret -SecretName "strava--AccessTokensEncryptionKey" `
 			-KeyVaultName $KeyVaultName `
-			-Password (ConvertTo-SecureString –String (GenerateEncryptionKey) –AsPlainText -Force)
+			-Password (ConvertTo-SecureString ï¿½String (GenerateEncryptionKey) ï¿½AsPlainText -Force)
 	}
     Catch {
         Write-Fail
