@@ -13,10 +13,10 @@ using Newtonsoft.Json.Linq;
 
 namespace BurnForMoney.Functions.Presentation.Functions
 {
-    public static class PresentationSubscription
+    public static class ReadModelSubscription
     {
-        [FunctionName("EventGrid_PresentationSubscription")]
-        public static async Task EventGrid_PresentationSubscription([EventGridTrigger] EventGridEvent @event, ILogger log,
+        [FunctionName("EventGrid_ReadModelSubscription")]
+        public static async Task EventGrid_ReadModelSubscription([EventGridTrigger] EventGridEvent @event, ILogger log,
             [Configuration] ConfigurationRoot configuration)
         {
             log.LogInformation("-------Event data received-------\n");
