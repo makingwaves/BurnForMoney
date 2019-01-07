@@ -1,7 +1,12 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Data;
+using System.Threading.Tasks;
 using BurnForMoney.Domain.Events;
+using BurnForMoney.Functions.Presentation.Exceptions;
+using BurnForMoney.Functions.Presentation.Views.Poco;
 using BurnForMoney.Infrastructure.Persistence.Sql;
 using Dapper;
+using DapperExtensions;
 
 namespace BurnForMoney.Functions.Presentation.Views
 {
@@ -16,25 +21,28 @@ namespace BurnForMoney.Functions.Presentation.Views
 
         public async Task HandleAsync(ActivityAdded message)
         {
-            using (var conn = BurnForMoney.Infrastructure.Persistence.Sql.SqlConnectionFactory.Create(_sqlConnectionString))
+            using (var conn = SqlConnectionFactory.Create(_sqlConnectionString))
             {
                 await conn.OpenWithRetryAsync();
 
-                await conn.ExecuteAsync(@"INSERT INTO dbo.Activities 
-(Id, AthleteId, ExternalId, ActivityTime, ActivityType, Category, Distance, MovingTime, Source, Points) 
-VALUES (@Id, @AthleteId, @ExternalId, @ActivityTime, @ActivityType, @ActivityCategory, @Distance, @MovingTime, @Source, @Points)", new
+                var row = new Activity
                 {
                     Id = message.ActivityId,
-                    message.AthleteId,
-                    message.ExternalId,
+                    AthleteId = message.AthleteId,
+                    ExternalId = message.ExternalId,
                     ActivityTime = message.StartDate,
-                    message.ActivityType,
-                    ActivityCategory = message.ActivityCategory.ToString(),
+                    ActivityType = message.ActivityType,
+                    Category = message.ActivityCategory.ToString(),
                     Distance = message.DistanceInMeters,
-                    MovingTime = message.MovingTimeInMinutes,
+                    MovingTime = Convert.ToInt32(message.MovingTimeInMinutes),
                     Source = message.Source.ToString(),
-                    message.Points
-                });
+                    Points = message.Points
+                };
+                var inserted = conn.Insert(row);
+                if (inserted == null)
+                {
+                    throw new FailedToCreateActivityException(message.ActivityId);
+                }
             }
         }
 
@@ -44,18 +52,20 @@ VALUES (@Id, @AthleteId, @ExternalId, @ActivityTime, @ActivityType, @ActivityCat
             {
                 await conn.OpenWithRetryAsync();
 
-                await conn.ExecuteAsync(@"UPDATE dbo.Activities
-SET ActivityTime=@ActivityTime, ActivityType=@ActivityType, Category=@ActivityCategory, Distance=@Distance, MovingTime=@MovingTime, Points=@Points
-WHERE Id=@Id", new
+                var activity = conn.Get<Activity>(message.ActivityId);
+                activity.ActivityTime = message.StartDate;
+                activity.ActivityType = message.ActivityType;
+                activity.Category = message.ActivityCategory.ToString();
+                activity.Distance = message.DistanceInMeters;
+                activity.MovingTime = Convert.ToInt32(message.MovingTimeInMinutes);
+                activity.Points = message.Points;
+
+                var success = conn.Update(activity);
+
+                if (!success)
                 {
-                    Id = message.ActivityId,
-                    ActivityTime = message.StartDate,
-                    message.ActivityType,
-                    ActivityCategory = message.ActivityCategory.ToString(),
-                    Distance = message.DistanceInMeters,
-                    MovingTime = message.MovingTimeInMinutes,
-                    message.Points
-                });
+                    throw new FailedToUpdateActivityException(message.ActivityId);
+                }
             }
         }
 
@@ -65,10 +75,13 @@ WHERE Id=@Id", new
             {
                 await conn.OpenWithRetryAsync();
 
-                await conn.ExecuteAsync("DELETE FROM dbo.Activities WHERE Id=@Id", new
+                var activity = conn.Get<Activity>(message.ActivityId);
+                var success = conn.Delete(activity);
+
+                if (!success)
                 {
-                    Id = message.ActivityId
-                });
+                    throw new FailedToDeleteActivityException(message.ActivityId);
+                }
             }
         }
     }

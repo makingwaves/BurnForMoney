@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using BurnForMoney.Functions.Presentation;
 using BurnForMoney.Functions.Presentation.Configuration;
+using BurnForMoney.Functions.Presentation.Views.Mappers;
 using BurnForMoney.Functions.Shared.Functions.Extensions;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Hosting;
@@ -25,6 +26,16 @@ namespace BurnForMoney.Functions.Presentation
             builder.Services.AddSingleton<IConfiguration>(config);
             builder.AddExtension(new ConfigurationExtensionConfigProvider<Configuration.ConfigurationRoot>(
                 ApplicationConfiguration.GetSettings()));
+
+            RegisterPocoMappings();
+        }
+
+        private void RegisterPocoMappings()
+        {
+            DapperExtensions.DapperExtensions.SetMappingAssemblies(new[]
+            {
+                typeof(ActivityMapper).Assembly
+            });
         }
     }
 }

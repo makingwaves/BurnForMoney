@@ -1,8 +1,11 @@
-﻿using System.Threading.Tasks;
+﻿using System.Data;
+using System.Threading.Tasks;
 using BurnForMoney.Domain.Events;
 using BurnForMoney.Functions.Presentation.Exceptions;
+using BurnForMoney.Functions.Presentation.Views.Poco;
 using BurnForMoney.Infrastructure.Persistence.Sql;
 using Dapper;
+using DapperExtensions;
 
 namespace BurnForMoney.Functions.Presentation.Views
 {
@@ -21,21 +24,20 @@ namespace BurnForMoney.Functions.Presentation.Views
             {
                 await conn.OpenWithRetryAsync();
 
-                var affectedRows = await conn.ExecuteAsync(
-                    @"INSERT INTO dbo.Athletes (Id, ExternalId, FirstName, LastName, ProfilePictureUrl, Active, System)
-VALUES (@Id, @ExternalId, @FirstName, @LastName, @ProfilePictureUrl, @Active, @System)", new
-                    {
-                        message.Id,
-                        message.ExternalId,
-                        message.FirstName,
-                        message.LastName,
-                        message.ProfilePictureUrl,
-                        Active = true,
-                        System = message.System.ToString()
-                    });
-                if (affectedRows != 1)
+                var row = new Athlete
                 {
-                    throw new FailedToAddAthleteException(message.Id.ToString());
+                    Id = message.Id,
+                    ExternalId = message.ExternalId,
+                    FirstName = message.FirstName,
+                    LastName = message.LastName,
+                    ProfilePictureUrl = message.ProfilePictureUrl,
+                    Active = true,
+                    System = message.System.ToString()
+                };
+                var inserted = conn.Insert(row);
+                if (inserted == null)
+                {
+                    throw new FailedToAddAthleteException(message.Id);
                 }
             }
         }
@@ -50,7 +52,7 @@ VALUES (@Id, @ExternalId, @FirstName, @LastName, @ProfilePictureUrl, @Active, @S
 
                 if (affectedRows != 1)
                 {
-                    throw new FailedToDeactivateAthleteException(message.AthleteId.ToString());
+                    throw new FailedToDeactivateAthleteException(message.AthleteId);
                 }
             }
         }
@@ -65,7 +67,7 @@ VALUES (@Id, @ExternalId, @FirstName, @LastName, @ProfilePictureUrl, @Active, @S
 
                 if (affectedRows != 1)
                 {
-                    throw new FailedToActivateAthleteException(message.AthleteId.ToString());
+                    throw new FailedToActivateAthleteException(message.AthleteId);
                 }
             }
         }
