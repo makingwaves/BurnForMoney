@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Route, Link, Switch } from 'react-router-dom';
 
-import './Dashboard.css';
+import './Dashboard/Dashboard.css';
 import logo from 'img/logo-white.svg';
 import iconRun from 'img/icon-run.svg';
 import iconRide from 'img/icon-bike.svg';
@@ -14,6 +14,8 @@ import iconHike from 'img/icon-hike.svg';
 import iconFitness from 'img/icon-fitness.svg';
 import iconOther from 'img/icon-other.svg';
 
+import Dashboard from './Dashboard/Dashboard.js';
+import Participants from './Participants/Participants.js';
 import NewActivity from './NewActivity/NewActivity';
 import AthletesList from './AthletesList/AthletesList';
 import AthleteProfile from './AthleteProfile/AthleteProfile';
@@ -34,7 +36,7 @@ import IconDashboard from 'img/IconDashboard';
 import IconBeneficiaries from 'img/IconBeneficiaries';
 import IconRules from 'img/IconRules';
 
-class Dashboard extends Component {
+class AppDashboard extends Component {
   api_url = process.env.REACT_APP_DASHBOARD_API_URL;
   mobileViewport = window.matchMedia("screen and (max-width: 600px)");
   resizeTimeout;
@@ -122,6 +124,8 @@ class Dashboard extends Component {
     this.state = {
       categories: [],
       athletes: [],
+      ranking: [],
+      rankCategory: 'All',
       windowHeight: undefined,
       windowWidth: undefined
     }
@@ -139,8 +143,8 @@ class Dashboard extends Component {
                 <span className="NavigationItem-text">Dashboard</span>
               </Link>
             </li>
-            <li className="NavigationItem NavigationItem__athletesList">
-              <Link to="/dashboard/athletes-list" className="NavigationItem-link">
+            <li className="NavigationItem NavigationItem__participants">
+              <Link to="/dashboard/participants" className="NavigationItem-link">
                 <IconParticipants className="NavigationItem-icon" />
                 <span className="NavigationItem-text">Participants</span>
               </Link>
@@ -168,6 +172,12 @@ class Dashboard extends Component {
 
         <section className="Dashboard-main">
           <Switch>
+            <Route exact path="/dashboard" render={(props) => (
+              <Dashboard {...props} ranking={this.state.ranking} categories={this.state.categories} rankCategory={this.state.rankCategory} />
+            )} />
+            <Route path="/dashboard/participants" render={(props) => (
+              <Participants {...props} ranking={this.state.ranking} categories={this.state.categories} rankCategory={this.state.rankCategory} />
+            )} />
             <Route exact path="/dashboard/new-activity" render={(props) => (
               <NewActivity {...props} categories={this.state.categories} athletes={this.state.athletes} />
             )} />
@@ -189,7 +199,7 @@ class Dashboard extends Component {
     fetch(this.api_url+"api/activities/categories")
       .then(res => res.json())
       .then(
-        (result) => { let categories = result.map( (i) => { return this.setCategoryDetails(i)}); this.setState({categories: categories }); console.log('STATE', this.state.categories, 'THIS', this)/**/},
+        (result) => { let categories = result.map( (i) => { return this.setCategoryDetails(i)}); this.setState({categories: categories }); },
         (error) => {this.setState({categories: null}); console.error('Error:', error); }
       );
 
@@ -199,10 +209,17 @@ class Dashboard extends Component {
         (result) => {this.setState({athletes: result }); console.log('athletes', this.state.athletes)},
         (error) => {this.setState({athletes: null}); console.error('Error:', error); }
       );
+
+    fetch(this.api_url+"api/ranking")
+      .then(res => res.json())
+      .then(
+        (result) => {this.setState({ranking: result }); console.log('ranking', this.state.ranking)},
+        (error) => {this.setState({ranking: null}); console.error('Error:', error); }
+      );
   }
   componentWillUnmount() {
     window.removeEventListener("resize", this.handleResize);
   }
 }
 
-export default Dashboard;
+export default AppDashboard;

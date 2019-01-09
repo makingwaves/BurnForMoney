@@ -16,7 +16,9 @@ class AthleteProfile extends Component {
         HELLo:
         {this.state.activities.length > 0 && (
           <ul>
-          {this.state.activities.map( (activity) => <li key={activity.id}>{`${activity.activityType} (${activity.movingTimeInMinutes}min)`}</li> )}
+          {this.state.activities.map( (activity) =>
+            <li key={activity.id}>{`${activity.activityType} (${activity.movingTimeInMinutes}min)`}</li>
+          )}
           </ul>
         )}
       </div>
@@ -28,7 +30,7 @@ class AthleteProfile extends Component {
     fetch(api_url+"api/athlete/"+this.props.match.params.athleteId+"/activities")
       .then(res => res.json())
       .then(
-        (result) => {console.log(result); this.setState({activities: result}); console.log('ACTIVITIES',this.state.activities); },
+        (result) => {console.log("RESULT:",result); this.setState({activities: result}); console.log('ACTIVITIES',this.state.activities); },
         (error) => {console.error('Error:', error); }
       );
 

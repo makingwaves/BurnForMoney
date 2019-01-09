@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import './NewActivity.css';
 
-import DashboardHeader from '../DashboardHeader.js';
+import DashboardHeader from '../DashboardHeader/DashboardHeader.js';
 
 import iconDistance from 'img/icon-distance.svg';
 import iconDuration from 'img/icon-duration.svg';
@@ -112,7 +112,7 @@ class NewActivity extends Component {
                 <select id="activityAthletesName" required value={this.state.athleteId} onChange={(e) => {this.setState({athleteId: e.target.value}); localStorage.setItem('athleteId', e.target.value); console.log('--->',localStorage.getItem('athleteId')) } }>
                   <option value=''>no one...</option>
                   {this.props.athletes.map( (i) =>
-                    <option key={i.externalId} value={i.id}>{`${i.firstName} ${i.lastName}`}</option>
+                    <option key={i.id} value={i.id}>{`${i.firstName} ${i.lastName}`}</option>
                   )}
                 </select>
               </div>
