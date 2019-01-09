@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using BurnForMoney.Functions.PublicApi.Configuration;
+using BurnForMoney.Functions.Shared;
 using BurnForMoney.Functions.Shared.Extensions;
 using BurnForMoney.Functions.Shared.Functions.Extensions;
 using BurnForMoney.Functions.Shared.Helpers;
@@ -24,7 +25,7 @@ namespace BurnForMoney.Functions.PublicApi.Functions
         private const string CacheKey = "api.totalnumbers";
         private static readonly IMemoryCache Cache = new MemoryCache(new MemoryDistributedCacheOptions());
 
-        [FunctionName("TotalNumbers")]
+        [FunctionName(FunctionNameConvention.HttpTriggerPrefix + "TotalNumbers")]
         public static async Task<IActionResult> TotalNumbers([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "totalnumbers")] HttpRequest req, 
             ILogger log, [Configuration] ConfigurationRoot configuration)
         {

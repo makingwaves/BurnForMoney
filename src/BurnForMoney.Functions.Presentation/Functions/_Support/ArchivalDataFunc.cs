@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
 using BurnForMoney.Functions.Presentation.Configuration;
+using BurnForMoney.Functions.Shared;
 using BurnForMoney.Functions.Shared.Extensions;
 using BurnForMoney.Functions.Shared.Functions.Extensions;
 using BurnForMoney.Functions.Shared.Helpers;
@@ -18,7 +19,7 @@ namespace BurnForMoney.Functions.Presentation.Functions._Support
     public static class ArchivalDataFunc
     {
         // ReSharper disable once InconsistentNaming
-        public const string FUNCTIONNAME_SeedHistoricalData = "SeedHistoricalData";
+        public const string FUNCTIONNAME_SeedHistoricalData = SupportFunctionNameConvention.Prefix + "SeedHistoricalData";
 
         [FunctionName(FUNCTIONNAME_SeedHistoricalData)]
         [NoAutomaticTrigger]

@@ -1,16 +1,20 @@
-﻿namespace BurnForMoney.Functions.InternalApi.Functions
+﻿using BurnForMoney.Functions.Shared;
+
+namespace BurnForMoney.Functions.InternalApi.Functions
 {
     public static class FunctionsNames
     {
-        public const string AddActivity = "AddActivity";
-        public const string UpdateActivity = "UpdateActivity";
-        public const string DeleteActivity = "DeleteActivity";
-        public const string AddAthlete = "AddAthlete";
+        public const string HttpTriggerPrefix = FunctionNameConvention.HttpTriggerPrefix;
 
-        public const string GetAthletes = "GetAthletes";
-        public const string GetAthleteActivities = "GetAthleteActivities";
-        public const string GetActivityCategories = "GetActivityCategories";
+        public const string AddActivity = HttpTriggerPrefix + "AddActivity";
+        public const string UpdateActivity = HttpTriggerPrefix + "UpdateActivity";
+        public const string DeleteActivity = HttpTriggerPrefix + "DeleteActivity";
+        public const string AddAthlete = HttpTriggerPrefix + "AddAthlete";
 
-        public const string GetTopAthletesForGivenActivityType = "GetTopAthletesForGivenActivityType";
+        public const string GetAthletes = HttpTriggerPrefix + "GetAthletes";
+        public const string GetAthleteActivities = HttpTriggerPrefix + "GetAthleteActivities";
+        public const string GetActivityCategories = HttpTriggerPrefix + "GetActivityCategories";
+
+        public const string GetTopAthletesForGivenActivityType = HttpTriggerPrefix + "GetTopAthletesForGivenActivityType";
     }
 }
