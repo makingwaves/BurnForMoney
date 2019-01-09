@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
-using BurnForMoney.Domain.Commands;
+using BurnForMoney.Functions.Infrastructure.Queues;
+using BurnForMoney.Functions.InternalApi.Commands;
 using BurnForMoney.Functions.Shared.Extensions;
-using BurnForMoney.Functions.Shared.Queues;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
@@ -21,11 +21,8 @@ namespace BurnForMoney.Functions.InternalApi.Functions.Activities
             ILogger log,
             [Queue(AppQueueNames.DeleteActivityRequests, Connection = "AppQueuesStorage")] CloudQueue outputQueue)
         {
-            log.LogFunctionStart(FunctionsNames.DeleteActivity);
-
             var json = JsonConvert.SerializeObject(new DeleteActivityCommand { Id = Guid.Parse(activityId), AthleteId = Guid.Parse(athleteId) });
             await outputQueue.AddMessageAsync(new CloudQueueMessage(json));
-            log.LogFunctionEnd(FunctionsNames.DeleteActivity);
             return new OkObjectResult("Request received.");
         }
     }

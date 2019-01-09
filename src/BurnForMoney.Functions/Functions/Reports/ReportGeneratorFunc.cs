@@ -6,12 +6,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using BurnForMoney.Functions.Configuration;
+using BurnForMoney.Functions.Infrastructure.Queues;
 using BurnForMoney.Functions.Shared;
 using BurnForMoney.Functions.Shared.Extensions;
 using BurnForMoney.Functions.Shared.Functions.Extensions;
 using BurnForMoney.Functions.Shared.Helpers;
-using BurnForMoney.Functions.Shared.Persistence;
-using BurnForMoney.Functions.Shared.Queues;
+using BurnForMoney.Infrastructure.Persistence.Repositories.Dto;
+using BurnForMoney.Infrastructure.Persistence.Sql;
 using CsvHelper;
 using Dapper;
 using Microsoft.Azure.WebJobs;
@@ -31,7 +32,6 @@ namespace BurnForMoney.Functions.Functions.Reports
             [Configuration] ConfigurationRoot configuration,
             ILogger log)
         {
-            log.LogFunctionStart(FunctionsNames.T_GenerateReport);
             var lastMonth = DateTime.UtcNow.AddMonths(-1);
 
             string json;
@@ -104,7 +104,6 @@ namespace BurnForMoney.Functions.Functions.Reports
                     }
                 }
             }
-            log.LogFunctionEnd(FunctionsNames.T_GenerateReport);
         }
 
         private static async Task<CloudBlockBlob> GetBlobReportAsync(string storageConnectionString)
@@ -125,8 +124,6 @@ namespace BurnForMoney.Functions.Functions.Reports
             [Configuration] ConfigurationRoot configuration,
             [Queue(AppQueueNames.NotificationsToSend)] CloudQueue notificationsQueue)
         {
-            log.LogFunctionStart(FunctionsNames.B_SendNotificationWithLinkToTheReport);
-
             var blobSasToken = GetBlobSasToken(cloudBlob, SharedAccessBlobPermissions.Read);
             log.LogInformation(FunctionsNames.B_SendNotificationWithLinkToTheReport, "Generated SAS token.");
             var link = cloudBlob.Uri + blobSasToken;
@@ -143,7 +140,6 @@ namespace BurnForMoney.Functions.Functions.Reports
             log.LogInformation(FunctionsNames.B_SendNotificationWithLinkToTheReport, "Created notification message.");
             var json = JsonConvert.SerializeObject(notification);
             await notificationsQueue.AddMessageAsync(new CloudQueueMessage(json));
-            log.LogFunctionEnd(FunctionsNames.B_SendNotificationWithLinkToTheReport);
         }
 
         private static string GetBlobSasToken(CloudBlob blob, SharedAccessBlobPermissions permissions)

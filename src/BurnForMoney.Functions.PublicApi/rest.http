@@ -1,0 +1,12 @@
+@baseUrl = http://localhost:7073/api
+
+
+###### ------------------------- Authorization
+
+### Authorize athlete
+GET {{baseUrl}}/strava/authorize/
+
+###### ------------------------- Results
+
+### Get aggregated results
+GET {{baseUrl}}/totalnumbers

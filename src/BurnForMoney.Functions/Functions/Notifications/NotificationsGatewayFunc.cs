@@ -4,9 +4,9 @@ using System.Net;
 using System.Threading.Tasks;
 using BurnForMoney.Functions.Configuration;
 using BurnForMoney.Functions.Exceptions;
+using BurnForMoney.Functions.Infrastructure.Queues;
 using BurnForMoney.Functions.Shared.Extensions;
 using BurnForMoney.Functions.Shared.Functions.Extensions;
-using BurnForMoney.Functions.Shared.Queues;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 using SendGrid;
@@ -24,8 +24,6 @@ namespace BurnForMoney.Functions.Functions.Notifications
             ILogger log, ExecutionContext context,
             [Configuration] ConfigurationRoot configuration)
         {
-            log.LogFunctionStart(FunctionsNames.Q_NotificationsGateway);
-
             if (_sendGridClient == null)
             {
                 _sendGridClient = new SendGridClient(configuration.SendGridApiKey);
@@ -51,7 +49,6 @@ namespace BurnForMoney.Functions.Functions.Notifications
             {
                 throw new EmailException(string.Join(", ", notification.Recipients), response.StatusCode.ToString());
             }
-            log.LogFunctionEnd(FunctionsNames.Q_NotificationsGateway);
         }
 
         private static string ApplyTemplate(string content, ExecutionContext context)

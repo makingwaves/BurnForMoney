@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using BurnForMoney.Functions.Shared.Exceptions;
 using BurnForMoney.Functions.Shared.Helpers;
 using BurnForMoney.Functions.Shared.Web;
 using BurnForMoney.Functions.Strava.Configuration;
@@ -115,6 +114,15 @@ namespace BurnForMoney.Functions.Strava.External.Strava.Api
             request.AddQueryParameter("access_token", accessToken);
             var response = _restClient.ExecuteWithRetry(request);
             response.ThrowExceptionIfNotSuccessful();
+        }
+    }
+
+    internal class ActivityNotFoundException : Exception 
+    {
+        public ActivityNotFoundException(string id)
+            : base($"Activity with id: {id} does not exists.")
+        {
+
         }
     }
 }

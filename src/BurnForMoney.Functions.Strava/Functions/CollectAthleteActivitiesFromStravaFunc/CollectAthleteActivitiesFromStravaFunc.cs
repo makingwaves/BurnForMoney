@@ -1,17 +1,17 @@
 ﻿using System;
 using System.Globalization;
 using System.Threading.Tasks;
-using BurnForMoney.Domain.Commands;
-using BurnForMoney.Domain.Domain;
+using BurnForMoney.Domain;
+using BurnForMoney.Functions.Infrastructure.Queues;
 using BurnForMoney.Functions.Shared.Extensions;
 using BurnForMoney.Functions.Shared.Functions.Extensions;
 using BurnForMoney.Functions.Shared.Helpers;
-using BurnForMoney.Functions.Shared.Identity;
-using BurnForMoney.Functions.Shared.Queues;
+using BurnForMoney.Functions.Strava.Commands;
 using BurnForMoney.Functions.Strava.Configuration;
 using BurnForMoney.Functions.Strava.External.Strava.Api;
 using BurnForMoney.Functions.Strava.External.Strava.Api.Exceptions;
 using BurnForMoney.Functions.Strava.Security;
+using BurnForMoney.Identity;
 using Microsoft.Azure.KeyVault.Models;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
@@ -31,8 +31,6 @@ namespace BurnForMoney.Functions.Strava.Functions.CollectAthleteActivitiesFromSt
             ILogger log,
             [Configuration] ConfigurationRoot configuration)
         {
-            log.LogFunctionStart(FunctionsNames.Q_CollectAthleteActivities);
-
             SecretBundle accessTokenSecret;
             try
             {
@@ -75,7 +73,6 @@ namespace BurnForMoney.Functions.Strava.Functions.CollectAthleteActivitiesFromSt
                 log.LogError(ex, ex.Message);
                 await unauthorizedAthletesQueue.AddMessageAsync(new CloudQueueMessage(request.AthleteId.ToString()));
             }
-            log.LogFunctionEnd(FunctionsNames.Q_CollectAthleteActivities);
         }
 
         private static DateTime GetFirstDayOfTheMonth(DateTime dateTime)

@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Threading.Tasks;
-using BurnForMoney.Domain.Commands;
+using BurnForMoney.Functions.Infrastructure.Queues;
 using BurnForMoney.Functions.Shared.Extensions;
 using BurnForMoney.Functions.Shared.Functions.Extensions;
-using BurnForMoney.Functions.Shared.Queues;
+using BurnForMoney.Functions.Strava.Commands;
 using BurnForMoney.Functions.Strava.Configuration;
 using BurnForMoney.Functions.Strava.Security;
 using Microsoft.Azure.WebJobs;
@@ -16,13 +16,11 @@ namespace BurnForMoney.Functions.Strava.Functions.DeactivateAthlete
     public static class DeactivateAthleteFunc
     {
         [FunctionName(FunctionsNames.Q_DeactivateAthlete)]
-        public static async Task Q_DeactivateAthlete([QueueTrigger(StravaQueueNames.DeactivateAthleteRequests)] string athleteId,
+        public static async Task Q_DeactivateAthlete([QueueTrigger(QueueNames.DeactivateAthleteRequests)] string athleteId,
             ILogger log,
             [Queue(AppQueueNames.DeactivateAthleteRequests, Connection = "AppQueuesStorage")] CloudQueue deactivateAthleteRequestsQueue,
             [Configuration] ConfigurationRoot configuration)
         {
-            log.LogFunctionStart(FunctionsNames.Q_DeactivateAthlete);
-
             var id = Guid.Parse(athleteId);
 
             var command = new DeactivateAthleteCommand(id);

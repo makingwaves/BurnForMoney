@@ -24,8 +24,6 @@ namespace BurnForMoney.Functions.Strava.Functions.EventsHub
         public static async Task<IActionResult> CreateWebhookSubscription([HttpTrigger(AuthorizationLevel.Admin, "post", Route = "strava/subscription/create")] HttpRequest req,
             ILogger log, [Configuration] ConfigurationRoot configuration)
         {
-            log.LogFunctionStart(FunctionsNames.CreateWebhookSubscription);
-
             var data = await req.ReadAsStringAsync();
             log.LogInformation(FunctionsNames.CreateWebhookSubscription, $"Function executed with the following data: <{data}>.");
 
@@ -42,8 +40,6 @@ namespace BurnForMoney.Functions.Strava.Functions.EventsHub
             log.LogInformation(FunctionsNames.CreateWebhookSubscription, $"Creating subscription for a client: <{configuration.Strava.ClientId}> and callback url: {callbackUrl}.");
             StravaWebhooksService.CreateSubscription(configuration.Strava.ClientId, configuration.Strava.ClientSecret,
                 callbackUrl, CallbackToken);
-
-            log.LogFunctionEnd(FunctionsNames.CreateWebhookSubscription);
             return new OkResult();
         }
 
@@ -71,8 +67,6 @@ namespace BurnForMoney.Functions.Strava.Functions.EventsHub
         public static IActionResult ValidateCallback([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "strava/events/hub")] HttpRequest req,
             ILogger log, ExecutionContext executionContext)
         {
-            log.LogFunctionStart(FunctionsNames.WebhooksCallbackValidation);
-
             if (bool.TryParse(req.Query["warmUp"], out var _))
             {
                 log.LogInformation(FunctionsNames.WebhooksCallbackValidation, "Processing warm up execution.");
@@ -94,7 +88,6 @@ namespace BurnForMoney.Functions.Strava.Functions.EventsHub
 
             log.LogInformation(FunctionsNames.WebhooksCallbackValidation, "Request validated.");
             var json = JsonConvert.SerializeObject(new ChallengeObject { Challenge = challenge });
-            log.LogFunctionEnd(FunctionsNames.WebhooksCallbackValidation);
             return new OkObjectResult(json);
         }
 
@@ -108,13 +101,10 @@ namespace BurnForMoney.Functions.Strava.Functions.EventsHub
         public static IActionResult ViewWebhookSubscription([HttpTrigger(AuthorizationLevel.Admin, "get", Route = "strava/subscription")] HttpRequest req,
             ILogger log, [Configuration] ConfigurationRoot configuration)
         {
-            log.LogFunctionStart(FunctionsNames.ViewWebhookSubscription);
-
             try
             {
                 var subscription = StravaWebhooksService.ViewSubscription(configuration.Strava.ClientId,
                     configuration.Strava.ClientSecret);
-                log.LogFunctionEnd(FunctionsNames.ViewWebhookSubscription);
                 return new OkObjectResult(subscription);
             }
             catch (Exception ex)
@@ -128,8 +118,6 @@ namespace BurnForMoney.Functions.Strava.Functions.EventsHub
         public static IActionResult DeleteWebhookSubscription([HttpTrigger(AuthorizationLevel.Admin, "delete", Route = "strava/subscription/{id}")] HttpRequest req,
             ILogger log, int id, [Configuration] ConfigurationRoot configuration)
         {
-            log.LogFunctionStart(FunctionsNames.ViewWebhookSubscription);
-
             if (id <= 0)
             {
                 return new BadRequestObjectResult("Subscription id required.");
@@ -139,7 +127,6 @@ namespace BurnForMoney.Functions.Strava.Functions.EventsHub
             {
                 var subscription = StravaWebhooksService.DeleteSubscription(configuration.Strava.ClientId,
                     configuration.Strava.ClientSecret, id);
-                log.LogFunctionEnd(FunctionsNames.ViewWebhookSubscription);
                 return new OkObjectResult(subscription);
             }
             catch (Exception ex)

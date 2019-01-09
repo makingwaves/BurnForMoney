@@ -17,7 +17,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BurnForMoney.Functions.Inte
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BurnForMoney.Domain", "BurnForMoney.Domain\BurnForMoney.Domain.csproj", "{9E03A6DB-2674-40B2-A876-961D2FB3CD9E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BurnForMoney.Functions.ReadModel", "BurnForMoney.Functions.ReadModel\BurnForMoney.Functions.ReadModel.csproj", "{0A49C366-358E-48EA-B413-A14AB98FEDEB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BurnForMoney.Functions.Presentation", "BurnForMoney.Functions.Presentation\BurnForMoney.Functions.Presentation.csproj", "{0A49C366-358E-48EA-B413-A14AB98FEDEB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BurnForMoney.Infrastructure", "BurnForMoney.Infrastructure\BurnForMoney.Infrastructure.csproj", "{30D75787-549D-4166-969A-8270AA28252C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BurnForMoney.Identity", "BurnForMoney.Identity\BurnForMoney.Identity.csproj", "{EFA2DF09-B8A1-4589-BA24-3171F41A8A1D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -57,6 +61,14 @@ Global
 		{0A49C366-358E-48EA-B413-A14AB98FEDEB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0A49C366-358E-48EA-B413-A14AB98FEDEB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0A49C366-358E-48EA-B413-A14AB98FEDEB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{30D75787-549D-4166-969A-8270AA28252C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{30D75787-549D-4166-969A-8270AA28252C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{30D75787-549D-4166-969A-8270AA28252C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{30D75787-549D-4166-969A-8270AA28252C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EFA2DF09-B8A1-4589-BA24-3171F41A8A1D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EFA2DF09-B8A1-4589-BA24-3171F41A8A1D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EFA2DF09-B8A1-4589-BA24-3171F41A8A1D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EFA2DF09-B8A1-4589-BA24-3171F41A8A1D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using BurnForMoney.Domain.Commands;
+using BurnForMoney.Infrastructure.Messages;
 
 namespace BurnForMoney.Functions.CommandHandlers
 {

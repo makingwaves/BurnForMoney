@@ -1,0 +1,70 @@
+@baseUrl = http://localhost:7074/api
+
+#Fill with valid values
+@athleteId = {{$guid}}
+@activityId = {{$guid}}
+
+
+###### ------------------------- ATHLETE
+
+### Create athlete (not supported)
+POST {{baseUrl}}/athlete
+Content-Type: application/json
+
+{
+    "FirstName": "John",
+    "LastName": "Doe",
+    "ProfilePictureUrl": "http://bfm.makingwaves.com/picurl.jpg",
+}
+
+### Get athletes
+GET {{baseUrl}}/athletes
+
+###### ------------------------- ACTIVITY 
+
+### Add activity
+POST {{baseUrl}}/athlete/{{athleteId}}/activities
+Content-Type: application/json
+
+{
+    "StartDate": "01.01.2019",
+    "Type": "Run",
+    "DistanceInMeters": 1000,
+    "MovingTimeInMinutes": 60
+}
+
+
+### Update activity
+PUT {{baseUrl}}/athlete/{{athleteId}}/activities/{{activityId}}
+Content-Type: application/json
+
+{
+    "StartDate": "05.01.2019",
+    "Type": "Run",
+    "DistanceInMeters": 1000,
+    "MovingTimeInMinutes": 60
+}
+
+### Delete activity
+DELETE {{baseUrl}}/athlete/{{athleteId}}/activities/{{activityId}}
+Content-Type: application/json
+
+### Get athlete activities
+GET {{baseUrl}}/athlete/{{athleteId}}/activities
+
+### Get activity categories
+GET {{baseUrl}}/activities/categories
+
+
+###### ------------------------- RANKING 
+
+### Get ranking (all)
+GET {{baseUrl}}/ranking
+
+### Get ranking (category)
+@category = Ride
+GET {{baseUrl}}/ranking/{{category}}
+
+### Get ranking, top 5
+@take = 5
+GET {{baseUrl}}/ranking?take={{take}}

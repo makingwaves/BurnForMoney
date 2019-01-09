@@ -14,11 +14,8 @@ namespace BurnForMoney.Functions.Strava.Functions.Monitoring
         public static async Task Run([TimerTrigger("0 */20 * * * *")]TimerInfo myTimer, ILogger log,
             [Configuration] ConfigurationRoot configuration)
         {
-            log.LogFunctionStart("MonitorPoisonQueues");
-
             await PoisonQueueMessagesMonitor.RunAsync(configuration.ConnectionStrings.AzureWebJobsStorage,
                 configuration.ApplicationInsightsInstrumentationKey, log, "BFM - Strava");
-            log.LogFunctionEnd("MonitorPoisonQueues");
         }
     }
 }

@@ -1,5 +1,5 @@
 ﻿using System;
-using BurnForMoney.Domain.Domain;
+using BurnForMoney.Domain;
 using BurnForMoney.Functions.Shared.Extensions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -16,8 +16,6 @@ namespace BurnForMoney.Functions.InternalApi.Functions.Activities
         [FunctionName(FunctionsNames.GetActivityCategories)]
         public static IActionResult GetActivityCategories([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "activities/categories")] HttpRequest req, ILogger log, ExecutionContext executionContext)
         {
-            log.LogFunctionStart(FunctionsNames.GetActivityCategories);
-            log.LogFunctionEnd(FunctionsNames.GetActivityCategories);
             return new OkObjectResult(ActivityCategories);
         }
     }

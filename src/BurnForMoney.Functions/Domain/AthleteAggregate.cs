@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using BurnForMoney.Domain;
-using BurnForMoney.Domain.Domain;
 using BurnForMoney.Domain.Events;
 using BurnForMoney.Functions.Domain.ActivityMappers;
 using BurnForMoney.Functions.Exceptions;

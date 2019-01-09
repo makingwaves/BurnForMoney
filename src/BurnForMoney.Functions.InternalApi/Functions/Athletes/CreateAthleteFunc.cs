@@ -16,8 +16,6 @@ namespace BurnForMoney.Functions.InternalApi.Functions.Athletes
         public static async Task<IActionResult> CreateAthleteAsync([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "athlete")] HttpRequest req, ExecutionContext executionContext,
             ILogger log)
         {
-            log.LogFunctionStart(FunctionsNames.AddAthlete);
-
             var requestData = await req.ReadAsStringAsync();
             var model = JsonConvert.DeserializeObject<CreateAthleteRequest>(requestData);
             try

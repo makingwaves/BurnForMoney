@@ -15,11 +15,6 @@ namespace BurnForMoney.Functions.Strava.Functions.AuthorizeNewAthlete
         [FunctionName(FunctionsNames.O_AuthorizeNewAthlete)]
         public static async Task O_AuthorizeNewAthlete(ILogger log, [OrchestrationTrigger] DurableOrchestrationContext context, ExecutionContext executionContext)
         {
-            if (!context.IsReplaying)
-            {
-                log.LogFunctionStart(FunctionsNames.O_AuthorizeNewAthlete);
-            }
-
             var authorizationCode = context.GetInput<string>();
 
             var athleteId = Guid.Empty;
@@ -92,7 +87,6 @@ namespace BurnForMoney.Functions.Strava.Functions.AuthorizeNewAthlete
 
                 throw;
             }
-            log.LogFunctionEnd(FunctionsNames.O_AuthorizeNewAthlete);
         }
     }
 

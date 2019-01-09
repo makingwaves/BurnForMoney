@@ -6,7 +6,8 @@ using BurnForMoney.Functions.PublicApi.Configuration;
 using BurnForMoney.Functions.Shared.Extensions;
 using BurnForMoney.Functions.Shared.Functions.Extensions;
 using BurnForMoney.Functions.Shared.Helpers;
-using BurnForMoney.Functions.Shared.Persistence;
+using BurnForMoney.Infrastructure.Persistence.Repositories.Dto;
+using BurnForMoney.Infrastructure.Persistence.Sql;
 using Dapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -27,7 +28,6 @@ namespace BurnForMoney.Functions.PublicApi.Functions
         public static async Task<IActionResult> TotalNumbers([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "totalnumbers")] HttpRequest req, 
             ILogger log, [Configuration] ConfigurationRoot configuration)
         {
-            log.LogFunctionStart("TotalNumbers");
             if (!Cache.TryGetValue(CacheKey, out var totalNumbers))
             {
                 totalNumbers = await GetTotalNumbersAsync(configuration.ConnectionStrings.SqlDbConnectionString);
@@ -41,12 +41,13 @@ namespace BurnForMoney.Functions.PublicApi.Functions
                 Cache.Set(CacheKey, totalNumbers, cacheEntryOptions);
             }
 
-            log.LogFunctionEnd("TotalNumbers");
             return new OkObjectResult(totalNumbers);
         }
 
         private static async Task<object> GetTotalNumbersAsync(string connectionString)
         {
+            var today = DateTime.UtcNow;
+
             using (var conn = SqlConnectionFactory.Create(connectionString))
             {
                 await conn.OpenWithRetryAsync();
@@ -67,12 +68,14 @@ namespace BurnForMoney.Functions.PublicApi.Functions
                 var totalTime = results.Sum(r => r.Results.Time);
                 var totalPoints = results.Sum(r => r.Results.Points);
 
+                var thisMonth = results.SingleOrDefault(r => r.Date.Equals($"{today.Year}/{today.Month}"));
+
                 var result = new
                 {
                     Distance = (int)UnitsConverter.ConvertMetersToKilometers(totalDistance, 0),
                     Time = (int)UnitsConverter.ConvertMinutesToHours(totalTime, 0),
                     Money = PointsToMoneyConverter.Convert(totalPoints),
-                    ThisMonth = GetThisMonthStatistics(results.Last().Results)
+                    ThisMonth = thisMonth == null ? ThisMonth.NoResults : GetThisMonthStatistics(thisMonth.Results)
                 };
 
                 return result;
@@ -125,6 +128,14 @@ namespace BurnForMoney.Functions.PublicApi.Functions
 
         public class ThisMonth
         {
+            public static ThisMonth NoResults = new ThisMonth
+            {
+                NumberOfTrainings = 0,
+                PercentOfEngagedEmployees = 0,
+                Points = 0,
+                Money = 0,
+                MostFrequentActivities = new List<object>()
+            };
             public int NumberOfTrainings { get; set; }
             public int PercentOfEngagedEmployees { get; set; }
             public int Points { get; set; }

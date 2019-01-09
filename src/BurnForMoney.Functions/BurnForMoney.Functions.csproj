@@ -37,6 +37,7 @@
   <ItemGroup>
     <ProjectReference Include="..\BurnForMoney.Functions.Shared\BurnForMoney.Functions.Shared.csproj" />
     <ProjectReference Include="..\BurnForMoney.Domain\BurnForMoney.Domain.csproj" />
+    <ProjectReference Include="..\BurnForMoney.Infrastructure\BurnForMoney.Infrastructure.csproj" />
   </ItemGroup>
   <ItemGroup>
     <None Update="host.json">

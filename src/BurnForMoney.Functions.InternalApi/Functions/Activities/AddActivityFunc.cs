@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Threading.Tasks;
 using BurnForMoney.Domain;
-using BurnForMoney.Domain.Commands;
-using BurnForMoney.Domain.Domain;
+using BurnForMoney.Functions.Infrastructure.Queues;
+using BurnForMoney.Functions.InternalApi.Commands;
+using BurnForMoney.Functions.InternalApi.Functions.Activities.Dto;
 using BurnForMoney.Functions.Shared.Extensions;
-using BurnForMoney.Functions.Shared.Identity;
-using BurnForMoney.Functions.Shared.Queues;
+using BurnForMoney.Identity;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
@@ -24,14 +24,12 @@ namespace BurnForMoney.Functions.InternalApi.Functions.Activities
             string athleteId,
             [Queue(AppQueueNames.AddActivityRequests, Connection = "AppQueuesStorage")] CloudQueue outputQueue)
         {
-            log.LogFunctionStart(FunctionsNames.AddActivity);
-
             var requestData = await req.ReadAsStringAsync();
 
-            AddActivityRequest model;
+            ActivityAddOrUpdateRequest model;
             try
             {
-                model = JsonConvert.DeserializeObject<AddActivityRequest>(requestData);
+                model = JsonConvert.DeserializeObject<ActivityAddOrUpdateRequest>(requestData);
             }
             catch (Exception ex)
             {
@@ -40,7 +38,7 @@ namespace BurnForMoney.Functions.InternalApi.Functions.Activities
 
             try
             {
-                ValidateRequest(model);
+                model.Validate();
             }
             catch (Exception ex)
             {
@@ -62,32 +60,7 @@ namespace BurnForMoney.Functions.InternalApi.Functions.Activities
 
             var output = JsonConvert.SerializeObject(addActivityCommand);
             await outputQueue.AddMessageAsync(new CloudQueueMessage(output));
-            log.LogFunctionEnd(FunctionsNames.AddActivity);
             return new OkObjectResult(addActivityCommand.Id);
         }
-
-        private static void ValidateRequest(AddActivityRequest request)
-        {
-            if (request.StartDate == null)
-            {
-                throw new ArgumentNullException(nameof(request.StartDate));
-            }
-            if (string.IsNullOrWhiteSpace(request.Type))
-            {
-                throw new ArgumentNullException(nameof(request.Type));
-            }
-            if (request.MovingTimeInMinutes <= 0)
-            {
-                throw new ArgumentNullException(nameof(request.MovingTimeInMinutes));
-            }
-        }
-    }
-
-    public class AddActivityRequest
-    {
-        public DateTime? StartDate { get; set; }
-        public string Type { get; set; }
-        public double? DistanceInMeters { get; set; }
-        public double MovingTimeInMinutes { get; set; }
     }
 }

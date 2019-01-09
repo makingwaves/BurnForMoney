@@ -1,8 +1,8 @@
 using System.Linq;
 using System.Threading.Tasks;
+using BurnForMoney.Functions.Infrastructure.Queues;
 using BurnForMoney.Functions.Shared.Extensions;
 using BurnForMoney.Functions.Shared.Functions.Extensions;
-using BurnForMoney.Functions.Shared.Queues;
 using BurnForMoney.Functions.Strava.Configuration;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -24,8 +24,6 @@ namespace BurnForMoney.Functions.Strava.Functions.AuthorizeNewAthlete
             HttpRequest req, ILogger log, [Queue(StravaQueueNames.AuthorizationCodes)] CloudQueue authorizationCodesQueue,
             [Configuration] ConfigurationRoot configuration)
         {
-            log.LogFunctionStart(FunctionsNames.AuthenticateUser);
-
             var referer = req.Headers["Referer"].FirstOrDefault() ?? "null";
             log.LogInformation(FunctionsNames.AuthenticateUser, $"Request referer: [{referer}].");
             if (!configuration.IsLocalEnvironment && !IsRequestRefererValid(referer))
@@ -56,7 +54,6 @@ namespace BurnForMoney.Functions.Strava.Functions.AuthorizeNewAthlete
 
             await InsertCodeToAuthorizationQueueAsync(code, authorizationCodesQueue, log).ConfigureAwait(false);
 
-            log.LogFunctionEnd(FunctionsNames.AuthenticateUser);
             return new RedirectResult(configuration.Strava.ConfirmationPageUrl);
         }
         

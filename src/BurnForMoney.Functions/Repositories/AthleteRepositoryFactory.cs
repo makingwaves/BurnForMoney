@@ -1,7 +1,7 @@
 ﻿using BurnForMoney.Domain;
-using BurnForMoney.Domain.Domain;
 using BurnForMoney.Functions.Configuration;
 using BurnForMoney.Functions.Domain;
+using BurnForMoney.Infrastructure.Persistence;
 
 namespace BurnForMoney.Functions.Repositories
 {

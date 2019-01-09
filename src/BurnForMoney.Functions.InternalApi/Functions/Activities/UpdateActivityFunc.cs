@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Threading.Tasks;
-using BurnForMoney.Domain.Commands;
+using BurnForMoney.Functions.Infrastructure.Queues;
+using BurnForMoney.Functions.InternalApi.Commands;
+using BurnForMoney.Functions.InternalApi.Functions.Activities.Dto;
 using BurnForMoney.Functions.Shared.Extensions;
-using BurnForMoney.Functions.Shared.Queues;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
@@ -21,14 +22,12 @@ namespace BurnForMoney.Functions.InternalApi.Functions.Activities
             ILogger log,
             [Queue(AppQueueNames.UpdateActivityRequests, Connection = "AppQueuesStorage")] CloudQueue outputQueue)
         {
-            log.LogFunctionStart(FunctionsNames.UpdateActivity);
-
             var requestData = await req.ReadAsStringAsync();
 
-            UpdateActivityRequest model;
+            ActivityAddOrUpdateRequest model;
             try
             {
-                model = JsonConvert.DeserializeObject<UpdateActivityRequest>(requestData);
+                model = JsonConvert.DeserializeObject<ActivityAddOrUpdateRequest>(requestData);
             }
             catch (Exception ex)
             {
@@ -37,7 +36,7 @@ namespace BurnForMoney.Functions.InternalApi.Functions.Activities
 
             try
             {
-                ValidateRequest(model);
+                model.Validate();
             }
             catch (Exception ex)
             {
@@ -52,38 +51,13 @@ namespace BurnForMoney.Functions.InternalApi.Functions.Activities
                 ActivityType = model.Type,
                 // ReSharper disable once PossibleInvalidOperationException
                 StartDate = model.StartDate.Value,
-                DistanceInMeters = model.DistanceInMeters,
+                DistanceInMeters = model.DistanceInMeters ?? 0,
                 MovingTimeInMinutes = model.MovingTimeInMinutes,
             };
 
             var output = JsonConvert.SerializeObject(command);
             await outputQueue.AddMessageAsync(new CloudQueueMessage(output));
-            log.LogFunctionEnd(FunctionsNames.UpdateActivity);
             return new OkObjectResult(command.Id);
-        }
-
-        private static void ValidateRequest(UpdateActivityRequest request)
-        {
-            if (request.StartDate == null)
-            {
-                throw new ArgumentNullException(nameof(request.StartDate));
-            }
-            if (string.IsNullOrWhiteSpace(request.Type))
-            {
-                throw new ArgumentNullException(nameof(request.Type));
-            }
-            if (request.MovingTimeInMinutes <= 0)
-            {
-                throw new ArgumentNullException(nameof(request.MovingTimeInMinutes));
-            }
-        }
-
-        public class UpdateActivityRequest
-        {
-            public DateTime? StartDate { get; set; }
-            public string Type { get; set; }
-            public double DistanceInMeters { get; set; }
-            public double MovingTimeInMinutes { get; set; }
         }
     }
 }
