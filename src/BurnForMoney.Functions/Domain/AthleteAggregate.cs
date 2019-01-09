@@ -65,7 +65,7 @@ namespace BurnForMoney.Functions.Domain
             Activities.Remove(activity);
         }
 
-        public Athlete()
+        private Athlete()
         {
 
         }
@@ -73,6 +73,11 @@ namespace BurnForMoney.Functions.Domain
         public Athlete(Guid id, string externalId, string firstName, string lastName, string profilePictureUrl,
             Source source)
         {
+            if (id == Guid.Empty)
+            {
+                throw new ArgumentNullException(nameof(Id));
+            }
+
             if (string.IsNullOrWhiteSpace(firstName))
             {
                 throw new ArgumentNullException(nameof(firstName));
@@ -84,6 +89,11 @@ namespace BurnForMoney.Functions.Domain
         public void AddActivity(Guid id, string externalId, string activityType, double distanceInMeters,
             double movingTimeInMinutes, DateTime startDate, Source source)
         {
+            if (id == Guid.Empty)
+            {
+                throw new ArgumentNullException(nameof(Id));
+            }
+
             if (!IsActive)
             {
                 throw new InvalidOperationException("Athlete is deactivated.");
@@ -125,6 +135,11 @@ namespace BurnForMoney.Functions.Domain
         public void UpdateActivity(Guid id, string activityType, double distanceInMeters, double movingTimeInMinutes,
             DateTime startDate)
         {
+            if (id == Guid.Empty)
+            {
+                throw new ArgumentNullException(nameof(Id));
+            }
+
             if (!IsActive)
             {
                 throw new InvalidOperationException("Athlete is deactivated.");
@@ -187,6 +202,11 @@ namespace BurnForMoney.Functions.Domain
 
         public void DeleteActivity(Guid id)
         {
+            if (id == Guid.Empty)
+            {
+                throw new ArgumentNullException(nameof(Id));
+            }
+            
             if (!IsActive)
             {
                 throw new InvalidOperationException("Athlete is deactivated.");
