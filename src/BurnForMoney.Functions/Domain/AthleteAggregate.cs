@@ -65,7 +65,7 @@ namespace BurnForMoney.Functions.Domain
             Activities.Remove(activity);
         }
 
-        private Athlete()
+        public Athlete()
         {
 
         }
@@ -206,7 +206,7 @@ namespace BurnForMoney.Functions.Domain
             {
                 throw new ArgumentNullException(nameof(Id));
             }
-            
+
             if (!IsActive)
             {
                 throw new InvalidOperationException("Athlete is deactivated.");
