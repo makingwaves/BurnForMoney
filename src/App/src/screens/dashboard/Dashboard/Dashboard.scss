@@ -45,17 +45,28 @@
     }
   }
 
-  &__header{
-    background-color: #fff;
-    padding: 0 30px;
-
-    &-title{
-      font-weight: 500;
-      font-size:24px;
-      margin: 0;
-      padding: 0;
+  &Grid{
+    display: grid;
+    grid-template-columns: 3fr 2fr;
+    grid-template-areas:
+      "summary results"
+      "contribution ranking";
+    &Item{
+      &-status{
+        grid-area: summary;
+      }
+      &-numbers{
+        grid-area: results;
+      }
+      &-contribution{
+        grid-area: contribution;
+      }
+      &-ranking{
+        grid-area: ranking;
+      }
     }
   }
+
   .Navigation{
     color: $light-gray;
     list-style: none;

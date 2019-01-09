@@ -8,7 +8,7 @@ import {
 import Home from './screens/home/Home';
 import StravaAuth from './screens/stravaAuth/StravaAuth';
 import StravaConfirmation from './screens/stravaAuth/StravaConfirmation';
-import Dashboard from './screens/dashboard/Dashboard';
+import AppDashboard from './screens/dashboard/AppDashboard';
 
 function App () {
 
@@ -19,7 +19,7 @@ function App () {
           <Route exact path="/" component={Home} />
           <Route path="/strava" component={StravaAuth} />
           <Route path="/strava-confirmation" component={StravaConfirmation} />
-          <Route path="/dashboard" component={Dashboard} />
+          <Route path="/dashboard" component={AppDashboard} />
         </Switch>
       </div>
     </Router>
