@@ -28,7 +28,7 @@ namespace BurnForMoney.Functions.Functions.Reports
     {
         [FunctionName(FunctionsNames.T_GenerateReport)]
         public static async Task Run(
-            [TimerTrigger("0 0 0 5 * *")] TimerInfo timer,
+            [TimerTrigger("0 0 0 3 * *")] TimerInfo timer,
             [Configuration] ConfigurationRoot configuration,
             ILogger log)
         {
