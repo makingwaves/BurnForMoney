@@ -1,7 +1,14 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
+using BurnForMoney.Domain;
+using BurnForMoney.Domain.Events;
+using BurnForMoney.Functions.Presentation.Configuration;
 using BurnForMoney.Functions.Presentation.Functions.ResultsSnapshots;
 using BurnForMoney.Functions.Presentation.Functions.ResultsSnapshots.Dto;
+using BurnForMoney.Functions.Presentation.Views;
+using BurnForMoney.Functions.Shared;
 using BurnForMoney.Functions.Shared.Extensions;
+using BurnForMoney.Functions.Shared.Functions.Extensions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
@@ -15,7 +22,7 @@ namespace BurnForMoney.Functions.Presentation.Functions._Support
     public static class ActivitiesOperationsFunc
     {
         public const string FUNCTIONNAME_CollectMonthlyStatistics =
-            "CollectMonthlyStatistics";
+            SupportFunctionNameConvention.Prefix + "CollectMonthlyStatistics";
 
         [FunctionName(FUNCTIONNAME_CollectMonthlyStatistics)]
         public static async Task<IActionResult> CollectMonthlyStatistics([HttpTrigger(AuthorizationLevel.Admin, "get", Route = "support/activities/collectmonthlystatistics/{year:int:min(2018)}/{month:range(1,12)}")]HttpRequest req, ILogger log,

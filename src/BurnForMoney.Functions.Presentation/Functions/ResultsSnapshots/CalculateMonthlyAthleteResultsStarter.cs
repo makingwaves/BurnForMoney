@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using BurnForMoney.Functions.Presentation.Functions.ResultsSnapshots.Dto;
+using BurnForMoney.Functions.Shared;
 using BurnForMoney.Functions.Shared.Extensions;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
@@ -14,10 +15,10 @@ namespace BurnForMoney.Functions.Presentation.Functions.ResultsSnapshots
     public static class CalculateMonthlyAthleteResultsStarter
     {
         public const string FUNCTIONNAME_T_CalculateMonthlyAthleteResults =
-            "T_CalculateMonthlyAthleteResults";
+            FunctionNameConvention.TimerTriggerPrefix + "CalculateMonthlyAthleteResults";
 
         public const string FUNCTIONNAME_T_CalculateMonthlyAthleteResultsFromPreviousMonth =
-            "T_CalculateMonthlyAthleteResultsFromPreviousMonth";
+            FunctionNameConvention.TimerTriggerPrefix + "CalculateMonthlyAthleteResultsFromPreviousMonth";
 
         // every hour
         [FunctionName(FUNCTIONNAME_T_CalculateMonthlyAthleteResults)]

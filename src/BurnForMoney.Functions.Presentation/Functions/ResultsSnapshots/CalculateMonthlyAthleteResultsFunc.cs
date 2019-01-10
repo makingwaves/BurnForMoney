@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using BurnForMoney.Functions.Presentation.Configuration;
 using BurnForMoney.Functions.Presentation.Functions.ResultsSnapshots.Dto;
+using BurnForMoney.Functions.Shared;
 using BurnForMoney.Functions.Shared.Extensions;
 using BurnForMoney.Functions.Shared.Functions.Extensions;
 using BurnForMoney.Infrastructure.Persistence.Repositories.Dto;
@@ -19,7 +20,7 @@ namespace BurnForMoney.Functions.Presentation.Functions.ResultsSnapshots
     public static class CalculateMonthlyAthleteResultsFunc
     {
         // ReSharper disable once InconsistentNaming
-        public const string FUNCTIONNAME_Q_CalculateMonthlyAthleteResults = "Q_CalculateMonthlyAthleteResults";
+        public const string FUNCTIONNAME_Q_CalculateMonthlyAthleteResults = FunctionNameConvention.QueueTriggerPrefix + "CalculateMonthlyAthleteResults";
 
         [FunctionName(FUNCTIONNAME_Q_CalculateMonthlyAthleteResults)]
         public static async Task Q_CalculateMonthlyAthleteResults([QueueTrigger(QueueNames.CalculateMonthlyResults)] CalculateMonthlyResultsRequest request, 

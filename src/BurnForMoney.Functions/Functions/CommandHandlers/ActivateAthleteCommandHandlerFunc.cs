@@ -14,7 +14,7 @@ namespace BurnForMoney.Functions.Functions.CommandHandlers
     public class ActivateAthleteCommandHandlerFunc
     {
         [FunctionName(FunctionsNames.Q_ActivateAthlete)]
-        public static async Task Q_AtivateAthleteAsync(ILogger log, ExecutionContext executionContext,
+        public static async Task Q_ActivateAthleteAsync(ILogger log, ExecutionContext executionContext,
             [QueueTrigger(AppQueueNames.ActivateAthleteRequests)] ActivateAthleteCommand message,
             [Configuration] ConfigurationRoot configuration)
         {
