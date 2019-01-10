@@ -2,6 +2,7 @@ import React from 'react';
 import './Ranking.css';
 
 const Ranking = (props) =>{
+  let setRankingCategory = props.setRankinkCategory;
   let rank = 0;
   let rankSkip = 1;
   let prevPoints = 0;
@@ -9,14 +10,14 @@ const Ranking = (props) =>{
     <div className="Ranking">
       <h4>Rank</h4>
       <ul className="RankingFilterList">
-        <li className="RankingFilterListItem active">All</li>
+        <li className={`RankingFilterListItem ${props.rankingCategory === 'All' && "active"}`} onClick={() => setRankingCategory('All')}>All</li>
         {props.categories.map((i) =>{
             return(
-              <li className="RankingFilterListItem" key={i.category}>{i.category}</li>
+              <li className={`RankingFilterListItem ${props.rankingCategory === i.category && "active"}`} key={i.category} onClick={() => {setRankingCategory(i.category);} }>{i.category}</li>
             );
         })}
       </ul>
-      <h4 className="RankingCategory">{props.rankCategory}</h4>
+      <h4 className="RankingCategory">{props.rankingCategory}</h4>
       <ol className="RankingList">
         {
           props.ranking.map( (i, index)=> {

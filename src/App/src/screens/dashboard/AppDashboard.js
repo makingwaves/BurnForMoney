@@ -108,6 +108,23 @@ class AppDashboard extends Component {
     };
     return obj;
   }
+  setRankinkCategory = (category) =>{
+    if(category === this.state.rankingCategory){return false;}
+    this.setState({
+      rankingCategory: category
+    });
+    this.getRankingResults(category);
+  }
+  getRankingResults = (category) =>{
+    if(category === 'All') category = '';
+    fetch(this.api_url+"api/ranking/"+category)
+      .then(res => res.json())
+      .then(
+        (result) => {this.setState({ranking: result }); console.log('ranking', this.state.ranking)},
+        (error) => {this.setState({ranking: null}); console.error('Error:', error); }
+      );
+  }
+
   handleResize = () => {
     clearTimeout(this.resizeTimeout);
     this.resizeTimeout = setTimeout(() => {
@@ -125,7 +142,7 @@ class AppDashboard extends Component {
       categories: [],
       athletes: [],
       ranking: [],
-      rankCategory: 'All',
+      rankingCategory: 'All',
       windowHeight: undefined,
       windowWidth: undefined
     }
@@ -173,16 +190,33 @@ class AppDashboard extends Component {
         <section className="Dashboard-main">
           <Switch>
             <Route exact path="/dashboard" render={(props) => (
-              <Dashboard {...props} ranking={this.state.ranking} categories={this.state.categories} rankCategory={this.state.rankCategory} />
+              <Dashboard {...props}
+                ranking={this.state.ranking}
+                rankingCategory={this.state.rankingCategory}
+                setRankinkCategory={this.setRankinkCategory}
+                categories={this.state.categories}
+                rankCategory={this.state.rankCategory}
+              />
             )} />
             <Route path="/dashboard/participants" render={(props) => (
-              <Participants {...props} ranking={this.state.ranking} categories={this.state.categories} rankCategory={this.state.rankCategory} />
+              <Participants {...props}
+                ranking={this.state.ranking}
+                rankingCategory={this.state.rankingCategory}
+                setRankinkCategory={this.setRankinkCategory}
+                categories={this.state.categories}
+                rankCategory={this.state.rankCategory}
+            />
             )} />
             <Route exact path="/dashboard/new-activity" render={(props) => (
-              <NewActivity {...props} categories={this.state.categories} athletes={this.state.athletes} />
+              <NewActivity {...props}
+                categories={this.state.categories}
+                athletes={this.state.athletes}
+              />
             )} />
             <Route path="/dashboard/athletes-list" render={(props) => (
-              <AthletesList {...props} athletes={this.state.athletes} />
+              <AthletesList {...props}
+                athletes={this.state.athletes}
+              />
             )} />
             <Route path="/dashboard/athlete/:athleteId" component={AthleteProfile} />
           </Switch>

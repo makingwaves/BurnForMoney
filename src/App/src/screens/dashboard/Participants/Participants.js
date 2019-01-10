@@ -9,7 +9,13 @@ const Participants = (props) =>{
     <div>
       <DashboardHeader header="Participants" />
       <div className="Dashboard-content">
-        <Ranking ranking={props.ranking} categories={props.categories} rankCategory={props.rankCategory} />
+        <Ranking
+          ranking={props.ranking}
+          rankingCategory={props.rankingCategory}
+          setRankinkCategory={props.setRankinkCategory}
+          categories={props.categories}
+          rankCategory={props.rankCategory}
+        />
       </div>
     </div>
   )
