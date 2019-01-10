@@ -13,6 +13,7 @@
         border: 1px solid $pink-salmon;
         border-radius: 12px;
         background-color: #fff;
+        cursor: pointer;
         &.active{
           background-color:$pink-salmon;
           color:#fff;
@@ -80,6 +81,7 @@
         font-size: 16px;
         font-weight: bold;
         font-family: "Volte2";
+        text-align: right;
       }
 
     }
