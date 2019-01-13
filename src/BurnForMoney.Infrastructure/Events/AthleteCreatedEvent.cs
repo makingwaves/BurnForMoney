@@ -1,12 +1,13 @@
 ﻿using System;
 using BurnForMoney.Domain;
+using BurnForMoney.Infrastructure.CodeAnalysis;
 using BurnForMoney.Infrastructure.Events;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
-//namespace lock
 namespace BurnForMoney.Domain.Events
 {
+    [NamespaceLock(Reason = NamespaceLockAttribute.Public_Contract_Please_Do_Not_Change_Its_Namespace)]
     public class AthleteCreated : AthleteEvent
     {
         public readonly Guid Id;
