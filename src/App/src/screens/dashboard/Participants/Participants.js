@@ -2,19 +2,23 @@ import React from 'react';
 //import './Participants.css';
 
 import DashboardHeader from '../DashboardHeader/DashboardHeader.js';
-import Ranking from '../Ranking/Ranking.js';
+import RankingList from '../RankingList/RankingList.js';
+import RankingFilter from '../RankingFilter/RankingFilter.js';
+
 
 const Participants = (props) =>{
   return (
     <div>
       <DashboardHeader header="Participants" />
       <div className="Dashboard-content">
-        <Ranking
-          ranking={props.ranking}
+        <RankingFilter
           rankingCategory={props.rankingCategory}
           setRankinkCategory={props.setRankinkCategory}
           categories={props.categories}
-          rankCategory={props.rankCategory}
+        />
+        <h4 className="RankingCategory">{props.rankingCategory}</h4>
+        <RankingList
+          ranking={props.ranking}
         />
       </div>
     </div>

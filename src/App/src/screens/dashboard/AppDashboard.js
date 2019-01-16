@@ -195,7 +195,6 @@ class AppDashboard extends Component {
                 rankingCategory={this.state.rankingCategory}
                 setRankinkCategory={this.setRankinkCategory}
                 categories={this.state.categories}
-                rankCategory={this.state.rankCategory}
               />
             )} />
             <Route path="/dashboard/participants" render={(props) => (
@@ -204,7 +203,6 @@ class AppDashboard extends Component {
                 rankingCategory={this.state.rankingCategory}
                 setRankinkCategory={this.setRankinkCategory}
                 categories={this.state.categories}
-                rankCategory={this.state.rankCategory}
             />
             )} />
             <Route exact path="/dashboard/new-activity" render={(props) => (

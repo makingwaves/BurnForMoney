@@ -2,7 +2,8 @@ import React from 'react';
 import './Dashboard.css';
 
 import DashboardHeader from '../DashboardHeader/DashboardHeader.js';
-import Ranking from '../Ranking/Ranking.js';
+import RankingList from '../RankingList/RankingList.js';
+import RankingFilter from '../RankingFilter/RankingFilter.js';
 
 const Dashboard = (props) =>{
   return (
@@ -16,12 +17,15 @@ const Dashboard = (props) =>{
           Results
         </div>
         <div className="DashboardGridItem DashboardGridItem-ranking">
-          <Ranking
-            ranking={props.ranking}
+
+          <RankingFilter
             rankingCategory={props.rankingCategory}
             setRankinkCategory={props.setRankinkCategory}
             categories={props.categories}
-            rankCategory={props.rankCategory}
+          />
+          <h4 className="RankingCategory">{props.rankingCategory}</h4>
+          <RankingList
+            ranking={props.ranking}
           />
         </div>
         <div className="DashboardGridItem DashboardGridItem-contribution">

@@ -1,0 +1,68 @@
+@import "style/variables.scss";
+
+.RankingList{
+  list-style: none;
+  &Item{
+    height: 50px;
+    margin-bottom: 10px;
+    display: grid;
+    grid-template-columns: 25px 100px 1fr 100px;
+    align-items: center;
+    &-rank{
+      font-size: 22px;
+      font-weight: bold;
+      font-family: "Volte2";
+    }
+    &-avatar{
+      justify-self: center;
+      .leader &{
+        position: relative;
+        display: grid;
+        grid-template-columns: 23px 50px 23px;
+
+        &:before,
+        &:after{
+          content:'';
+          display: block;
+          width: 23px;
+          height: 20px;
+          position: relative;
+          top:15px;
+        }
+        &:before{
+          background-image: url('~img/iconBicepsR.svg');
+          transform: scaleX(-1);
+          right: -3px;
+        }
+        &:after{
+          background-image: url('~img/iconBicepsR.svg');
+          left:-3px;
+        }
+      }
+    }
+    &-image{
+      width:50px;
+      height: 50px;
+      display: block;
+      background-color: $primary-color;
+      border-radius:50%;
+      font-size: 14px;
+      font-weight: normal;
+      font-family: "AftenScreen";
+      z-index: 2;
+    }
+    &-name{
+      padding-left: 5px;
+      font-size: 14px;
+      font-weight: normal;
+      font-family: "AftenScreen";
+    }
+    &-points{
+      font-size: 16px;
+      font-weight: bold;
+      font-family: "Volte2";
+      text-align: right;
+    }
+
+  }
+}
