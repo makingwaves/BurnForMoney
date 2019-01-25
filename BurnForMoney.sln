@@ -3,25 +3,29 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27428.2002
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BurnForMoney.Functions", "BurnForMoney.Functions\BurnForMoney.Functions.csproj", "{B58D8685-89D8-4977-97C5-B54E8A42544A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BurnForMoney.Functions", "src\BurnForMoney.Functions\BurnForMoney.Functions.csproj", "{B58D8685-89D8-4977-97C5-B54E8A42544A}"
 EndProject
-Project("{151D2E53-A2C4-4D7D-83FE-D05416EBD58E}") = "BurnForMoney.ResourceGroup", "ResourceGroup\BurnForMoney.ResourceGroup.deployproj", "{8B63AEEF-BEB9-4E06-9B85-31B1F5AAB749}"
+Project("{151D2E53-A2C4-4D7D-83FE-D05416EBD58E}") = "BurnForMoney.ResourceGroup", "src\ResourceGroup\BurnForMoney.ResourceGroup.deployproj", "{8B63AEEF-BEB9-4E06-9B85-31B1F5AAB749}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BurnForMoney.Functions.Strava", "BurnForMoney.Functions.Strava\BurnForMoney.Functions.Strava.csproj", "{AC127353-BD6C-4322-B456-E17652594892}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BurnForMoney.Functions.Strava", "src\BurnForMoney.Functions.Strava\BurnForMoney.Functions.Strava.csproj", "{AC127353-BD6C-4322-B456-E17652594892}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BurnForMoney.Functions.Shared", "BurnForMoney.Functions.Shared\BurnForMoney.Functions.Shared.csproj", "{CBD8EC2D-BBEF-45FA-BAC1-0348E86501CF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BurnForMoney.Functions.Shared", "src\BurnForMoney.Functions.Shared\BurnForMoney.Functions.Shared.csproj", "{CBD8EC2D-BBEF-45FA-BAC1-0348E86501CF}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BurnForMoney.Functions.PublicApi", "BurnForMoney.Functions.PublicApi\BurnForMoney.Functions.PublicApi.csproj", "{E6354980-45FB-43B5-8A66-ABAC7E0DA242}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BurnForMoney.Functions.PublicApi", "src\BurnForMoney.Functions.PublicApi\BurnForMoney.Functions.PublicApi.csproj", "{E6354980-45FB-43B5-8A66-ABAC7E0DA242}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BurnForMoney.Functions.InternalApi", "BurnForMoney.Functions.InternalApi\BurnForMoney.Functions.InternalApi.csproj", "{53E4412E-3B79-4CE2-8B4F-0ECF02B59557}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BurnForMoney.Functions.InternalApi", "src\BurnForMoney.Functions.InternalApi\BurnForMoney.Functions.InternalApi.csproj", "{53E4412E-3B79-4CE2-8B4F-0ECF02B59557}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BurnForMoney.Domain", "BurnForMoney.Domain\BurnForMoney.Domain.csproj", "{9E03A6DB-2674-40B2-A876-961D2FB3CD9E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BurnForMoney.Domain", "src\BurnForMoney.Domain\BurnForMoney.Domain.csproj", "{9E03A6DB-2674-40B2-A876-961D2FB3CD9E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BurnForMoney.Functions.Presentation", "BurnForMoney.Functions.Presentation\BurnForMoney.Functions.Presentation.csproj", "{0A49C366-358E-48EA-B413-A14AB98FEDEB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BurnForMoney.Functions.Presentation", "src\BurnForMoney.Functions.Presentation\BurnForMoney.Functions.Presentation.csproj", "{0A49C366-358E-48EA-B413-A14AB98FEDEB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BurnForMoney.Infrastructure", "BurnForMoney.Infrastructure\BurnForMoney.Infrastructure.csproj", "{30D75787-549D-4166-969A-8270AA28252C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BurnForMoney.Infrastructure", "src\BurnForMoney.Infrastructure\BurnForMoney.Infrastructure.csproj", "{30D75787-549D-4166-969A-8270AA28252C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BurnForMoney.Identity", "BurnForMoney.Identity\BurnForMoney.Identity.csproj", "{EFA2DF09-B8A1-4589-BA24-3171F41A8A1D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BurnForMoney.Identity", "src\BurnForMoney.Identity\BurnForMoney.Identity.csproj", "{EFA2DF09-B8A1-4589-BA24-3171F41A8A1D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{F624F300-4820-42BA-AA33-51AAAD65468B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BurnForMoney.UnitTests", "tests\BurnForMoney.UnitTests\BurnForMoney.UnitTests.csproj", "{4B759ECF-AC9E-4189-A49B-25D62F9DD865}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -69,11 +73,18 @@ Global
 		{EFA2DF09-B8A1-4589-BA24-3171F41A8A1D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EFA2DF09-B8A1-4589-BA24-3171F41A8A1D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EFA2DF09-B8A1-4589-BA24-3171F41A8A1D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4B759ECF-AC9E-4189-A49B-25D62F9DD865}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4B759ECF-AC9E-4189-A49B-25D62F9DD865}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4B759ECF-AC9E-4189-A49B-25D62F9DD865}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4B759ECF-AC9E-4189-A49B-25D62F9DD865}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B541DB8A-FD37-4F72-86E1-5628D28CE7E8}
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{4B759ECF-AC9E-4189-A49B-25D62F9DD865} = {F624F300-4820-42BA-AA33-51AAAD65468B}
 	EndGlobalSection
 EndGlobal
