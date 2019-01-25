@@ -44,7 +44,7 @@ namespace BurnForMoney.UnitTests
             await HandleCommand(new CreateAthleteCommand(newAthleteId, null, 
                 FirstName, null, null, Source.None));
 
-            var newAthlete = await GetAthlete(newAthleteId);
+            var newAthlete = await GetAthleteAsync(newAthleteId);
             
             Assert.True(newAthlete.IsActive);
             Assert.Equal(newAthleteId, newAthlete.Id);
@@ -55,7 +55,7 @@ namespace BurnForMoney.UnitTests
             Assert.Null(newAthlete.ProfilePictureUrl);
         }
 
-        // [Fact] // Actualy you can !
+        // [Fact] // Actually you can !
         // public async Task Cant_CreateTwoAthletes_WithSameId()
         // {
         //     var newAthleteId = Guid.NewGuid();
@@ -83,7 +83,7 @@ namespace BurnForMoney.UnitTests
         [Fact]
         public async Task Cant_Activate_ActiveAthlete()
         {
-            var athleteId = await CreateNewAthlete();
+            var athleteId = await CreateNewAthleteAsync();
 
             await Assert.ThrowsAsync<InvalidOperationException>(()=>
                 HandleCommand(new ActivateAthleteCommand(athleteId)));
@@ -92,17 +92,17 @@ namespace BurnForMoney.UnitTests
         [Fact]
         public async Task Can_Deactivate_ActiveAthlete()
         {
-            var athleteId = await CreateNewAthlete();
+            var athleteId = await CreateNewAthleteAsync();
             await HandleCommand(new DeactivateAthleteCommand(athleteId));
             
-            var athlete = await GetAthlete(athleteId);
+            var athlete = await GetAthleteAsync(athleteId);
             Assert.False(athlete.IsActive);
         }
 
         [Fact]
         public async Task Cant_Deactivate_DeactivatedAthlete()
         {
-            var athleteId = await CreateNewAthlete();
+            var athleteId = await CreateNewAthleteAsync();
             await HandleCommand(new DeactivateAthleteCommand(athleteId));
 
             await Assert.ThrowsAsync<InvalidOperationException>(()=>
@@ -112,18 +112,18 @@ namespace BurnForMoney.UnitTests
         [Fact]
         public async Task Can_Activate_DeactivatedAthlete()
         {
-            var athleteId = await CreateNewAthlete();
+            var athleteId = await CreateNewAthleteAsync();
             await HandleCommand(new DeactivateAthleteCommand(athleteId));
             await HandleCommand(new ActivateAthleteCommand(athleteId));
 
-            var athlete = await GetAthlete(athleteId);
+            var athlete = await GetAthleteAsync(athleteId);
             Assert.True(athlete.IsActive);
         }
 
         [Fact]
         public async Task Can_AddActivity_ToExistingAthlete()
         {
-            var athleteId = await CreateNewAthlete();
+            var athleteId = await CreateNewAthleteAsync();
             await HandleCommand(new AddActivityCommand {
                 Id = Guid.NewGuid(),
                 ExternalId = "ex_id",
@@ -135,7 +135,7 @@ namespace BurnForMoney.UnitTests
                 Source = Source.Strava
             });
             
-            var athlete = await GetAthlete(athleteId);
+            var athlete = await GetAthleteAsync(athleteId);
             Assert.Single(athlete.Activities);
         }
 
@@ -158,7 +158,7 @@ namespace BurnForMoney.UnitTests
          [Fact]
         public async Task Can_AddActivity_WithZeroDistance()
         {
-            var athleteId = await CreateNewAthlete();
+            var athleteId = await CreateNewAthleteAsync();
             await HandleCommand(new AddActivityCommand {
                 Id = Guid.NewGuid(),
                 ExternalId = "ex_id",
@@ -170,14 +170,14 @@ namespace BurnForMoney.UnitTests
                 Source = Source.Strava
             });
             
-            var athlete = await GetAthlete(athleteId);
+            var athlete = await GetAthleteAsync(athleteId);
             Assert.Single(athlete.Activities);
         }
 
         [Fact]
         public async Task Cant_AddActivity_WithoutId()
         {
-            var athleteId = await CreateNewAthlete();
+            var athleteId = await CreateNewAthleteAsync();
             
             await Assert.ThrowsAsync<ArgumentNullException>(()=>
                 HandleCommand(new AddActivityCommand {
@@ -195,7 +195,7 @@ namespace BurnForMoney.UnitTests
         [Fact]
         public async Task Cant_AddActivity_WithNegativeDistance()
         {
-            var athleteId = await CreateNewAthlete();
+            var athleteId = await CreateNewAthleteAsync();
             
             await Assert.ThrowsAsync<InvalidOperationException>(()=>
                 HandleCommand(new AddActivityCommand {
@@ -213,7 +213,7 @@ namespace BurnForMoney.UnitTests
         [Fact]
         public async Task Cant_AddActivity_WithZeroMovingTime()
         {
-            var athleteId = await CreateNewAthlete();
+            var athleteId = await CreateNewAthleteAsync();
             
             await Assert.ThrowsAsync<InvalidOperationException>(()=>
                 HandleCommand(new AddActivityCommand {
@@ -231,7 +231,7 @@ namespace BurnForMoney.UnitTests
          [Fact]
         public async Task Cant_AddActivity_Before2018()
         {
-            var athleteId = await CreateNewAthlete();
+            var athleteId = await CreateNewAthleteAsync();
             
             await Assert.ThrowsAsync<InvalidOperationException>(()=>
                 HandleCommand(new AddActivityCommand {
@@ -249,7 +249,7 @@ namespace BurnForMoney.UnitTests
         [Fact]
         public async Task Cant_AddActivity_WithTheSameId()
         {
-            var athleteId = await CreateNewAthlete();
+            var athleteId = await CreateNewAthleteAsync();
             var activityId = Guid.NewGuid();
 
             await HandleCommand(new AddActivityCommand

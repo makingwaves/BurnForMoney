@@ -10,12 +10,11 @@ namespace BurnForMoney.UnitTests
 {
     public class StravaPointsCalculationTests : AthleteBaseTests
     {
-        private Guid _athelteId;
-        private Task<Athlete> _testAthelte { get => GetAthlete(_athelteId); }
+        private Guid _athleteId;
 
         public StravaPointsCalculationTests()
         {
-            _athelteId = CreateNewAthlete().Result;
+            _athleteId = CreateNewAthleteAsync().Result;
         }
 
         [Theory]
@@ -83,7 +82,7 @@ namespace BurnForMoney.UnitTests
 
         private async Task AssertActivityPoints(double expectedAmount)
         {
-            Assert.Equal(expectedAmount, (await _testAthelte).Activities.Last().Points);
+            Assert.Equal(expectedAmount, (await GetAthleteAsync(_athleteId)).Activities.Last().Points);
         }
 
         private async Task RecordActivity(string type, double distance, double duration)
@@ -91,7 +90,7 @@ namespace BurnForMoney.UnitTests
             await HandleCommand(new AddActivityCommand {
                 Id = Guid.NewGuid(),
                 ExternalId = "ex_id",
-                AthleteId = (await _testAthelte).Id,
+                AthleteId = (await GetAthleteAsync(_athleteId)).Id,
                 StartDate = new DateTime(2018,1,1),
                 ActivityType = type,
                 DistanceInMeters = distance,

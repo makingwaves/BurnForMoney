@@ -14,9 +14,9 @@ namespace BurnForMoney.UnitTests
         
         protected readonly IRepository<Athlete> _athleteRepo = new Repository<Athlete>(new MemoryEventStore());
 
-        protected async Task<Athlete> GetAthlete(Guid id) =>  await _athleteRepo.GetByIdAsync(id);
+        protected async Task<Athlete> GetAthleteAsync(Guid id) =>  await _athleteRepo.GetByIdAsync(id);
 
-        protected async Task<Guid> CreateNewAthlete(string firstName = "test_first_name", string lastName = "test_last_name", 
+        protected async Task<Guid> CreateNewAthleteAsync(string firstName = "test_first_name", string lastName = "test_last_name", 
             string profilePictureUrl = "http://test.com/img.png", Source source = Source.Strava)
         {
             var newAthleteId = Guid.NewGuid();
