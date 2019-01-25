@@ -36,6 +36,8 @@ import IconDashboard from 'img/IconDashboard';
 import IconBeneficiaries from 'img/IconBeneficiaries';
 import IconRules from 'img/IconRules';
 
+import {adalApiFetch} from "../../adalConfig"
+
 class AppDashboard extends Component {
   api_url = process.env.REACT_APP_DASHBOARD_API_URL;
   mobileViewport = window.matchMedia("screen and (max-width: 600px)");
@@ -117,7 +119,7 @@ class AppDashboard extends Component {
   }
   getRankingResults = (category) =>{
     if(category === 'All') category = '';
-    fetch(this.api_url+"api/ranking/"+category)
+    adalApiFetch(this.api_url+"api/ranking/"+category)
       .then(res => res.json())
       .then(
         (result) => {this.setState({ranking: result }); console.log('ranking', this.state.ranking)},
@@ -228,21 +230,21 @@ class AppDashboard extends Component {
     window.addEventListener("resize", this.handleResize);
 
     // internal api_url
-    fetch(this.api_url+"api/activities/categories")
+    adalApiFetch(this.api_url+"api/activities/categories")
       .then(res => res.json())
       .then(
         (result) => { let categories = result.map( (i) => { return this.setCategoryDetails(i)}); this.setState({categories: categories }); },
         (error) => {this.setState({categories: null}); console.error('Error:', error); }
       );
 
-    fetch(this.api_url+"api/athletes")
+    adalApiFetch(this.api_url+"api/athletes")
       .then(res => res.json())
       .then(
         (result) => {this.setState({athletes: result }); console.log('athletes', this.state.athletes)},
         (error) => {this.setState({athletes: null}); console.error('Error:', error); }
       );
 
-    fetch(this.api_url+"api/ranking")
+    adalApiFetch(this.api_url+"api/ranking")
       .then(res => res.json())
       .then(
         (result) => {this.setState({ranking: result }); console.log('ranking', this.state.ranking)},
