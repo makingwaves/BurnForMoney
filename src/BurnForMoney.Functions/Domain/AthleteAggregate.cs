@@ -129,7 +129,6 @@ namespace BurnForMoney.Functions.Domain
 
             ApplyChange(new ActivityAdded(id, Id, externalId, distanceInMeters, movingTimeInMinutes, activityType,
                 category, startDate, source, points));
-            ApplyChange(new PointsGranted(Id, points, PointsSource.Activity, id));
         }
 
         public void UpdateActivity(Guid id, string activityType, double distanceInMeters, double movingTimeInMinutes,
@@ -185,19 +184,6 @@ namespace BurnForMoney.Functions.Domain
 
             ApplyChange(new ActivityUpdated(id, distanceInMeters, movingTimeInMinutes, activityType, category,
                 startDate, points));
-
-            var originalPoints = Activities.Where(p => p.Id == id).Sum(l => l.Points);
-            var pointsDelta = points - originalPoints;
-
-            if (pointsDelta > 0)
-            {
-                ApplyChange(new PointsGranted(Id, pointsDelta, PointsSource.Activity, id));
-            }
-
-            if (pointsDelta < 0)
-            {
-                ApplyChange(new PointsLost(Id, pointsDelta, PointsSource.Activity, id));
-            }
         }
 
         public void DeleteActivity(Guid id)
@@ -219,9 +205,6 @@ namespace BurnForMoney.Functions.Domain
             }
 
             ApplyChange(new ActivityDeleted(id));
-
-            var originalPoints = Activities.Where(p => p.Id == id).Sum(l => l.Points);
-            ApplyChange(new PointsLost(Id, originalPoints, PointsSource.Activity, id));
         }
 
         public void Activate()
