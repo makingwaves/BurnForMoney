@@ -23,7 +23,7 @@ namespace BurnForMoney.UnitTests
         [InlineData("EBikeRide")]
         [InlineData("Handcycle")]
         [InlineData("VirtualRide")]
-        public async Task CheckDistanceBasedPoints_x1(string sportType)
+        public async Task Assert_PointsForTimes1MultiplierDistanceBasedActivities_AreCalculatedCorrectly(string sportType)
         {
             await RecordActivity(sportType, 1200, 100);
             await AssertActivityPoints(1.2);
@@ -36,7 +36,7 @@ namespace BurnForMoney.UnitTests
         [InlineData("Run")]
         [InlineData("Elliptical")]
         [InlineData("VirtualRun")]
-        public async Task CheckDistanceBasedPoints_x2(string sportType)
+        public async Task Assert_PointsForTimes2MultiplierDistanceBasedActivities_AreCalculatedCorrectly(string sportType)
         {
             await RecordActivity(sportType, 1500, 100);
             await AssertActivityPoints(3.0);
@@ -71,7 +71,7 @@ namespace BurnForMoney.UnitTests
         [InlineData("Wheelchair")]
         [InlineData("Workout")]
         [InlineData("Yoga")]
-        public async Task CheckTimeBasedPoints(string sportType)
+        public async Task Assert_PointsForTimeBasedActivities_AreCalculatedCorrectly(string sportType)
         {
             await RecordActivity(sportType, 0, 25);
             await AssertActivityPoints(2.5);
