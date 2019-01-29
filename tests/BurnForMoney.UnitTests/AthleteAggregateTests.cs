@@ -124,8 +124,10 @@ namespace BurnForMoney.UnitTests
         public async Task Can_AddActivity_ToExistingAthlete()
         {
             var athleteId = await CreateNewAthleteAsync();
+            var newActivityId = Guid.NewGuid();
+
             await HandleCommand(new AddActivityCommand {
-                Id = Guid.NewGuid(),
+                Id = newActivityId,
                 ExternalId = "ex_id",
                 AthleteId = athleteId,
                 StartDate = new DateTime(2019,1,1),
@@ -137,6 +139,7 @@ namespace BurnForMoney.UnitTests
             
             var athlete = await GetAthleteAsync(athleteId);
             Assert.Single(athlete.Activities);
+            Assert.Equal(newActivityId, athlete.Activities[0].Id);
         }
 
         [Fact]
@@ -159,8 +162,10 @@ namespace BurnForMoney.UnitTests
         public async Task Can_AddActivity_WithZeroDistance()
         {
             var athleteId = await CreateNewAthleteAsync();
+            var newActivityId = Guid.NewGuid();
+
             await HandleCommand(new AddActivityCommand {
-                Id = Guid.NewGuid(),
+                Id = newActivityId,
                 ExternalId = "ex_id",
                 AthleteId = athleteId,
                 StartDate = new DateTime(2019,1,1),
@@ -172,6 +177,8 @@ namespace BurnForMoney.UnitTests
             
             var athlete = await GetAthleteAsync(athleteId);
             Assert.Single(athlete.Activities);
+            Assert.Equal(newActivityId, athlete.Activities[0].Id);
+            Assert.Equal(0, athlete.Activities[0].DistanceInMeters);
         }
 
         [Fact]
