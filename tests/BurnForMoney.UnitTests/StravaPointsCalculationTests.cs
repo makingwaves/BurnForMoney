@@ -27,7 +27,7 @@ namespace BurnForMoney.UnitTests
             await RecordActivity(sportType, 1200, 100);
             await AssertActivityPoints(1.2);
 
-            await RecordActivity(sportType, 1000, 1);
+            await RecordActivity(sportType, 1000, 100);
             await AssertActivityPoints(1.0);
         }
 
@@ -40,7 +40,7 @@ namespace BurnForMoney.UnitTests
             await RecordActivity(sportType, 1500, 100);
             await AssertActivityPoints(3.0);
 
-            await RecordActivity(sportType, 1000, 1);
+            await RecordActivity(sportType, 1000, 100);
             await AssertActivityPoints(2.0);
 
         }
@@ -72,11 +72,11 @@ namespace BurnForMoney.UnitTests
         [InlineData("Yoga")]
         public async Task Assert_PointsForTimeBasedActivities_AreCalculatedCorrectly(string sportType)
         {
-            await RecordActivity(sportType, 0, 25);
-            await AssertActivityPoints(2.5);
-
             await RecordActivity(sportType, 1000, 25);
             await AssertActivityPoints(2.5);
+
+            await RecordActivity(sportType, 1000, 50);
+            await AssertActivityPoints(5.0);
         }
 
         private async Task AssertActivityPoints(double expectedAmount)
