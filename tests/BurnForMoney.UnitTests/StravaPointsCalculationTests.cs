@@ -3,7 +3,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using BurnForMoney.Domain;
 using BurnForMoney.Functions.Commands;
-using BurnForMoney.Functions.Domain;
 using Xunit;
 
 namespace BurnForMoney.UnitTests
