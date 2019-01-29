@@ -1,8 +1,8 @@
 import React from 'react';
 import './RankingList.css';
+import loader from 'img/loader.gif';
 
 const RankingList = (props) =>{
-  let setRankingCategory = props.setRankinkCategory;
   let rank = 0;
   let rankSkip = 1;
   let prevPoints = 0;
@@ -20,6 +20,7 @@ const RankingList = (props) =>{
 
           return(
             <li key={i.athleteId} className={`RankingListItem ${rank === 1 ? 'leader' : ''}`}>
+
               <div className="RankingListItem-rank">{rank}</div>
               <div className="RankingListItem-avatar">
                 <img src={i.profilePictureUrl} alt="" className="RankingListItem-image"/>

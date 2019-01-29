@@ -4,6 +4,7 @@ import React from 'react';
 import DashboardHeader from '../DashboardHeader/DashboardHeader.js';
 import RankingList from '../RankingList/RankingList.js';
 import RankingFilter from '../RankingFilter/RankingFilter.js';
+import RankingSearch from '../RankingSearch/RankingSearch.js';
 
 
 const Participants = (props) =>{
@@ -11,6 +12,7 @@ const Participants = (props) =>{
     <div>
       <DashboardHeader header="Participants" />
       <div className="Dashboard-content">
+        <RankingSearch />
         <RankingFilter
           rankingCategory={props.rankingCategory}
           setRankinkCategory={props.setRankinkCategory}
