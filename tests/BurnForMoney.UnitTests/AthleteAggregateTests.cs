@@ -55,19 +55,19 @@ namespace BurnForMoney.UnitTests
             Assert.Null(newAthlete.ProfilePictureUrl);
         }
 
-        // [Fact] // Actually you can !
-        // public async Task Cant_CreateTwoAthletes_WithSameId()
-        // {
-        //     var newAthleteId = Guid.NewGuid();
-        //     var newExternalId = Guid.NewGuid().ToString();
+        [Fact(Skip = "Logic bug, currently it's possible to add two athletes with the same id")]
+        public async Task Cant_CreateTwoAthletes_WithSameId()
+        {
+            var newAthleteId = Guid.NewGuid();
+            var newExternalId = Guid.NewGuid().ToString();
             
-        //     await HandleCommand(new CreateAthleteCommand(newAthleteId, newExternalId,
-        //         "test_first_name", "test_last_name", "https://test.com/img.png", Source.Strava));
+            await HandleCommand(new CreateAthleteCommand(newAthleteId, newExternalId,
+                "test_first_name", "test_last_name", "https://test.com/img.png", Source.Strava));
 
-        //     await Assert.ThrowsAnyAsync<ConcurrencyException>(()=> 
-        //         HandleCommand(new CreateAthleteCommand(newAthleteId, newExternalId,
-        //         "test_first_name", "test_last_name", "https://test.com/img.png", Source.Strava)));
-        // }
+            await Assert.ThrowsAnyAsync<ConcurrencyException>(()=>
+                HandleCommand(new CreateAthleteCommand(newAthleteId, newExternalId,
+                "test_first_name", "test_last_name", "https://test.com/img.png", Source.Strava)));
+        }
 
         [Fact]
         public async Task Cant_CreateAthlete_WithEmptyId()
