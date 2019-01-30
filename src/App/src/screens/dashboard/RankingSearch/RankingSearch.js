@@ -1,10 +1,12 @@
 import React from 'react';
 import './RankingSearch.css';
 
-const RankingSearch = (props) =>{
+const RankingSearch = (props) => {
+  let setRankingInputFilter = props.setRankingInputFilter;
+
   return (
     <div className="RankingSearch">
-      <input type="text" placeholder="Search by name" />
+      <input type="text" placeholder="Search by name" value={props.rankingInputFilter} onChange={(e) => {setRankingInputFilter(e.target.value);} }/>
     </div>
   )
 }
