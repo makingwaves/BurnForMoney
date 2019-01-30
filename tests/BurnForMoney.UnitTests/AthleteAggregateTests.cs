@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using BurnForMoney.Domain;
 using BurnForMoney.Functions.Commands;
-using BurnForMoney.Functions.Domain;
 using BurnForMoney.Infrastructure.Persistence;
 using Xunit;
 
@@ -10,28 +9,33 @@ namespace BurnForMoney.UnitTests
 {
     public class AthleteAggregateTests : AthleteBaseTests
     {
-               
+        private const string TestFirstName = "test_first_name";
+        private const string TestLastName = "test_last_name";
+        private const string TestProfilePictureUrl = "https://test.com/img.png";
+        private const string TestExternalId = "ex_id";
+        private const string TestActivityType = "sleeping";
+        private const int PositiveDistanceInMeters = 123;
+        private const int PositiveMovingTimeInMinutes = 61;
+
+        private readonly DateTime _testStartDate  = new DateTime(2019,1,1);
+
         [Fact]
         public async Task Can_CreateNewStravaAthlete()
         {
             var newAthleteId = Guid.NewGuid();
             var newExternalId = Guid.NewGuid().ToString();
 
-            const string FirstName = "test_first_name";
-            const string LastName = "test_last_name";
-            const string ProfilePictureUrl = "https://test.com/img.png";
-
             await HandleCommand(new CreateAthleteCommand(newAthleteId, newExternalId, 
-                FirstName, LastName, ProfilePictureUrl, Source.Strava));
+                TestFirstName, TestLastName, TestProfilePictureUrl, Source.Strava));
 
             var newAthlete = await _athleteRepo.GetByIdAsync(newAthleteId);
             
             Assert.True(newAthlete.IsActive);
             Assert.Equal(newAthleteId, newAthlete.Id);
             Assert.Equal(newExternalId, newAthlete.ExternalId);
-            Assert.Equal(FirstName, newAthlete.FirstName);
-            Assert.Equal(LastName, newAthlete.LastName);
-            Assert.Equal(ProfilePictureUrl, newAthlete.ProfilePictureUrl);
+            Assert.Equal(TestFirstName, newAthlete.FirstName);
+            Assert.Equal(TestLastName, newAthlete.LastName);
+            Assert.Equal(TestProfilePictureUrl, newAthlete.ProfilePictureUrl);
             Assert.Equal(Source.Strava, newAthlete.Source);
         }
 
@@ -39,35 +43,34 @@ namespace BurnForMoney.UnitTests
         public async Task Can_CreateAthlete_MinimumData()
         {
             var newAthleteId = Guid.NewGuid();
-            const string FirstName = "test_first_name";
-            
+
             await HandleCommand(new CreateAthleteCommand(newAthleteId, null, 
-                FirstName, null, null, Source.None));
+                TestFirstName, null, null, Source.None));
 
             var newAthlete = await GetAthleteAsync(newAthleteId);
             
             Assert.True(newAthlete.IsActive);
             Assert.Equal(newAthleteId, newAthlete.Id);
-            Assert.Equal(FirstName, newAthlete.FirstName);
+            Assert.Equal(TestFirstName, newAthlete.FirstName);
             Assert.Equal(Source.None, newAthlete.Source);
             Assert.Null(newAthlete.ExternalId);
             Assert.Null(newAthlete.LastName);
             Assert.Null(newAthlete.ProfilePictureUrl);
         }
 
-        // [Fact] // Actually you can !
-        // public async Task Cant_CreateTwoAthletes_WithSameId()
-        // {
-        //     var newAthleteId = Guid.NewGuid();
-        //     var newExternalId = Guid.NewGuid().ToString();
+        [Fact(Skip = "Logic bug, currently it's possible to add two athletes with the same id")]
+        public async Task Cant_CreateTwoAthletes_WithSameId()
+        {
+            var newAthleteId = Guid.NewGuid();
+            var newExternalId = Guid.NewGuid().ToString();
             
-        //     await HandleCommand(new CreateAthleteCommand(newAthleteId, newExternalId,
-        //         "test_first_name", "test_last_name", "https://test.com/img.png", Source.Strava));
+            await HandleCommand(new CreateAthleteCommand(newAthleteId, newExternalId,
+                TestFirstName, TestLastName, TestProfilePictureUrl, Source.Strava));
 
-        //     await Assert.ThrowsAnyAsync<ConcurrencyException>(()=> 
-        //         HandleCommand(new CreateAthleteCommand(newAthleteId, newExternalId,
-        //         "test_first_name", "test_last_name", "https://test.com/img.png", Source.Strava)));
-        // }
+            await Assert.ThrowsAnyAsync<ConcurrencyException>(()=>
+                HandleCommand(new CreateAthleteCommand(newAthleteId, newExternalId,
+                TestFirstName, TestLastName, TestProfilePictureUrl, Source.Strava)));
+        }
 
         [Fact]
         public async Task Cant_CreateAthlete_WithEmptyId()
@@ -77,7 +80,7 @@ namespace BurnForMoney.UnitTests
             
             await Assert.ThrowsAsync<ArgumentNullException>(()=> 
                 HandleCommand(new CreateAthleteCommand(newAthleteId, newExternalId,
-                "test_first_name", "test_last_name", "https://test.com/img.png", Source.Strava)));
+                TestFirstName, TestLastName, TestProfilePictureUrl, Source.Strava)));
         }
         
         [Fact]
@@ -124,19 +127,22 @@ namespace BurnForMoney.UnitTests
         public async Task Can_AddActivity_ToExistingAthlete()
         {
             var athleteId = await CreateNewAthleteAsync();
+            var newActivityId = Guid.NewGuid();
+
             await HandleCommand(new AddActivityCommand {
-                Id = Guid.NewGuid(),
-                ExternalId = "ex_id",
+                Id = newActivityId,
+                ExternalId = TestExternalId,
                 AthleteId = athleteId,
-                StartDate = new DateTime(2019,1,1),
-                ActivityType = "sleeping",
-                DistanceInMeters = 123,
-                MovingTimeInMinutes = 61,
+                StartDate = _testStartDate,
+                ActivityType = TestActivityType,
+                DistanceInMeters = PositiveDistanceInMeters,
+                MovingTimeInMinutes = PositiveMovingTimeInMinutes,
                 Source = Source.Strava
             });
             
             var athlete = await GetAthleteAsync(athleteId);
             Assert.Single(athlete.Activities);
+            Assert.Equal(newActivityId, athlete.Activities[0].Id);
         }
 
         [Fact]
@@ -145,12 +151,12 @@ namespace BurnForMoney.UnitTests
             await Assert.ThrowsAnyAsync<Exception>(()=>
                 HandleCommand(new AddActivityCommand {
                     Id = Guid.NewGuid(),
-                    ExternalId = "ex_id",
+                    ExternalId = TestExternalId,
                     AthleteId = Guid.NewGuid(),
-                    StartDate = new DateTime(2019,1,1),
-                    ActivityType = "sleeping",
-                    DistanceInMeters = 123,
-                    MovingTimeInMinutes = 61,
+                    StartDate = _testStartDate,
+                    ActivityType = TestActivityType,
+                    DistanceInMeters = PositiveDistanceInMeters,
+                    MovingTimeInMinutes = PositiveMovingTimeInMinutes,
                     Source = Source.Strava
             }));
         }
@@ -159,19 +165,24 @@ namespace BurnForMoney.UnitTests
         public async Task Can_AddActivity_WithZeroDistance()
         {
             var athleteId = await CreateNewAthleteAsync();
+            var newActivityId = Guid.NewGuid();
+            const int zeroMeters = 0;
+
             await HandleCommand(new AddActivityCommand {
-                Id = Guid.NewGuid(),
-                ExternalId = "ex_id",
+                Id = newActivityId,
+                ExternalId = TestExternalId,
                 AthleteId = athleteId,
-                StartDate = new DateTime(2019,1,1),
-                ActivityType = "sleeping",
-                DistanceInMeters = 0,
-                MovingTimeInMinutes = 61,
+                StartDate = _testStartDate,
+                ActivityType = TestActivityType,
+                DistanceInMeters = zeroMeters,
+                MovingTimeInMinutes = PositiveMovingTimeInMinutes,
                 Source = Source.Strava
             });
             
             var athlete = await GetAthleteAsync(athleteId);
             Assert.Single(athlete.Activities);
+            Assert.Equal(newActivityId, athlete.Activities[0].Id);
+            Assert.Equal(zeroMeters, athlete.Activities[0].DistanceInMeters);
         }
 
         [Fact]
@@ -182,12 +193,12 @@ namespace BurnForMoney.UnitTests
             await Assert.ThrowsAsync<ArgumentNullException>(()=>
                 HandleCommand(new AddActivityCommand {
                     Id = Guid.Empty,
-                    ExternalId = "ex_id",
+                    ExternalId = TestExternalId,
                     AthleteId = athleteId,
-                    StartDate = new DateTime(2019,1,1),
-                    ActivityType = "sleeping",
-                    DistanceInMeters = 123,
-                    MovingTimeInMinutes = 61,
+                    StartDate = _testStartDate,
+                    ActivityType = TestActivityType,
+                    DistanceInMeters = PositiveDistanceInMeters,
+                    MovingTimeInMinutes = PositiveMovingTimeInMinutes,
                     Source = Source.Strava
             }));   
         }
@@ -200,12 +211,12 @@ namespace BurnForMoney.UnitTests
             await Assert.ThrowsAsync<InvalidOperationException>(()=>
                 HandleCommand(new AddActivityCommand {
                     Id = Guid.NewGuid(),
-                    ExternalId = "ex_id",
+                    ExternalId = TestExternalId,
                     AthleteId = athleteId,
-                    StartDate = new DateTime(2019,1,1),
-                    ActivityType = "sleeping",
-                    DistanceInMeters = -123,
-                    MovingTimeInMinutes = 61,
+                    StartDate = _testStartDate,
+                    ActivityType = TestActivityType,
+                    DistanceInMeters = -PositiveDistanceInMeters,
+                    MovingTimeInMinutes = PositiveMovingTimeInMinutes,
                     Source = Source.Strava
             }));   
         }
@@ -214,16 +225,17 @@ namespace BurnForMoney.UnitTests
         public async Task Cant_AddActivity_WithZeroMovingTime()
         {
             var athleteId = await CreateNewAthleteAsync();
-            
+            const int zeroMinutes = 0;
+
             await Assert.ThrowsAsync<InvalidOperationException>(()=>
                 HandleCommand(new AddActivityCommand {
                     Id = Guid.NewGuid(),
-                    ExternalId = "ex_id",
+                    ExternalId = TestExternalId,
                     AthleteId = athleteId,
-                    StartDate = new DateTime(2019,1,1),
-                    ActivityType = "sleeping",
-                    DistanceInMeters = 123,
-                    MovingTimeInMinutes = 0,
+                    StartDate = _testStartDate,
+                    ActivityType = TestActivityType,
+                    DistanceInMeters = PositiveDistanceInMeters,
+                    MovingTimeInMinutes = zeroMinutes,
                     Source = Source.Strava
             }));   
         }
@@ -232,17 +244,18 @@ namespace BurnForMoney.UnitTests
         public async Task Cant_AddActivity_Before2018()
         {
             var athleteId = await CreateNewAthleteAsync();
-            
-            await Assert.ThrowsAsync<InvalidOperationException>(()=>
-                HandleCommand(new AddActivityCommand {
-                    Id = Guid.NewGuid(),
-                    ExternalId = "ex_id",
-                    AthleteId = athleteId,
-                    StartDate = new DateTime(2017,12,31),
-                    ActivityType = "sleeping",
-                    DistanceInMeters = 123,
-                    MovingTimeInMinutes = 60,
-                    Source = Source.Strava
+            var startDateBefore2018 = new DateTime(2017,12,31);
+
+            await Assert.ThrowsAsync<InvalidOperationException>(() => HandleCommand(new AddActivityCommand
+            {
+                Id = Guid.NewGuid(),
+                ExternalId = TestExternalId,
+                AthleteId = athleteId,
+                StartDate = startDateBefore2018,
+                ActivityType = TestActivityType,
+                DistanceInMeters = PositiveDistanceInMeters,
+                MovingTimeInMinutes = PositiveMovingTimeInMinutes,
+                Source = Source.Strava
             }));   
         }
 
@@ -255,24 +268,24 @@ namespace BurnForMoney.UnitTests
             await HandleCommand(new AddActivityCommand
             {
                 Id = activityId,
-                ExternalId = "ex_id",
+                ExternalId = TestExternalId,
                 AthleteId = athleteId,
-                StartDate = new DateTime(2019,1,1),
-                ActivityType = "sleeping",
-                DistanceInMeters = 123,
-                MovingTimeInMinutes = 61,
+                StartDate = _testStartDate,
+                ActivityType = TestActivityType,
+                DistanceInMeters = PositiveDistanceInMeters,
+                MovingTimeInMinutes = PositiveMovingTimeInMinutes,
                 Source = Source.Strava
             });
 
             await Assert.ThrowsAsync<InvalidOperationException>(()=>
                 HandleCommand(new AddActivityCommand {
                     Id = activityId,
-                    ExternalId = "ex_id",
+                    ExternalId = TestExternalId,
                     AthleteId = athleteId,
-                    StartDate = new DateTime(2019,1,1),
-                    ActivityType = "sleeping",
-                    DistanceInMeters = 123,
-                    MovingTimeInMinutes = 61,
+                    StartDate = _testStartDate,
+                    ActivityType = TestActivityType,
+                    DistanceInMeters = PositiveDistanceInMeters,
+                    MovingTimeInMinutes = PositiveMovingTimeInMinutes,
                     Source = Source.Strava
             }));   
         }
