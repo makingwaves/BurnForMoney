@@ -33,7 +33,7 @@ namespace BurnForMoney.Infrastructure.Persistence
 
         public async Task<List<Guid>> ListAggregates()
         {
-            var pariotionsIds = new List<Guid>();
+            var partitionsIds = new List<Guid>();
 
             var headQuery = new TableQuery<DynamicTableEntity>().Where(
                 TableQuery.GenerateFilterCondition(nameof(DynamicTableEntity.RowKey), QueryComparisons.Equal, "SS-HEAD"));
@@ -42,14 +42,14 @@ namespace BurnForMoney.Infrastructure.Persistence
             do
             {
                 var segment = await _domainEventsTable.ExecuteQuerySegmentedAsync<DynamicTableEntity>(headQuery, continuationToken);
-                pariotionsIds.AddRange(
+                partitionsIds.AddRange(
                     segment.Select(s =>  Guid.TryParse(s.PartitionKey, out var guid) ? guid : Guid.Empty)
                     .Where(id => id != Guid.Empty));
 
                 continuationToken = segment.ContinuationToken;
             } while(continuationToken != null);
 
-            return pariotionsIds;
+            return partitionsIds;
         }
 
         public async Task SaveAsync(Guid aggregateId, DomainEvent[] events, int expectedVersion)
@@ -62,8 +62,8 @@ namespace BurnForMoney.Infrastructure.Persistence
                 @event.Version = i;
             }
 
-            var paritionKey = aggregateId.ToString("D");
-            var partition = new Partition(_domainEventsTable, paritionKey);
+            var partionKey = aggregateId.ToString("D");
+            var partition = new Partition(_domainEventsTable, partionKey);
 
             var existent = await Stream.TryOpenAsync(partition);
             var stream = existent.Found
@@ -107,8 +107,8 @@ namespace BurnForMoney.Infrastructure.Persistence
 
         public async Task<List<DomainEvent>> GetEventsForAggregateAsync(Guid aggregateId)
         {
-            var paritionKey = aggregateId.ToString("D");
-            var partition = new Partition(_domainEventsTable, paritionKey);
+            var partionKey = aggregateId.ToString("D");
+            var partition = new Partition(_domainEventsTable, partionKey);
 
             if (!await Stream.ExistsAsync(partition))
             {
