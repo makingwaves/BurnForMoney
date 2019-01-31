@@ -1,5 +1,5 @@
 import React from 'react';
-//import './Participants.css';
+import './Participants.css';
 
 import DashboardHeader from '../DashboardHeader/DashboardHeader.js';
 import RankingList from '../RankingList/RankingList.js';
@@ -10,9 +10,9 @@ import RankingSearch from '../RankingSearch/RankingSearch.js';
 const Participants = (props) =>{
 
   return (
-    <div>
+    <React.Fragment>
       <DashboardHeader header="Participants" />
-      <div className="Dashboard-content">
+      <div className="Dashboard-content Participants">
         <RankingSearch
           ranking={props.ranking}
           setRankingInputFilter={props.setRankingInputFilter}
@@ -22,14 +22,15 @@ const Participants = (props) =>{
           setRankinkCategory={props.setRankinkCategory}
           categories={props.categories}
         />
-        <h4 className="RankingCategory">{props.rankingCategory}</h4>
-        <RankingList
-          ranking={props.ranking}
-          rankingInputFilter={props.rankingInputFilter}
-        />
+        <div className="ParticipantsRanking">
+          <h4 className="RankingCategory">{props.rankingCategory}</h4>
+          <RankingList
+            ranking={props.ranking}
+            rankingInputFilter={props.rankingInputFilter}
+          />
+        </div>
       </div>
-
-    </div>
+    </React.Fragment>
   )
 }
 

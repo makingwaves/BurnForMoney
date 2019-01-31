@@ -2,12 +2,17 @@
 
 .RankingList{
   list-style: none;
+  padding: 0;
+  margin: 0;
   &Item{
     height: 50px;
     margin-bottom: 10px;
     display: grid;
     grid-template-columns: 25px 100px 1fr 100px;
     align-items: center;
+    &:last-of-type{
+      margin-bottom: 0;
+    }
     &-rank{
       font-size: 22px;
       font-weight: bold;

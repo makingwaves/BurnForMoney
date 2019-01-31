@@ -26,7 +26,7 @@ const RankingList = (props) =>{
         rankingList.map( (i, index)=> {
           if((i.athleteFirstName+i.athleteLastName).toLowerCase().includes(substring)){
             return(
-              <li key={i.athleteId} className={`RankingListItem ${rank === 1 ? 'leader' : ''}`}>
+              <li key={i.athleteId} className={`RankingListItem ${i.rank === 1 ? 'leader' : ''}`}>
 
                 <div className="RankingListItem-rank">{i.rank}</div>
                 <div className="RankingListItem-avatar">
