@@ -27,6 +27,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{F624F300
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BurnForMoney.UnitTests", "tests\BurnForMoney.UnitTests\BurnForMoney.UnitTests.csproj", "{4B759ECF-AC9E-4189-A49B-25D62F9DD865}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{22BBCADA-3742-43D0-A007-6C0532C680A9}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tools", "tools", "{FF75C88F-1DE7-4301-8AF8-4B274FDCE0AA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BurnForMoney.RegenerateViews", "src\tools\BurnForMoney.RegenerateViews\BurnForMoney.RegenerateViews.csproj", "{C7BB5B4E-1515-4E28-89A9-31C7A4C38B9E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -77,6 +83,10 @@ Global
 		{4B759ECF-AC9E-4189-A49B-25D62F9DD865}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4B759ECF-AC9E-4189-A49B-25D62F9DD865}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4B759ECF-AC9E-4189-A49B-25D62F9DD865}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C7BB5B4E-1515-4E28-89A9-31C7A4C38B9E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C7BB5B4E-1515-4E28-89A9-31C7A4C38B9E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C7BB5B4E-1515-4E28-89A9-31C7A4C38B9E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C7BB5B4E-1515-4E28-89A9-31C7A4C38B9E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -86,5 +96,7 @@ Global
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{4B759ECF-AC9E-4189-A49B-25D62F9DD865} = {F624F300-4820-42BA-AA33-51AAAD65468B}
+		{FF75C88F-1DE7-4301-8AF8-4B274FDCE0AA} = {22BBCADA-3742-43D0-A007-6C0532C680A9}
+		{C7BB5B4E-1515-4E28-89A9-31C7A4C38B9E} = {FF75C88F-1DE7-4301-8AF8-4B274FDCE0AA}
 	EndGlobalSection
 EndGlobal

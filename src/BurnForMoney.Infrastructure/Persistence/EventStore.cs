@@ -14,6 +14,8 @@ namespace BurnForMoney.Infrastructure.Persistence
     {
         Task SaveAsync(Guid aggregateId, DomainEvent[] events, int expectedVersion);
         Task<List<DomainEvent>> GetEventsForAggregateAsync(Guid aggregateId);
+
+        Task<List<Guid>> ListAggregates();
     }
 
     public class EventStore : IEventStore
@@ -27,6 +29,27 @@ namespace BurnForMoney.Infrastructure.Persistence
             var storageAccount = CloudStorageAccount.Parse(storageConnectionString);
             var tableClient = storageAccount.CreateCloudTableClient();
             _domainEventsTable = tableClient.GetTableReference("DomainEvents");
+        }
+
+        public async Task<List<Guid>> ListAggregates()
+        {
+            var pariotionsIds = new List<Guid>();
+
+            var headQuery = new TableQuery<DynamicTableEntity>().Where(
+                TableQuery.GenerateFilterCondition(nameof(DynamicTableEntity.RowKey), QueryComparisons.Equal, "SS-HEAD"));
+
+            TableContinuationToken continuationToken = null;
+            do
+            {
+                var segment = await _domainEventsTable.ExecuteQuerySegmentedAsync<DynamicTableEntity>(headQuery, continuationToken);
+                pariotionsIds.AddRange(
+                    segment.Select(s =>  Guid.TryParse(s.PartitionKey, out var guid) ? guid : Guid.Empty)
+                    .Where(id => id != Guid.Empty));
+
+                continuationToken = segment.ContinuationToken;
+            } while(continuationToken != null);
+
+            return pariotionsIds;
         }
 
         public async Task SaveAsync(Guid aggregateId, DomainEvent[] events, int expectedVersion)

@@ -25,6 +25,11 @@ namespace BurnForMoney.Infrastructure.Persistence
 
             return Task.CompletedTask;
         }
+        
+        public Task<List<Guid>> ListAggregates()
+        {
+            return Task.FromResult(_domainsEvents.Keys.ToList());
+        }
 
         private void checkForConcurencyException(Guid aggregateId, int expectedVersion)
         {

@@ -33,20 +33,8 @@ namespace BurnForMoney.Functions.Presentation.Functions
                 throw new ArgumentException(@event.EventType);
             }
 
-            switch (receivedEvent)
-            {
-                case ActivityAdded activityAdded:
-                    await new RankingView(configuration.ConnectionStrings.SqlDbConnectionString).HandleAsync(activityAdded);
-                    break;
-                case ActivityUpdated activityUpdated:
-                    await new RankingView(configuration.ConnectionStrings.SqlDbConnectionString).HandleAsync(activityUpdated);
-                    break;
-                case ActivityDeleted activityDeleted:
-                    await new RankingView(configuration.ConnectionStrings.SqlDbConnectionString).HandleAsync(activityDeleted);
-                    break;
-                default:
-                    throw new NotSupportedException($"Event type: {receivedEvent.GetType()} is not supported.");
-            }
+            if(!await new PresentationEventsDispatcher(configuration.ConnectionStrings.SqlDbConnectionString).DispatchActivityEvent(receivedEvent))
+                throw new NotSupportedException($"Event type: {receivedEvent.GetType()} is not supported.");
         }
     }
 }

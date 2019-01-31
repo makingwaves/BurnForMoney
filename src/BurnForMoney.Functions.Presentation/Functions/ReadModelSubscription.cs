@@ -33,33 +33,8 @@ namespace BurnForMoney.Functions.Presentation.Functions
                 throw new ArgumentException(@event.EventType);
             }
 
-            switch (receivedEvent)
-            {
-                case AthleteCreated created:
-                    await new AthleteView(configuration.ConnectionStrings.SqlDbConnectionString).HandleAsync(created);
-                    break;
-                case AthleteDeactivated deactivated:
-                    await new AthleteView(configuration.ConnectionStrings.SqlDbConnectionString).HandleAsync(deactivated);
-                    break;
-                case AthleteActivated activated:
-                    await new AthleteView(configuration.ConnectionStrings.SqlDbConnectionString).HandleAsync(activated);
-                    break;
-                case ActivityAdded activityAdded:
-                    await new ActivityView(configuration.ConnectionStrings.SqlDbConnectionString).HandleAsync(activityAdded);
-                    break;
-                case ActivityUpdated activityUpdated:
-                    await new ActivityView(configuration.ConnectionStrings.SqlDbConnectionString).HandleAsync(activityUpdated);
-                    break;
-                case ActivityDeleted activityDeleted:
-                    await new ActivityView(configuration.ConnectionStrings.SqlDbConnectionString).HandleAsync(activityDeleted);
-                    break;
-                case PointsGranted _:
-                    break;
-                case PointsLost _:
-                    break;
-                default:
-                    throw new NotSupportedException($"Event type: {receivedEvent.GetType()} is not supported.");
-            }
+            if(!await new PresentationEventsDispatcher(configuration.ConnectionStrings.SqlDbConnectionString).DispatchAthleteEvent(receivedEvent))
+                throw new NotSupportedException($"Event type: {receivedEvent.GetType()} is not supported.");
         }
     }
 }
