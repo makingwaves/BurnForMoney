@@ -117,6 +117,10 @@ class AppDashboard extends Component {
     });
     this.getRankingResults(category);
   }
+  setRankingInputFilter = (input) =>{
+    this.setState({rankingInputFilter: input})
+  }
+
   getRankingResults = (category) =>{
     if(category === 'All') category = '';
     adalApiFetch(this.api_url+"api/ranking/"+category)
@@ -145,6 +149,7 @@ class AppDashboard extends Component {
       athletes: [],
       ranking: [],
       rankingCategory: 'All',
+      rankingInputFilter: '',
       windowHeight: undefined,
       windowWidth: undefined
     }
@@ -204,6 +209,8 @@ class AppDashboard extends Component {
                 ranking={this.state.ranking}
                 rankingCategory={this.state.rankingCategory}
                 setRankinkCategory={this.setRankinkCategory}
+                rankingInputFilter={this.state.rankingInputFilter}
+                setRankingInputFilter={this.setRankingInputFilter}
                 categories={this.state.categories}
             />
             )} />
