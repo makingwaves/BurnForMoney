@@ -2,11 +2,8 @@ import React from 'react';
 import './RankingFilter.css';
 
 const RankingFilter = (props) =>{
-  let setRankingCategory = props.setRankinkCategory;
-  let rank = 0;
-  let rankSkip = 1;
-  let prevPoints = 0;
-   return (
+let setRankingCategory = props.setRankinkCategory;
+  return (
       <ul className="RankingFilter">
         <li className={`RankingFilterItem ${props.rankingCategory === 'All' && "active"}`} onClick={() => setRankingCategory('All')}>All</li>
         {props.categories.map((i) =>{

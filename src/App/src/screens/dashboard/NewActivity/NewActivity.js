@@ -6,6 +6,8 @@ import DashboardHeader from '../DashboardHeader/DashboardHeader.js';
 import iconDistance from 'img/icon-distance.svg';
 import iconDuration from 'img/icon-duration.svg';
 
+import {adalApiFetch} from "../../../adalConfig"
+
 class NewActivity extends Component {
   api_url = process.env.REACT_APP_DASHBOARD_API_URL;
   categoriesWithDistance = ['Run', 'Ride', 'Walk'];
@@ -50,7 +52,7 @@ class NewActivity extends Component {
     console.log("AthleteId: ", this.state.athleteId);
 
     if(this.validate() ){
-      fetch(this.api_url+"api/athlete/"+this.state.athleteId+"/activities", {
+      adalApiFetch(this.api_url+"api/athlete/"+this.state.athleteId+"/activities", {
           method: 'POST',
           body: JSON.stringify(newEntry)
       }).then(
@@ -172,7 +174,7 @@ class NewActivity extends Component {
 
   componentDidMount(){
     // internal api_url
-    fetch(this.api_url+"api/activities/categories")
+    adalApiFetch(this.api_url+"api/activities/categories")
       .then(res => res.json())
       .then(
         (result) => {this.setState({categories: result }); },

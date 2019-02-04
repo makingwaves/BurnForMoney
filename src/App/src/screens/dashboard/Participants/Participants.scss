@@ -1,0 +1,18 @@
+@import "style/variables.scss";
+
+.Participants{
+  max-width: 590px;
+
+  &Ranking{
+    background: #fff;
+    padding: 20px;
+    box-shadow: $dashboard-shadow;
+
+    .RankingCategory{
+      margin: 0 0 20px;
+    }
+    .RankingList{
+      padding: 0 20px;
+    }
+  }
+}
