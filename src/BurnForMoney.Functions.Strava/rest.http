@@ -1,9 +1,9 @@
 @baseUrl = http://localhost:7072/api
 
 
-###### ------------------------- Results
+###### ------------------------- Subscription
 
-### Get aggregated results
+### Create subscription
 POST {{baseUrl}}/strava/subscription/create
 
 {
