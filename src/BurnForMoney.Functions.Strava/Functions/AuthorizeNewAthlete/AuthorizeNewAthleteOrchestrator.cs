@@ -21,7 +21,7 @@ namespace BurnForMoney.Functions.Strava.Functions.AuthorizeNewAthlete
             try
             {
                 // 1. Generate athlete id
-                athleteId = await context.CallActivityAsync<Guid>("A_GenerateAthleteId", null);
+                athleteId = await context.CallActivityAsync<Guid>(FunctionsNames.A_GenerateAthleteId, null);
 
                 // 2. Exchange and authorize athlete
                 var athlete = await context.CallActivityWithRetryAsync<AthleteDto>(FunctionsNames.A_ExchangeTokenAndGetAthleteSummary,
