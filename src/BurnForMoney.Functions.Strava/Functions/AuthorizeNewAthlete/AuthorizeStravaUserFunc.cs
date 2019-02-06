@@ -54,6 +54,7 @@ namespace BurnForMoney.Functions.Strava.Functions.AuthorizeNewAthlete
 
             await InsertCodeToAuthorizationQueueAsync(code, authorizationCodesQueue, log).ConfigureAwait(false);
 
+            log.LogInformation($"Redirects request to: {configuration.Strava.ConfirmationPageUrl}");
             return new RedirectResult(configuration.Strava.ConfirmationPageUrl);
         }
         
