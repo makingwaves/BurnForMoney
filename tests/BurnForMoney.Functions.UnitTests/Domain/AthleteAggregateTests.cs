@@ -82,6 +82,16 @@ namespace BurnForMoney.Functions.UnitTests.Domain
                 HandleCommand(new CreateAthleteCommand(newAthleteId, newExternalId,
                 TestFirstName, TestLastName, TestProfilePictureUrl, Source.Strava)));
         }
+
+        [Fact]
+        public async Task Cant_CreateAthlete_WithNoFirstName()
+        {
+            var newAthleteId = Guid.NewGuid();
+
+            await Assert.ThrowsAsync<ArgumentNullException>(()=>
+                HandleCommand(new CreateAthleteCommand(newAthleteId, null,
+                null, null, null, Source.Strava)));
+        }
         
         [Fact]
         public async Task Cant_Activate_ActiveAthlete()
