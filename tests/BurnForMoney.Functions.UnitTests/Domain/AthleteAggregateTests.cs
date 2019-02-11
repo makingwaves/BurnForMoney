@@ -192,6 +192,25 @@ namespace BurnForMoney.Functions.UnitTests.Domain
         }
 
         [Fact]
+        public async Task Cant_AddActivity_WithNoType()
+        {
+            var athleteId = await CreateNewAthleteAsync();
+            var newActivityId = Guid.NewGuid();
+
+            await Assert.ThrowsAsync<ArgumentNullException>("activityType", () =>
+                HandleCommand(new AddActivityCommand {
+                    Id = newActivityId,
+                    ExternalId = TestExternalId,
+                    AthleteId = athleteId,
+                    StartDate = _testStartDate,
+                    ActivityType = string.Empty,
+                    DistanceInMeters = PositiveDistanceInMeters,
+                    MovingTimeInMinutes = PositiveMovingTimeInMinutes,
+                    Source = Source.Strava
+                }));
+        }
+
+        [Fact]
         public async Task Can_AddActivity_WithZeroDistance()
         {
             var athleteId = await CreateNewAthleteAsync();
