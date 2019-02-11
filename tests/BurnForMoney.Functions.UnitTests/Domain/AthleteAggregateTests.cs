@@ -171,7 +171,27 @@ namespace BurnForMoney.Functions.UnitTests.Domain
             }));
         }
 
-         [Fact]
+        [Fact]
+        public async Task Cant_AddActivity_ToDeactivatedAthlete()
+        {
+            var athleteId = await CreateNewAthleteAsync();
+            await HandleCommand(new DeactivateAthleteCommand(athleteId));
+            var newActivityId = Guid.NewGuid();
+
+            await Assert.ThrowsAsync<InvalidOperationException>(() =>
+                HandleCommand(new AddActivityCommand {
+                Id = newActivityId,
+                ExternalId = TestExternalId,
+                AthleteId = athleteId,
+                StartDate = _testStartDate,
+                ActivityType = TestActivityType,
+                DistanceInMeters = PositiveDistanceInMeters,
+                MovingTimeInMinutes = PositiveMovingTimeInMinutes,
+                Source = Source.Strava
+            }));
+        }
+
+        [Fact]
         public async Task Can_AddActivity_WithZeroDistance()
         {
             var athleteId = await CreateNewAthleteAsync();
