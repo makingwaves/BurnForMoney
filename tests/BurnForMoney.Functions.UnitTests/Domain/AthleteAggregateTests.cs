@@ -78,7 +78,7 @@ namespace BurnForMoney.Functions.UnitTests.Domain
             var newAthleteId = Guid.Empty;
             var newExternalId = Guid.NewGuid().ToString();
             
-            await Assert.ThrowsAsync<ArgumentNullException>(()=> 
+            await Assert.ThrowsAsync<ArgumentNullException>("Id", ()=>
                 HandleCommand(new CreateAthleteCommand(newAthleteId, newExternalId,
                 TestFirstName, TestLastName, TestProfilePictureUrl, Source.Strava)));
         }
@@ -88,7 +88,7 @@ namespace BurnForMoney.Functions.UnitTests.Domain
         {
             var newAthleteId = Guid.NewGuid();
 
-            await Assert.ThrowsAsync<ArgumentNullException>(()=>
+            await Assert.ThrowsAsync<ArgumentNullException>("firstName", ()=>
                 HandleCommand(new CreateAthleteCommand(newAthleteId, null,
                 null, null, null, Source.Strava)));
         }
@@ -200,7 +200,7 @@ namespace BurnForMoney.Functions.UnitTests.Domain
         {
             var athleteId = await CreateNewAthleteAsync();
             
-            await Assert.ThrowsAsync<ArgumentNullException>(()=>
+            await Assert.ThrowsAsync<ArgumentNullException>("Id", ()=>
                 HandleCommand(new AddActivityCommand {
                     Id = Guid.Empty,
                     ExternalId = TestExternalId,
