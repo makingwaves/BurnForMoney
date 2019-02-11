@@ -42,6 +42,9 @@ namespace BurnForMoney.Functions.UnitTests.Domain
                 case AddActivityCommand cmd:
                     await new AddActivityCommandHandler(_athleteRepo).HandleAsync(cmd);
                     break;
+                case UpdateActivityCommand cmd:
+                    await new UpdateActivityCommandHandler(_athleteRepo).HandleAsync(cmd);
+                    break;
                 default:
                     throw new NotImplementedException();
             }
