@@ -1,11 +1,11 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using BurnForMoney.Domain;
 using BurnForMoney.Functions.Commands;
 using BurnForMoney.Infrastructure.Persistence;
 using Xunit;
 
-namespace BurnForMoney.UnitTests
+namespace BurnForMoney.Functions.UnitTests.Domain
 {
     public class AthleteAggregateTests : AthleteBaseTests
     {

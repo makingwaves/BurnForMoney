@@ -7,7 +7,7 @@ using BurnForMoney.Functions.Domain;
 using BurnForMoney.Infrastructure.Messages;
 using BurnForMoney.Infrastructure.Persistence;
 
-namespace BurnForMoney.UnitTests
+namespace BurnForMoney.Functions.UnitTests.Domain
 {
     public abstract  class AthleteBaseTests
     {
