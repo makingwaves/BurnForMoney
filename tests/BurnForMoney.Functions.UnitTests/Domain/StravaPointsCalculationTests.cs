@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 using BurnForMoney.Domain;
@@ -9,7 +10,7 @@ namespace BurnForMoney.Functions.UnitTests.Domain
 {
     public class StravaPointsCalculationTests : AthleteBaseTests
     {
-        private Guid _athleteId;
+        private readonly Guid _athleteId;
 
         public StravaPointsCalculationTests()
         {
@@ -79,6 +80,7 @@ namespace BurnForMoney.Functions.UnitTests.Domain
             await AssertActivityPoints(5.0);
         }
 
+        [SuppressMessage("ReSharper", "ParameterOnlyUsedForPreconditionCheck.Local")]
         private async Task AssertActivityPoints(double expectedAmount)
         {
             Assert.Equal(expectedAmount, (await GetAthleteAsync(_athleteId)).Activities.Last().Points);
