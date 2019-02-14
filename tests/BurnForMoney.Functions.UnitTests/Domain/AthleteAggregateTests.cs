@@ -207,6 +207,34 @@ namespace BurnForMoney.Functions.UnitTests.Domain
         }
 
         [Fact]
+        public async Task Can_DeleteActivity_WhichExists()
+        {
+            var athleteId = await CreateNewAthleteAsync();
+            var activityId = Guid.NewGuid();
+            await HandleCommand(new AddActivityCommand {
+                Id = activityId,
+                ExternalId = TestExternalId,
+                AthleteId = athleteId,
+                StartDate = _testStartDate,
+                ActivityType = TestActivityType,
+                DistanceInMeters = PositiveDistanceInMeters,
+                MovingTimeInMinutes = PositiveMovingTimeInMinutes,
+                Source = Source.Strava
+            });
+            var athleteBeforeActivityDeleted = await GetAthleteAsync(athleteId);
+
+            await HandleCommand(new DeleteActivityCommand
+            {
+                Id = activityId,
+                AthleteId = athleteId
+            });
+
+            var athleteAfterActivityDeleted = await GetAthleteAsync(athleteId);
+            Assert.Single(athleteBeforeActivityDeleted.Activities);
+            Assert.Empty(athleteAfterActivityDeleted.Activities);
+        }
+
+        [Fact]
         public async Task Cant_AddActivity_ToNotExistingAthlete()
         {
             await Assert.ThrowsAnyAsync<Exception>(()=>
@@ -257,6 +285,20 @@ namespace BurnForMoney.Functions.UnitTests.Domain
                 ActivityType = TestActivityType,
                 DistanceInMeters = PositiveDistanceInMeters,
                 MovingTimeInMinutes = PositiveMovingTimeInMinutes,
+            }));
+        }
+
+        [Fact]
+        public async Task Cant_DeleteActivity_OfDeactivatedAthlete()
+        {
+            var athleteId = await CreateNewAthleteAsync();
+            await HandleCommand(new DeactivateAthleteCommand(athleteId));
+            var newActivityId = Guid.NewGuid();
+
+            await Assert.ThrowsAsync<InvalidOperationException>(() =>
+                HandleCommand(new DeleteActivityCommand {
+                Id = newActivityId,
+                AthleteId = athleteId
             }));
         }
 
@@ -350,6 +392,17 @@ namespace BurnForMoney.Functions.UnitTests.Domain
                     ActivityType = TestActivityType,
                     DistanceInMeters = PositiveDistanceInMeters,
                     MovingTimeInMinutes = PositiveMovingTimeInMinutes,
+                }));
+        }
+
+        [Fact]
+        public async Task Cant_DeleteActivity_WithoutId()
+        {
+            var athleteId = await CreateNewAthleteAsync();
+            await Assert.ThrowsAsync<ArgumentNullException>("Id", ()=>
+                HandleCommand(new DeleteActivityCommand {
+                    Id = Guid.Empty,
+                    AthleteId = athleteId
                 }));
         }
 
@@ -504,6 +557,19 @@ namespace BurnForMoney.Functions.UnitTests.Domain
                     ActivityType = TestActivityType,
                     DistanceInMeters = PositiveDistanceInMeters,
                     MovingTimeInMinutes = PositiveMovingTimeInMinutes,
+            }));
+        }
+
+        [Fact]
+        public async Task Cant_DeleteActivity_WhichDoesNotExist()
+        {
+            var athleteId = await CreateNewAthleteAsync();
+            var activityId = Guid.NewGuid();
+
+            await Assert.ThrowsAsync<InvalidOperationException>(()=>
+                HandleCommand(new DeleteActivityCommand {
+                    Id = activityId,
+                    AthleteId = athleteId
             }));
         }
     }
