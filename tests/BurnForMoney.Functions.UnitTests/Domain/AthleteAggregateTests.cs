@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using BurnForMoney.Domain;
 using BurnForMoney.Functions.Commands;
@@ -153,6 +154,56 @@ namespace BurnForMoney.Functions.UnitTests.Domain
             var athlete = await GetAthleteAsync(athleteId);
             Assert.Single(athlete.Activities);
             Assert.Equal(newActivityId, athlete.Activities[0].Id);
+        }
+
+        [Fact]
+        public async Task Can_UpdateActivity_WhichExists()
+        {
+            const int updatedDistanceInMeters = PositiveDistanceInMeters + 100;
+            const int updatedMovingTimeInMinutes = PositiveMovingTimeInMinutes + 60;
+            const string updatedActivityType = "Walk";
+            var updatedStartDate = _testStartDate.Add(TimeSpan.FromDays(1));
+            var athleteId = await CreateNewAthleteAsync();
+            var activityId = Guid.NewGuid();
+            await HandleCommand(new AddActivityCommand {
+                Id = activityId,
+                ExternalId = TestExternalId,
+                AthleteId = athleteId,
+                StartDate = _testStartDate,
+                ActivityType = TestActivityType,
+                DistanceInMeters = PositiveDistanceInMeters,
+                MovingTimeInMinutes = PositiveMovingTimeInMinutes,
+                Source = Source.Strava
+            });
+            var originalAthlete = await GetAthleteAsync(athleteId);
+            var originalActivity = originalAthlete.Activities.FirstOrDefault();
+            var originalActivityId = originalActivity?.Id;
+            var originalActivityExternalId = originalActivity?.ExternalId;
+            var originalActivitySource = originalActivity?.Source;
+            var originalActivityPoints = originalActivity?.Points;
+            var originalActivityCategory = originalActivity?.Category;
+
+            await HandleCommand(new UpdateActivityCommand
+            {
+                Id = activityId,
+                AthleteId = athleteId,
+                StartDate = updatedStartDate,
+                ActivityType = updatedActivityType,
+                DistanceInMeters = updatedDistanceInMeters,
+                MovingTimeInMinutes = updatedMovingTimeInMinutes,
+            });
+
+            var updatedAthlete = await GetAthleteAsync(athleteId);
+            var updatedActivity = updatedAthlete.Activities.FirstOrDefault();
+            Assert.Equal(originalActivityId, updatedActivity?.Id);
+            Assert.Equal(originalActivityExternalId, updatedActivity?.ExternalId);
+            Assert.Equal(updatedDistanceInMeters, updatedActivity?.DistanceInMeters);
+            Assert.Equal(updatedMovingTimeInMinutes, updatedActivity?.MovingTimeInMinutes);
+            Assert.Equal(updatedActivityType, updatedActivity?.ActivityType);
+            Assert.Equal(updatedStartDate, updatedActivity?.StartDate);
+            Assert.Equal(originalActivitySource, updatedActivity?.Source);
+            Assert.NotEqual(originalActivityCategory, updatedActivity?.Category);
+            Assert.NotEqual(originalActivityPoints, updatedActivity?.Points);
         }
 
         [Fact]
@@ -437,6 +488,23 @@ namespace BurnForMoney.Functions.UnitTests.Domain
                     MovingTimeInMinutes = PositiveMovingTimeInMinutes,
                     Source = Source.Strava
             }));   
+        }
+
+        [Fact]
+        public async Task Cant_UpdateActivity_WhichDoesNotExist()
+        {
+            var athleteId = await CreateNewAthleteAsync();
+            var activityId = Guid.NewGuid();
+
+            await Assert.ThrowsAsync<InvalidOperationException>(()=>
+                HandleCommand(new UpdateActivityCommand {
+                    Id = activityId,
+                    AthleteId = athleteId,
+                    StartDate = _testStartDate,
+                    ActivityType = TestActivityType,
+                    DistanceInMeters = PositiveDistanceInMeters,
+                    MovingTimeInMinutes = PositiveMovingTimeInMinutes,
+            }));
         }
     }
 }
