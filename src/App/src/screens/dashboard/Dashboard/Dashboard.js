@@ -31,6 +31,7 @@ const Dashboard = (props) =>{
             <h4 className="RankingCategory">{props.rankingCategory}</h4>
             <RankingList
               ranking={props.ranking}
+              rankingLoading={props.rankingLoading}
             />
           </div>
         </div>
