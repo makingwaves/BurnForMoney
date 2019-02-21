@@ -7,6 +7,7 @@ using Newtonsoft.Json.Converters;
 namespace BurnForMoney.Domain.Events
 {
     [NamespaceLock(Reason = NamespaceLockAttribute.Public_Contract_Please_Do_Not_Change_Its_Namespace)]
+    [Obsolete("No longer used.")]
     public class PointsGranted : DomainEvent
     {
         public readonly Guid AthleteId;

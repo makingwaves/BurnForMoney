@@ -1,0 +1,11 @@
+@baseUrl = http://localhost:7072/api
+
+
+###### ------------------------- Subscription
+
+### Create subscription
+POST {{baseUrl}}/strava/subscription/create
+
+{
+    "HostName": "http://9ad72fb5.ngrok.io"
+}

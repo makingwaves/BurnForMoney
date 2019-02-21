@@ -25,7 +25,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BurnForMoney.Identity", "sr
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{F624F300-4820-42BA-AA33-51AAAD65468B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BurnForMoney.UnitTests", "tests\BurnForMoney.UnitTests\BurnForMoney.UnitTests.csproj", "{4B759ECF-AC9E-4189-A49B-25D62F9DD865}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BurnForMoney.Functions.UnitTests", "tests\BurnForMoney.Functions.UnitTests\BurnForMoney.Functions.UnitTests.csproj", "{4B759ECF-AC9E-4189-A49B-25D62F9DD865}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

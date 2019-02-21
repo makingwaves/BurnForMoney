@@ -28,9 +28,10 @@ namespace BurnForMoney.Functions.Strava.Functions.AuthorizeNewAthlete
         private static readonly StravaService StravaService = new StravaService();
         
         [FunctionName(FunctionsNames.A_GenerateAthleteId)]
-        public static string A_GenerateAthleteId([ActivityTrigger] object input)
+        public static async Task<Guid> A_GenerateAthleteId([ActivityTrigger] object input)
         {
-            return AthleteIdentity.Next();
+            var id = await Task.Run(() => AthleteIdentity.Next());
+            return id;
         }
 
         [FunctionName(FunctionsNames.A_ExchangeTokenAndGetAthleteSummary)]
