@@ -93,7 +93,7 @@ namespace BurnForMoney.Functions.Presentation.Views
 
         public Task HandleAsync(ActivityDeleted message)
         {
-            return null;
+            return Task.CompletedTask;
             /* 
             using (var conn = SqlConnectionFactory.Create(_sqlConnectionString))
             {
@@ -118,7 +118,7 @@ namespace BurnForMoney.Functions.Presentation.Views
 
         public Task HandleAsync(ActivityUpdated message)
         {
-            return null;
+            return Task.CompletedTask;
 
             /* 
             using (var conn = SqlConnectionFactory.Create(_sqlConnectionString))
