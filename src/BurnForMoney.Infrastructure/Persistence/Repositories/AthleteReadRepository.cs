@@ -74,6 +74,11 @@ namespace BurnForMoney.Infrastructure.Persistence.Repositories
                     ExternalId = id
                 });
 
+                if (athlete == null)
+                {
+                    return null;
+                }
+
                 if (!athlete.Active)
                 {
                     return AthleteRow.NonActive;
