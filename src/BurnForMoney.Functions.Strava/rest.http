@@ -9,3 +9,36 @@ POST {{baseUrl}}/strava/subscription/create
 {
     "HostName": "http://9ad72fb5.ngrok.io"
 }
+
+
+###### ------------------------- Strava API
+
+### Authorize athlete
+@client_id = 26733
+@client_secret = "-"
+@code = "-"
+
+POST https://www.strava.com/oauth/token
+Content-Type: application/json
+
+{
+    "client_id": {{client_id}},
+    "client_secret": {{client_secret}},
+    "grant_type": "authorization_code",
+    "code": {{code}}
+}
+
+### Refresh token
+@client_id = 26733
+@client_secret = "-"
+@refresh_token = "-"
+
+POST https://www.strava.com/oauth/token
+Content-Type: application/json
+
+{
+    "client_id": {{client_id}},
+    "client_secret": {{client_secret}},
+    "grant_type": "refresh_token",
+    "refresh_token": {{refresh_token}}
+}

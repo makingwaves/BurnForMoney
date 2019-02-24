@@ -16,7 +16,6 @@ namespace BurnForMoney.Infrastructure.Persistence.Repositories
             _connectionString = connectionString;
         }
 
-
         public async Task<IEnumerable<AthleteRow>> GetAllActiveAsync()
         {
             using (var conn = SqlConnectionFactory.Create(_connectionString))
@@ -74,6 +73,11 @@ namespace BurnForMoney.Infrastructure.Persistence.Repositories
                 {
                     ExternalId = id
                 });
+
+                if (athlete == null)
+                {
+                    return null;
+                }
 
                 if (!athlete.Active)
                 {
