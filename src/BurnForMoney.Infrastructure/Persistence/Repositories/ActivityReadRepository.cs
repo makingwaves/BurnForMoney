@@ -9,7 +9,7 @@ using Dapper;
 
 namespace BurnForMoney.Infrastructure.Persistence.Repositories
 {
-    public class ActivityReadRepository : IReadFacade<ActivityRow>
+    public class ActivityReadRepository
     {
         private readonly string _sqlConnectionString;
 

@@ -7,7 +7,7 @@ using Dapper;
 
 namespace BurnForMoney.Infrastructure.Persistence.Repositories
 {
-    public class AthleteReadRepository : IReadFacade<AthleteRow>
+    public class AthleteReadRepository
     {
         private readonly string _connectionString;
 

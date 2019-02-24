@@ -1,7 +1,10 @@
-﻿namespace BurnForMoney.Infrastructure.Persistence.Repositories.Dto
+﻿using System;
+
+namespace BurnForMoney.Infrastructure.Persistence.Repositories.Dto
 {
-    public class AthleteRow : Row
+    public class AthleteRow
     {
+        public Guid Id { get; set; }
         public static readonly AthleteRow NonActive = new AthleteRow();
 
         public string ExternalId { get; set; }
