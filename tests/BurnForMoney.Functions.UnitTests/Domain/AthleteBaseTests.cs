@@ -7,7 +7,7 @@ using BurnForMoney.Functions.Domain;
 using BurnForMoney.Infrastructure.Messages;
 using BurnForMoney.Infrastructure.Persistence;
 
-namespace BurnForMoney.UnitTests
+namespace BurnForMoney.Functions.UnitTests.Domain
 {
     public abstract  class AthleteBaseTests
     {
@@ -41,6 +41,12 @@ namespace BurnForMoney.UnitTests
                     break;
                 case AddActivityCommand cmd:
                     await new AddActivityCommandHandler(_athleteRepo).HandleAsync(cmd);
+                    break;
+                case UpdateActivityCommand cmd:
+                    await new UpdateActivityCommandHandler(_athleteRepo).HandleAsync(cmd);
+                    break;
+                case DeleteActivityCommand cmd:
+                    await new DeleteActivityCommandHandler(_athleteRepo).HandleAsync(cmd);
                     break;
                 default:
                     throw new NotImplementedException();

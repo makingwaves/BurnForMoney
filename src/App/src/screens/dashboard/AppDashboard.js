@@ -115,20 +115,10 @@ class AppDashboard extends Component {
     this.setState({
       rankingCategory: category
     });
-    this.getRankingResults(category);
-  }
-  setRankingInputFilter = (input) =>{
-    this.setState({rankingInputFilter: input})
   }
 
-  getRankingResults = (category) =>{
-    if(category === 'All') category = '';
-    adalApiFetch(this.api_url+"api/ranking/"+category)
-      .then(res => res.json())
-      .then(
-        (result) => {this.setState({ranking: result }); console.log('ranking', this.state.ranking)},
-        (error) => {this.setState({ranking: null}); console.error('Error:', error); }
-      );
+  setRankingInputFilter = (input) =>{
+    this.setState({rankingInputFilter: input})
   }
 
   handleResize = () => {
@@ -148,6 +138,7 @@ class AppDashboard extends Component {
       categories: [],
       athletes: [],
       ranking: [],
+      rankingLoading: true,
       rankingCategory: 'All',
       rankingInputFilter: '',
       windowHeight: undefined,
@@ -199,6 +190,7 @@ class AppDashboard extends Component {
             <Route exact path="/dashboard" render={(props) => (
               <Dashboard {...props}
                 ranking={this.state.ranking}
+                rankingLoading={this.state.rankingLoading}
                 rankingCategory={this.state.rankingCategory}
                 setRankinkCategory={this.setRankinkCategory}
                 categories={this.state.categories}
@@ -207,6 +199,7 @@ class AppDashboard extends Component {
             <Route path="/dashboard/participants" render={(props) => (
               <Participants {...props}
                 ranking={this.state.ranking}
+                rankingLoading={this.state.rankingLoading}
                 rankingCategory={this.state.rankingCategory}
                 setRankinkCategory={this.setRankinkCategory}
                 rankingInputFilter={this.state.rankingInputFilter}
@@ -254,12 +247,26 @@ class AppDashboard extends Component {
     adalApiFetch(this.api_url+"api/ranking")
       .then(res => res.json())
       .then(
-        (result) => {this.setState({ranking: result }); console.log('ranking', this.state.ranking)},
+        (result) => {this.setState({ranking: result,  rankingLoading: false }); console.log('ranking', this.state.ranking)},
         (error) => {this.setState({ranking: null}); console.error('Error:', error); }
       );
   }
   componentWillUnmount() {
     window.removeEventListener("resize", this.handleResize);
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (this.state.rankingCategory !== prevState.rankingCategory) {
+      this.setState({rankingLoading: true });
+      let category = this.state.rankingCategory;
+      if(category === 'All') category = '';
+      adalApiFetch(this.api_url+"api/ranking/"+category)
+        .then(res => res.json())
+        .then(
+          (result) => {this.setState({ranking: result, rankingLoading: false }); console.log('ranking', this.state.ranking)},
+          (error) => {this.setState({ranking: null}); console.error('Error:', error); }
+        );
+    }
   }
 }
 
