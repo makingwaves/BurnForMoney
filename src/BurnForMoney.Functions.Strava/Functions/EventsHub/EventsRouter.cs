@@ -42,8 +42,8 @@ namespace BurnForMoney.Functions.Strava.Functions.EventsHub
             if (athlete == null)
             {
                 // This can happen when the athlete is either deactivated (but authenticated) or has not yet been authorized.
-                log.LogInformation($"Athlete with strava id: {stravaAthleteId} does not exists.");
-                throw new AthleteNotExistsException(null, stravaAthleteId);
+                log.LogWarning($"Athlete with strava id: {stravaAthleteId} does not exists.");
+                return;
             }
 
             if (athlete == AthleteRow.NonActive)
