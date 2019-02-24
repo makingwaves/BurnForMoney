@@ -45,7 +45,7 @@ namespace BurnForMoney.Functions.Presentation.Functions
                     await new RankingView(configuration.ConnectionStrings.SqlDbConnectionString).HandleAsync(activityDeleted);
                     break;
                 default:
-                    throw new NotSupportedException($"Event type: {receivedEvent.GetType()} is not supported.");
+                    break;
             }
         }
     }

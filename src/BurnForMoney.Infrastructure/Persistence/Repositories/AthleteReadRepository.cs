@@ -16,7 +16,6 @@ namespace BurnForMoney.Infrastructure.Persistence.Repositories
             _connectionString = connectionString;
         }
 
-
         public async Task<IEnumerable<AthleteRow>> GetAllActiveAsync()
         {
             using (var conn = SqlConnectionFactory.Create(_connectionString))
