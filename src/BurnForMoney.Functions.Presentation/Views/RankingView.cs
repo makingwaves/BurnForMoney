@@ -37,8 +37,14 @@ namespace BurnForMoney.Functions.Presentation.Views
             using (var conn = SqlConnectionFactory.Create(_sqlConnectionString))
             {
                 await conn.OpenWithRetryAsync();
-
-                var result = conn.Get<IndividualResult>(new { athleteId, category, month, year });
+            
+                var result = conn.Get<IndividualResult>(
+                        new {
+                            AthleteId = athleteId,
+                            Category = category,
+                            Month = month,
+                            Year = year
+                        });
 
                 if (result == null)
                 {
