@@ -109,7 +109,7 @@ namespace BurnForMoney.Functions.Strava.Functions.AuthorizeNewAthlete
         {
             var athlete = activityContext.GetInput<AthleteDto>();
 
-            var command = new CreateAthleteCommand(athlete.Id, athlete.ExternalId, athlete.FirstName, athlete.LastName,
+            var command = new CreateAthleteCommand(athlete.Id, athlete.ExternalId, athlete.ActiveDirectoryId, athlete.FirstName, athlete.LastName,
                 athlete.ProfilePictureUrl, Source.Strava);
             var json = JsonConvert.SerializeObject(command);
             await addAthleteRequestsQueue.AddMessageAsync(new CloudQueueMessage(json));

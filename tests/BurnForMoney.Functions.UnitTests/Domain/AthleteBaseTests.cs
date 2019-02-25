@@ -20,8 +20,8 @@ namespace BurnForMoney.Functions.UnitTests.Domain
             string profilePictureUrl = "http://test.com/img.png", Source source = Source.Strava)
         {
             var newAthleteId = Guid.NewGuid();
-            await HandleCommand(new CreateAthleteCommand(newAthleteId, Guid.NewGuid().ToString(), 
-                firstName, lastName, profilePictureUrl, source));
+            await HandleCommand(new CreateAthleteCommand(newAthleteId, Guid.NewGuid().ToString(),
+                Guid.NewGuid().ToString(), firstName, lastName, profilePictureUrl, source));
 
             return newAthleteId;
         }

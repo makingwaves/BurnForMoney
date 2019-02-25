@@ -8,16 +8,18 @@ namespace BurnForMoney.Functions.Strava.Commands
     {
         public readonly Guid Id;
         public readonly string ExternalId;
+        public readonly string ActiveDirectoryId;
         public readonly string FirstName;
         public readonly string LastName;
         public readonly string ProfilePictureUrl;
         public readonly Source System;
 
-        public CreateAthleteCommand(Guid id, string externalId, string firstName, string lastName, string profilePictureUrl,
-            Source system)
+        public CreateAthleteCommand(Guid id, string externalId, string activeDirectoryId, string firstName,
+            string lastName, string profilePictureUrl, Source system)
         {
             Id = id;
             ExternalId = externalId;
+            ActiveDirectoryId = activeDirectoryId;
             FirstName = firstName;
             LastName = lastName;
             ProfilePictureUrl = profilePictureUrl;
