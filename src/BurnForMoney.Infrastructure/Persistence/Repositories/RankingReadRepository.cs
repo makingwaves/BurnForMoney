@@ -23,7 +23,7 @@ namespace BurnForMoney.Infrastructure.Persistence.Repositories
 
                 var activities = await conn.QueryAsync<RankingByPoints>(
                     @"
-SELECT TOP @Take A.Id as AthleteId, A.FirstName as AthleteFirstName, A.LastName AS AthleteLastName, A.ProfilePictureUrl, SUM(IR.Points) AS Points 
+SELECT TOP (@Take) A.Id as AthleteId, A.FirstName as AthleteFirstName, A.LastName AS AthleteLastName, A.ProfilePictureUrl, SUM(IR.Points) AS Points 
 FROM dbo.IndividualResults IR 
 INNER JOIN dbo.Athletes A ON A.Id = IR.AthleteId
 WHERE IR.Category = COALESCE(@Category, IR.Category)
