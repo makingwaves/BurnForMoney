@@ -48,8 +48,8 @@ namespace BurnForMoney.Functions.Presentation.Views
             var deltaPoints = message.Points - message.PreviousData.Points;
 
             await CreateANewRankingOrAppendValuesToExistingAsync(message.AthleteId, message.ActivityCategory.ToString(), 
-                message.StartDate.Month,
-                message.StartDate.Year, 
+                message.PreviousData.StartDate.Month,
+                message.PreviousData.StartDate.Year, 
                 deltaDistance, 
                 deltaMovingTime,
                 deltaPoints);
