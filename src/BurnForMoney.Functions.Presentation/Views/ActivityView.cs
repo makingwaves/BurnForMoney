@@ -10,7 +10,7 @@ using DapperExtensions;
 
 namespace BurnForMoney.Functions.Presentation.Views
 {
-    public class ActivityView : IHandles<ActivityAdded>, IHandles<ActivityDeleted>, IHandles<ActivityUpdated>
+    public class ActivityView : IHandles<ActivityAdded>, IHandles<ActivityDeleted_V2>, IHandles<ActivityUpdated_V2>
     {
         private readonly string _sqlConnectionString;
 
@@ -46,7 +46,7 @@ namespace BurnForMoney.Functions.Presentation.Views
             }
         }
 
-        public async Task HandleAsync(ActivityUpdated message)
+        public async Task HandleAsync(ActivityUpdated_V2 message)
         {
             using (var conn = SqlConnectionFactory.Create(_sqlConnectionString))
             {
@@ -69,7 +69,7 @@ namespace BurnForMoney.Functions.Presentation.Views
             }
         }
 
-        public async Task HandleAsync(ActivityDeleted message)
+        public async Task HandleAsync(ActivityDeleted_V2 message)
         {
             using (var conn = SqlConnectionFactory.Create(_sqlConnectionString))
             {

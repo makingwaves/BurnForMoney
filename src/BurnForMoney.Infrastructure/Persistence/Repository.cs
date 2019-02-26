@@ -29,7 +29,7 @@ namespace BurnForMoney.Infrastructure.Persistence
         {
             var obj = new T();
             var e = await _storage.GetEventsForAggregateAsync(id);
-            obj.LoadsFromHistory(e);
+            obj.LoadFromHistory(e);
             return obj;
         }
     }

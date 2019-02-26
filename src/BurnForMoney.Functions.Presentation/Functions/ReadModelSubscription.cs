@@ -47,10 +47,10 @@ namespace BurnForMoney.Functions.Presentation.Functions
                 case ActivityAdded activityAdded:
                     await new ActivityView(configuration.ConnectionStrings.SqlDbConnectionString).HandleAsync(activityAdded);
                     break;
-                case ActivityUpdated activityUpdated:
+                case ActivityUpdated_V2 activityUpdated:
                     await new ActivityView(configuration.ConnectionStrings.SqlDbConnectionString).HandleAsync(activityUpdated);
                     break;
-                case ActivityDeleted activityDeleted:
+                case ActivityDeleted_V2 activityDeleted:
                     await new ActivityView(configuration.ConnectionStrings.SqlDbConnectionString).HandleAsync(activityDeleted);
                     break;
                 case PointsGranted _:
