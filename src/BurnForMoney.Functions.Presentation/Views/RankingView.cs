@@ -13,7 +13,7 @@ using DapperExtensions.Mapper;
 
 namespace BurnForMoney.Functions.Presentation.Views
 {
-    public class RankingView : IHandles<ActivityAdded>, IHandles<ActivityDeleted>, IHandles<ActivityUpdated>
+    public class RankingView : IHandles<ActivityAdded>, IHandles<ActivityDeleted_V2>, IHandles<ActivityUpdated_V2>
     {
         private readonly string _sqlConnectionString;
 
@@ -29,6 +29,30 @@ namespace BurnForMoney.Functions.Presentation.Views
                 Convert.ToInt32(message.DistanceInMeters), 
                 Convert.ToInt32(message.MovingTimeInMinutes), 
                 message.Points);
+        }
+
+        public async Task HandleAsync(ActivityDeleted_V2 message)
+        {
+            await InsertOrUpdateAsync(message.AthleteId, message.PreviousData.ActivityCategory.ToString(), 
+                message.PreviousData.StartDate.Month,
+                message.PreviousData.StartDate.Year, 
+                Convert.ToInt32(message.PreviousData.DistanceInMeters), 
+                Convert.ToInt32(message.PreviousData.MovingTimeInMinutes),
+                message.PreviousData.Points);
+        }
+
+        public async Task HandleAsync(ActivityUpdated_V2 message)
+        {
+            var deltaDistance = Convert.ToInt32(message.DistanceInMeters - message.PreviousData.DistanceInMeters);
+            var deltaMovingTime = Convert.ToInt32(message.MovingTimeInMinutes - message.PreviousData.MovingTimeInMinutes);
+            var deltaPoints = message.Points - message.PreviousData.Points;
+
+            await InsertOrUpdateAsync(message.AthleteId, message.ActivityCategory.ToString(), 
+                message.StartDate.Month,
+                message.StartDate.Year, 
+                deltaDistance, 
+                deltaMovingTime,
+                deltaPoints);
         }
 
         public async Task InsertOrUpdateAsync(Guid athleteId, string category, int month, int year,
@@ -89,57 +113,6 @@ namespace BurnForMoney.Functions.Presentation.Views
                     }
                 }
             }
-        }
-
-        public Task HandleAsync(ActivityDeleted message)
-        {
-            return Task.CompletedTask;
-            /* 
-            using (var conn = SqlConnectionFactory.Create(_sqlConnectionString))
-            {
-                await conn.OpenWithRetryAsync();
-
-                var activity = conn.Get<Activity>(message.ActivityId);
-                var row = conn.Get<IndividualResult>(new { 
-                    AthleteId = activity.AthleteId,
-                    Category = message.ActivityCategory.ToString(),
-                    Month = message.StartDate.Month,
-                    Year = message.StartDate.Year
-                });
-
-                row.Distance -= Convert.ToInt32(message.DistanceInMeters);
-                row.MovingTime -= Convert.ToInt32(message.MovingTimeInMinutes);
-                row.Points -= message.Points;
-
-                await UpdateRowAsync(row);
-            }
-            */
-        }
-
-        public Task HandleAsync(ActivityUpdated message)
-        {
-            return Task.CompletedTask;
-
-            /* 
-            using (var conn = SqlConnectionFactory.Create(_sqlConnectionString))
-            {
-                await conn.OpenWithRetryAsync();
-
-                var activity = conn.Get<Activity>(message.ActivityId);
-                var row = conn.Get<IndividualResult>(new { 
-                    AthleteId = activity.AthleteId,
-                    Category = activity.Category.ToString(),
-                    Month = activity.ActivityTime.Month,
-                    Year = activity.ActivityTime.Year
-                });
-
-                row.Distance += Convert.ToInt32(message.DistanceInMeters); // calculate delta
-                row.MovingTime += Convert.ToInt32(message.MovingTimeInMinutes); // calculate delta
-                row.Points += message.Points; // calculate delta
-
-                await UpdateRowAsync(row);
-            }
-            */
         }
     }
 }

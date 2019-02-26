@@ -52,14 +52,16 @@ namespace BurnForMoney.Functions.Domain
                 @event.Source, @event.Points));
         }
 
-        public void Apply(ActivityUpdated @event)
+        public void Apply(ActivityUpdated @event) => Apply(ActivityUpdated_V2.ConvertFrom(@event));
+        public void Apply(ActivityUpdated_V2 @event)
         {
             var activity = Activities.Single(a => a.Id.Equals(@event.ActivityId));
             activity.Update(@event.DistanceInMeters, @event.MovingTimeInMinutes, @event.ActivityType,
                 @event.ActivityCategory, @event.StartDate, @event.Points);
         }
 
-        public void Apply(ActivityDeleted @event)
+        public void Apply(ActivityDeleted @event) => Apply(ActivityDeleted_V2.ConvertFrom(@event));
+        public void Apply(ActivityDeleted_V2 @event)
         {
             var activity = Activities.Single(a => a.Id.Equals(@event.ActivityId));
             Activities.Remove(activity);
@@ -182,13 +184,14 @@ namespace BurnForMoney.Functions.Domain
             var category = MapToActivityCategory(activityType, activity.Source);
             var points = PointsCalculator.Calculate(category, distanceInMeters, movingTimeInMinutes);
 
-            ApplyChange(new ActivityUpdated(id, distanceInMeters, movingTimeInMinutes, activityType, category,
-                startDate, points));
+            ApplyChange(new ActivityUpdated_V2(id, distanceInMeters, movingTimeInMinutes, activityType, category, startDate, points, 
+                new BurnForMoney.Infrastructure.Events.PreviousActivityData(activity.DistanceInMeters,
+                    activity.MovingTimeInMinutes, activity.ActivityType, activity.Category, activity.StartDate, activity.Points)));
         }
 
-        public void DeleteActivity(Guid id)
+        public void DeleteActivity(Guid activityId)
         {
-            if (id == Guid.Empty)
+            if (activityId == Guid.Empty)
             {
                 throw new ArgumentNullException(nameof(Id));
             }
@@ -198,13 +201,14 @@ namespace BurnForMoney.Functions.Domain
                 throw new InvalidOperationException("Athlete is deactivated.");
             }
 
-            var activity = Activities.SingleOrDefault(a => a.Id == id);
+            var activity = Activities.SingleOrDefault(a => a.Id == activityId);
             if (activity == null)
             {
-                throw new InvalidOperationException($"Activity with id: {id} does not exists.");
+                throw new InvalidOperationException($"Activity with id: {activityId} does not exists.");
             }
 
-            ApplyChange(new ActivityDeleted(id));
+            ApplyChange(new ActivityDeleted_V2(Id, activityId, new BurnForMoney.Infrastructure.Events.PreviousActivityData(activity.DistanceInMeters,
+                activity.MovingTimeInMinutes, activity.ActivityType, activity.Category, activity.StartDate, activity.Points)));
         }
 
         public void Activate()
@@ -216,7 +220,6 @@ namespace BurnForMoney.Functions.Domain
 
             ApplyChange(new AthleteActivated(Id));
         }
-
 
         public void Deactivate()
         {
