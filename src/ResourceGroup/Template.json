@@ -82,7 +82,8 @@
     "keyVaultName": "[concat(variables('applicationName'), 'kv', parameters('environmentCode'))]",
     "stravaAccessTokensKeyVaultName": "[concat(variables('applicationShortName'), 'kvstravatokens', parameters('environmentCode'))]",
     "appInsightsName": "[concat(variables('applicationName'), 'ai', parameters('environmentCode'))]",
-    "eventGridTopicName": "[concat(variables('applicationShortName'), 'domainEvents', parameters('environmentCode'))]"
+    "eventGridTopicName": "[concat(variables('applicationShortName'), 'domainEvents', parameters('environmentCode'))]",
+    "numberOfEmployees": "100"
   },
   "resources": [
     {
@@ -493,6 +494,10 @@
             {
               "name": "KeyVaultName",
               "value": "[variables('keyVaultName')]"
+            },
+            {
+              "name": "CompanyInformation:NumberOfEmployees",
+              "value": "[variables('numberOfEmployees')]"
             }
           ]
         }
