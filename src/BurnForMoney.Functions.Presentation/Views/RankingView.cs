@@ -24,7 +24,7 @@ namespace BurnForMoney.Functions.Presentation.Views
 
         public async Task HandleAsync(ActivityAdded message)
         {
-            await InsertOrUpdateAsync(message.AthleteId, message.ActivityCategory.ToString(), message.StartDate.Month,
+            await CreateANewRankingOrAppendValuesToExistingAsync(message.AthleteId, message.ActivityCategory.ToString(), message.StartDate.Month,
                 message.StartDate.Year, 
                 Convert.ToInt32(message.DistanceInMeters), 
                 Convert.ToInt32(message.MovingTimeInMinutes), 
@@ -33,7 +33,7 @@ namespace BurnForMoney.Functions.Presentation.Views
 
         public async Task HandleAsync(ActivityDeleted_V2 message)
         {
-            await InsertOrUpdateAsync(message.AthleteId, message.PreviousData.ActivityCategory.ToString(), 
+            await CreateANewRankingOrAppendValuesToExistingAsync(message.AthleteId, message.PreviousData.ActivityCategory.ToString(), 
                 message.PreviousData.StartDate.Month,
                 message.PreviousData.StartDate.Year, 
                 Convert.ToInt32(message.PreviousData.DistanceInMeters) * -1, 
@@ -47,7 +47,7 @@ namespace BurnForMoney.Functions.Presentation.Views
             var deltaMovingTime = Convert.ToInt32(message.MovingTimeInMinutes - message.PreviousData.MovingTimeInMinutes);
             var deltaPoints = message.Points - message.PreviousData.Points;
 
-            await InsertOrUpdateAsync(message.AthleteId, message.ActivityCategory.ToString(), 
+            await CreateANewRankingOrAppendValuesToExistingAsync(message.AthleteId, message.ActivityCategory.ToString(), 
                 message.StartDate.Month,
                 message.StartDate.Year, 
                 deltaDistance, 
@@ -55,7 +55,7 @@ namespace BurnForMoney.Functions.Presentation.Views
                 deltaPoints);
         }
 
-        public async Task InsertOrUpdateAsync(Guid athleteId, string category, int month, int year,
+        public async Task CreateANewRankingOrAppendValuesToExistingAsync(Guid athleteId, string category, int month, int year,
             int distance, int movingTime, double points)
         {
             using (var conn = SqlConnectionFactory.Create(_sqlConnectionString))
