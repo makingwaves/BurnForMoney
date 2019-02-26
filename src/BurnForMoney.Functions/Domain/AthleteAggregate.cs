@@ -133,10 +133,10 @@ namespace BurnForMoney.Functions.Domain
                 category, startDate, source, points));
         }
 
-        public void UpdateActivity(Guid id, string activityType, double distanceInMeters, double movingTimeInMinutes,
+        public void UpdateActivity(Guid activityId, string activityType, double distanceInMeters, double movingTimeInMinutes,
             DateTime startDate)
         {
-            if (id == Guid.Empty)
+            if (activityId == Guid.Empty)
             {
                 throw new ArgumentNullException(nameof(Id));
             }
@@ -166,13 +166,13 @@ namespace BurnForMoney.Functions.Domain
                 throw new InvalidOperationException("Year must be greater than 2017.");
             }
 
-            var activity = Activities.SingleOrDefault(a => a.Id == id);
+            var activity = Activities.SingleOrDefault(a => a.Id == activityId);
             if (activity == null)
             {
-                throw new InvalidOperationException($"Activity with id: {id} does not exists.");
+                throw new InvalidOperationException($"Activity with id: {activityId} does not exists.");
             }
 
-            if (activity.Id == id &&
+            if (activity.Id == activityId &&
                 activity.ActivityType == activityType &&
                 Math.Abs(activity.DistanceInMeters - distanceInMeters) < 0.05 &&
                 Math.Abs(activity.MovingTimeInMinutes - movingTimeInMinutes) < 0.05 &&
@@ -184,7 +184,7 @@ namespace BurnForMoney.Functions.Domain
             var category = MapToActivityCategory(activityType, activity.Source);
             var points = PointsCalculator.Calculate(category, distanceInMeters, movingTimeInMinutes);
 
-            ApplyChange(new ActivityUpdated_V2(id, distanceInMeters, movingTimeInMinutes, activityType, category, startDate, points, 
+            ApplyChange(new ActivityUpdated_V2(Id, activityId, distanceInMeters, movingTimeInMinutes, activityType, category, startDate, points, 
                 new BurnForMoney.Infrastructure.Events.PreviousActivityData(activity.DistanceInMeters,
                     activity.MovingTimeInMinutes, activity.ActivityType, activity.Category, activity.StartDate, activity.Points)));
         }
