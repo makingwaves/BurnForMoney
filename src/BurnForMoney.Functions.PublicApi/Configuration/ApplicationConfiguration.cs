@@ -18,11 +18,16 @@ namespace BurnForMoney.Functions.PublicApi.Configuration
             {
                 var config = GetApplicationConfiguration(functionAppDirectory);
 
+                int.TryParse(config["CompanyInformation:NumberOfEmployees"], out var numberOfEmployees);
                 _settings = new ConfigurationRoot
                 {
                     ConnectionStrings = new ConnectionStringsSection
                     {
                         SqlDbConnectionString = config["ConnectionStrings:Sql"]
+                    },
+                    CompanyInformation = new CompanyInformationSection
+                    {
+                        NumberOfEmployees = numberOfEmployees
                     }
                 };
 
