@@ -22,15 +22,27 @@ namespace BurnForMoney.Functions.InternalApi.Functions.Ranking
             ILogger log, [Configuration] ConfigurationRoot configuration,
             string activityCategory)
         {
+            int? month = null;
+            int? year = null;
             int take = 10;
             var takeParameter = req.Query["take"];
             if (!string.IsNullOrWhiteSpace(takeParameter))
             {
                 take = int.Parse(takeParameter);
             }
+            var monthParameter = req.Query["month"];
+            if (!string.IsNullOrWhiteSpace(monthParameter))
+            {
+                month = int.Parse(monthParameter);
+            }
+            var yearParameter = req.Query["year"];
+            if (!string.IsNullOrWhiteSpace(yearParameter))
+            {
+                year = int.Parse(yearParameter);
+            }
 
             var repository = new RankingReadRepository(configuration.ConnectionStrings.SqlDbConnectionString);
-            var ranking = await repository.GetTopByPointsForCategoryAsync(activityCategory, take);
+            var ranking = await repository.GetTopByPointsForCategoryAsync(activityCategory, take, month, year);
        
             return new OkObjectResult(ranking
                 .Select(r => new RankingDto

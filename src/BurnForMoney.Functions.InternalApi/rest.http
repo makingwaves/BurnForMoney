@@ -68,3 +68,10 @@ GET {{baseUrl}}/ranking/{{category}}
 ### Get ranking, top 5
 @take = 5
 GET {{baseUrl}}/ranking?take={{take}}
+
+
+### Get ranking, top 5, year 2019
+GET {{baseUrl}}/ranking?take=5&year=2018
+
+### Get ranking, top 5, month 2, year 2019
+GET {{baseUrl}}/ranking?take=5&month=2&year=2019
