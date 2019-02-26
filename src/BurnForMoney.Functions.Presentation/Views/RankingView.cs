@@ -36,9 +36,9 @@ namespace BurnForMoney.Functions.Presentation.Views
             await InsertOrUpdateAsync(message.AthleteId, message.PreviousData.ActivityCategory.ToString(), 
                 message.PreviousData.StartDate.Month,
                 message.PreviousData.StartDate.Year, 
-                Convert.ToInt32(message.PreviousData.DistanceInMeters), 
-                Convert.ToInt32(message.PreviousData.MovingTimeInMinutes),
-                message.PreviousData.Points);
+                Convert.ToInt32(message.PreviousData.DistanceInMeters) * -1, 
+                Convert.ToInt32(message.PreviousData.MovingTimeInMinutes) * -1,
+                message.PreviousData.Points * -1);
         }
 
         public async Task HandleAsync(ActivityUpdated_V2 message)
