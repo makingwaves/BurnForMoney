@@ -83,7 +83,7 @@
     "stravaAccessTokensKeyVaultName": "[concat(variables('applicationShortName'), 'kvstravatokens', parameters('environmentCode'))]",
     "appInsightsName": "[concat(variables('applicationName'), 'ai', parameters('environmentCode'))]",
     "eventGridTopicName": "[concat(variables('applicationShortName'), 'domainEvents', parameters('environmentCode'))]",
-    "numberOfEmployees": "100"
+    "numberOfEmployees": 100
   },
   "resources": [
     {
