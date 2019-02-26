@@ -3,6 +3,15 @@
     "BurnForMoney.Functions.PublicApi": {
       "commandName": "Project",
       "commandLineArgs": "host start -p 7073"
+    },
+    "BurnForMoney.Functions.Rider": {
+      "commandName": "Executable",
+      "executablePath": "dotnet",
+      "commandLineArgs": "%ProgramData%\\nvm\\v10.15.0\\node_modules\\azure-functions-core-tools\\bin\\func.dll host start --port 7073 --pause-on-error",
+      "environmentVariables": {
+        "AZURE_FUNCTIONS_ENVIRONMENT": "Development",
+        "AzureWebJobsStorage": "UseDevelopmentStorage=true"
+      }
     }
   }
 }
