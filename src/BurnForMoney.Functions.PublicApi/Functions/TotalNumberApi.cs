@@ -24,11 +24,14 @@ namespace BurnForMoney.Functions.PublicApi.Functions
     {
         private const string CacheKey = "api.totalnumbers";
         private static readonly IMemoryCache Cache = new MemoryCache(new MemoryDistributedCacheOptions());
+        private static EmployeesEngagementCalculator _employeesEngagementCalculator;
 
         [FunctionName(FunctionNameConvention.HttpTriggerPrefix + "TotalNumbers")]
         public static async Task<IActionResult> TotalNumbers([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "totalnumbers")] HttpRequest req, 
             ILogger log, [Configuration] ConfigurationRoot configuration)
         {
+            _employeesEngagementCalculator = new EmployeesEngagementCalculator(configuration.CompanyInformation.NumberOfEmployees);
+
             if (!Cache.TryGetValue(CacheKey, out var totalNumbers))
             {
                 totalNumbers = await GetTotalNumbersAsync(configuration.ConnectionStrings.SqlDbConnectionString);
@@ -107,19 +110,24 @@ namespace BurnForMoney.Functions.PublicApi.Functions
             return new ThisMonth
             {
                 NumberOfTrainings = thisMonth.AthleteResults.Sum(r => r.NumberOfTrainings),
-                PercentOfEngagedEmployees = EmployeesEngagementCalculator.GetPercentOfEngagedEmployees(uniqueAthletes),
+                PercentOfEngagedEmployees = _employeesEngagementCalculator.GetPercentOfEngagedEmployees(uniqueAthletes),
                 Points = totalPointsThisMonth,
                 Money = PointsToMoneyConverter.Convert(totalPointsThisMonth),
                 MostFrequentActivities = mostFrequentActivities
             };
         }
 
-        public class EmployeesEngagementCalculator
+        private class EmployeesEngagementCalculator
         {
-            public const int NumberOfEmployees = 97;
+            private readonly int _numberOfEmployees;
 
-            public static int GetPercentOfEngagedEmployees(int numberOfTheUniqueAthletes) =>
-                (numberOfTheUniqueAthletes * 100) / NumberOfEmployees;
+            public EmployeesEngagementCalculator(int numberOfEmployees)
+            {
+                _numberOfEmployees = numberOfEmployees;
+            }
+
+            public int GetPercentOfEngagedEmployees(int numberOfTheUniqueAthletes) =>
+                (numberOfTheUniqueAthletes * 100) / _numberOfEmployees;
         }
 
         public class PointsToMoneyConverter
