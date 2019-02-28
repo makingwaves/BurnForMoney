@@ -24,7 +24,7 @@ namespace BurnForMoney.Functions.PublicApi.Configuration
                     {
                         SqlDbConnectionString = config["ConnectionStrings:Sql"]
                     },
-                    CompanyInformation = config.GetSection("CompanyInformation").Get<CompanyInformationSection>()
+                    CompanyInformation = config.GetSection("CompanyInformation")?.Get<CompanyInformationSection>() ?? new CompanyInformationSection()
                 };
 
                 if (!_settings.IsValid())
