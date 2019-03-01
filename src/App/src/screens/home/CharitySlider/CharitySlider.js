@@ -13,7 +13,8 @@ class CharitySlider extends Component {
       infinite: true,
       speed: 500,
       slidesToShow: 1,
-      slidesToScroll: 1
+      slidesToScroll: 1,
+      initialSlide: 1
     };
 
     let slides;
@@ -32,13 +33,17 @@ class CharitySlider extends Component {
       <div className="CharitySlider">
         <div className="CharitySlider__container container">
           <h2 className="CharitySlider__header Header"><strong>... {t('for charity')}</strong></h2>
-          <Slider className="CharitySlider__slider" {...settings}>
+          <Slider className="CharitySlider__slider" ref={c => (this.slider = c)} {...settings}>
             {slides}
           </Slider>
         </div>
       </div>
 
     );
+  }
+
+  componentDidMount() {
+    this.slider.slickGoTo(0);
   }
 }
 
