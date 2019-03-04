@@ -12,19 +12,17 @@ namespace BurnForMoney.Domain.Events
     {
         public readonly Guid Id;
         public readonly string ExternalId;
-        public readonly string ActiveDirectoryId;
         public readonly string FirstName;
         public readonly string LastName;
         public readonly string ProfilePictureUrl;
         [JsonConverter(typeof(StringEnumConverter))]
         public readonly Source System;
 
-        public AthleteCreated(Guid id, string externalId, string activeDirectoryId, string firstName, string lastName,
+        public AthleteCreated(Guid id, string externalId, string firstName, string lastName,
             string profilePictureUrl, Source system)
         {
             Id = id;
             ExternalId = externalId;
-            ActiveDirectoryId = activeDirectoryId;
             FirstName = firstName;
             LastName = lastName;
             ProfilePictureUrl = profilePictureUrl;

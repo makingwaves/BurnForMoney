@@ -25,11 +25,10 @@ namespace BurnForMoney.Functions.UnitTests.Domain
         {
             var newAthleteId = Guid.Empty;
             var newExternalId = Guid.NewGuid().ToString();
-            var newActiveDirectoryId = Guid.NewGuid().ToString();
 
-            await Assert.ThrowsAsync<ArgumentNullException>("Id", ()=>
-                HandleCommand(new CreateAthleteCommand(newAthleteId, newExternalId, newActiveDirectoryId,
-                    TestFirstName, TestLastName, TestProfilePictureUrl, Source.Strava)));
+            await Assert.ThrowsAsync<ArgumentNullException>("Id",
+                () => HandleCommand(new CreateAthleteCommand(newAthleteId, newExternalId, TestFirstName, TestLastName,
+                    TestProfilePictureUrl, Source.Strava)));
         }
 
         [Fact]
@@ -37,9 +36,8 @@ namespace BurnForMoney.Functions.UnitTests.Domain
         {
             var newAthleteId = Guid.NewGuid();
 
-            await Assert.ThrowsAsync<ArgumentNullException>("firstName", ()=>
-                HandleCommand(new CreateAthleteCommand(newAthleteId, null, null,
-                    null, null, null, Source.Strava)));
+            await Assert.ThrowsAsync<ArgumentNullException>("firstName",
+                () => HandleCommand(new CreateAthleteCommand(newAthleteId, null, null, null, null, Source.Strava)));
         }
 
         [Fact(Skip = "Logic bug, currently it's possible to add two athletes with the same id")]
@@ -47,14 +45,12 @@ namespace BurnForMoney.Functions.UnitTests.Domain
         {
             var newAthleteId = Guid.NewGuid();
             var newExternalId = Guid.NewGuid().ToString();
-            var newActiveDirectoryId = Guid.NewGuid().ToString();
 
-            await HandleCommand(new CreateAthleteCommand(newAthleteId, newExternalId, newActiveDirectoryId,
-                TestFirstName, TestLastName, TestProfilePictureUrl, Source.Strava));
+            await HandleCommand(new CreateAthleteCommand(newAthleteId, newExternalId, TestFirstName, TestLastName,
+                TestProfilePictureUrl, Source.Strava));
 
-            await Assert.ThrowsAnyAsync<ConcurrencyException>(()=>
-                HandleCommand(new CreateAthleteCommand(newAthleteId, newExternalId, newActiveDirectoryId, TestFirstName,
-                    TestLastName, TestProfilePictureUrl, Source.Strava)));
+            await Assert.ThrowsAnyAsync<ConcurrencyException>(() => HandleCommand(new CreateAthleteCommand(newAthleteId,
+                newExternalId, TestFirstName, TestLastName, TestProfilePictureUrl, Source.Strava)));
         }
 
         [Fact]
@@ -62,8 +58,7 @@ namespace BurnForMoney.Functions.UnitTests.Domain
         {
             var newAthleteId = Guid.NewGuid();
 
-            await HandleCommand(new CreateAthleteCommand(newAthleteId, null, null, TestFirstName, null, null,
-                Source.None));
+            await HandleCommand(new CreateAthleteCommand(newAthleteId, null, TestFirstName, null, null, Source.None));
 
             var newAthlete = await GetAthleteAsync(newAthleteId);
             
@@ -82,17 +77,16 @@ namespace BurnForMoney.Functions.UnitTests.Domain
         {
             var newAthleteId = Guid.NewGuid();
             var newExternalId = Guid.NewGuid().ToString();
-            var newActiveDirectoryId = Guid.NewGuid().ToString();
 
-            await HandleCommand(new CreateAthleteCommand(newAthleteId, newExternalId, newActiveDirectoryId,
-                TestFirstName, TestLastName, TestProfilePictureUrl, Source.Strava));
+            await HandleCommand(new CreateAthleteCommand(newAthleteId, newExternalId, TestFirstName, TestLastName,
+                TestProfilePictureUrl, Source.Strava));
 
             var newAthlete = await _athleteRepo.GetByIdAsync(newAthleteId);
 
             Assert.True(newAthlete.IsActive);
             Assert.Equal(newAthleteId, newAthlete.Id);
             Assert.Equal(newExternalId, newAthlete.ExternalId);
-            Assert.Equal(newActiveDirectoryId, newAthlete.ActiveDirectoryId);
+            Assert.Null(newAthlete.ActiveDirectoryId);
             Assert.Equal(TestFirstName, newAthlete.FirstName);
             Assert.Equal(TestLastName, newAthlete.LastName);
             Assert.Equal(TestProfilePictureUrl, newAthlete.ProfilePictureUrl);

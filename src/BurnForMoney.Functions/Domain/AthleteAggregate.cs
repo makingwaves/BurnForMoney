@@ -30,7 +30,6 @@ namespace BurnForMoney.Functions.Domain
         {
             Id = @event.Id;
             ExternalId = @event.ExternalId;
-            ActiveDirectoryId = @event.ActiveDirectoryId;
             FirstName = @event.FirstName;
             LastName = @event.LastName;
             ProfilePictureUrl = @event.ProfilePictureUrl;
@@ -75,7 +74,7 @@ namespace BurnForMoney.Functions.Domain
 
         }
 
-        public Athlete(Guid id, string externalId, string activeDirectoryId, string firstName, string lastName,
+        public Athlete(Guid id, string externalId, string firstName, string lastName,
             string profilePictureUrl, Source source)
         {
             if (id == Guid.Empty)
@@ -88,7 +87,7 @@ namespace BurnForMoney.Functions.Domain
                 throw new ArgumentNullException(nameof(firstName));
             }
 
-            ApplyChange(new AthleteCreated(id, externalId, activeDirectoryId, firstName, lastName, profilePictureUrl,
+            ApplyChange(new AthleteCreated(id, externalId, firstName, lastName, profilePictureUrl,
                 source));
         }
 
