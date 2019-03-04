@@ -47,6 +47,11 @@ namespace BurnForMoney.Functions.Domain
             IsActive = true;
         }
 
+        public void Apply(ActiveDirectoryIdAssigned @event)
+        {
+            ActiveDirectoryId = @event.ActiveDirectoryId;
+        }
+
         public void Apply(ActivityAdded @event)
         {
             Activities.Add(new Activity(@event.ActivityId, @event.ExternalId, @event.DistanceInMeters,
@@ -232,6 +237,16 @@ namespace BurnForMoney.Functions.Domain
             }
 
             ApplyChange(new AthleteDeactivated(Id));
+        }
+
+        public void AssignActiveDirectoryId(string activeDirectoryId)
+        {
+            if (string.IsNullOrEmpty(activeDirectoryId))
+            {
+                throw new ArgumentNullException(nameof(activeDirectoryId));
+            }
+
+            ApplyChange(new ActiveDirectoryIdAssigned(Id, activeDirectoryId));
         }
 
         private static ActivityCategory MapToActivityCategory(string activityType, Source source)
