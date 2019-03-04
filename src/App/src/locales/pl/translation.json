@@ -31,6 +31,25 @@
   "See our initiatives": "Zobacz pozostałe inicjatywy",
   "Our initiatives": "Nasze inicjatywy",
   "Contact us": "Kontakt",
-  "praca.makingwaves.com/initiatives": "http://praca.makingwaves.com/#initiatives"
+  "praca.makingwaves.com/initiatives": "http://praca.makingwaves.com/#initiatives",
 
+  "TV_Summary":"Sumarycznie",
+  "TV_Training_sessions":"Treningów",
+  "TV_Making_Wavers_engaged": "Zespołu Making Waves",
+  "TV_Collected_this_month_so_far":"Zebranych w tym miesiącu",
+  "TV_Result_per_category": "Kategorie",
+  "TV_TOP_10": "Top 10",
+
+  "January": "Styczeń",
+  "February": "Luty",
+  "March": "Marzec",
+  "April": "Kwiecień",
+  "May": "Maj",
+  "June": "Czerwiec",
+  "July": "Lipiec",
+  "August": "Sierpień",
+  "September": "Wrzesień",
+  "October": "Październik",
+  "November": "Listopad",
+  "December": "Grudzień"
 }
