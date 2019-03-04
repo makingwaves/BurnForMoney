@@ -80,60 +80,6 @@ class AppTvboard extends Component {
         .then(res => res.json())
         .then(
           (result) => { 
-            result = {
-              "distance": 66894,
-              "time": 4880,
-              "money": 23115,
-              "thisMonth": {
-                "numberOfTrainings": 300,
-                "percentOfEngagedEmployees": 49,
-                "points": 530,
-                "money": 2305,
-                "mostFrequentActivities": [
-                  {
-                    "category": "Ride",
-                    "numberOfTrainings": 3,
-                    "points": 150
-                  },
-                  {
-                    "category": "Run",
-                    "numberOfTrainings": 3,
-                    "points": 205
-                  },
-                  {
-                    "category": "Walk",
-                    "numberOfTrainings": 3,
-                    "points": 35
-                  },
-                  {
-                    "category": "WinterSports",
-                    "numberOfTrainings": 3,
-                    "points": 125
-                  },
-                  {
-                    "category": "Gym",
-                    "numberOfTrainings": 3,
-                    "points": 5
-                  },
-                  {
-                    "category": "Hike",
-                    "numberOfTrainings": 3,
-                    "points": 125
-                  },
-                  {
-                    "category": "Fitness",
-                    "numberOfTrainings": 3,
-                    "points": 80
-                  },
-                  {
-                    "category": "Other",
-                    "numberOfTrainings": 3,
-                    "points": 50
-                  }
-            
-                ]
-              }
-            };
             this.setState({ bfmStats: result}); },
           (error) => { this.setState({ bfmStats: null,}); console.error('Error:', error); }
         );
