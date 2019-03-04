@@ -39,6 +39,9 @@ namespace BurnForMoney.Functions.UnitTests.Domain
                 case DeactivateAthleteCommand cmd:
                     await new DeactivateAthleteCommandHandler(_athleteRepo).HandleAsync(cmd);
                     break;
+                case AssignActiveDirectoryIdToAthleteCommand cmd:
+                    await new AssignActiveDirectoryIdToAthleteCommandHandler(_athleteRepo).HandleAsync(cmd);
+                    break;
                 case AddActivityCommand cmd:
                     await new AddActivityCommandHandler(_athleteRepo).HandleAsync(cmd);
                     break;
