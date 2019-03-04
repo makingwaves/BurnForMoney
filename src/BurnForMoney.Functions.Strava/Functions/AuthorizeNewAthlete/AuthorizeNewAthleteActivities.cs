@@ -115,6 +115,20 @@ namespace BurnForMoney.Functions.Strava.Functions.AuthorizeNewAthlete
             await addAthleteRequestsQueue.AddMessageAsync(new CloudQueueMessage(json));
         }
 
+        [FunctionName(FunctionsNames.A_AssignActiveDirectoryIdRequest)]
+        public static async Task A_AssignActiveDirectoryIdRequest(
+            [ActivityTrigger] DurableActivityContext activityContext, ILogger log, ExecutionContext context,
+            [Queue(AppQueueNames.AssignActiveDirectoryIdRequests, Connection = "AppQueuesStorage")]
+            CloudQueue assignActiveDirectoryIdRequestsQueue)
+        {
+            var athleteActiveDirectoryRelation = activityContext.GetInput<AthleteActiveDirectoryRelationDto>();
+
+            var command = new AssignActiveDirectoryIdToAthleteCommand(athleteActiveDirectoryRelation.Id,
+                athleteActiveDirectoryRelation.ActiveDirectoryId);
+            var json = JsonConvert.SerializeObject(command);
+            await assignActiveDirectoryIdRequestsQueue.AddMessageAsync(new CloudQueueMessage(json));
+        }
+
         [FunctionName(FunctionsNames.A_AuthorizeNewAthleteCompensation)]
         public static async Task A_AuthorizeNewAthleteCompensation([ActivityTrigger]DurableActivityContext activityContext, ILogger log,
             ExecutionContext context, [Queue(StravaQueueNames.AuthorizationCodesPoison)] CloudQueue authorizationCodePoisonQueue,

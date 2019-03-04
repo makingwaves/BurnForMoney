@@ -19,6 +19,7 @@ namespace BurnForMoney.Functions.Strava.Functions
         public const string A_ExchangeTokenAndGetAthleteSummary = DurableActivityPrefix + "ExchangeTokenAndGetAthleteSummary";
         public const string A_SendAthleteApprovalRequest = DurableActivityPrefix + "SendAthleteApprovalRequest";
         public const string A_ProcessNewAthleteRequest = DurableActivityPrefix + "ProcessNewAthleteRequest";
+        public const string A_AssignActiveDirectoryIdRequest = DurableActivityPrefix + "ProcessAssignActiveDirectoryIdRequest";
         public const string A_AuthorizeNewAthleteCompensation = DurableActivityPrefix + "AuthorizeNewAthleteCompensation";
         public const string SubmitAthleteApproval = HttpTriggerPrefix + "SubmitAthleteApproval";
 
@@ -41,5 +42,6 @@ namespace BurnForMoney.Functions.Strava.Functions
 
         public const string T_RefreshAccessTokens = TimerTriggerPrefix + "RefreshAccessTokens";
         public const string Q_RefreshAccessTokens = QueueTriggerPrefix + "RefreshAccessTokens";
-        public const string Q_DeactivateExpiredAccessTokens = QueueTriggerPrefix + "DeactivateExpiredAccessTokens";}
+        public const string Q_DeactivateExpiredAccessTokens = QueueTriggerPrefix + "DeactivateExpiredAccessTokens";
+    }
 }
