@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 
 import './MonthStats.css';
 
-import { withNamespaces, Trans } from 'react-i18next';
+import { withNamespaces } from 'react-i18next';
 
 class MonthSummaryStats extends Component {
 

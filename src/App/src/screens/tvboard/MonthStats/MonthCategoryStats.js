@@ -12,7 +12,7 @@ import iconGym from 'img/icon-gym.svg';
 import iconHike from 'img/icon-hike.svg';
 import iconFitness from 'img/icon-fitness.svg';
 import iconOther from 'img/icon-other.svg';
-import { withNamespaces, Trans } from 'react-i18next';
+import { withNamespaces } from 'react-i18next';
 
 class MonthCategoryStats extends Component {
 
@@ -57,8 +57,6 @@ class MonthCategoryStats extends Component {
       }
 
     render() {
-        const { t } = this.props;
-
         let frequentActivitiesList;
         if(this.props.data){
 

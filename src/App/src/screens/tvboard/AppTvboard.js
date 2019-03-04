@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { Route, Link, Switch } from 'react-router-dom';
 import logo from 'img/logo-white.svg';
 import './AppTvboard.css'
 
@@ -9,7 +8,7 @@ import MonthSummaryStats from "./MonthStats/MonthSummaryStats";
 import RankingList from '../dashboard/RankingList/RankingList.js';
 
 import {adalApiFetch} from "../../adalConfig"
-import { withNamespaces, Trans } from 'react-i18next';
+import { withNamespaces } from 'react-i18next';
 
 
 class AppTvboard extends Component {
@@ -33,7 +32,6 @@ class AppTvboard extends Component {
 
     render() {
       const { t } = this.props;
-      const currentDate = new Date();
 
         return (
           <div className="Tvboard">
@@ -80,17 +78,16 @@ class AppTvboard extends Component {
       const { t } = this.props;
       
       const currentDate = new Date();
-      this.state.current_month =  `${t(this.monthNames[currentDate.getMonth()])} ${currentDate.getFullYear()}`;
-
+      this.setState({current_month: `${t(this.monthNames[currentDate.getMonth()])} ${currentDate.getFullYear()}`});
+      
       fetch(`${this.public_api_url}/api/totalnumbers`)
         .then(res => res.json())
         .then(
-          (result) => { 
-            this.setState({ bfmStats: result}); },
-          (error) => { this.setState({ bfmStats: null,}); console.error('Error:', error); }
+          (result) => {this.setState({ bfmStats: result}); },
+          (error) => {this.setState({ bfmStats: null,}); console.error('Error:', error); }
         );
 
-      adalApiFetch(`${this.internal_api_url}/api/ranking?month=${currentDate.getMonth()}`)
+      adalApiFetch(`${this.internal_api_url}/api/ranking?month=${currentDate.getMonth()}&year=${currentDate.getFullYear()}`)
         .then(res => res.json())
         .then(
           (result) => {this.setState({ranking: result,  rankingLoading: false });},
