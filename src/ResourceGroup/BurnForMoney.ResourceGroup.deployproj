@@ -35,7 +35,8 @@
       <Visible>False</Visible>
     </None>
     <Content Include="Deploy.ps1" />
-    <Content Include="SqlScripts\Script0003 - Add Active Directory Id to Athlete aggregate.sql" />
+    <Content Include="SqlScripts\Script0003 - Add IndividualResults table.sql" />
+    <Content Include="SqlScripts\Script0004 - Add Active Directory Id to Athlete aggregate.sql" />
     <Content Include="Template.Dev.json" />
     <Content Include="Template.Test.parameters.json" />
     <Content Include="Template.json" />
