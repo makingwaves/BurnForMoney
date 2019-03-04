@@ -67,7 +67,7 @@ namespace BurnForMoney.Functions.UnitTests.Domain
             Assert.Equal(TestFirstName, newAthlete.FirstName);
             Assert.Equal(Source.None, newAthlete.Source);
             Assert.Null(newAthlete.ExternalId);
-            Assert.Null(newAthlete.ActiveDirectoryId);
+            Assert.True(newAthlete.ActiveDirectoryId == Guid.Empty);
             Assert.Null(newAthlete.LastName);
             Assert.Null(newAthlete.ProfilePictureUrl);
         }
@@ -86,7 +86,7 @@ namespace BurnForMoney.Functions.UnitTests.Domain
             Assert.True(newAthlete.IsActive);
             Assert.Equal(newAthleteId, newAthlete.Id);
             Assert.Equal(newExternalId, newAthlete.ExternalId);
-            Assert.Null(newAthlete.ActiveDirectoryId);
+            Assert.True(newAthlete.ActiveDirectoryId == Guid.Empty);
             Assert.Equal(TestFirstName, newAthlete.FirstName);
             Assert.Equal(TestLastName, newAthlete.LastName);
             Assert.Equal(TestProfilePictureUrl, newAthlete.ProfilePictureUrl);
@@ -583,14 +583,14 @@ namespace BurnForMoney.Functions.UnitTests.Domain
             var athleteId = await CreateNewAthleteAsync();
 
             await Assert.ThrowsAsync<ArgumentNullException>("activeDirectoryId",
-                () => HandleCommand(new AssignActiveDirectoryIdToAthleteCommand(athleteId, string.Empty)));
+                () => HandleCommand(new AssignActiveDirectoryIdToAthleteCommand(athleteId, Guid.Empty)));
         }
 
         [Fact]
         public async Task Can_AssignActiveDirectoryId()
         {
             var athleteId = await CreateNewAthleteAsync();
-            const string athleteActiveDirectoryId = "6bc729fc-686d-4f44-bfc4-53f542e5bcf7";
+            var athleteActiveDirectoryId = Guid.NewGuid();
 
             await HandleCommand(new AssignActiveDirectoryIdToAthleteCommand(athleteId, athleteActiveDirectoryId));
 

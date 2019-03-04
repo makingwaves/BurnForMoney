@@ -28,6 +28,9 @@ namespace BurnForMoney.Functions.Strava.Functions.AuthorizeNewAthlete
                 athleteId = await context.CallActivityAsync<Guid>(FunctionsNames.A_GenerateAthleteId, null);
                 var athleteActiveDirectoryId = principal.Claims.SingleOrDefault(c =>
                     c.Type == "http://schemas.microsoft.com/identity/claims/objectidentifier")?.Value;
+                var athleteActiveDirectoryGuid = string.IsNullOrEmpty(athleteActiveDirectoryId)
+                    ? Guid.Empty
+                    : new Guid(athleteActiveDirectoryId);
 
                 // 2. Exchange and authorize athlete
                 var athlete = await context.CallActivityWithRetryAsync<AthleteDto>(FunctionsNames.A_ExchangeTokenAndGetAthleteSummary,
@@ -82,7 +85,7 @@ namespace BurnForMoney.Functions.Strava.Functions.AuthorizeNewAthlete
                 await context.CallActivityAsync(FunctionsNames.A_ProcessNewAthleteRequest, athlete);
                 await context.CallActivityAsync(FunctionsNames.A_AssignActiveDirectoryIdRequest,
                     new AthleteActiveDirectoryRelationDto
-                        {Id = athleteId, ActiveDirectoryId = athleteActiveDirectoryId});
+                        {Id = athleteId, ActiveDirectoryId = athleteActiveDirectoryGuid});
                 if (!context.IsReplaying)
                 {
                     log.LogInformation(FunctionsNames.O_AuthorizeNewAthlete, "Processed athlete's data.");

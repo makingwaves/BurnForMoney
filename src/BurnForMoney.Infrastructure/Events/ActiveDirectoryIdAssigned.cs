@@ -8,9 +8,9 @@ namespace BurnForMoney.Domain.Events
     public class ActiveDirectoryIdAssigned : AthleteEvent
     {
         public readonly Guid AthleteId;
-        public readonly string ActiveDirectoryId;
+        public readonly Guid ActiveDirectoryId;
         
-        public ActiveDirectoryIdAssigned(Guid athleteId, string activeDirectoryId)
+        public ActiveDirectoryIdAssigned(Guid athleteId, Guid activeDirectoryId)
         {
             AthleteId = athleteId;
             ActiveDirectoryId = activeDirectoryId;

@@ -12,7 +12,7 @@ namespace BurnForMoney.Functions.Domain
     {
         public string ExternalId { get; private set; }
 
-        public string ActiveDirectoryId { get; private set; }
+        public Guid ActiveDirectoryId { get; private set; }
 
         public string FirstName { get; private set; }
 
@@ -239,9 +239,9 @@ namespace BurnForMoney.Functions.Domain
             ApplyChange(new AthleteDeactivated(Id));
         }
 
-        public void AssignActiveDirectoryId(string activeDirectoryId)
+        public void AssignActiveDirectoryId(Guid activeDirectoryId)
         {
-            if (string.IsNullOrEmpty(activeDirectoryId))
+            if (activeDirectoryId == Guid.Empty)
             {
                 throw new ArgumentNullException(nameof(activeDirectoryId));
             }
