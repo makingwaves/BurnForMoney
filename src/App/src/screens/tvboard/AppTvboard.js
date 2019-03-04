@@ -13,7 +13,8 @@ import { withNamespaces, Trans } from 'react-i18next';
 
 
 class AppTvboard extends Component {
-    api_url = process.env.REACT_APP_DASHBOARD_API_URL;
+    internal_api_url = process.env.REACT_APP_DASHBOARD_API_URL;
+    public_api_url = process.env.REACT_APP_API_URL;
 
     monthNames = ["January", "February", "March", "April", "May", "June",
       "July", "August", "September", "October", "November", "December"
@@ -26,19 +27,21 @@ class AppTvboard extends Component {
             lang: localStorage.getItem('language') || 'en',
             ranking: [],
             rankingLoading: true,
+            current_month: ''
           };      
     }
 
     render() {
       const { t } = this.props;
       const currentDate = new Date();
+
         return (
           <div className="Tvboard">
             <div className="Tvboard__layout">
               <div className="Tvboard__layout-head"> 
                 <img className="Tvboard__layout-head-logo" src={logo} alt="Burn for Money" />
                 <div className="Tvboard__layout-head-date" >
-                  {t(this.monthNames[currentDate.getMonth()])} {currentDate.getFullYear()}
+                  {this.state.current_month}
                 </div>
               </div> 
               <div className="Tvboard__layout-board">
@@ -74,9 +77,12 @@ class AppTvboard extends Component {
     }
 
     fetchStats(){
-      const api_url = process.env.REACT_APP_API_URL;
-    
-      fetch(api_url+"api/totalnumbers")
+      const { t } = this.props;
+      
+      const currentDate = new Date();
+      this.state.current_month =  `${t(this.monthNames[currentDate.getMonth()])} ${currentDate.getFullYear()}`;
+
+      fetch(`${this.public_api_url}/api/totalnumbers`)
         .then(res => res.json())
         .then(
           (result) => { 
@@ -84,7 +90,7 @@ class AppTvboard extends Component {
           (error) => { this.setState({ bfmStats: null,}); console.error('Error:', error); }
         );
 
-      adalApiFetch(this.api_url+"api/ranking")
+      adalApiFetch(`${this.internal_api_url}/api/ranking?month=${currentDate.getMonth()}`)
         .then(res => res.json())
         .then(
           (result) => {this.setState({ranking: result,  rankingLoading: false });},
@@ -98,10 +104,8 @@ class AppTvboard extends Component {
       this.fetch_timer = setInterval(() => this.fetchStats(), 15*1000*60);
     }
     componentWillUnmount(){
-      console.log("Removing timer")
       clearInterval(this.fetch_timer);
     }
-
 }
 
 export default withNamespaces()(AppTvboard);
