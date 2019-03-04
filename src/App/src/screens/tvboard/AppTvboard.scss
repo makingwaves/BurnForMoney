@@ -16,18 +16,15 @@
         grid-template-areas:  "head" "content";
         
         &-head {
+            display: flex;
+            justify-content: center;
+
             background-color: #122833;
             grid-area: head;
             height: 150px;
             box-shadow: 0 2px 4px 0 #D8D8D8;
-            
-            display: -webkit-flexbox;
-            display: -ms-flexbox;
-            display: -webkit-flex;
-            
-            justify-content: center;
-
-            &_layout{
+        
+            &_layout {
                 display: grid;
             
                 grid-template-columns: 1fr  1fr 1fr;
@@ -57,15 +54,10 @@
             }
         }
 
-        &-board{
-            grid-area: content;
-            margin-top: 40px;
-
-            display: -webkit-flexbox;
-            display: -ms-flexbox;
-            display: -webkit-flex;
-            
+        &-board {
+            display: flex;
             justify-content: center;
+            grid-area: content;
 
             &__inner-layout {
                 display: grid;
@@ -79,6 +71,7 @@
             &__header {
                 font-size: 24px;
                 font-weight: 600;
+                margin-top: 40px;
                 margin-bottom: 28px;
             }
 

@@ -47,24 +47,24 @@ class AppTvboard extends Component {
               <div className="Tvboard__layout-board">
                 <div className="Tvboard__layout-board__inner-layout">
                   <div className="Tvboard__layout-board__summary"> 
-                    <div className="Tvboard__layout-board__header">
+                    <h4 className="Tvboard__layout-board__header">
                       {t("TV_Summary")}
-                    </div>
+                    </h4>
                     <div className="Tvboard__layout-board__summary-content">
                       <MonthSummaryStats data={this.state.bfmStats}/>
                     </div>
                   </div>
                   <div className="Tvboard__layout-board__category">
-                    <div className="Tvboard__layout-board__header">
+                    <h4 className="Tvboard__layout-board__header">
                       {t("TV_Result_per_category")}
-                    </div>
+                    </h4>
                     <div className="Tvboard__layout-board__category-content">
                       <MonthCategoryStats data={this.state.bfmStats} /></div>
                     </div>
                   <div className="Tvboard__layout-board__ranking">
-                    <div className="Tvboard__layout-board__header">
+                    <h4 className="Tvboard__layout-board__header">
                       {t("TV_TOP_10")}
-                    </div>
+                    </h4>
                     <div className="Tvboard__layout-board__ranking-content">
                       <RankingList ranking={this.state.ranking} rankingLoading={this.state.rankingLoading} /> 
                     </div>
