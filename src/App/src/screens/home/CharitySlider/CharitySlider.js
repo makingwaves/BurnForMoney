@@ -13,8 +13,7 @@ class CharitySlider extends Component {
       infinite: true,
       speed: 500,
       slidesToShow: 1,
-      slidesToScroll: 1,
-      initialSlide: 1
+      slidesToScroll: 1
     };
 
     let slides;
@@ -42,7 +41,7 @@ class CharitySlider extends Component {
     );
   }
 
-  componentDidMount() {
+  componentWillUpdate() {
     this.slider.slickGoTo(0);
   }
 }
