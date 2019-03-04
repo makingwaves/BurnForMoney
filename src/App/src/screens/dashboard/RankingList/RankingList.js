@@ -35,8 +35,8 @@ const RankingList = (props) =>{
                 <li key={i.athleteId} className={`RankingListItem ${i.rank === 1 ? 'leader' : ''}`}>
                   <div className="RankingListItem-rank">{i.rank}</div>
                   <div className="RankingListItem-avatar">
-                    <Avatar name={`${i.athleteFirstName} ${i.athleteLastName}`} size="50" round={true} />
-                    {/* <img src={i.profilePictureUrl} alt="" className="RankingListItem-image"/> */}
+                    {/* <Avatar name={`${i.athleteFirstName} ${i.athleteLastName}`} size="50" round={true} /> */}
+                    <img src={`https://api.adorable.io/avatars/50/${i.athleteFirstName}${i.athleteLastName}`} alt="" className="RankingListItem-image"/>
                   </div>
                   <div className="RankingListItem-name">{`${i.athleteFirstName} ${i.athleteLastName}`}</div>
                   <div className="RankingListItem-points">{i.points}</div>
