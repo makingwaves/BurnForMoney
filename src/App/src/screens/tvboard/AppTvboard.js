@@ -37,10 +37,12 @@ class AppTvboard extends Component {
           <div className="Tvboard">
             <div className="Tvboard__layout">
               <div className="Tvboard__layout-head"> 
-                <img className="Tvboard__layout-head-logo" src={logo} alt="Burn for Money" />
-                <div className="Tvboard__layout-head-date" >
-                  {this.state.current_month}
-                </div>
+                <div className="Tvboard__layout-head_layout"> 
+                  <img className="Tvboard__layout-head-logo" src={logo} alt="Burn for Money" />
+                  <div className="Tvboard__layout-head-date" >
+                    {this.state.current_month}
+                  </div>
+                </div> 
               </div> 
               <div className="Tvboard__layout-board">
                 <div className="Tvboard__layout-board__inner-layout">

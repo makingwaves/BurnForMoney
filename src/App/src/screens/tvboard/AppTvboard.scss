@@ -10,7 +10,6 @@
     
     &__layout {
         display: grid;
-        grid-column-gap: 10px;
         
         grid-template-columns: 1fr;
         grid-template-rows: 0fr 1fr;
@@ -22,20 +21,39 @@
             height: 150px;
             box-shadow: 0 2px 4px 0 #D8D8D8;
             
+            display: -webkit-flexbox;
+            display: -ms-flexbox;
+            display: -webkit-flex;
+            
+            justify-content: center;
+
+            &_layout{
+                display: grid;
+            
+                grid-template-columns: 1fr  1fr 1fr;
+                grid-template-rows: 1fr;
+                grid-template-areas:  "header_logo header_spacer header_date";
+    
+                grid-column-gap: 100px;   
+            }
+            
             &-logo {
-                margin: 33px 0px 0px 214px;
+                grid-area: header_logo;
+                margin-top: 33px;
                 height: 85px;
             }
 
             &-date {
-                float: right;
+                grid-area: header_date;
+
                 color: #fff;
+                width: 430px;
+                margin-top: 55px;
+
+                text-align: right;
                 font-weight: 600;
                 font-size: 36px;
                 line-height: 43px;
-                
-                text-align: right;
-                margin: 55px 214px 0px 0px;
             }
         }
 
@@ -56,7 +74,6 @@
                 grid-template-columns: 1fr 1fr 1fr;
                 grid-template-rows: 1fr;
                 grid-template-areas:  "summary category ranking";
-
             }
             
             &__header {
