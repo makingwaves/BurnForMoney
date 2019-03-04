@@ -1,6 +1,7 @@
 import React from 'react';
 import './RankingList.css';
 import loader from 'img/loader.gif';
+import Avatar from 'react-avatar';
 
 const RankingList = (props) =>{
   let rank = 0;
@@ -32,10 +33,10 @@ const RankingList = (props) =>{
             if((i.athleteFirstName+i.athleteLastName).toLowerCase().includes(substring)){
               return(
                 <li key={i.athleteId} className={`RankingListItem ${i.rank === 1 ? 'leader' : ''}`}>
-
                   <div className="RankingListItem-rank">{i.rank}</div>
                   <div className="RankingListItem-avatar">
-                    <img src={i.profilePictureUrl} alt="" className="RankingListItem-image"/>
+                    <Avatar name={`${i.athleteFirstName} ${i.athleteLastName}`} size="50" round={true} />
+                    {/* <img src={i.profilePictureUrl} alt="" className="RankingListItem-image"/> */}
                   </div>
                   <div className="RankingListItem-name">{`${i.athleteFirstName} ${i.athleteLastName}`}</div>
                   <div className="RankingListItem-points">{i.points}</div>
