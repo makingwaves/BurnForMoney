@@ -89,7 +89,7 @@ class AppTvboard extends Component {
           (error) => {this.setState({ bfmStats: null,}); console.error('Error:', error); }
         );
 
-      adalApiFetch(`${this.internal_api_url}/api/ranking?month=${currentDate.getMonth()}&year=${currentDate.getFullYear()}`)
+      adalApiFetch(`${this.internal_api_url}/api/ranking?month=${currentDate.getMonth()+1}&year=${currentDate.getFullYear()}`)
         .then(res => res.json())
         .then(
           (result) => {this.setState({ranking: result,  rankingLoading: false });},
