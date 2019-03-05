@@ -32,10 +32,9 @@ const RankingList = (props) =>{
             if((i.athleteFirstName+i.athleteLastName).toLowerCase().includes(substring)){
               return(
                 <li key={i.athleteId} className={`RankingListItem ${i.rank === 1 ? 'leader' : ''}`}>
-
                   <div className="RankingListItem-rank">{i.rank}</div>
                   <div className="RankingListItem-avatar">
-                    <img src={i.profilePictureUrl} alt="" className="RankingListItem-image"/>
+                    <img src={`https://api.adorable.io/avatars/50/${encodeURIComponent(i.athleteId)}`} alt="" className="RankingListItem-image"/>
                   </div>
                   <div className="RankingListItem-name">{`${i.athleteFirstName} ${i.athleteLastName}`}</div>
                   <div className="RankingListItem-points">{i.points}</div>
