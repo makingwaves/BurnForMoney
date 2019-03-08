@@ -33,7 +33,7 @@ namespace BurnForMoney.Functions.Presentation.Views
                     ActivityTime = message.StartDate,
                     ActivityType = message.ActivityType,
                     Category = message.ActivityCategory.ToString(),
-                    Distance = message.DistanceInMeters,
+                    Distance = Convert.ToInt32(message.DistanceInMeters),
                     MovingTime = Convert.ToInt32(message.MovingTimeInMinutes),
                     Source = message.Source.ToString(),
                     Points = message.Points
@@ -56,7 +56,7 @@ namespace BurnForMoney.Functions.Presentation.Views
                 activity.ActivityTime = message.StartDate;
                 activity.ActivityType = message.ActivityType;
                 activity.Category = message.ActivityCategory.ToString();
-                activity.Distance = message.DistanceInMeters;
+                activity.Distance = Convert.ToInt32(message.DistanceInMeters);
                 activity.MovingTime = Convert.ToInt32(message.MovingTimeInMinutes);
                 activity.Points = message.Points;
 
