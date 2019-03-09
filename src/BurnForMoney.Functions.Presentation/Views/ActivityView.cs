@@ -25,6 +25,12 @@ namespace BurnForMoney.Functions.Presentation.Views
             {
                 await conn.OpenWithRetryAsync();
 
+                var activity = conn.Get<Activity>(message.ActivityId);
+                if (activity != null)
+                {
+                    return;
+                }
+
                 var row = new Activity
                 {
                     Id = message.ActivityId,

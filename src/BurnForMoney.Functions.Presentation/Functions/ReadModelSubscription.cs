@@ -33,28 +33,35 @@ namespace BurnForMoney.Functions.Presentation.Functions
                 throw new ArgumentException(@event.EventType);
             }
 
-            switch (receivedEvent)
+            try 
             {
-                case AthleteCreated created:
-                    await new AthleteView(configuration.ConnectionStrings.SqlDbConnectionString).HandleAsync(created);
-                    break;
-                case AthleteDeactivated deactivated:
-                    await new AthleteView(configuration.ConnectionStrings.SqlDbConnectionString).HandleAsync(deactivated);
-                    break;
-                case AthleteActivated activated:
-                    await new AthleteView(configuration.ConnectionStrings.SqlDbConnectionString).HandleAsync(activated);
-                    break;
-                case ActivityAdded activityAdded:
-                    await new ActivityView(configuration.ConnectionStrings.SqlDbConnectionString).HandleAsync(activityAdded);
-                    break;
-                case ActivityUpdated_V2 activityUpdated:
-                    await new ActivityView(configuration.ConnectionStrings.SqlDbConnectionString).HandleAsync(activityUpdated);
-                    break;
-                case ActivityDeleted_V2 activityDeleted:
-                    await new ActivityView(configuration.ConnectionStrings.SqlDbConnectionString).HandleAsync(activityDeleted);
-                    break;
-                default:
-                    break;
+                switch (receivedEvent)
+                {
+                    case AthleteCreated created:
+                        await new AthleteView(configuration.ConnectionStrings.SqlDbConnectionString).HandleAsync(created);
+                        break;
+                    case AthleteDeactivated deactivated:
+                        await new AthleteView(configuration.ConnectionStrings.SqlDbConnectionString).HandleAsync(deactivated);
+                        break;
+                    case AthleteActivated activated:
+                        await new AthleteView(configuration.ConnectionStrings.SqlDbConnectionString).HandleAsync(activated);
+                        break;
+                    case ActivityAdded activityAdded:
+                        await new ActivityView(configuration.ConnectionStrings.SqlDbConnectionString).HandleAsync(activityAdded);
+                        break;
+                    case ActivityUpdated_V2 activityUpdated:
+                        await new ActivityView(configuration.ConnectionStrings.SqlDbConnectionString).HandleAsync(activityUpdated);
+                        break;
+                    case ActivityDeleted_V2 activityDeleted:
+                        await new ActivityView(configuration.ConnectionStrings.SqlDbConnectionString).HandleAsync(activityDeleted);
+                        break;
+                    default:
+                        break;
+                }
+            } catch (Exception ex)
+            {
+                log.LogError(ex, $"{ex.Message}");
+                throw;
             }
         }
     }
