@@ -47,13 +47,13 @@ namespace BurnForMoney.Functions.Presentation.Functions
                         await new AthleteView(configuration.ConnectionStrings.SqlDbConnectionString).HandleAsync(activated);
                         break;
                     case ActivityAdded activityAdded:
-                        await new ActivityView(configuration.ConnectionStrings.SqlDbConnectionString).HandleAsync(activityAdded);
+                        await new ActivityView(configuration.ConnectionStrings.SqlDbConnectionString, log).HandleAsync(activityAdded);
                         break;
                     case ActivityUpdated_V2 activityUpdated:
-                        await new ActivityView(configuration.ConnectionStrings.SqlDbConnectionString).HandleAsync(activityUpdated);
+                        await new ActivityView(configuration.ConnectionStrings.SqlDbConnectionString, log).HandleAsync(activityUpdated);
                         break;
                     case ActivityDeleted_V2 activityDeleted:
-                        await new ActivityView(configuration.ConnectionStrings.SqlDbConnectionString).HandleAsync(activityDeleted);
+                        await new ActivityView(configuration.ConnectionStrings.SqlDbConnectionString, log).HandleAsync(activityDeleted);
                         break;
                     default:
                         break;

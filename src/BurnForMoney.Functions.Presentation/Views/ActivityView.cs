@@ -7,16 +7,19 @@ using BurnForMoney.Functions.Presentation.Views.Poco;
 using BurnForMoney.Infrastructure.Persistence.Sql;
 using Dapper;
 using DapperExtensions;
+using Microsoft.Extensions.Logging;
 
 namespace BurnForMoney.Functions.Presentation.Views
 {
     public class ActivityView : IHandles<ActivityAdded>, IHandles<ActivityDeleted_V2>, IHandles<ActivityUpdated_V2>
     {
         private readonly string _sqlConnectionString;
+        private readonly ILogger _log;
 
-        public ActivityView(string sqlConnectionString)
+        public ActivityView(string sqlConnectionString, ILogger log)
         {
             _sqlConnectionString = sqlConnectionString;
+            _log = log;
         }
 
         public async Task HandleAsync(ActivityAdded message)
@@ -28,6 +31,7 @@ namespace BurnForMoney.Functions.Presentation.Views
                 var activity = conn.Get<Activity>(message.ActivityId);
                 if (activity != null)
                 {
+                    _log.LogWarning($"Detected duplicated event propagation for activity with id {message.ActivityId}.");
                     return;
                 }
 
