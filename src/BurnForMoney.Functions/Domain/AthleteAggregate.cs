@@ -123,7 +123,12 @@ namespace BurnForMoney.Functions.Domain
 
             if (Activities.Any(activity => activity.Id.Equals(id)))
             {
-                throw new InvalidOperationException("Cannot add the same activity twice.");
+                throw new InvalidOperationException($"Cannot add the same activity twice. Activity id: {id}");
+            }
+
+            if (Activities.Any(activity => activity.ExternalId.Equals(ExternalId) && activity.Source.Equals(source)))
+            {
+                throw new InvalidOperationException($"Cannot add the same activity twice. External id: [{externalId}].");
             }
 
             var category = MapToActivityCategory(activityType, source);
