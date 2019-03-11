@@ -38,6 +38,10 @@ namespace BurnForMoney.Functions.Presentation.Functions
                 case AthleteCreated created:
                     await new AthleteView(configuration.ConnectionStrings.SqlDbConnectionString).HandleAsync(created);
                     break;
+                case ActiveDirectoryIdAssigned activeDirectoryIdAssigned:
+                    await new AthleteView(configuration.ConnectionStrings.SqlDbConnectionString).HandleAsync(
+                        activeDirectoryIdAssigned);
+                    break;
                 case AthleteDeactivated deactivated:
                     await new AthleteView(configuration.ConnectionStrings.SqlDbConnectionString).HandleAsync(deactivated);
                     break;

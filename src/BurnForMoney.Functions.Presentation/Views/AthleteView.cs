@@ -42,6 +42,23 @@ namespace BurnForMoney.Functions.Presentation.Views
             }
         }
 
+        public async Task HandleAsync(ActiveDirectoryIdAssigned message)
+        {
+            using (var conn = SqlConnectionFactory.Create(_sqlConnectionString))
+            {
+                await conn.OpenWithRetryAsync();
+
+                var affectedRows = await conn.ExecuteAsync(
+                    @"UPDATE dbo.Athletes SET ActiveDirectoryId=@activeDirectoryId WHERE Id=@Id",
+                    new {Id = message.AthleteId, activeDirectoryId = message.ActiveDirectoryId});
+
+                if (affectedRows != 1)
+                {
+                    throw new FailedToAssignActiveDirectoryIdException(message.AthleteId);
+                }
+            }
+        }
+
         public async Task HandleAsync(AthleteDeactivated message)
         {
             using (var conn = SqlConnectionFactory.Create(_sqlConnectionString))
