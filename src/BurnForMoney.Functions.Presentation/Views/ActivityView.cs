@@ -28,8 +28,11 @@ namespace BurnForMoney.Functions.Presentation.Views
             {
                 await conn.OpenWithRetryAsync();
 
-                var activity = conn.Get<Activity>(message.ActivityId);
-                if (activity != null)
+                var exists = await conn.ExecuteScalarAsync<bool>("SELECT COUNT(1) FROM dbo.Activities WHERE Id=@ActivityId", new
+                {
+                    ActivityId = message.ActivityId
+                });
+                if (exists)
                 {
                     _log.LogWarning($"Detected duplicated event propagation for activity with id {message.ActivityId}.");
                     return;
