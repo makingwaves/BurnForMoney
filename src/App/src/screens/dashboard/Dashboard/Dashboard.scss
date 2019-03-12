@@ -6,6 +6,7 @@
   display: grid;
   grid-template-columns: 185px 1fr;
   grid-template-areas: "side main";
+
   @media only screen and (max-width: 600px) {
     grid-template-columns: 1fr;
     grid-template-areas:
@@ -51,6 +52,9 @@
     grid-template-areas:
       "summary results"
       "contribution ranking";
+    grid-column-gap: 40px;
+    grid-row-gap: 30px;
+
     &Item{
       &-status{
         grid-area: summary;

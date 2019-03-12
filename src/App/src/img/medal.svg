@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="25px" height="25px" viewBox="0 0 25 25" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 52.1 (67048) - http://www.bohemiancoding.com/sketch -->
+    <title>Group 13</title>
+    <desc>Created with Sketch.</desc>
+    <g id="BFM-Dashboard" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" stroke-linejoin="round">
+        <g id="Dashboard" transform="translate(-1097.000000, -200.000000)">
+            <g id="Group-27" transform="translate(965.000000, 177.000000)">
+                <g id="Group-13" transform="translate(133.000000, 24.000000)">
+                    <path d="M19.042,16 C19.042,20.143 15.684,23.5 11.542,23.5 C7.399,23.5 4.042,20.143 4.042,16 C4.042,11.858 7.399,8.5 11.542,8.5 C15.684,8.5 19.042,11.858 19.042,16 Z" id="Stroke-1" stroke="#DCDCE1"></path>
+                    <polygon id="Stroke-3" stroke="#2BB9FF" points="11.542 11.5 13.042 14.5 16.042 14.5 13.542 16.5 14.542 20 11.542 18.124 8.542 20 9.542 16.5 7.042 14.5 10.042 14.5"></polygon>
+                    <polyline id="Stroke-5" stroke="#DCDCE1" stroke-linecap="round" points="16.7402 7.4697 20.0422 0.4997 17.5422 0.4997 14.6792 6.5097"></polyline>
+                    <polyline id="Stroke-7" stroke="#DCDCE1" stroke-linecap="round" points="18.5303 8.855 22.5423 0.5 20.0423 0.5 16.7403 7.47"></polyline>
+                    <polyline id="Stroke-9" stroke="#DCDCE1" stroke-linecap="round" points="6.3008 7.4697 2.9998 0.4997 5.4998 0.4997 8.3628 6.5097"></polyline>
+                    <polyline id="Stroke-11" stroke="#DCDCE1" stroke-linecap="round" points="4.5098 8.855 0.4998 0.5 2.9998 0.5 6.3008 7.47"></polyline>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

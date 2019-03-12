@@ -5,6 +5,7 @@ import './Dashboard.css';
 import DashboardHeader from '../DashboardHeader/DashboardHeader.js';
 import RankingList from '../RankingList/RankingList.js';
 import RankingFilter from '../RankingFilter/RankingFilter.js';
+import PointsAndMoney from '../PointsAndMoney/PointsAndMoney.js';
 
 const Dashboard = (props) =>{
   return (
@@ -12,10 +13,10 @@ const Dashboard = (props) =>{
       <DashboardHeader header="Dashboard" />
       <div className="Dashboard-content DashboardGrid">
         <div className="DashboardGridItem DashboardGridItem-summary">
-          <p>Summry</p>
+          <p>Summary</p>
         </div>
         <div className="DashboardGridItem DashboardGridItem-results">
-          Results
+          <PointsAndMoney />
         </div>
         <div className="DashboardGridItem DashboardGridItem-ranking">
           <div className="DashboardGridItem-rankingHeader">
