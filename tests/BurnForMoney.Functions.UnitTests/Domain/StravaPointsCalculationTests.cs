@@ -90,7 +90,7 @@ namespace BurnForMoney.Functions.UnitTests.Domain
         {
             await HandleCommand(new AddActivityCommand {
                 Id = Guid.NewGuid(),
-                ExternalId = "ex_id",
+                ExternalId = Guid.NewGuid().ToString(),
                 AthleteId = (await GetAthleteAsync(_athleteId)).Id,
                 StartDate = new DateTime(2018,1,1),
                 ActivityType = type,
