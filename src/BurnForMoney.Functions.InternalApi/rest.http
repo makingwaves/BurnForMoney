@@ -75,3 +75,9 @@ GET {{baseUrl}}/ranking?take=5&year=2018
 
 ### Get ranking, top 5, month 2, year 2019
 GET {{baseUrl}}/ranking?take=5&month=2&year=2019
+
+
+###### ------------------------- DASHBOARD 
+
+### Get dashboard header, month 2, year 2019
+GET {{baseUrl}}/dashboardtop?month=2&year=2019
