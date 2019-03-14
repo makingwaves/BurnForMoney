@@ -31,11 +31,15 @@ namespace BurnForMoney.Infrastructure.Persistence.Repositories
             {
                 await conn.OpenWithRetryAsync();
 
-                var json = await conn.QuerySingleAsync<string>("SELECT Results FROM dbo.[MonthlyResultsSnapshots] WHERE Date=@Date", new {
+                var json = await conn.QuerySingleOrDefaultAsync<string>("SELECT Results FROM dbo.[MonthlyResultsSnapshots] WHERE Date=@Date", new {
                     Date = $"{year ?? DateTime.UtcNow.Year}/{month ?? DateTime.UtcNow.Month}"
                 }).ConfigureAwait(false);
 
-                var result = JsonConvert.DeserializeObject<DashboardTop>(json);
+                var result = new DashboardTop();
+                if (!string.IsNullOrWhiteSpace(json))
+                {
+                    result = JsonConvert.DeserializeObject<DashboardTop>(json);
+                }
 
                 return result;
             }
