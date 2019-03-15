@@ -14,10 +14,10 @@ namespace BurnForMoney.Functions.Strava.Functions.HandleExpiredTokens
     {
         [FunctionName(FunctionsNames.Q_DeactivateExpiredAccessTokens)]
         public static async Task Q_DeactivateExpiredAccessTokens(ILogger log, 
-            [QueueTrigger(StravaQueueNames.UnauthorizedAthletes)] Guid athleteId,
+            [QueueTrigger(StravaQueueNames.UnauthorizedAthletes)] string athleteId,
             [Configuration] ConfigurationRoot configuration)
         {
-            await AccessTokensStore.DeactivateAccessTokenOfAsync(athleteId, configuration.Strava.AccessTokensKeyVaultUrl);
+            await AccessTokensStore.DeactivateAccessTokenOfAsync(Guid.Parse(athleteId), configuration.Strava.AccessTokensKeyVaultUrl);
             log.LogInformation(nameof(FunctionsNames.Q_DeactivateExpiredAccessTokens), $"Disabled access token for athlete: {athleteId}.");
         }
     }

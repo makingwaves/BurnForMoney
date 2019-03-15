@@ -1,0 +1,108 @@
+@import "style/variables.scss";
+
+.Tvboard {
+    background-color: #F5F6FA;
+
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    
+    &__layout {
+        display: grid;
+        
+        grid-template-columns: 1fr;
+        grid-template-rows: 0fr 1fr;
+        grid-template-areas:  "head" "content";
+        
+        &-head {
+            display: flex;
+            justify-content: center;
+
+            background-color: #122833;
+            grid-area: head;
+            height: 150px;
+            box-shadow: 0 2px 4px 0 #D8D8D8;
+        
+            &_layout {
+                display: grid;
+            
+                grid-template-columns: 1fr  1fr 1fr;
+                grid-template-rows: 1fr;
+                grid-template-areas:  "header_logo header_spacer header_date";
+    
+                grid-column-gap: 100px;   
+            }
+            
+            &-logo {
+                grid-area: header_logo;
+                margin-top: 33px;
+                height: 85px;
+            }
+
+            &-date {
+                grid-area: header_date;
+
+                color: #fff;
+                width: 430px;
+                margin-top: 55px;
+
+                text-align: right;
+                font-weight: 600;
+                font-size: 36px;
+                line-height: 43px;
+            }
+        }
+
+        &-board {
+            display: flex;
+            justify-content: center;
+            grid-area: content;
+
+            &__inner-layout {
+                display: grid;
+                grid-column-gap: 100px;
+                
+                grid-template-columns: 1fr 1fr 1fr;
+                grid-template-rows: 1fr;
+                grid-template-areas:  "summary category ranking";
+            }
+            
+            &__header {
+                font-size: 24px;
+                font-weight: 600;
+                margin-top: 40px;
+                margin-bottom: 28px;
+            }
+
+            &__summary{
+                grid-area: summary;
+                &-content {
+                    height: 100%;
+                }
+            }
+
+            &__category {
+                grid-area: category;
+
+                &-header {
+                    
+                }
+
+                &-content {
+                    height: 100%;
+                }
+            }
+    
+            &__ranking {
+                grid-area: ranking;
+
+                &-content {
+                    padding: 27px 30px 25px 23px;
+                    background-color: #fff;
+                    box-shadow: 1px 2px 5px 0 rgba(0,0,0,0.1);
+                }
+            }
+        }
+    }
+}

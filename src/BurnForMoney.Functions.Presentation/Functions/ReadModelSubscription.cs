@@ -33,36 +33,46 @@ namespace BurnForMoney.Functions.Presentation.Functions
                 throw new ArgumentException(@event.EventType);
             }
 
-            switch (receivedEvent)
+            try
             {
-                case AthleteCreated created:
-                    await new AthleteView(configuration.ConnectionStrings.SqlDbConnectionString).HandleAsync(created);
-                    break;
-                case ActiveDirectoryIdAssigned activeDirectoryIdAssigned:
-                    await new AthleteView(configuration.ConnectionStrings.SqlDbConnectionString).HandleAsync(
-                        activeDirectoryIdAssigned);
-                    break;
-                case AthleteDeactivated deactivated:
-                    await new AthleteView(configuration.ConnectionStrings.SqlDbConnectionString).HandleAsync(deactivated);
-                    break;
-                case AthleteActivated activated:
-                    await new AthleteView(configuration.ConnectionStrings.SqlDbConnectionString).HandleAsync(activated);
-                    break;
-                case ActivityAdded activityAdded:
-                    await new ActivityView(configuration.ConnectionStrings.SqlDbConnectionString).HandleAsync(activityAdded);
-                    break;
-                case ActivityUpdated_V2 activityUpdated:
-                    await new ActivityView(configuration.ConnectionStrings.SqlDbConnectionString).HandleAsync(activityUpdated);
-                    break;
-                case ActivityDeleted_V2 activityDeleted:
-                    await new ActivityView(configuration.ConnectionStrings.SqlDbConnectionString).HandleAsync(activityDeleted);
-                    break;
-                case PointsGranted _:
-                    break;
-                case PointsLost _:
-                    break;
-                default:
-                    throw new NotSupportedException($"Event type: {receivedEvent.GetType()} is not supported.");
+                switch (receivedEvent)
+                {
+                    case AthleteCreated created:
+                        await new AthleteView(configuration.ConnectionStrings.SqlDbConnectionString).HandleAsync(
+                            created);
+                        break;
+                    case ActiveDirectoryIdAssigned activeDirectoryIdAssigned:
+                        await new AthleteView(configuration.ConnectionStrings.SqlDbConnectionString).HandleAsync(
+                            activeDirectoryIdAssigned);
+                        break;
+                    case AthleteDeactivated deactivated:
+                        await new AthleteView(configuration.ConnectionStrings.SqlDbConnectionString).HandleAsync(
+                            deactivated);
+                        break;
+                    case AthleteActivated activated:
+                        await new AthleteView(configuration.ConnectionStrings.SqlDbConnectionString).HandleAsync(
+                            activated);
+                        break;
+                    case ActivityAdded activityAdded:
+                        await new ActivityView(configuration.ConnectionStrings.SqlDbConnectionString, log).HandleAsync(
+                            activityAdded);
+                        break;
+                    case ActivityUpdated_V2 activityUpdated:
+                        await new ActivityView(configuration.ConnectionStrings.SqlDbConnectionString, log).HandleAsync(
+                            activityUpdated);
+                        break;
+                    case ActivityDeleted_V2 activityDeleted:
+                        await new ActivityView(configuration.ConnectionStrings.SqlDbConnectionString, log).HandleAsync(
+                            activityDeleted);
+                        break;
+                    default:
+                        throw new NotSupportedException($"Event type: {receivedEvent.GetType()} is not supported.");
+                }
+            }
+            catch (Exception ex)
+            {
+                log.LogError(ex, $"{ex.Message}");
+                throw;
             }
         }
     }
