@@ -1,5 +1,4 @@
-﻿using System.Data;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using BurnForMoney.Domain.Events;
 using BurnForMoney.Functions.Presentation.Exceptions;
 using BurnForMoney.Functions.Presentation.Views.Poco;

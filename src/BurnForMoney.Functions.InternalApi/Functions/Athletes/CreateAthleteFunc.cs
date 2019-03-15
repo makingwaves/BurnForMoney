@@ -13,7 +13,9 @@ namespace BurnForMoney.Functions.InternalApi.Functions.Athletes
     public static class CreateAthleteFunc
     {
         [FunctionName(FunctionsNames.AddAthlete)]
-        public static async Task<IActionResult> CreateAthleteAsync([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "athlete")] HttpRequest req, ExecutionContext executionContext,
+        public static async Task<IActionResult> CreateAthleteAsync(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "athlete")]
+            HttpRequest req, ExecutionContext executionContext,
             ILogger log)
         {
             var requestData = await req.ReadAsStringAsync();

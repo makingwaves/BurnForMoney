@@ -1,6 +1,4 @@
 using System;
-using System.Linq;
-using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using BurnForMoney.Functions.Shared.Extensions;
@@ -16,21 +14,16 @@ namespace BurnForMoney.Functions.Strava.Functions.AuthorizeNewAthlete
     {
         [FunctionName(FunctionsNames.O_AuthorizeNewAthlete)]
         public static async Task O_AuthorizeNewAthlete(ILogger log,
-            [OrchestrationTrigger] DurableOrchestrationContext context, ExecutionContext executionContext,
-            ClaimsPrincipal principal)
+            [OrchestrationTrigger] DurableOrchestrationContext context, ExecutionContext executionContext)
         {
             var authorizationCode = context.GetInput<string>();
 
             var athleteId = Guid.Empty;
             try
             {
-                // 1. Generate athlete ids
+                // 1. Generate athlete id
+
                 athleteId = await context.CallActivityAsync<Guid>(FunctionsNames.A_GenerateAthleteId, null);
-                var athleteActiveDirectoryId = principal.Claims.SingleOrDefault(c =>
-                    c.Type == "http://schemas.microsoft.com/identity/claims/objectidentifier")?.Value;
-                var athleteActiveDirectoryGuid = string.IsNullOrEmpty(athleteActiveDirectoryId)
-                    ? Guid.Empty
-                    : new Guid(athleteActiveDirectoryId);
 
                 // 2. Exchange and authorize athlete
                 var athlete = await context.CallActivityWithRetryAsync<AthleteDto>(FunctionsNames.A_ExchangeTokenAndGetAthleteSummary,
@@ -83,9 +76,7 @@ namespace BurnForMoney.Functions.Strava.Functions.AuthorizeNewAthlete
 
                 // 5. Process a new athlete request
                 await context.CallActivityAsync(FunctionsNames.A_ProcessNewAthleteRequest, athlete);
-                await context.CallActivityAsync(FunctionsNames.A_AssignActiveDirectoryIdRequest,
-                    new AthleteActiveDirectoryRelationDto
-                        {Id = athleteId, ActiveDirectoryId = athleteActiveDirectoryGuid});
+                
                 if (!context.IsReplaying)
                 {
                     log.LogInformation(FunctionsNames.O_AuthorizeNewAthlete, "Processed athlete's data.");

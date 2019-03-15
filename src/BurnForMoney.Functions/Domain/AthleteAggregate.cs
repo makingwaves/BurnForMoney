@@ -75,9 +75,7 @@ namespace BurnForMoney.Functions.Domain
         }
 
         public Athlete()
-        {
-
-        }
+        {}
 
         public Athlete(Guid id, string externalId, string firstName, string lastName,
             string profilePictureUrl, Source source)

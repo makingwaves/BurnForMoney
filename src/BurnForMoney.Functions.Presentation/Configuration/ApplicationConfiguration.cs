@@ -22,8 +22,7 @@ namespace BurnForMoney.Functions.Presentation.Configuration
                 {
                     ConnectionStrings = new ConnectionStringsSection
                     {
-                        SqlDbConnectionString = config["ConnectionStrings:Sql"],
-                        AzureWebJobsStorage = config["AzureWebJobsStorage"]
+                        SqlDbConnectionString = config["ConnectionStrings:Sql"]
                     }
                 };
 
