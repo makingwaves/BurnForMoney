@@ -30,13 +30,16 @@ namespace BurnForMoney.Functions.Strava.External.Strava.Api
             {
                 RequestFormat = DataFormat.Json
             };
+
             var payLoad = new TokenExchangeRequest
             {
                 ClientId = clientId,
                 ClientSecret = clientSecret,
                 Code = code
             };
+
             request.AddParameter("application/json", payLoad.ToJson(), ParameterType.RequestBody);
+
             var response = _restClient.ExecuteWithRetry(request);
             response.ThrowExceptionIfNotSuccessful();
 
@@ -61,7 +64,7 @@ namespace BurnForMoney.Functions.Strava.External.Strava.Api
 
             return TokenRefreshResult.FromJson(response.Content);
         }
-        
+
         public StravaActivity GetActivity(string accessToken, string activityId)
         {
             var request = new RestRequest($"api/v3/activities/{activityId}");
@@ -108,15 +111,15 @@ namespace BurnForMoney.Functions.Strava.External.Strava.Api
             return activities;
         }
 
-        public void DeauthorizeAthlete(string accessToken)
-        {
-            var request = new RestRequest("/oauth/deauthorize", Method.POST);
-            request.AddQueryParameter("access_token", accessToken);
-            var response = _restClient.ExecuteWithRetry(request);
-            response.ThrowExceptionIfNotSuccessful();
-        }
+//        public void DeauthorizeAthlete(string accessToken)
+//        {
+//            var request = new RestRequest("/oauth/deauthorize", Method.POST);
+//            request.AddQueryParameter("access_token", accessToken);
+//            var response = _restClient.ExecuteWithRetry(request);
+//            response.ThrowExceptionIfNotSuccessful();
+//        }
     }
-
+//
     internal class ActivityNotFoundException : Exception 
     {
         public ActivityNotFoundException(string id)

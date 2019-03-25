@@ -8,7 +8,6 @@ namespace BurnForMoney.Functions.Presentation.Exceptions
     {
         public FailedToActivateAthleteException(Guid athleteId)
             : base($"Failed to activate athlete: [{athleteId}].")
-        {
-        }
+        {}
     }
 }

@@ -3,7 +3,13 @@ using System.Threading.Tasks;
 using BurnForMoney.Functions.Infrastructure.Queues;
 using BurnForMoney.Functions.InternalApi.Commands;
 using BurnForMoney.Functions.InternalApi.Functions.Activities.Dto;
+using BurnForMoney.Functions.InternalApi.Configuration;
 using BurnForMoney.Functions.Shared.Extensions;
+using BurnForMoney.Functions.Shared.Functions.Extensions;
+using BurnForMoney.Infrastructure.Authorization;
+using BurnForMoney.Infrastructure.Authorization.Extensions;
+using BurnForMoney.Infrastructure.Persistence.Repositories;
+using BurnForMoney.Infrastructure.Persistence.Repositories.Dto;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
@@ -19,9 +25,20 @@ namespace BurnForMoney.Functions.InternalApi.Functions.Activities
         [FunctionName(FunctionsNames.UpdateActivity)]
         public static async Task<IActionResult> Async([HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "athlete/{athleteId:guid}/activities/{activityId:guid}")] HttpRequest req, ExecutionContext executionContext,
             string athleteId, string activityId,
-            ILogger log,
-            [Queue(AppQueueNames.UpdateActivityRequests, Connection = "AppQueuesStorage")] CloudQueue outputQueue)
+            ILogger log, [Configuration] ConfigurationRoot configuration,
+            [Queue(AppQueueNames.UpdateActivityRequests, Connection = "AppQueuesStorage")] CloudQueue outputQueue,
+            [BfmAuthorize] BfmPrincipal principal)
         {
+            var athleteIdGuid = Guid.Parse(athleteId);
+            var activityIdGuid = Guid.Parse(activityId);
+
+            var repository = new AthleteReadRepository(configuration.ConnectionStrings.SqlDbConnectionString);
+            var athlete = await repository.GetAthleteByAadIdAsync(principal.AadId);
+
+            if (!athlete.IsValid() || athlete.Id != athleteIdGuid)
+                return new StatusCodeResult(StatusCodes.Status400BadRequest);
+
+
             var requestData = await req.ReadAsStringAsync();
 
             ActivityAddOrUpdateRequest model;
@@ -46,8 +63,8 @@ namespace BurnForMoney.Functions.InternalApi.Functions.Activities
 
             var command = new UpdateActivityCommand
             {
-                Id = Guid.Parse(activityId),
-                AthleteId = Guid.Parse(athleteId),
+                Id = activityIdGuid,
+                AthleteId = athleteIdGuid,
                 ActivityType = model.Type,
                 // ReSharper disable once PossibleInvalidOperationException
                 StartDate = model.StartDate.Value,

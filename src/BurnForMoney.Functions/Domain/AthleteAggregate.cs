@@ -10,9 +10,8 @@ namespace BurnForMoney.Functions.Domain
 {
     public class Athlete : AggregateRoot
     {
-        public string ExternalId { get; private set; }
-
-        public Guid ActiveDirectoryId { get; private set; }
+        public Guid ActiveDirectoryId { get; set; }
+        public string StravaId { get; private set; }
 
         public string FirstName { get; private set; }
 
@@ -21,20 +20,28 @@ namespace BurnForMoney.Functions.Domain
         public string ProfilePictureUrl { get; private set; }
 
         public bool IsActive { get; private set; }
-
-        public Source Source { get; private set; }
+        
 
         public List<Activity> Activities { get; } = new List<Activity>();
 
         public void Apply(AthleteCreated @event)
         {
             Id = @event.Id;
-            ExternalId = @event.ExternalId;
+            StravaId = @event.ExternalId;
             FirstName = @event.FirstName;
             LastName = @event.LastName;
             ProfilePictureUrl = @event.ProfilePictureUrl;
             IsActive = true;
-            Source = @event.System;
+        }
+
+        public void Apply(AthleteCreated_V2 @event)
+        {
+            Id = @event.Id;
+            ActiveDirectoryId = @event.AadId;
+            FirstName = @event.FirstName;
+            LastName = @event.LastName;
+            ProfilePictureUrl = null;
+            IsActive = true;
         }
 
         public void Apply(AthleteDeactivated @event)
@@ -74,15 +81,24 @@ namespace BurnForMoney.Functions.Domain
             Activities.Remove(activity);
         }
 
+        public void Apply(StravaIdAdded @event)
+        {
+            StravaId = @event.StravaId;
+        }
+
         public Athlete()
         {}
 
-        public Athlete(Guid id, string externalId, string firstName, string lastName,
-            string profilePictureUrl, Source source)
+        public Athlete(Guid id, Guid aadId, string firstName, string lastName)
         {
             if (id == Guid.Empty)
             {
-                throw new ArgumentNullException(nameof(Id));
+                throw new ArgumentNullException(nameof(id));
+            }
+
+            if (aadId == Guid.Empty)
+            {
+                throw new ArgumentNullException(nameof(aadId));
             }
 
             if (string.IsNullOrWhiteSpace(firstName))
@@ -90,8 +106,7 @@ namespace BurnForMoney.Functions.Domain
                 throw new ArgumentNullException(nameof(firstName));
             }
 
-            ApplyChange(new AthleteCreated(id, externalId, firstName, lastName, profilePictureUrl,
-                source));
+            ApplyChange(new AthleteCreated_V2(id, aadId, firstName, lastName));
         }
 
         public void AddActivity(Guid id, string externalId, string activityType, double distanceInMeters,
@@ -132,7 +147,7 @@ namespace BurnForMoney.Functions.Domain
                 throw new InvalidOperationException($"Cannot add the same activity twice. Activity id: {id}");
             }
 
-            if (Activities.Any(activity => activity.ExternalId.Equals(ExternalId) && activity.Source.Equals(source)))
+            if (Activities.Any(activity => activity.ExternalId.Equals(externalId) && activity.Source.Equals(source)))
             {
                 throw new InvalidOperationException($"Cannot add the same activity twice. External id: [{externalId}].");
             }
@@ -240,6 +255,18 @@ namespace BurnForMoney.Functions.Domain
             }
 
             ApplyChange(new AthleteDeactivated(Id));
+        }
+
+        public void AddStravaAccount(string stravaId)
+        {
+            if (!string.IsNullOrEmpty(StravaId))
+                throw new InvalidOperationException("Athlete has already a stravaId account.");
+            
+            ApplyChange(new StravaIdAdded
+            {
+                AthleteId = Id,
+                StravaId = stravaId
+            });
         }
 
         public void AssignActiveDirectoryId(Guid activeDirectoryId)

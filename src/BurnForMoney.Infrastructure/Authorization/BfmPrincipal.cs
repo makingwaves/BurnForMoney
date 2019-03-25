@@ -1,22 +1,28 @@
-﻿namespace BurnForMoney.Infrastructure.Authorization
+﻿using System;
+using System.Collections.Generic;
+
+namespace BurnForMoney.Infrastructure.Authorization
 {
     public class BfmPrincipal
     {
         
-        public string Id { get; private set; }
+        public Guid AadId { get; private set; }
         public string FirstName{ get; private set; }
         public string LastName { get; private set; }
+        public List<KeyValuePair<string, string>> Claims { get; private set; }
 
         public bool IsAuthenticated { get; private set; }
 
-
-
-        public static BfmPrincipal CreateAuthenticated(string id)
+        
+        public static BfmPrincipal CreateAuthenticated(Guid id, string firstName, string lastName, List<KeyValuePair<string, string>> claims)
         {
             return new BfmPrincipal
             {
                 IsAuthenticated = true,
-                Id = id
+                AadId = id,
+                FirstName = firstName,
+                LastName = lastName,
+                Claims = claims
             };
         }
 
@@ -24,7 +30,11 @@
         {
             return new BfmPrincipal
             {
-                IsAuthenticated = false
+                IsAuthenticated = false,
+                AadId = Guid.Empty,
+                FirstName = string.Empty,
+                LastName = string.Empty,
+                Claims = new List<KeyValuePair<string, string>>()
             };
         }
     }    

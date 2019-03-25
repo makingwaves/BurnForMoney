@@ -40,7 +40,48 @@ namespace BurnForMoney.Functions.Presentation.Views
                 }
             }
         }
+        
+        public async Task HandleAsync(AthleteCreated_V2 message)
+        {
+            using (var conn = SqlConnectionFactory.Create(_sqlConnectionString))
+            {
+                await conn.OpenWithRetryAsync();
 
+                var row = new Athlete
+                {
+                    Id = message.Id,                    
+                    ActiveDirectoryId = message.AadId,
+                    FirstName = message.FirstName,
+                    LastName = message.LastName,
+                    ProfilePictureUrl = string.Empty,
+                    Active = true,
+                    
+                    System = "None"
+                };
+
+                var inserted = conn.Insert(row);
+                if (inserted == null)
+                {
+                    throw new FailedToAddAthleteException(message.Id);
+                }
+            }
+        }
+
+        public async Task HandleAsync(StravaIdAdded message)
+        {
+            using (var conn = SqlConnectionFactory.Create(_sqlConnectionString))
+            {
+                await conn.OpenWithRetryAsync();
+
+                var affectedRows = await conn.ExecuteAsync(
+                    @"UPDATE dbo.Athletes SET ExternalId=@stravaId WHERE Id=@Id",
+                    new { Id = message.AthleteId, stravaId = message.StravaId.ToString() });
+
+                if (affectedRows != 1)                
+                    throw new FailedToAddStravaAccountException(message.AthleteId, message.StravaId);
+            }
+        }
+        
         public async Task HandleAsync(ActiveDirectoryIdAssigned message)
         {
             using (var conn = SqlConnectionFactory.Create(_sqlConnectionString))

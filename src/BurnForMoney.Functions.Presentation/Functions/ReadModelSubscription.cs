@@ -41,6 +41,13 @@ namespace BurnForMoney.Functions.Presentation.Functions
                         await new AthleteView(configuration.ConnectionStrings.SqlDbConnectionString).HandleAsync(
                             created);
                         break;
+                    case AthleteCreated_V2 created:
+                        await new AthleteView(configuration.ConnectionStrings.SqlDbConnectionString).HandleAsync(created);
+                        break;
+                    case StravaIdAdded stravaIdAdded:
+                        await new AthleteView(configuration.ConnectionStrings.SqlDbConnectionString).HandleAsync(
+                            stravaIdAdded);
+                        break;
                     case ActiveDirectoryIdAssigned activeDirectoryIdAssigned:
                         await new AthleteView(configuration.ConnectionStrings.SqlDbConnectionString).HandleAsync(
                             activeDirectoryIdAssigned);

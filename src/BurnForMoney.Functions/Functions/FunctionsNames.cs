@@ -11,6 +11,7 @@ namespace BurnForMoney.Functions.Functions
         public const string BlobTriggerPrefix = FunctionNameConvention.BlobTriggerPrefix;
 
         public const string Q_AddAthlete = QueueTriggerPrefix + "AddAthlete";
+        public const string Q_AddStravaAccount = QueueTriggerPrefix + "AddStravaAccount";
         public const string Q_DeactivateAthlete = QueueTriggerPrefix + "DeactivateAthlete";
         public const string Q_ActivateAthlete = QueueTriggerPrefix + "ActivateAthlete";
         public const string Q_AssignActiveDirectoryIdToAthlete = QueueTriggerPrefix + "AssignActiveDirectoryId";

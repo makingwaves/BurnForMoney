@@ -6,6 +6,7 @@
         public const string DeactivateAthleteRequests = "deactivate-athlete-requests";
         public const string ActivateAthleteRequests = "activate-athlete-requests";
         public const string AssignActiveDirectoryIdRequests = "assign-active-directory-id-request";
+        public const string AddStravaAccountRequests = "add-strava-account-requests";
 
         public const string AddActivityRequests = "add-activity-requests";
         public const string UpdateActivityRequests = "update-activity-requests";

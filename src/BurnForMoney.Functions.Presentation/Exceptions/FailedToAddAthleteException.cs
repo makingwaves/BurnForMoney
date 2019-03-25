@@ -8,7 +8,6 @@ namespace BurnForMoney.Functions.Presentation.Exceptions
     {
         public FailedToAddAthleteException(Guid athleteId)
             : base($"Failed to add a new athlete: [{athleteId}].")
-        {
-        }
+        {}
     }
 }

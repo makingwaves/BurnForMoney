@@ -1,5 +1,4 @@
 ﻿using System;
-using BurnForMoney.Domain;
 using BurnForMoney.Infrastructure.Messages;
 
 namespace BurnForMoney.Functions.Commands
@@ -7,21 +6,17 @@ namespace BurnForMoney.Functions.Commands
     public class CreateAthleteCommand : Command
     {
         public readonly Guid Id;
-        public readonly string ExternalId;
+        public readonly Guid AadId;
         public readonly string FirstName;
         public readonly string LastName;
-        public readonly string ProfilePictureUrl;
-        public readonly Source System;
+        
 
-        public CreateAthleteCommand(Guid id, string externalId, string firstName,
-            string lastName, string profilePictureUrl, Source system)
+        public CreateAthleteCommand(Guid id, Guid aadId, string firstName, string lastName)
         {
             Id = id;
-            ExternalId = externalId;
+            AadId = aadId;
             FirstName = firstName;
             LastName = lastName;
-            ProfilePictureUrl = profilePictureUrl;
-            System = system;
         }
     }
 }

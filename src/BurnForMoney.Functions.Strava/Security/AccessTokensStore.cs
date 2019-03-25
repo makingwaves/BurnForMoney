@@ -10,11 +10,12 @@ using Newtonsoft.Json;
 
 namespace BurnForMoney.Functions.Strava.Security
 {
-    public class AccessTokensStore
+    public static class AccessTokensStore
     {
         private static readonly IMemoryCache AccessTokensCache = new MemoryCache(new MemoryDistributedCacheOptions());
         private static readonly IMemoryCache RefreshTokensCache = new MemoryCache(new MemoryDistributedCacheOptions());
         private static readonly IKeyVaultClient KeyVault = KeyVaultClientFactory.Create();
+
         private static readonly MemoryCacheEntryOptions CacheEntryOptions = new MemoryCacheEntryOptions
         {
             Size = 1,
@@ -138,8 +139,6 @@ namespace BurnForMoney.Functions.Strava.Security
     {
         public SecretDisabledException(Guid athleteId, Exception inner)
             :base($"Access token for athlete with id: {athleteId} is disabled.", inner)
-        {
-            
-        }
+        {}
     }
 }
