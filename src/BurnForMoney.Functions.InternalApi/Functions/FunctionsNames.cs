@@ -18,5 +18,6 @@ namespace BurnForMoney.Functions.InternalApi.Functions
         public const string GetActivityCategories = HttpTriggerPrefix + "GetActivityCategories";
 
         public const string GetTopAthletesForGivenActivityType = HttpTriggerPrefix + "GetTopAthletesForGivenActivityType";
+        public const string GetDashboardTop = HttpTriggerPrefix + "GetDashboardTop";
     }
 }

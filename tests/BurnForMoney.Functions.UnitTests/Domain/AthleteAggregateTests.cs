@@ -584,6 +584,69 @@ namespace BurnForMoney.Functions.UnitTests.Domain
             var athlete = await GetAthleteAsync(athleteId);
             Assert.True(athlete.IsActive);
         }
+
+        [Fact]
+        public async Task Can_AddActivity_WithTheSameExternalId_IfSourceIsDifferent()
+        {
+            var athleteId = await CreateNewAthleteAsync();
+            var newActivityId = Guid.NewGuid();
+
+            var command1 = new AddActivityCommand {
+                    Id = newActivityId,
+                    ExternalId = TestExternalId,
+                    AthleteId = athleteId,
+                    StartDate = _testStartDate,
+                    ActivityType = TestActivityType,
+                    DistanceInMeters = PositiveDistanceInMeters,
+                    MovingTimeInMinutes = PositiveMovingTimeInMinutes,
+                    Source = Source.Strava
+                };
+            var command2 = new AddActivityCommand {
+                    Id = Guid.NewGuid(),
+                    ExternalId = TestExternalId,
+                    AthleteId = athleteId,
+                    StartDate = _testStartDate,
+                    ActivityType = TestActivityType,
+                    DistanceInMeters = PositiveDistanceInMeters,
+                    MovingTimeInMinutes = PositiveMovingTimeInMinutes,
+                    Source = Source.None
+                };
+
+            await HandleCommand(command1);
+            await HandleCommand(command2);
+        }
+
+        [Fact]
+        public async Task Cant_AddActivity_WithTheSameExternalId_IfSourceIsSame()
+        {
+            var athleteId = await CreateNewAthleteAsync();
+            var newActivityId = Guid.NewGuid();
+
+            var command1 = new AddActivityCommand {
+                    Id = newActivityId,
+                    ExternalId = TestExternalId,
+                    AthleteId = athleteId,
+                    StartDate = _testStartDate,
+                    ActivityType = TestActivityType,
+                    DistanceInMeters = PositiveDistanceInMeters,
+                    MovingTimeInMinutes = PositiveMovingTimeInMinutes,
+                    Source = Source.Strava
+                };
+            var command2 = new AddActivityCommand {
+                    Id = Guid.NewGuid(),
+                    ExternalId = TestExternalId,
+                    AthleteId = athleteId,
+                    StartDate = _testStartDate,
+                    ActivityType = TestActivityType,
+                    DistanceInMeters = PositiveDistanceInMeters,
+                    MovingTimeInMinutes = PositiveMovingTimeInMinutes,
+                    Source = Source.Strava
+                };
+
+            await HandleCommand(command1);
+            await Assert.ThrowsAsync<InvalidOperationException>(() =>
+                HandleCommand(command2));
+        }
         [Fact]
         public async Task Cant_AssignActiveDirectoryId_WithEmptyId()
         {
