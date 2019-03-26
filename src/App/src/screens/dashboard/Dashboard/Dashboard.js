@@ -12,12 +12,21 @@ const Dashboard = (props) =>{
     <React.Fragment>
       <DashboardHeader header="Dashboard" />
       <div className="Dashboard-content DashboardGrid">
+
         <div className="DashboardGridItem DashboardGridItem-summary">
           <p>Summary</p>
+          <div className="">
+            <p>Keep going! We miss only 55 pt for next 100 PLN</p>
+            <div>
+              <div></div>
+            </div>
+          </div>
         </div>
+
         <div className="DashboardGridItem DashboardGridItem-results">
           <PointsAndMoney />
         </div>
+
         <div className="DashboardGridItem DashboardGridItem-ranking">
           <div className="DashboardGridItem-rankingHeader">
             <h4 className="DashboardGridItem-rankingHeader-title">Rank</h4>
@@ -36,6 +45,7 @@ const Dashboard = (props) =>{
             />
           </div>
         </div>
+
         <div className="DashboardGridItem DashboardGridItem-contribution">
           Activities Contribution
         </div>
