@@ -28,7 +28,7 @@ namespace BurnForMoney.Functions.Strava.External.Strava.Api
             
             if (!response.IsSuccessful)
             {
-                throw new UnsuccessfullCallToStravaApiException(response.StatusCode.ToString(), response.Content, response.ErrorMessage);
+                throw new UnsuccessfulCallToStravaApiException(response.StatusCode.ToString(), response.Content, response.ErrorMessage);
             }
         }
 

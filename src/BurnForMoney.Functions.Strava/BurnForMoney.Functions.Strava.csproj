@@ -11,7 +11,7 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Dapper" Version="1.50.5" />
-    <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.DurableTask" Version="1.7.0" />
+    <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.DurableTask" Version="1.8.0" />
     <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.Storage" Version="3.0.2" />
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="2.1.2" />
     <PackageReference Include="Microsoft.Extensions.Configuration.AzureKeyVault" Version="2.1.1" />
