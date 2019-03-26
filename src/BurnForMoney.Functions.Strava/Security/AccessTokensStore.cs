@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
+using System.Security.Permissions;
 using System.Threading.Tasks;
 using BurnForMoney.Functions.Shared;
 using Microsoft.Azure.KeyVault;
@@ -151,7 +152,6 @@ namespace BurnForMoney.Functions.Strava.Security
             SerializationInfo info,
             StreamingContext context)
         {
-            base.GetObjectData(info, context);
         }
     }
 }

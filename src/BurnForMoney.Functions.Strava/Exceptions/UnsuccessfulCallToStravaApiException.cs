@@ -16,7 +16,6 @@ namespace BurnForMoney.Functions.Strava.Exceptions
             SerializationInfo info,
             StreamingContext context)
         {
-            base.GetObjectData(info, context);
         }
     }
 }
