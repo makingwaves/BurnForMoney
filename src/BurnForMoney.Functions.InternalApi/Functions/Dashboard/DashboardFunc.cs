@@ -29,8 +29,10 @@ namespace BurnForMoney.Functions.InternalApi.Functions.Dashboard
                 year = int.Parse(yearParameter);
             }
 
+            decimal payment = configuration.Payment;
+            int pointsThreshold = configuration.PointsThreshold;
             var repository = new DashboardReadRepository(configuration.ConnectionStrings.SqlDbConnectionString);
-            var dashboardTop = await repository.GetDashboardTopAsync(month, year);
+            var dashboardTop = await repository.GetDashboardTopAsync(pointsThreshold, payment, month, year);
        
             return new OkObjectResult(dashboardTop);
         }
