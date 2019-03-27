@@ -13,7 +13,7 @@ namespace BurnForMoney.Functions.InternalApi.Functions.Dashboard
     public class DashboardFunc
     {
         [FunctionName(FunctionsNames.GetDashboardTop)]
-        public static async Task<IActionResult> GetDashboardTop([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "dashboardtop")] HttpRequest req,  
+        public static async Task<IActionResult> GetDashboardTop([HttpTrigger(AuthorizationLevel.Function, "get", Route = "dashboardtop")] HttpRequest req,  
             ILogger log, [Configuration] ConfigurationRoot configuration)
         {
             int? month = null;

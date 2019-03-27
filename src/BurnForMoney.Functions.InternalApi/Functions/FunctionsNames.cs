@@ -13,7 +13,7 @@ namespace BurnForMoney.Functions.InternalApi.Functions
         public const string AsignActiveDirectoryIdToAthlete = HttpTriggerPrefix + "AsignActiveDirectoryIdToAthlete";
 
         public const string GetAthletes = HttpTriggerPrefix + "GetAthletes";
-        public const string GetCurrentAthelte = HttpTriggerPrefix + "GetCurrentAthelte";
+        public const string GetCurrentAthlete = HttpTriggerPrefix + "GetCurrentAthlete";
         public const string GetAthleteActivities = HttpTriggerPrefix + "GetAthleteActivities";
         public const string GetActivityCategories = HttpTriggerPrefix + "GetActivityCategories";
 

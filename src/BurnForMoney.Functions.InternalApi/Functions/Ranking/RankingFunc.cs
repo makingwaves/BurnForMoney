@@ -18,7 +18,7 @@ namespace BurnForMoney.Functions.InternalApi.Functions.Ranking
     public class RankingFunc
     {
         [FunctionName(FunctionsNames.GetTopAthletesForGivenActivityType)]
-        public static async Task<IActionResult> GetTopAthletesForGivenActivityType([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "ranking/{activityCategory?}")] HttpRequest req,  
+        public static async Task<IActionResult> GetTopAthletesForGivenActivityType([HttpTrigger(AuthorizationLevel.Function, "get", Route = "ranking/{activityCategory?}")] HttpRequest req,  
             ILogger log, [Configuration] ConfigurationRoot configuration,
             string activityCategory)
         {

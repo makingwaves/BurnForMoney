@@ -3,11 +3,9 @@ using System.Threading.Tasks;
 using BurnForMoney.Functions.Infrastructure.Queues;
 using BurnForMoney.Functions.InternalApi.Commands;
 using BurnForMoney.Functions.InternalApi.Configuration;
+using BurnForMoney.Functions.InternalApi.Functions.Athletes.Dto;
+using BurnForMoney.Functions.Shared.Extensions;
 using BurnForMoney.Functions.Shared.Functions.Extensions;
-using BurnForMoney.Infrastructure.Authorization;
-using BurnForMoney.Infrastructure.Authorization.Extensions;
-using BurnForMoney.Infrastructure.Persistence.Repositories;
-using BurnForMoney.Infrastructure.Persistence.Repositories.Dto;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
@@ -23,31 +21,43 @@ namespace BurnForMoney.Functions.InternalApi.Functions.Athletes
         [FunctionName(FunctionsNames.SignInAthlete)]
         public static async Task<IActionResult> CreateAthleteAsync(
             [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "athlete/signin")] HttpRequest req, 
-            ExecutionContext executionContext, 
-            [BfmAuthorize] BfmPrincipal principal, ILogger log,
+            ExecutionContext executionContext, ILogger log,
             [Configuration] ConfigurationRoot configuration,
             [Queue(AppQueueNames.AddAthleteRequests, Connection = "AppQueuesStorage")] CloudQueue outputQueue)
         {
-            if (!principal.IsAuthenticated)
-                return new StatusCodeResult(StatusCodes.Status403Forbidden);
+            string requestData = await req.ReadAsStringAsync();
+            CreateAthleteRequest model;
 
-            var repository = new AthleteReadRepository(configuration.ConnectionStrings.SqlDbConnectionString);
-            var athlete = await repository.GetAthleteByAadIdAsync(principal.AadId);
-            
-            if (athlete != null)
-                return new StatusCodeResult(StatusCodes.Status400BadRequest);
+            try
+            {
+                model = JsonConvert.DeserializeObject<CreateAthleteRequest>(requestData);
+            }
+            catch (Exception ex)
+            {
+                return new BadRequestObjectResult($"Failed to deserialize data. {ex.Message}");
+            }
 
-            var createAthelteCommand = new CreateAthleteCommand
+            try
+            {
+                model.Validate();
+            }
+            catch (Exception ex)
+            {
+                log.LogError(FunctionsNames.SignInAthlete, ex.Message);
+                return new BadRequestObjectResult($"Validation failed. {ex.Message}.");
+            }
+
+            var createAthleteCommand = new CreateAthleteCommand
             {
                 Id = Guid.NewGuid(),
-                AadId = principal.AadId,
-                FirstName = principal.FirstName,
-                LastName = principal.FirstName
+                AadId = model.AadId,
+                FirstName = model.FirstName,
+                LastName = model.LastName
             };
 
-            var output = JsonConvert.SerializeObject(createAthelteCommand);
+            var output = JsonConvert.SerializeObject(createAthleteCommand);
             await outputQueue.AddMessageAsync(new CloudQueueMessage(output));
-            return new OkObjectResult(createAthelteCommand.Id);
+            return new OkObjectResult(createAthleteCommand.Id);
         }
     }
 }

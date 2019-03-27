@@ -1,7 +1,6 @@
 ﻿using System.Linq;
 using BurnForMoney.Functions.Shared.Functions.Extensions;
 using BurnForMoney.Functions.Strava.Configuration;
-using BurnForMoney.Infrastructure.Authorization.Extensions;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -25,11 +24,6 @@ namespace BurnForMoney.Functions.Strava
             builder.Services.AddSingleton<IConfiguration>(config);
             builder.AddExtension(new ConfigurationExtensionConfigProvider<Configuration.ConfigurationRoot>(
                 ApplicationConfiguration.GetSettings()));
-
-            if (rootConfig.GetValue("UseLocalAuthentication", false))
-                builder.AddBfmAuthorization(new DevelopBfmPrincipalFactory());
-            else
-                builder.AddBfmAuthorization(new BfmPrincipalFactory());
         }
     }
 }

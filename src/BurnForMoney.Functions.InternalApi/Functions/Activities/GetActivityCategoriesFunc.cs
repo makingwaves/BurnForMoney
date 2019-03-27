@@ -1,6 +1,5 @@
 ﻿using System;
 using BurnForMoney.Domain;
-using BurnForMoney.Functions.Shared.Extensions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
@@ -14,7 +13,7 @@ namespace BurnForMoney.Functions.InternalApi.Functions.Activities
         private static readonly string[] ActivityCategories = Enum.GetNames(typeof(ActivityCategory));
 
         [FunctionName(FunctionsNames.GetActivityCategories)]
-        public static IActionResult GetActivityCategories([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "activities/categories")] HttpRequest req, ILogger log, ExecutionContext executionContext)
+        public static IActionResult GetActivityCategories([HttpTrigger(AuthorizationLevel.Function, "get", Route = "activities/categories")] HttpRequest req, ILogger log, ExecutionContext executionContext)
         {
             return new OkObjectResult(ActivityCategories);
         }
