@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using BurnForMoney.Domain;
 using BurnForMoney.Functions.InternalApi.Configuration;
 using BurnForMoney.Functions.Shared.Functions.Extensions;
 using BurnForMoney.Infrastructure.Persistence.Repositories;
@@ -31,29 +32,45 @@ namespace BurnForMoney.Functions.InternalApi.Functions.Athletes
                 }));
         }
 
-        [FunctionName(FunctionsNames.GetCurrentAthlete)]
-        public static async Task<IActionResult> GetCurrentAthleteAsync([HttpTrigger(AuthorizationLevel.Function, "get", Route = "athletes/{athleteId:guid}")] HttpRequest req,
-            ILogger log, string athleteId, [Configuration] ConfigurationRoot configuration)
+        [FunctionName(FunctionsNames.GetAthlete)]
+        public static async Task<IActionResult> GetAthleteAsync([HttpTrigger(AuthorizationLevel.Function, "get", Route = "athletes/{id}")] HttpRequest req,
+            ILogger log, [Configuration] ConfigurationRoot configuration, string id)
         {
             var repository = new AthleteReadRepository(configuration.ConnectionStrings.SqlDbConnectionString);
-            var athleteIdGuid = Guid.Parse(athleteId);
-            var athlete = await repository.GetAthleteByIdAsync(athleteIdGuid);
+            string source = req.Query["source"];
+            source = string.IsNullOrWhiteSpace(source) ? SourceNames.BurnForMoneySystem : source;
 
-            if (!athlete.IsValid())
+            AthleteRow athlete;
+            try
             {
-                if(athlete == null)
-                    return new StatusCodeResult(StatusCodes.Status404NotFound);
-
-                return new StatusCodeResult(StatusCodes.Status403Forbidden);
+                athlete = await FetchAthlete(id, source, repository);
             }
-            
-            return new OkObjectResult(new {
-                athlete.Id,
-                athlete.FirstName,
-                athlete.LastName,
-                athlete.ProfilePictureUrl,
-                athlete.System
-            });
+            catch (Exception ex)
+            {
+                return new BadRequestObjectResult($"Failed to fetch athlete. {ex.Message}");
+            }
+
+            if (athlete == null)
+            {
+                return new NotFoundResult();
+            }
+
+            return new OkObjectResult(athlete);
+        }
+
+        private static async Task<AthleteRow> FetchAthlete(string id, string source, AthleteReadRepository repository)
+        {
+            switch (source)
+            {
+                case SourceNames.BurnForMoneySystem:
+                    return await repository.GetAthleteByIdAsync(Guid.Parse(id));
+                case SourceNames.AzureActiveDirectory:
+                    return await repository.GetAthleteByAadIdAsync(Guid.Parse(id));
+                case SourceNames.Strava:
+                    return await repository.GetAthleteByStravaIdAsync(id);
+                default:
+                    throw new ArgumentOutOfRangeException("Invalid source specified");
+            }
         }
     }
 }

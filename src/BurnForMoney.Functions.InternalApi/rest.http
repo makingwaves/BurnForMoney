@@ -20,6 +20,10 @@ Content-Type: application/json
 ### Get athletes
 GET {{baseUrl}}/athletes
 
+
+### Get athlete
+GET {{baseUrl}}/athletes/{id}
+
 ###### ------------------------- ACTIVITY 
 
 ### Add activity
