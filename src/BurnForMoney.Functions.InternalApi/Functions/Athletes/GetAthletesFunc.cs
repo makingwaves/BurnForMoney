@@ -55,7 +55,14 @@ namespace BurnForMoney.Functions.InternalApi.Functions.Athletes
                 return new NotFoundResult();
             }
 
-            return new OkObjectResult(athlete);
+            return new OkObjectResult(new
+            {
+                athlete.Id,
+                athlete.FirstName,
+                athlete.LastName,
+                athlete.ProfilePictureUrl,
+                athlete.System
+            });
         }
 
         private static async Task<AthleteRow> FetchAthlete(string id, string source, AthleteReadRepository repository)
