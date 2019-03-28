@@ -76,7 +76,7 @@ namespace BurnForMoney.Functions.InternalApi.Functions.Athletes
                 case SourceNames.Strava:
                     return await repository.GetAthleteByStravaIdAsync(id);
                 default:
-                    throw new ArgumentOutOfRangeException("Invalid source specified");
+                    throw new ArgumentOutOfRangeException(nameof(source), "Invalid source specified");
             }
         }
     }

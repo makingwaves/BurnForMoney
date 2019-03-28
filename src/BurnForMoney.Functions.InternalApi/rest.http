@@ -8,7 +8,7 @@
 ###### ------------------------- ATHLETE
 
 ### Create athlete
-POST {{baseUrl}}/athlete
+POST {{baseUrl}}/athlete/create
 Content-Type: application/json
 
 {
