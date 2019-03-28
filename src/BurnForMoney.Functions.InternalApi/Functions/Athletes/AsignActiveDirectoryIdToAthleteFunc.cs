@@ -19,8 +19,8 @@ namespace BurnForMoney.Functions.InternalApi.Functions.Athletes
 {
     public static class AsignActiveDirectoryIdToAthleteFunc
     {
-        [FunctionName(FunctionsNames.AsignActiveDirectoryIdToAthlete)]
-        public static async Task<IActionResult> CreateAthleteAsync(
+        [FunctionName(FunctionsNames.AssignActiveDirectoryIdToAthlete)]
+        public static async Task<IActionResult> AssignActiveDirectoryIdToAthleteAsync(
             [HttpTrigger(AuthorizationLevel.Admin, "post", Route = "athlete/asign_aad")] HttpRequest req,
             ExecutionContext executionContext, ILogger log,
             [Configuration] ConfigurationRoot configuration,
@@ -40,9 +40,9 @@ namespace BurnForMoney.Functions.InternalApi.Functions.Athletes
             }
 
             var repository = new AthleteReadRepository(configuration.ConnectionStrings.SqlDbConnectionString);
-            var existingAthelte = await repository.GetAthleteByAadIdAsync(model.AadId);
+            var existingAthlete = await repository.GetAthleteByAadIdAsync(model.AadId);
 
-            if(existingAthelte != null)
+            if(existingAthlete != null)
                 return new BadRequestObjectResult($"Athlete with given AadId already exists.");
 
             var cmd = new AssignActiveDirectoryIdToAthleteCommand(model.AthleteId, model.AadId);

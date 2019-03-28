@@ -2,14 +2,6 @@
 
 namespace BurnForMoney.Infrastructure.Persistence.Repositories.Dto
 {
-    public static class AthleteRowExt
-    {
-        public static bool IsValid(this AthleteRow row)
-        {
-            return row != null && row != AthleteRow.NonActive;
-        }
-    }
-
     public class AthleteRow
     {
         public static readonly AthleteRow NonActive = new AthleteRow();

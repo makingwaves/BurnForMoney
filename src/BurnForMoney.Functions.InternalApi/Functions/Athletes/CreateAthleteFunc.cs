@@ -16,11 +16,11 @@ using Newtonsoft.Json;
 
 namespace BurnForMoney.Functions.InternalApi.Functions.Athletes
 {
-    public static class SignInAthleteFunc
+    public static class CreateAthleteFunc
     {
-        [FunctionName(FunctionsNames.SignInAthlete)]
+        [FunctionName(FunctionsNames.CreateAthlete)]
         public static async Task<IActionResult> CreateAthleteAsync(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "athlete/signin")] HttpRequest req, 
+            [HttpTrigger(AuthorizationLevel.Function, "post", Route = "athlete/create")] HttpRequest req, 
             ExecutionContext executionContext, ILogger log,
             [Configuration] ConfigurationRoot configuration,
             [Queue(AppQueueNames.AddAthleteRequests, Connection = "AppQueuesStorage")] CloudQueue outputQueue)
@@ -43,7 +43,7 @@ namespace BurnForMoney.Functions.InternalApi.Functions.Athletes
             }
             catch (Exception ex)
             {
-                log.LogError(FunctionsNames.SignInAthlete, ex.Message);
+                log.LogError(FunctionsNames.CreateAthlete, ex.Message);
                 return new BadRequestObjectResult($"Validation failed. {ex.Message}.");
             }
 

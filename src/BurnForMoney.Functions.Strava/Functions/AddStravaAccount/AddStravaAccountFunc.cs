@@ -37,22 +37,22 @@ namespace BurnForMoney.Functions.Strava.Functions.AddStravaAccount
             var athleteReadRepository = new AthleteReadRepository(configuration.ConnectionStrings.SqlDbConnectionString);
             var existingAthlete = await athleteReadRepository.GetAthleteByIdAsync(athleteIdGuid);
 
-            var tokenexceResult = StravaService.ExchangeToken(configuration.Strava.ClientId, configuration.Strava.ClientSecret, authCode);
-            await EnsureThatStravaAccountIsNotAlreadyRegistred(tokenexceResult.Athlete.Id, athleteReadRepository);
+            var tokenExchangeResult = StravaService.ExchangeToken(configuration.Strava.ClientId, configuration.Strava.ClientSecret, authCode);
+            await EnsureThatStravaAccountIsNotAlreadyRegistered(tokenExchangeResult.Athlete.Id, athleteReadRepository);
             
-            await AssignStravaAccountToAthelte(existingAthlete.Id, tokenexceResult, outputQueue, configuration);
+            await AssignStravaAccountToAthlete(existingAthlete.Id, tokenExchangeResult, outputQueue, configuration);
             await PullStravaActivities(existingAthlete.Id, collectActivitiesQueues);
 
             return new OkResult();
         }
 
-        private static async Task EnsureThatStravaAccountIsNotAlreadyRegistred(int stravaId, AthleteReadRepository repository)
+        private static async Task EnsureThatStravaAccountIsNotAlreadyRegistered(int stravaId, AthleteReadRepository repository)
         {
             if(await repository.AthleteWithStravaIdExistsAsync(stravaId.ToString()))
                 throw new StravaAccountExistsException(stravaId.ToString());
         }
 
-        private static async Task AssignStravaAccountToAthelte(Guid athleteId, TokenExchangeResult response, CloudQueue queue, ConfigurationRoot configuration)
+        private static async Task AssignStravaAccountToAthlete(Guid athleteId, TokenExchangeResult response, CloudQueue queue, ConfigurationRoot configuration)
         {
             await AccessTokensStore.AddAsync(athleteId, response.AccessToken, response.RefreshToken, response.ExpiresAt, configuration.Strava.AccessTokensKeyVaultUrl);
 

@@ -7,7 +7,7 @@
 
 ###### ------------------------- ATHLETE
 
-### Create athlete (not supported)
+### Create athlete
 POST {{baseUrl}}/athlete
 Content-Type: application/json
 

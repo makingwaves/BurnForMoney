@@ -26,7 +26,7 @@ namespace BurnForMoney.Functions.InternalApi.Functions.Activities
             [Configuration] ConfigurationRoot configuration,
             [Queue(AppQueueNames.AddActivityRequests, Connection = "AppQueuesStorage")] CloudQueue outputQueue)
         {
-            var athleteIdGuid = Guid.Parse(athleteId);         
+            var athleteGuid = Guid.Parse(athleteId);         
             var requestData = await req.ReadAsStringAsync();
             
             ActivityAddOrUpdateRequest model;
@@ -52,7 +52,7 @@ namespace BurnForMoney.Functions.InternalApi.Functions.Activities
             var addActivityCommand = new AddActivityCommand
             {
                 Id = ActivityIdentity.Next(),
-                AthleteId = athleteIdGuid,
+                AthleteId = athleteGuid,
                 ActivityType = model.Type,
                 // ReSharper disable once PossibleInvalidOperationException
                 StartDate = model.StartDate.Value,
