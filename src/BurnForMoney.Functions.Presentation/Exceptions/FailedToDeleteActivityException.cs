@@ -1,5 +1,6 @@
 using System;
 using System.Data;
+using System.Runtime.Serialization;
 
 namespace BurnForMoney.Functions.Presentation.Exceptions
 {
@@ -8,6 +9,12 @@ namespace BurnForMoney.Functions.Presentation.Exceptions
     {
         public FailedToDeleteActivityException(Guid activityId)
             : base($"Failed to delete activity: [{activityId}].")
+        {
+        }
+
+        protected FailedToDeleteActivityException(
+            SerializationInfo info,
+            StreamingContext context) : base(info, context)
         {
         }
     }

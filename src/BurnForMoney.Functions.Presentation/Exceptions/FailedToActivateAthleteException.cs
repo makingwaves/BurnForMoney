@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Data;
+using System.Runtime.Serialization;
 
 namespace BurnForMoney.Functions.Presentation.Exceptions
 {
