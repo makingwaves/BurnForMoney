@@ -3,7 +3,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using BurnForMoney.Domain;
 using BurnForMoney.Functions.InternalApi.Configuration;
-using BurnForMoney.Functions.Shared.Extensions;
 using BurnForMoney.Functions.Shared.Functions.Extensions;
 using BurnForMoney.Infrastructure.Persistence.Repositories;
 using Microsoft.AspNetCore.Http;
@@ -17,7 +16,7 @@ namespace BurnForMoney.Functions.InternalApi.Functions.Activities
     public static class GetAthleteActivitiesFunc
     {
         [FunctionName(FunctionsNames.GetAthleteActivities)]
-        public static async Task<IActionResult> GetAthleteActivitiesAsync([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "athlete/{athleteId:guid}/activities")] HttpRequest req,
+        public static async Task<IActionResult> GetAthleteActivitiesAsync([HttpTrigger(AuthorizationLevel.Function, "get", Route = "athlete/{athleteId:guid}/activities")] HttpRequest req,
             ILogger log, [Configuration] ConfigurationRoot configuration, string athleteId)
         {
             var repository = new ActivityReadRepository(configuration.ConnectionStrings.SqlDbConnectionString);

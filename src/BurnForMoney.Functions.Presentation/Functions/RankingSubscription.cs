@@ -14,7 +14,7 @@ using Newtonsoft.Json.Linq;
 namespace BurnForMoney.Functions.Presentation.Functions
 {
     public static class RankingSubscription
-    {      
+    {
         [FunctionName("EventGrid_RankingSubscription")]
         public static async Task EventGrid_RankingSubscription([EventGridTrigger] EventGridEvent @event, ILogger log,
             [Configuration] ConfigurationRoot configuration)
@@ -33,19 +33,28 @@ namespace BurnForMoney.Functions.Presentation.Functions
                 throw new ArgumentException(@event.EventType);
             }
 
-            switch (receivedEvent)
+            try
             {
-                case ActivityAdded activityAdded:
-                    await new RankingView(configuration.ConnectionStrings.SqlDbConnectionString).HandleAsync(activityAdded);
-                    break;
-                case ActivityUpdated_V2 activityUpdated:
-                    await new RankingView(configuration.ConnectionStrings.SqlDbConnectionString).HandleAsync(activityUpdated);
-                    break;
-                case ActivityDeleted_V2 activityDeleted:
-                    await new RankingView(configuration.ConnectionStrings.SqlDbConnectionString).HandleAsync(activityDeleted);
-                    break;
-                default:
-                    break;
+                switch (receivedEvent)
+                {
+                    case ActivityAdded activityAdded:
+                        await new RankingView(configuration.ConnectionStrings.SqlDbConnectionString).HandleAsync(
+                            activityAdded);
+                        break;
+                    case ActivityUpdated_V2 activityUpdated:
+                        await new RankingView(configuration.ConnectionStrings.SqlDbConnectionString).HandleAsync(
+                            activityUpdated);
+                        break;
+                    case ActivityDeleted_V2 activityDeleted:
+                        await new RankingView(configuration.ConnectionStrings.SqlDbConnectionString).HandleAsync(
+                            activityDeleted);
+                        break;
+                }
+            }
+            catch (Exception ex)
+            {
+                log.LogError(ex, $"{ex.Message}");
+                throw;
             }
         }
     }

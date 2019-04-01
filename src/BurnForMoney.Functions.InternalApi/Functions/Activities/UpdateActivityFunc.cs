@@ -3,7 +3,9 @@ using System.Threading.Tasks;
 using BurnForMoney.Functions.Infrastructure.Queues;
 using BurnForMoney.Functions.InternalApi.Commands;
 using BurnForMoney.Functions.InternalApi.Functions.Activities.Dto;
+using BurnForMoney.Functions.InternalApi.Configuration;
 using BurnForMoney.Functions.Shared.Extensions;
+using BurnForMoney.Functions.Shared.Functions.Extensions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
@@ -17,11 +19,13 @@ namespace BurnForMoney.Functions.InternalApi.Functions.Activities
     public static class UpdateActivityFunc
     {
         [FunctionName(FunctionsNames.UpdateActivity)]
-        public static async Task<IActionResult> Async([HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "athlete/{athleteId:guid}/activities/{activityId:guid}")] HttpRequest req, ExecutionContext executionContext,
+        public static async Task<IActionResult> Async([HttpTrigger(AuthorizationLevel.Function, "put", Route = "athlete/{athleteId:guid}/activities/{activityId:guid}")] HttpRequest req, ExecutionContext executionContext,
             string athleteId, string activityId,
-            ILogger log,
+            ILogger log, [Configuration] ConfigurationRoot configuration,
             [Queue(AppQueueNames.UpdateActivityRequests, Connection = "AppQueuesStorage")] CloudQueue outputQueue)
         {
+            var athleteIdGuid = Guid.Parse(athleteId);
+            var activityIdGuid = Guid.Parse(activityId);
             var requestData = await req.ReadAsStringAsync();
 
             ActivityAddOrUpdateRequest model;
@@ -46,8 +50,8 @@ namespace BurnForMoney.Functions.InternalApi.Functions.Activities
 
             var command = new UpdateActivityCommand
             {
-                Id = Guid.Parse(activityId),
-                AthleteId = Guid.Parse(athleteId),
+                Id = activityIdGuid,
+                AthleteId = athleteIdGuid,
                 ActivityType = model.Type,
                 // ReSharper disable once PossibleInvalidOperationException
                 StartDate = model.StartDate.Value,

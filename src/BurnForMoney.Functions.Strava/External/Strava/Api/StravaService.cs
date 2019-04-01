@@ -31,13 +31,16 @@ namespace BurnForMoney.Functions.Strava.External.Strava.Api
             {
                 RequestFormat = DataFormat.Json
             };
+
             var payLoad = new TokenExchangeRequest
             {
                 ClientId = clientId,
                 ClientSecret = clientSecret,
                 Code = code
             };
+
             request.AddParameter("application/json", payLoad.ToJson(), ParameterType.RequestBody);
+
             var response = _restClient.ExecuteWithRetry(request);
             response.ThrowExceptionIfNotSuccessful();
 
@@ -113,17 +116,16 @@ namespace BurnForMoney.Functions.Strava.External.Strava.Api
             return activities;
         }
 
-        public void DeauthorizeAthlete(string accessToken)
-        {
-            var request = new RestRequest("/oauth/deauthorize", Method.POST);
-            request.AddQueryParameter("access_token", accessToken);
-            var response = _restClient.ExecuteWithRetry(request);
-            response.ThrowExceptionIfNotSuccessful();
-        }
+//        public void DeauthorizeAthlete(string accessToken)
+//        {
+//            var request = new RestRequest("/oauth/deauthorize", Method.POST);
+//            request.AddQueryParameter("access_token", accessToken);
+//            var response = _restClient.ExecuteWithRetry(request);
+//            response.ThrowExceptionIfNotSuccessful();
+//        }
     }
-
-    [Serializable]
-    internal class ActivityNotFoundException : Exception
+//
+    internal class ActivityNotFoundException : Exception 
     {
         public ActivityNotFoundException(string id)
             : base($"Activity with id: {id} does not exists.")

@@ -39,6 +39,7 @@ namespace BurnForMoney.Infrastructure.Persistence.Repositories
                 {
                     ExternalId = id
                 });
+
                 return exists;
             }
         }
@@ -54,10 +55,11 @@ namespace BurnForMoney.Infrastructure.Persistence.Repositories
                     Id = id
                 });
 
+                if (athlete == null)
+                    return null;
+
                 if (!athlete.Active)
-                {
                     return AthleteRow.NonActive;
-                }
 
                 return athlete;
             }
@@ -75,14 +77,31 @@ namespace BurnForMoney.Infrastructure.Persistence.Repositories
                 });
 
                 if (athlete == null)
-                {
                     return null;
-                }
 
                 if (!athlete.Active)
-                {
                     return AthleteRow.NonActive;
-                }
+
+                return athlete;
+            }
+        }
+
+        public async Task<AthleteRow> GetAthleteByAadIdAsync(Guid aadId)
+        {
+            using (var conn = SqlConnectionFactory.Create(_connectionString))
+            {
+                await conn.OpenWithRetryAsync();
+
+                var athlete = await conn.QuerySingleOrDefaultAsync<AthleteRow>("SELECT Id, FirstName, LastName, Active FROM dbo.Athletes WHERE ActiveDirectoryId=@Id", new
+                {
+                    Id = aadId
+                });
+
+                if (athlete == null)
+                    return null;
+
+                if (!athlete.Active)
+                    return AthleteRow.NonActive;
 
                 return athlete;
             }
