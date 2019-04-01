@@ -7,8 +7,8 @@
 
 ###### ------------------------- ATHLETE
 
-### Create athlete (not supported)
-POST {{baseUrl}}/athlete
+### Create athlete
+POST {{baseUrl}}/athlete/create
 Content-Type: application/json
 
 {
@@ -19,6 +19,10 @@ Content-Type: application/json
 
 ### Get athletes
 GET {{baseUrl}}/athletes
+
+
+### Get athlete
+GET {{baseUrl}}/athletes/{id}
 
 ###### ------------------------- ACTIVITY 
 

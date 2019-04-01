@@ -13,6 +13,5 @@ namespace BurnForMoney.Functions.Presentation.Configuration
     public class ConnectionStringsSection
     {
         public string SqlDbConnectionString { get; set; }
-        public string AzureWebJobsStorage { get; set; }
     }
 }

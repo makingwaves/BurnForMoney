@@ -9,13 +9,6 @@ namespace BurnForMoney.Functions.Presentation.Exceptions
     {
         public FailedToActivateAthleteException(Guid athleteId)
             : base($"Failed to activate athlete: [{athleteId}].")
-        {
-        }
-
-        protected FailedToActivateAthleteException(
-            SerializationInfo info,
-            StreamingContext context) : base(info, context)
-        {
-        }
+        {}
     }
 }

@@ -18,30 +18,30 @@ namespace BurnForMoney.Functions.Strava.Functions._Support
 {
     public static class PullAthleteActivitiesFunc
     {
-        [FunctionName(SupportFunctionsNames.PullAllAthletesActivities)]
-        public static async Task<IActionResult> PullAllAthletesActivities([HttpTrigger(AuthorizationLevel.Admin, "post", Route = "support/athlete/all/activities/collect")]HttpRequest req, ILogger log,
-            [Queue(StravaQueueNames.CollectAthleteActivities)] CloudQueue collectActivitiesQueues,
-            [Configuration] ConfigurationRoot configuration)
-        {
-            var from = DateTime.TryParse(req.Query["from"], out var date) ? date : (DateTime?)null;
-
-            var allActiveAthletes = await new AthleteReadRepository(configuration.ConnectionStrings.SqlDbConnectionString)
-                .GetAllActiveAsync();
-            var ids = allActiveAthletes.Select(a => a.Id);
-
-            foreach (var athleteId in ids)
-            {
-                var input = new CollectStravaActivitiesRequestMessage
-                {
-                    AthleteId = athleteId,
-                    From = from
-                };
-                var json = JsonConvert.SerializeObject(input);
-                await collectActivitiesQueues.AddMessageAsync(new CloudQueueMessage(json));
-            }
-
-            return new OkResult();
-        }
+//        [FunctionName(SupportFunctionsNames.PullAllAthletesActivities)]
+//        public static async Task<IActionResult> PullAllAthletesActivities([HttpTrigger(AuthorizationLevel.Admin, "post", Route = "support/athlete/all/activities/collect")]HttpRequest req, ILogger log,
+//            [Queue(StravaQueueNames.CollectAthleteActivities)] CloudQueue collectActivitiesQueues,
+//            [Configuration] ConfigurationRoot configuration)
+//        {
+//            var from = DateTime.TryParse(req.Query["from"], out var date) ? date : (DateTime?)null;
+//
+//            var allActiveAthletes = await new AthleteReadRepository(configuration.ConnectionStrings.SqlDbConnectionString)
+//                .GetAllActiveAsync();
+//            var ids = allActiveAthletes.Select(a => a.Id);
+//
+//            foreach (var athleteId in ids)
+//            {
+//                var input = new CollectStravaActivitiesRequestMessage
+//                {
+//                    AthleteId = athleteId,
+//                    From = from
+//                };
+//                var json = JsonConvert.SerializeObject(input);
+//                await collectActivitiesQueues.AddMessageAsync(new CloudQueueMessage(json));
+//            }
+//
+//            return new OkResult();
+//        }
 
         [FunctionName(SupportFunctionsNames.PullAthleteActivities)]
         public static async Task<IActionResult> PullAthleteActivities([HttpTrigger(AuthorizationLevel.Admin, "post", Route = "support/athlete/{athleteId:guid}/activities/collect")]HttpRequest req, ILogger log,

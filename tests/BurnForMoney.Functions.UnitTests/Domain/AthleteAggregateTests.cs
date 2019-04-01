@@ -12,7 +12,6 @@ namespace BurnForMoney.Functions.UnitTests.Domain
     {
         private const string TestFirstName = "test_first_name";
         private const string TestLastName = "test_last_name";
-        private const string TestProfilePictureUrl = "https://test.com/img.png";
         private const string TestExternalId = "ex_id";
         private const string TestActivityType = "sleeping";
         private const int PositiveDistanceInMeters = 123;
@@ -24,74 +23,82 @@ namespace BurnForMoney.Functions.UnitTests.Domain
         public async Task Cant_CreateAthlete_WithEmptyId()
         {
             var newAthleteId = Guid.Empty;
-            var newExternalId = Guid.NewGuid().ToString();
+            var aadId = Guid.NewGuid();
 
-            await Assert.ThrowsAsync<ArgumentNullException>("Id", ()=>
-                HandleCommand(new CreateAthleteCommand(newAthleteId, newExternalId,
-                    TestFirstName, TestLastName, TestProfilePictureUrl, Source.Strava)));
+            await Assert.ThrowsAsync<ArgumentNullException>("id",
+                () => HandleCommand(new CreateAthleteCommand(newAthleteId, aadId, TestFirstName, TestLastName)));
+        }
+
+        [Fact]
+        public async Task Cant_CreateAthlete_WithEmptyAadId()
+        {
+            var newAthleteId = Guid.NewGuid();
+            var aadId = Guid.Empty;
+
+            await Assert.ThrowsAsync<ArgumentNullException>("aadId",
+                () => HandleCommand(new CreateAthleteCommand(newAthleteId, aadId, TestFirstName, TestLastName)));
         }
 
         [Fact]
         public async Task Cant_CreateAthlete_WithNoFirstName()
         {
             var newAthleteId = Guid.NewGuid();
-
-            await Assert.ThrowsAsync<ArgumentNullException>("firstName", ()=>
-                HandleCommand(new CreateAthleteCommand(newAthleteId, null,
-                    null, null, null, Source.Strava)));
+            var aadId = Guid.NewGuid();
+            await Assert.ThrowsAsync<ArgumentNullException>("firstName",
+                () => HandleCommand(new CreateAthleteCommand(newAthleteId, aadId, null, null)));
         }
 
-        [Fact(Skip = "Logic bug, currently it's possible to add two athletes with the same id")]
+        [Fact]
         public async Task Cant_CreateTwoAthletes_WithSameId()
         {
             var newAthleteId = Guid.NewGuid();
-            var newExternalId = Guid.NewGuid().ToString();
-            
-            await HandleCommand(new CreateAthleteCommand(newAthleteId, newExternalId,
-                TestFirstName, TestLastName, TestProfilePictureUrl, Source.Strava));
+            var aadId = Guid.NewGuid();
 
-            await Assert.ThrowsAnyAsync<ConcurrencyException>(()=>
-                HandleCommand(new CreateAthleteCommand(newAthleteId, newExternalId,
-                    TestFirstName, TestLastName, TestProfilePictureUrl, Source.Strava)));
+            await HandleCommand(new CreateAthleteCommand(newAthleteId, aadId, TestFirstName, TestLastName));
+            await Assert.ThrowsAnyAsync<ConcurrencyException>(() => HandleCommand(new CreateAthleteCommand(newAthleteId, aadId, TestFirstName, TestLastName)));
         }
-
+        
         [Fact]
         public async Task Can_CreateAthlete_MinimumData()
         {
             var newAthleteId = Guid.NewGuid();
+            var aadId = Guid.NewGuid();
 
-            await HandleCommand(new CreateAthleteCommand(newAthleteId, null, 
-                TestFirstName, null, null, Source.None));
+            await HandleCommand(new CreateAthleteCommand(newAthleteId, aadId, TestFirstName, null));
 
             var newAthlete = await GetAthleteAsync(newAthleteId);
             
             Assert.True(newAthlete.IsActive);
             Assert.Equal(newAthleteId, newAthlete.Id);
             Assert.Equal(TestFirstName, newAthlete.FirstName);
-            Assert.Equal(Source.None, newAthlete.Source);
-            Assert.Null(newAthlete.ExternalId);
             Assert.Null(newAthlete.LastName);
             Assert.Null(newAthlete.ProfilePictureUrl);
         }
 
         [Fact]
-        public async Task Can_CreateNewStravaAthlete()
+        public async Task Can_AddStravaAccount()
         {
             var newAthleteId = Guid.NewGuid();
-            var newExternalId = Guid.NewGuid().ToString();
+            var aadId = Guid.NewGuid();
+            var newStravaId = "123456";
 
-            await HandleCommand(new CreateAthleteCommand(newAthleteId, newExternalId,
-                TestFirstName, TestLastName, TestProfilePictureUrl, Source.Strava));
+            await HandleCommand(new CreateAthleteCommand(newAthleteId, aadId, TestFirstName, TestLastName));
+
+            await HandleCommand(new AddStravaAccountCommand
+            {
+                StravaId = newStravaId,
+                AthleteId = newAthleteId
+            });
 
             var newAthlete = await _athleteRepo.GetByIdAsync(newAthleteId);
 
             Assert.True(newAthlete.IsActive);
             Assert.Equal(newAthleteId, newAthlete.Id);
-            Assert.Equal(newExternalId, newAthlete.ExternalId);
+            
             Assert.Equal(TestFirstName, newAthlete.FirstName);
             Assert.Equal(TestLastName, newAthlete.LastName);
-            Assert.Equal(TestProfilePictureUrl, newAthlete.ProfilePictureUrl);
-            Assert.Equal(Source.Strava, newAthlete.Source);
+            Assert.Equal(newStravaId, newAthlete.StravaId);
+            Assert.Null(newAthlete.ProfilePictureUrl);
         }
 
         [Fact]
@@ -639,6 +646,26 @@ namespace BurnForMoney.Functions.UnitTests.Domain
             await HandleCommand(command1);
             await Assert.ThrowsAsync<InvalidOperationException>(() =>
                 HandleCommand(command2));
+        }
+        [Fact]
+        public async Task Cant_AssignActiveDirectoryId_WithEmptyId()
+        {
+            var athleteId = await CreateNewAthleteAsync();
+
+            await Assert.ThrowsAsync<ArgumentNullException>("activeDirectoryId",
+                () => HandleCommand(new AssignActiveDirectoryIdToAthleteCommand(athleteId, Guid.Empty)));
+        }
+
+        [Fact]
+        public async Task Can_AssignActiveDirectoryId()
+        {
+            var athleteId = await CreateNewAthleteAsync();
+            var athleteActiveDirectoryId = Guid.NewGuid();
+
+            await HandleCommand(new AssignActiveDirectoryIdToAthleteCommand(athleteId, athleteActiveDirectoryId));
+
+            var athlete = await GetAthleteAsync(athleteId);
+            Assert.Equal(athleteActiveDirectoryId, athlete.ActiveDirectoryId);
         }
     }
 }

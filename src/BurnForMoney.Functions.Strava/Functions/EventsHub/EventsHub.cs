@@ -13,7 +13,7 @@ namespace BurnForMoney.Functions.Strava.Functions.EventsHub
     public static class EventsHub
     {
         [FunctionName(FunctionsNames.EventsHub)]
-        public static async Task<IActionResult> EventsHubAsync([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "strava/events/hub")] HttpRequest req,
+        public static async Task<IActionResult> EventsHubAsync([HttpTrigger(AuthorizationLevel.Function, "post", Route = "strava/events/hub")] HttpRequest req,
             ILogger log, ExecutionContext executionContext,
             [Queue(QueueNames.StravaEvents)] CloudQueue outputQueue)
         {

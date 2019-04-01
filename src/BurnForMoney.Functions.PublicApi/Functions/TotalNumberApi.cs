@@ -27,7 +27,7 @@ namespace BurnForMoney.Functions.PublicApi.Functions
         private static EmployeesEngagementCalculator _employeesEngagementCalculator;
 
         [FunctionName(FunctionNameConvention.HttpTriggerPrefix + "TotalNumbers")]
-        public static async Task<IActionResult> TotalNumbers([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "totalnumbers")] HttpRequest req, 
+        public static async Task<IActionResult> TotalNumbers([HttpTrigger(AuthorizationLevel.Function, "get", Route = "totalnumbers")] HttpRequest req, 
             ILogger log, [Configuration] ConfigurationRoot configuration)
         {
             _employeesEngagementCalculator = new EmployeesEngagementCalculator(configuration.CompanyInformation.NumberOfEmployees);
