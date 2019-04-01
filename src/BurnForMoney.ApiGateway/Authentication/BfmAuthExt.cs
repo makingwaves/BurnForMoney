@@ -1,62 +1,45 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
-using System.Text;
-using BurnForMoney.ApiGateway.Clients;
-using BurnForMoney.ApiGateway.Utils;
+﻿using BurnForMoney.ApiGateway.Utils;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.IdentityModel.Tokens;
+using System.Linq;
+using System.Security.Claims;
 
 namespace BurnForMoney.ApiGateway.Authentication
 {
 
     public static class BfmAuthExt
     {
+        private static readonly string ObjectIdentifierClaimType = "http://schemas.microsoft.com/identity/claims/objectidentifier";
         public static AuthenticationBuilder AddBfmAuth(this AuthenticationBuilder builder, IConfiguration configuration)
         {
             return builder
                 .AddCookie(Globals.OidAuthScheme, options =>
                 {
                     configuration.Bind("CookieAuth", options);
-                    
-                    options.Events.OnSigningIn = async context =>
+                })
+                .AddOpenIdConnect(Globals.AzureScheme, options =>
+                {
+                    options.SignInScheme = Globals.OidAuthScheme;
+                    configuration.Bind("AzureAdAuth", options);
+                    options.Events.OnTokenValidated = async ctx =>
                     {
-
-                        var claimsProvider = context.HttpContext.RequestServices.GetService<IBfmApiClient>();
-                        var authenticationProviderHandler = context.HttpContext.RequestServices.GetService<IAuthProviderHandler>();
-
-                        var principalIdentity = ((ClaimsIdentity)context.Principal.Identity);
-
-                        if (!authenticationProviderHandler.CanHandle(context))
+                        var claims = ctx.Principal.Claims.ToList();
+                        var nameId = claims.FirstOrDefault(c => c.Type == ObjectIdentifierClaimType)?.Value;
+                        if (nameId == null)
                         {
-                            context.Principal = new ClaimsPrincipal();
+                            ctx.Principal = new ClaimsPrincipal();
                             return;
                         }
 
-                        var bfmClaims = (await authenticationProviderHandler.GetBfmClaimsAsync(context, claimsProvider))?.ToList();
+                        claims.RemoveAll(c => c.Type == ClaimTypes.NameIdentifier);
+                        claims.Add(new Claim(Globals.FederatedProviderTypeClaims, AthleteSourceNames.AzureActiveDirectory));
+                        claims.Add(new Claim(ClaimTypes.NameIdentifier, nameId));
 
-                        if (bfmClaims == null)
-                        {
-                            context.Principal = new ClaimsPrincipal();
-                            return;
-                        }
-
-                        var existingClaims = principalIdentity.Claims.Except(bfmClaims);
-                        bfmClaims.AddRange(existingClaims);
-                        context.Principal = new ClaimsPrincipal(new List<ClaimsIdentity> { new ClaimsIdentity(bfmClaims, principalIdentity.AuthenticationType) });
+                        ctx.Principal = new ClaimsPrincipal(new ClaimsIdentity(claims, ctx.Principal.Identity.AuthenticationType));
                     };
                 })
-                .AddAzureAD(options =>
-                {
-                    configuration.Bind("AzureAdAuth", options);
-                    options.CookieSchemeName = Globals.OidAuthScheme;
-                })
-                .AddOAuthValidation(Globals.TokenAuthShecme, options =>
-                    {
-                        
-                    })
+                .AddOAuthValidation(Globals.TokenAuthShecme)
                 .AddOpenIdConnectServer(options =>
                 {
                     var oidcConfiguration = new OidcConfiguration();
@@ -66,8 +49,7 @@ namespace BurnForMoney.ApiGateway.Authentication
                     options.AuthorizationEndpointPath = oidcConfiguration.AuthorizationEndpointPath;
                     options.UserinfoEndpointPath = oidcConfiguration.UserinfoEndpointPath;
 
-                    options.SigningCredentials.AddKey(new SymmetricSecurityKey(Encoding.ASCII.GetBytes(oidcConfiguration.SigningCredentialsSymmetricKey)));
-                    
+                    options.SigningCredentials.AddEphemeralKey();
 
                     //TODO fix this
                     options.AllowInsecureHttp = true;
