@@ -3,11 +3,11 @@ import { UserManager, UserManagerSettings, User } from 'oidc-client';
 export class AuthManager {
     constructor(){
         var settings = {
-            authority: "https://dd-bfm-backend.azurewebsites.net/",
-            client_id: "test1",
-            redirect_uri: `http://localhost:3000/auth/signin?redirect=${window.location.href}`,
-            silent_redirect_uri: "http://localhost:3000/auth/silent",
-            post_logout_redirect_uri: `http://localhost:3000`,
+            authority: process.env.REACT_APP_OIDC_AUTH_URL,
+            client_id: process.env.REACT_APP_OIDC_CLIENT_ID,
+            redirect_uri: `${window.location.origin}/auth/signin?redirect=${window.location.href}`,
+            silent_redirect_uri: `${window.location.origin}/auth/silent`,
+            post_logout_redirect_uri: window.location.origin,
             response_type: 'id_token token',
             scope: 'openid'
         };
@@ -35,4 +35,7 @@ export class AuthManager {
         return this._userManager.signinRedirectCallback();
     }
 
+    signinSilentCallback (){
+        return this._userManager.signinSilentCallback();
+    }
 };

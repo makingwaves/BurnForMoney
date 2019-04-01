@@ -16,6 +16,7 @@ import SimpleLoginPage from "./components/Authentication/SimpleLoginPage";
 
 function  App(){
   let authDashboard = authComponent(AppDashboard, SimpleLoginPage);
+  let authTvboard = authComponent(AppTvboard, SimpleLoginPage);
 
   return (
     <Router>
@@ -25,12 +26,10 @@ function  App(){
           <Route path="/strava" component={StravaAuth} />
           <Route path="/strava-confirmation" component={StravaConfirmation} />
           <Route path="/dashboard" component={authDashboard} />
-          <Route path="/tvboard" component={AppTvboard} />
+          <Route path="/tvboard" component={authTvboard} />
+          
           <Route path="/auth/signin" component={SignInHandler} />
           <Route path="/auth/silent" component={SilentCallbackHandler} />
-          
-          {/* <Route path="/auth/login" component={LoginPage} />
-          <Route path="/auth/signin" component={SignInHandler} /> */}
         </Switch>
       </div>
     </Router>

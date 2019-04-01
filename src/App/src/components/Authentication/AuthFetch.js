@@ -12,30 +12,24 @@ function authFetch(url, method, body){
                 }
             })
             .then(resp => new Promise((resolve, reject)=>{
-                if(resp.status == 200)
+                if(resp.status == 401) {
+                    appManager.renewToken()
+                    .then(user => {
+                        resolve(
+                        fetch(url, {
+                            method:  method,
+                            body: body,
+                            headers: {
+                                'Authorization': 'Bearer '+ user.access_token,
+                            }
+                        }));
+                    });
+                } 
+                else {
                     resolve(resp);
-                else
-                {
-                    if(resp.status == 401)
-                    {
-                        console.log("Missing token");
-                        appManager.renewToken()
-                        .then(user => {
-                            console.log("New token");
-                            return fetch(url, {
-                                method:  method,
-                                body: body,
-                                headers: {
-                                    'Authorization': 'Bearer '+ user.access_token,
-                                }
-                            })
-                        });
-                    }
-                    else
-                        reject(resp);
                 }
-            })));
-}
-
+            })
+            ))}
+            
 
 export default authFetch;

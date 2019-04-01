@@ -260,7 +260,7 @@ class AppDashboard extends Component {
       this.setState({rankingLoading: true });
       let category = this.state.rankingCategory;
       if(category === 'All') category = '';
-      fetch(this.api_url+"api/ranking/"+category)
+      authFetch(this.api_url+"api/ranking/"+category)
         .then(res => res.json())
         .then(
           (result) => {this.setState({ranking: result, rankingLoading: false }); console.log('ranking', this.state.ranking)},

@@ -5,9 +5,8 @@ class SilentCallbackHandler extends Component {
     componentDidMount(){
         let mgr = new AuthManager();
         mgr.signinSilentCallback()
-        .then(r => {
-            console.log("Refresh");
-            console.log(r);
+        .then(_ => {
+            console.log("Token refreshed");
         })
         .catch(err => {
             console.log(err);

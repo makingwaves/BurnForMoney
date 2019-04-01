@@ -114,7 +114,7 @@ class NewActivity extends Component {
           <div className="NewActivity__form">
             <div className="NewActivity__form-row" id="activityAthlete">
               <label htmlFor="activityAthletesName" className="NewActivity__form-label">I am</label>
-              <p>{this.state.user ? this.state.user.profile.name[1] : '?'}</p>
+              <p>{this.state.user ? this.state.user.profile.name : '?'}</p>
             </div>
 
             <div className="NewActivity__form-row" id="activityDateDiv">
@@ -183,7 +183,5 @@ class NewActivity extends Component {
           this.setState({"user": user});
       });
   }
-
-
 }
 export default NewActivity;
