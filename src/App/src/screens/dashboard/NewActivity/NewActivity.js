@@ -6,7 +6,9 @@ import DashboardHeader from '../DashboardHeader/DashboardHeader.js';
 import iconDistance from 'img/icon-distance.svg';
 import iconDuration from 'img/icon-duration.svg';
 
-import {adalApiFetch} from "../../../adalConfig"
+import authFetch from "../../../components/Authentication/AuthFetch"
+import {AuthManager} from "../../../components/Authentication/AuthManager"
+
 
 class NewActivity extends Component {
   api_url = process.env.REACT_APP_DASHBOARD_API_URL;
@@ -23,6 +25,8 @@ class NewActivity extends Component {
       movingTimeInHours: 0,
       movingTimeInMinutes: 0
     };
+
+    this._authManager = new AuthManager();
   }
   setCategory = (e) => {
     if(this.categoriesWithDistance.includes(e.target.getAttribute('data-category'))){
@@ -48,25 +52,25 @@ class NewActivity extends Component {
       "DistanceInMeters": distanceInMeters,
       "MovingTimeInMinutes": timeInMinutes
     };
+
     console.log("Adding new ENTRY: ",newEntry);
     console.log("AthleteId: ", this.state.athleteId);
 
     if(this.validate() ){
-      adalApiFetch(this.api_url+"api/athlete/"+this.state.athleteId+"/activities", {
-          method: 'POST',
-          body: JSON.stringify(newEntry)
-      }).then(
+      authFetch(this.api_url+"api/me/activities", 'POST', JSON.stringify(newEntry)
+      ).then(
           (result) => { console.log('RESULT:', result)},
           (error) => { console.error('Error:', error) }
       );
     }
   };
+
   validate = () => {
     let timeInMinutes = (this.state.movingTimeInHours) * 60 + (this.state.movingTimeInMinutes)*1;
     let distanceInMeters = parseFloat(this.state.distanceInKiloMeteres, 10)*1000;
     let isValid = true;
 
-    var elements = document.getElementsByClassName('error');
+    var elements = document.getElementsByClassName('error');``
     while(elements.length > 0){
         elements[0].parentNode.removeChild(elements[0]);
     }
@@ -110,14 +114,7 @@ class NewActivity extends Component {
           <div className="NewActivity__form">
             <div className="NewActivity__form-row" id="activityAthlete">
               <label htmlFor="activityAthletesName" className="NewActivity__form-label">I am</label>
-              <div className="NewActivity__form-selectAthlete">
-                <select id="activityAthletesName" required value={this.state.athleteId} onChange={(e) => {this.setState({athleteId: e.target.value}); localStorage.setItem('athleteId', e.target.value); console.log('--->',localStorage.getItem('athleteId')) } }>
-                  <option value=''>no one...</option>
-                  {this.props.athletes.map( (i) =>
-                    <option key={i.id} value={i.id}>{`${i.firstName} ${i.lastName}`}</option>
-                  )}
-                </select>
-              </div>
+              <p>{this.state.user ? this.state.user.profile.name[1] : '?'}</p>
             </div>
 
             <div className="NewActivity__form-row" id="activityDateDiv">
@@ -174,12 +171,17 @@ class NewActivity extends Component {
 
   componentDidMount(){
     // internal api_url
-    adalApiFetch(this.api_url+"api/activities/categories")
+    authFetch(this.api_url+"api/activities/categories")
       .then(res => res.json())
       .then(
         (result) => {this.setState({categories: result }); },
         (error) => {this.setState({categories: null}); console.error('Error:', error); }
       );
+
+      this._authManager.getUser().then(user => {
+        if(user)
+          this.setState({"user": user});
+      });
   }
 
 
