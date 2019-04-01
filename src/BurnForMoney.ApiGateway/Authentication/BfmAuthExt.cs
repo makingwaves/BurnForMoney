@@ -1,18 +1,14 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
-using System.Text;
 using BurnForMoney.ApiGateway.Clients;
 using BurnForMoney.ApiGateway.Utils;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.IdentityModel.Tokens;
 
 namespace BurnForMoney.ApiGateway.Authentication
 {
-
     public static class BfmAuthExt
     {
         public static AuthenticationBuilder AddBfmAuth(this AuthenticationBuilder builder, IConfiguration configuration)
@@ -71,9 +67,6 @@ namespace BurnForMoney.ApiGateway.Authentication
                     options.UserinfoEndpointPath = oidcConfiguration.UserinfoEndpointPath;
 
                     options.SigningCredentials.AddEphemeralKey();
-
-                    //TODO fix this
-                    options.AllowInsecureHttp = true;
                 });
         }
     }
