@@ -81,3 +81,6 @@ GET {{baseUrl}}/ranking?take=5&month=2&year=2019
 
 ### Get dashboard header, month 2, year 2019
 GET {{baseUrl}}/dashboardtop?month=2&year=2019
+
+### Get dashboard header (totals)
+GET {{baseUrl}}/dashboardtop

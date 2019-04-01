@@ -70,6 +70,13 @@ namespace BurnForMoney.ApiGateway.Controllers
             return this.AuthorizedProxyAsync($"{_appConfiguration.InternalApiUri}/activities/categories", _appConfiguration.InternalApiMasterKey);
         }
 
+        [HttpGet]
+        [Route("dashboardtop")]
+        public Task GetDashboardTop()
+        {
+            return this.AuthorizedProxyAsync($"{_appConfiguration.InternalApiUri}/dashboardtop", _appConfiguration.InternalApiMasterKey);
+        }
+
         [HttpPost]
         [Route("me/activities")]
         public IActionResult AddActivity([FromServices]IBfmApiClient client)
