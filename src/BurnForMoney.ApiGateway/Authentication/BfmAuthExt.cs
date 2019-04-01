@@ -5,6 +5,7 @@ using System.Text;
 using BurnForMoney.ApiGateway.Clients;
 using BurnForMoney.ApiGateway.Utils;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
@@ -20,7 +21,10 @@ namespace BurnForMoney.ApiGateway.Authentication
                 .AddCookie(Globals.OidAuthScheme, options =>
                 {
                     configuration.Bind("CookieAuth", options);
-                    
+
+//                    //TODO only for testing
+//                    options.Cookie.SameSite = SameSiteMode.None;
+//                  
                     options.Events.OnSigningIn = async context =>
                     {
 
@@ -66,8 +70,7 @@ namespace BurnForMoney.ApiGateway.Authentication
                     options.AuthorizationEndpointPath = oidcConfiguration.AuthorizationEndpointPath;
                     options.UserinfoEndpointPath = oidcConfiguration.UserinfoEndpointPath;
 
-                    options.SigningCredentials.AddKey(new SymmetricSecurityKey(Encoding.ASCII.GetBytes(oidcConfiguration.SigningCredentialsSymmetricKey)));
-                    
+                    options.SigningCredentials.AddEphemeralKey();
 
                     //TODO fix this
                     options.AllowInsecureHttp = true;

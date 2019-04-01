@@ -77,10 +77,10 @@ namespace BurnForMoney.ApiGateway.Controllers
                 new Claim(OpenIdConnectConstants.Claims.Name, User.FindFirst(ClaimTypes.Name).Value)
                     .SetDestinations(OpenIdConnectConstants.Destinations.AccessToken,
                         OpenIdConnectConstants.Destinations.IdentityToken));
+            
 
             identity.AddClaims(User.Claims.Select(c => new Claim(c.Type, c.Value)
-                .SetDestinations(OpenIdConnectConstants.Destinations.AccessToken,
-                    OpenIdConnectConstants.Destinations.IdentityToken)));
+                .SetDestinations(OpenIdConnectConstants.Destinations.AccessToken)));
 
             var ticket = new AuthenticationTicket(
                 new ClaimsPrincipal(identity),

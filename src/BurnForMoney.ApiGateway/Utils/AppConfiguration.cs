@@ -6,7 +6,7 @@ namespace BurnForMoney.ApiGateway.Utils
     {
         public string[] AcceptableClientsIds { get; set; }
 
-        public string SigningCredentialsSymmetricKey { get; set; }
+//        public string SigningCredentialsSymmetricKey { get; set; }
         public string AuthorizationEndpointPath { get; set; }
         public string UserinfoEndpointPath { get; set; }
     }
@@ -29,7 +29,6 @@ namespace BurnForMoney.ApiGateway.Utils
         public string StravaApiUriMasterKey { get; set; }
 
         public string StravaAuthorizationUrl { get; set; }
-        public string StravaAuthorizationRedirectUrl { get; set; }
 
         public string[] ValidRedirectUris { get; set; }
         public string DefaultRedirectUri { get; set; }

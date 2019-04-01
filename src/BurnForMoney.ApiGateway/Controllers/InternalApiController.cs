@@ -28,20 +28,10 @@ namespace BurnForMoney.ApiGateway.Controllers
         {
             return this.AuthorizedProxyAsync($"{_appConfiguration.InternalApiUri}/athletes", _appConfiguration.InternalApiMasterKey);
         }
-
-        [HttpGet]
-        [AllowAnonymous]
-        [Route("athletes/start_strava")]
-        public IActionResult StartAddStravaAccount([FromQuery(Name = "redirect_uri")]string redirectUrl)
-        {
-            var postAuthRedirectUrl = $"{_appConfiguration.StravaAuthorizationRedirectUrl}?redirect_uri={redirectUrl}";
-            var authorizationUrl = $"{_appConfiguration.StravaAuthorizationUrl}&redirect_uri={postAuthRedirectUrl.UrlEncode()}";
-            return Redirect(authorizationUrl);
-        }
-
-        [HttpGet]
+        
+        [HttpPost]
         [Route("athletes/finish_strava")]
-        public async Task<IActionResult> FinishAddStravaAccount([FromQuery]string code, [FromQuery(Name = "redirect_uri")]string redirectUri, [FromServices]IBfmApiClient client)
+        public async Task<IActionResult> FinishAddStravaAccount([FromQuery]string code, [FromServices]IBfmApiClient client)
         {
             var athleteId = User.GetBfmAthleteId();
 
@@ -51,16 +41,16 @@ namespace BurnForMoney.ApiGateway.Controllers
             var stravaId = await client.AddStravaAccountAndWait(athleteId, code, Request.HttpContext.RequestAborted);
 
             if (stravaId == 0)
-                return Redirect(redirectUri); //TODO Change to error page or similar
+                return BadRequest();
 
-            return Redirect(redirectUri);
+            return Ok();
         }
 
         [HttpGet]
         [Route("ranking")]
         public Task GetRanking()
         {
-            return this.AuthorizedProxyAsync($"{_appConfiguration.InternalApiUri}/ranking",_appConfiguration.InternalApiMasterKey);
+            return this.AuthorizedProxyAsync($"{_appConfiguration.InternalApiUri}/ranking", _appConfiguration.InternalApiMasterKey);
         }
 
         [HttpGet]
@@ -72,14 +62,10 @@ namespace BurnForMoney.ApiGateway.Controllers
 
         [HttpPost]
         [Route("me/activities")]
-        public IActionResult AddActivity([FromServices]IBfmApiClient client)
+        public Task AddActivity([FromServices]IBfmApiClient client)
         {
             var athleteId = User.GetBfmAthleteId();
-
-            if (athleteId == Guid.Empty)
-                return BadRequest();
-            
-            return Ok();
+            return this.AuthorizedProxyAsync($"{_appConfiguration.InternalApiUri}/athlete/{athleteId}/activities", _appConfiguration.InternalApiMasterKey);
         }
     }
 }

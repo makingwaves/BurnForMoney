@@ -13,6 +13,7 @@ namespace BurnForMoney.ApiGateway.Utils
     {
         private readonly AppConfiguration _configuration;
 
+        
         public RedirectUriValdiator(IOptions<AppConfiguration> configuration)
         {
             _configuration = configuration.Value;
@@ -20,7 +21,7 @@ namespace BurnForMoney.ApiGateway.Utils
 
         public bool IsValid(string url)
         {
-            return !string.IsNullOrEmpty(url) && _configuration.ValidRedirectUris.Any(url.StartsWith);
+            return !string.IsNullOrEmpty(url) && (_configuration.ValidRedirectUris.Any(url.StartsWith) || url.StartsWith("/"));
         }
 
         public string GetDefaultIfNotValid(string url)
