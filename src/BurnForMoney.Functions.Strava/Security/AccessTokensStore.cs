@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
+using System.Security.Permissions;
 using System.Threading.Tasks;
 using BurnForMoney.Functions.Shared;
 using Microsoft.Azure.KeyVault;
@@ -15,6 +17,7 @@ namespace BurnForMoney.Functions.Strava.Security
         private static readonly IMemoryCache AccessTokensCache = new MemoryCache(new MemoryDistributedCacheOptions());
         private static readonly IMemoryCache RefreshTokensCache = new MemoryCache(new MemoryDistributedCacheOptions());
         private static readonly IKeyVaultClient KeyVault = KeyVaultClientFactory.Create();
+
         private static readonly MemoryCacheEntryOptions CacheEntryOptions = new MemoryCacheEntryOptions
         {
             Size = 1,
@@ -61,7 +64,8 @@ namespace BurnForMoney.Functions.Strava.Security
             return refreshToken;
         }
 
-        public static async Task AddAsync(Guid athleteId, string accessToken, string refreshToken, DateTime accessTokenExpirationDate, string keyVaultBaseUrl)
+        public static async Task AddAsync(Guid athleteId, string accessToken, string refreshToken,
+            DateTime accessTokenExpirationDate, string keyVaultBaseUrl)
         {
             var accessTokenSecretName = AccessTokensSecretNameConvention.AccessToken(athleteId);
             var refreshTokenSecretName = AccessTokensSecretNameConvention.RefreshToken(athleteId);
@@ -72,8 +76,8 @@ namespace BurnForMoney.Functions.Strava.Security
                 secretAttributes: new SecretAttributes(enabled: true, expires: accessTokenExpirationDate),
                 tags: new Dictionary<string, string>
                 {
-                    { AccessTokensTag.RefreshTokenSecretName, refreshTokenSecretName },
-                    { AccessTokensTag.AthleteId, athleteId.ToString() }
+                    {AccessTokensTag.RefreshTokenSecretName, refreshTokenSecretName},
+                    {AccessTokensTag.AthleteId, athleteId.ToString()}
                 });
             var refreshTokenSecret = await KeyVault.SetSecretAsync(keyVaultBaseUrl,
                 refreshTokenSecretName,
@@ -109,6 +113,7 @@ namespace BurnForMoney.Functions.Strava.Security
                 {
                     secrets.Add(secretItem);
                 }
+
                 nextPageLink = secretsPage.NextPageLink;
             }
 
@@ -117,7 +122,8 @@ namespace BurnForMoney.Functions.Strava.Security
 
         public static async Task DeactivateAccessTokenOfAsync(Guid athleteId, string keyVaultBaseUrl)
         {
-            var secretIdentifier = new SecretIdentifier(keyVaultBaseUrl, AccessTokensSecretNameConvention.AccessToken(athleteId));
+            var secretIdentifier =
+                new SecretIdentifier(keyVaultBaseUrl, AccessTokensSecretNameConvention.AccessToken(athleteId));
 
             await KeyVault.UpdateSecretAsync(secretIdentifier.Identifier,
                 secretAttributes: new SecretAttributes(enabled: false));
@@ -126,7 +132,8 @@ namespace BurnForMoney.Functions.Strava.Security
 
         public static async Task ActivateAccessTokenOfAsync(Guid athleteId, string keyVaultBaseUrl)
         {
-            var secretIdentifier = new SecretIdentifier(keyVaultBaseUrl, AccessTokensSecretNameConvention.AccessToken(athleteId));
+            var secretIdentifier =
+                new SecretIdentifier(keyVaultBaseUrl, AccessTokensSecretNameConvention.AccessToken(athleteId));
 
             await KeyVault.UpdateSecretAsync(secretIdentifier.Identifier,
                 secretAttributes: new SecretAttributes(enabled: true));
@@ -137,9 +144,14 @@ namespace BurnForMoney.Functions.Strava.Security
     public class SecretDisabledException : KeyVaultErrorException
     {
         public SecretDisabledException(Guid athleteId, Exception inner)
-            :base($"Access token for athlete with id: {athleteId} is disabled.", inner)
+            : base($"Access token for athlete with id: {athleteId} is disabled.", inner)
         {
-            
+        }
+
+        protected SecretDisabledException(
+            SerializationInfo info,
+            StreamingContext context)
+        {
         }
     }
 }
