@@ -1,9 +1,14 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
+using System.Net;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using AspNet.Security.OpenIdConnect.Extensions;
 using AspNet.Security.OpenIdConnect.Primitives;
 using AspNet.Security.OpenIdConnect.Server;
+using BurnForMoney.ApiGateway.Authentication;
+using BurnForMoney.ApiGateway.Clients;
+using BurnForMoney.ApiGateway.Clients.Dto;
 using BurnForMoney.ApiGateway.Utils;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.AzureAD.UI;
@@ -40,7 +45,7 @@ namespace BurnForMoney.ApiGateway.Controllers
                 return Challenge(new AuthenticationProperties
                 {
                     RedirectUri = valdiatedRedirectUri
-                }, AzureADDefaults.AuthenticationScheme);
+                }, Globals.AzureScheme);
             }
 
             return Redirect(valdiatedRedirectUri);
@@ -58,7 +63,7 @@ namespace BurnForMoney.ApiGateway.Controllers
         [HttpGet]
         [Route("authorize")]
         [Authorize(AuthenticationSchemes = Globals.OidAuthScheme)]
-        public IActionResult Authorize()
+        public async Task<IActionResult> Authorize([FromServices] IBfmApiClient bfmApiClient)
         {
             var response = HttpContext.GetOpenIdConnectResponse();
             var request = HttpContext.GetOpenIdConnectRequest();
@@ -68,19 +73,42 @@ namespace BurnForMoney.ApiGateway.Controllers
                 OpenIdConnectConstants.Claims.Name,
                 OpenIdConnectConstants.Claims.Role);
 
+
+            var nameId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+            var idSource = User.Claims.FirstOrDefault(c => c.Type == Globals.FederatedProviderTypeClaims)?.Value;
+
+            var athlete = await bfmApiClient.GetAthleteAsync(nameId, idSource);
+            if (athlete == null)
+            {
+                var firstName = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.GivenName)?.Value;
+                var lastName = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Surname)?.Value;
+
+                athlete = await bfmApiClient.CreateAthleteAndWait(Guid.Parse(nameId), new Athlete
+                {
+                    FirstName = firstName,
+                    LastName = lastName
+                }, Request.HttpContext.RequestAborted);
+            }
+
+            if (athlete == null)
+                //OR redirect to error page ...
+                return StatusCode((int)HttpStatusCode.InternalServerError);
+
             identity.AddClaim(
-                new Claim(OpenIdConnectConstants.Claims.Subject, User.FindFirst(ClaimTypes.NameIdentifier).Value)
+                new Claim(OpenIdConnectConstants.Claims.Subject, athlete.Id.ToString())
                     .SetDestinations(OpenIdConnectConstants.Destinations.AccessToken,
                         OpenIdConnectConstants.Destinations.IdentityToken));
 
             identity.AddClaim(
-                new Claim(OpenIdConnectConstants.Claims.Name, User.FindFirst(ClaimTypes.Name).Value)
+                new Claim(OpenIdConnectConstants.Claims.Name, $"{athlete.FirstName} {athlete.LastName}")
                     .SetDestinations(OpenIdConnectConstants.Destinations.AccessToken,
                         OpenIdConnectConstants.Destinations.IdentityToken));
             
+            identity.AddClaim(
+                new Claim(ClaimTypes.NameIdentifier, athlete.Id.ToString())
+                    .SetDestinations(OpenIdConnectConstants.Destinations.AccessToken,
+                        OpenIdConnectConstants.Destinations.IdentityToken));
 
-            identity.AddClaims(User.Claims.Select(c => new Claim(c.Type, c.Value)
-                .SetDestinations(OpenIdConnectConstants.Destinations.AccessToken)));
 
             var ticket = new AuthenticationTicket(
                 new ClaimsPrincipal(identity),
