@@ -49,17 +49,18 @@
   &Grid{
     display: grid;
     grid-template-columns: 3fr 2fr;
+    grid-template-rows: 75px auto;
     grid-template-areas:
-      "summary results"
+      "progress results"
       "contribution ranking";
     grid-column-gap: 40px;
     grid-row-gap: 30px;
 
     &Item{
-      &-status{
-        grid-area: summary;
+      &-progress{
+        grid-area: progress;
       }
-      &-numbers{
+      &-results{
         grid-area: results;
       }
       &-contribution{
@@ -67,7 +68,6 @@
       }
       &-ranking{
         grid-area: ranking;
-
 
         &Header{
           display:flex;
