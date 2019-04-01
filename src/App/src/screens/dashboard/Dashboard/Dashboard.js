@@ -6,6 +6,7 @@ import DashboardHeader from '../DashboardHeader/DashboardHeader.js';
 import RankingList from '../RankingList/RankingList.js';
 import RankingFilter from '../RankingFilter/RankingFilter.js';
 import PointsAndMoney from '../PointsAndMoney/PointsAndMoney.js';
+import ProgressBonus from '../ProgressBonus/ProgressBonus.js';
 
 const Dashboard = (props) =>{
   return (
@@ -13,14 +14,8 @@ const Dashboard = (props) =>{
       <DashboardHeader header="Dashboard" />
       <div className="Dashboard-content DashboardGrid">
 
-        <div className="DashboardGridItem DashboardGridItem-summary">
-          <p>Summary</p>
-          <div className="">
-            <p>Keep going! We miss only 55 pt for next 100 PLN</p>
-            <div>
-              <div></div>
-            </div>
-          </div>
+        <div className="DashboardGridItem DashboardGridItem-progress">
+          <ProgressBonus />
         </div>
 
         <div className="DashboardGridItem DashboardGridItem-results">
