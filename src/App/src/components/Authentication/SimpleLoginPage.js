@@ -17,7 +17,6 @@ class SimpleLoginPage extends Component {
             Elo Ziom :) Trzeba sie zalogowac! <br/> 
             Albo jak Cześi mawaiją:  Musíte se přihlásit) <br/> 
             <button onClick={this.azureAdLogin}>Sign In</button><br/> 
-            <button>Sign Up</button>
         </div>);
     }
 }

@@ -4,6 +4,7 @@ import authFetch from "../../components/Authentication/AuthFetch"
 import './StravaAuth.css';
 import logo from 'img/logo.svg';
 
+import {AuthManager} from "../../components/Authentication/AuthManager"
 
 class StravaAuth extends Component {
 
@@ -22,17 +23,22 @@ class StravaAuth extends Component {
       this.state = { 
         strava_auth_finished: false
       };
+
+      this._authManager = new AuthManager();
     }
 
   componentDidMount(){
     let code = this.getParameterByName("code");
-    authFetch(`${process.env.REACT_APP_DASHBOARD_API_URL}api/athletes/finish_strava?code=${code}`, "POST")
+
+    this._authManager.getUser()
+    .then(user => 
+      authFetch(`${process.env.REACT_APP_DASHBOARD_API_URL}api/athletes/${user.profile.sub}/strava_code?code=${code}`, "POST"))
     .then((r)=>{
       if(r.status == 200)
         this.setState({strava_auth_finished: true});
       else {
         console.log(r);
-        alert("Strava account syncronization failed !");
+        alert("Strava account synchronization failed !");
       }
     })
     .catch((e)=>{
