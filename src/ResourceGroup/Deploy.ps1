@@ -11,7 +11,6 @@ Param(
 . "$PSScriptRoot\Deploy-Credentials.ps1"
 . "$PSScriptRoot\Upgrade-Database.ps1"
 . "$PSScriptRoot\Utils.ps1"
-. "$PSScriptRoot\Set-WebApp-Ip-Restrictions.ps1"
 
 try {
     [Microsoft.Azure.Common.Authentication.AzureSession]::ClientFactory.AddUserAgent("VSAzureTools-$UI$($host.name)".replace(' ','_'), '3.0.0')

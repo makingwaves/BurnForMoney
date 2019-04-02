@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {Component} from 'react';
 import {
   BrowserRouter as Router,
   Route,
@@ -9,11 +9,14 @@ import Home from './screens/home/Home';
 import StravaAuth from './screens/stravaAuth/StravaAuth';
 import StravaConfirmation from './screens/stravaAuth/StravaConfirmation';
 import AppDashboard from './screens/dashboard/AppDashboard';
+import AppTvboard from './screens/tvboard/AppTvboard';
 
-import { withAdalLoginApi } from './adalConfig';
+import {authComponent, SignInHandler, SilentCallbackHandler} from "./components/Authentication/AuthComponent";
+import SimpleLoginPage from "./components/Authentication/SimpleLoginPage";
 
-function App () {
-  const ProtectedAppDashboard = withAdalLoginApi(AppDashboard, null, null);
+function  App(){
+  let authDashboard = authComponent(AppDashboard, SimpleLoginPage);
+  let authTvboard = authComponent(AppTvboard, SimpleLoginPage);
 
   return (
     <Router>
@@ -22,7 +25,11 @@ function App () {
           <Route exact path="/" component={Home} />
           <Route path="/strava" component={StravaAuth} />
           <Route path="/strava-confirmation" component={StravaConfirmation} />
-          <Route path="/dashboard" component={ProtectedAppDashboard} />
+          <Route path="/dashboard" component={authDashboard} />
+          <Route path="/tvboard" component={authTvboard} />
+          
+          <Route path="/auth/signin" component={SignInHandler} />
+          <Route path="/auth/silent" component={SilentCallbackHandler} />
         </Switch>
       </div>
     </Router>

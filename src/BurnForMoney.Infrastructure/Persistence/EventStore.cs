@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Threading.Tasks;
 using BurnForMoney.Domain;
 using Microsoft.WindowsAzure.Storage;
@@ -92,9 +93,9 @@ namespace BurnForMoney.Infrastructure.Persistence
 
             var properties = new
             {
-                Id = id,                 
-                Type = e.GetType().FullName, 
-                Data = Json(e)     
+                Id = id,
+                Type = e.GetType().FullName,
+                Data = Json(e)
             };
 
             return new EventData(EventId.From(id), EventProperties.From(properties));
@@ -121,7 +122,7 @@ namespace BurnForMoney.Infrastructure.Persistence
 
         private static DomainEvent ToEvent(DomainEventEntity e)
         {
-            return (DomainEvent)JsonConvert.DeserializeObject(e.Data, Type.GetType(e.Type));
+            return (DomainEvent) JsonConvert.DeserializeObject(e.Data, Type.GetType(e.Type));
         }
 
         public static IEventStore Create(string storageConnectionString, IEventPublisher eventPublisher)
@@ -130,11 +131,31 @@ namespace BurnForMoney.Infrastructure.Persistence
         }
     }
 
+    [Serializable]
     public class AggregateNotFoundException : Exception
     {
+        public AggregateNotFoundException()
+        {
+        }
+
+        protected AggregateNotFoundException(
+            SerializationInfo info,
+            StreamingContext context) : base(info, context)
+        {
+        }
     }
 
+    [Serializable]
     public class ConcurrencyException : Exception
     {
+        public ConcurrencyException()
+        {
+        }
+
+        protected ConcurrencyException(
+            SerializationInfo info,
+            StreamingContext context) : base(info, context)
+        {
+        }
     }
 }

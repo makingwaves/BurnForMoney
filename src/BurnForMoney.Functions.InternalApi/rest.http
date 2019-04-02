@@ -7,8 +7,8 @@
 
 ###### ------------------------- ATHLETE
 
-### Create athlete (not supported)
-POST {{baseUrl}}/athlete
+### Create athlete
+POST {{baseUrl}}/athlete/create
 Content-Type: application/json
 
 {
@@ -19,6 +19,10 @@ Content-Type: application/json
 
 ### Get athletes
 GET {{baseUrl}}/athletes
+
+
+### Get athlete
+GET {{baseUrl}}/athletes/{id}
 
 ###### ------------------------- ACTIVITY 
 
@@ -68,3 +72,19 @@ GET {{baseUrl}}/ranking/{{category}}
 ### Get ranking, top 5
 @take = 5
 GET {{baseUrl}}/ranking?take={{take}}
+
+
+### Get ranking, top 5, year 2019
+GET {{baseUrl}}/ranking?take=5&year=2018
+
+### Get ranking, top 5, month 2, year 2019
+GET {{baseUrl}}/ranking?take=5&month=2&year=2019
+
+
+###### ------------------------- DASHBOARD 
+
+### Get dashboard header, month 2, year 2019
+GET {{baseUrl}}/dashboardtop?month=2&year=2019
+
+### Get dashboard header (totals)
+GET {{baseUrl}}/dashboardtop

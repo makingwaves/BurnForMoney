@@ -6,6 +6,7 @@
   display: grid;
   grid-template-columns: 185px 1fr;
   grid-template-areas: "side main";
+
   @media only screen and (max-width: 600px) {
     grid-template-columns: 1fr;
     grid-template-areas:
@@ -48,14 +49,18 @@
   &Grid{
     display: grid;
     grid-template-columns: 3fr 2fr;
+    grid-template-rows: 75px auto;
     grid-template-areas:
-      "summary results"
+      "progress results"
       "contribution ranking";
+    grid-column-gap: 40px;
+    grid-row-gap: 30px;
+
     &Item{
-      &-status{
-        grid-area: summary;
+      &-progress{
+        grid-area: progress;
       }
-      &-numbers{
+      &-results{
         grid-area: results;
       }
       &-contribution{
@@ -63,6 +68,36 @@
       }
       &-ranking{
         grid-area: ranking;
+
+        &Header{
+          display:flex;
+          padding-bottom: 20px;
+          align-items: center;
+          justify-content: space-between;
+          &-title{
+            margin: 0;
+          }
+          &-link{
+            font-size: 14px;
+            text-decoration:underline;
+            font-family: 'AftenScreen';
+            color:#000;
+            &:after{
+              content:'';
+              display: inline-block;
+              width: 13px;
+              height: 12px;
+              margin-left: 5px;
+              background-image: url('~img/arrowRightPink.svg');
+              vertical-align: middle;
+            }
+          }
+        }
+        &Content{
+          padding:20px;
+          background: #fff;
+          box-shadow: $dashboard-shadow;
+        }
       }
     }
   }

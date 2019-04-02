@@ -31,5 +31,12 @@
   "See our initiatives": "See all initiatives",
   "Our initiatives": "Our initiatives",
   "Contact us": "Contact us",
-  "praca.makingwaves.com/initiatives": "http://praca.makingwaves.com/?lang=en#initiatives"
+  "praca.makingwaves.com/initiatives": "http://praca.makingwaves.com/?lang=en#initiatives",
+
+  "TV_Summary":"Summary",
+  "TV_Training_sessions":"Training sessions",
+  "TV_Making_Wavers_engaged": "Wave Makers engaged",
+  "TV_Collected_this_month_so_far":"Collected this month so far",
+  "TV_Result_per_category": "Result per category",
+  "TV_TOP_10": "Top 10"
 }

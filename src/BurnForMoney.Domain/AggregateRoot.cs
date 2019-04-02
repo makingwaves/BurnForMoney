@@ -25,7 +25,7 @@ namespace BurnForMoney.Domain
             _changes.Clear();
         }
 
-        public void LoadsFromHistory(IEnumerable<DomainEvent> history)
+        public void LoadFromHistory(IEnumerable<DomainEvent> history)
         {
             foreach (var e in history)
             {

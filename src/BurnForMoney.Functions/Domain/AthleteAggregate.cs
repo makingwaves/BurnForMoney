@@ -10,7 +10,8 @@ namespace BurnForMoney.Functions.Domain
 {
     public class Athlete : AggregateRoot
     {
-        public string ExternalId { get; private set; }
+        public Guid ActiveDirectoryId { get; set; }
+        public string StravaId { get; private set; }
 
         public string FirstName { get; private set; }
 
@@ -19,20 +20,28 @@ namespace BurnForMoney.Functions.Domain
         public string ProfilePictureUrl { get; private set; }
 
         public bool IsActive { get; private set; }
-
-        public Source Source { get; private set; }
+        
 
         public List<Activity> Activities { get; } = new List<Activity>();
 
         public void Apply(AthleteCreated @event)
         {
             Id = @event.Id;
-            ExternalId = @event.ExternalId;
+            StravaId = @event.ExternalId;
             FirstName = @event.FirstName;
             LastName = @event.LastName;
             ProfilePictureUrl = @event.ProfilePictureUrl;
             IsActive = true;
-            Source = @event.System;
+        }
+
+        public void Apply(AthleteCreated_V2 @event)
+        {
+            Id = @event.Id;
+            ActiveDirectoryId = @event.AadId;
+            FirstName = @event.FirstName;
+            LastName = @event.LastName;
+            ProfilePictureUrl = null;
+            IsActive = true;
         }
 
         public void Apply(AthleteDeactivated @event)
@@ -45,6 +54,11 @@ namespace BurnForMoney.Functions.Domain
             IsActive = true;
         }
 
+        public void Apply(ActiveDirectoryIdAssigned @event)
+        {
+            ActiveDirectoryId = @event.ActiveDirectoryId;
+        }
+
         public void Apply(ActivityAdded @event)
         {
             Activities.Add(new Activity(@event.ActivityId, @event.ExternalId, @event.DistanceInMeters,
@@ -52,30 +66,39 @@ namespace BurnForMoney.Functions.Domain
                 @event.Source, @event.Points));
         }
 
-        public void Apply(ActivityUpdated @event)
+        public void Apply(ActivityUpdated @event) => Apply(ActivityUpdated_V2.ConvertFrom(@event));
+        public void Apply(ActivityUpdated_V2 @event)
         {
             var activity = Activities.Single(a => a.Id.Equals(@event.ActivityId));
             activity.Update(@event.DistanceInMeters, @event.MovingTimeInMinutes, @event.ActivityType,
                 @event.ActivityCategory, @event.StartDate, @event.Points);
         }
 
-        public void Apply(ActivityDeleted @event)
+        public void Apply(ActivityDeleted @event) => Apply(ActivityDeleted_V2.ConvertFrom(@event));
+        public void Apply(ActivityDeleted_V2 @event)
         {
             var activity = Activities.Single(a => a.Id.Equals(@event.ActivityId));
             Activities.Remove(activity);
         }
 
-        public Athlete()
+        public void Apply(StravaIdAdded @event)
         {
-
+            StravaId = @event.StravaId;
         }
 
-        public Athlete(Guid id, string externalId, string firstName, string lastName, string profilePictureUrl,
-            Source source)
+        public Athlete()
+        {}
+
+        public Athlete(Guid id, Guid aadId, string firstName, string lastName)
         {
             if (id == Guid.Empty)
             {
-                throw new ArgumentNullException(nameof(Id));
+                throw new ArgumentNullException(nameof(id));
+            }
+
+            if (aadId == Guid.Empty)
+            {
+                throw new ArgumentNullException(nameof(aadId));
             }
 
             if (string.IsNullOrWhiteSpace(firstName))
@@ -83,7 +106,7 @@ namespace BurnForMoney.Functions.Domain
                 throw new ArgumentNullException(nameof(firstName));
             }
 
-            ApplyChange(new AthleteCreated(id, externalId, firstName, lastName, profilePictureUrl, source));
+            ApplyChange(new AthleteCreated_V2(id, aadId, firstName, lastName));
         }
 
         public void AddActivity(Guid id, string externalId, string activityType, double distanceInMeters,
@@ -121,7 +144,14 @@ namespace BurnForMoney.Functions.Domain
 
             if (Activities.Any(activity => activity.Id.Equals(id)))
             {
-                throw new InvalidOperationException("Cannot add the same activity twice.");
+                throw new InvalidOperationException($"Cannot add the same activity twice. Activity id: {id}");
+            }
+
+            if (Activities
+                .Where(a => !string.IsNullOrWhiteSpace(a.ExternalId))
+                .Any(activity => activity.ExternalId.Equals(externalId) && activity.Source.Equals(source)))
+            {
+                throw new InvalidOperationException($"Cannot add the same activity twice. External id: [{externalId}].");
             }
 
             var category = MapToActivityCategory(activityType, source);
@@ -129,13 +159,12 @@ namespace BurnForMoney.Functions.Domain
 
             ApplyChange(new ActivityAdded(id, Id, externalId, distanceInMeters, movingTimeInMinutes, activityType,
                 category, startDate, source, points));
-            ApplyChange(new PointsGranted(Id, points, PointsSource.Activity, id));
         }
 
-        public void UpdateActivity(Guid id, string activityType, double distanceInMeters, double movingTimeInMinutes,
+        public void UpdateActivity(Guid activityId, string activityType, double distanceInMeters, double movingTimeInMinutes,
             DateTime startDate)
         {
-            if (id == Guid.Empty)
+            if (activityId == Guid.Empty)
             {
                 throw new ArgumentNullException(nameof(Id));
             }
@@ -165,13 +194,13 @@ namespace BurnForMoney.Functions.Domain
                 throw new InvalidOperationException("Year must be greater than 2017.");
             }
 
-            var activity = Activities.SingleOrDefault(a => a.Id == id);
+            var activity = Activities.SingleOrDefault(a => a.Id == activityId);
             if (activity == null)
             {
-                throw new InvalidOperationException($"Activity with id: {id} does not exists.");
+                throw new InvalidOperationException($"Activity with id: {activityId} does not exists.");
             }
 
-            if (activity.Id == id &&
+            if (activity.Id == activityId &&
                 activity.ActivityType == activityType &&
                 Math.Abs(activity.DistanceInMeters - distanceInMeters) < 0.05 &&
                 Math.Abs(activity.MovingTimeInMinutes - movingTimeInMinutes) < 0.05 &&
@@ -183,26 +212,14 @@ namespace BurnForMoney.Functions.Domain
             var category = MapToActivityCategory(activityType, activity.Source);
             var points = PointsCalculator.Calculate(category, distanceInMeters, movingTimeInMinutes);
 
-            ApplyChange(new ActivityUpdated(id, distanceInMeters, movingTimeInMinutes, activityType, category,
-                startDate, points));
-
-            var originalPoints = Activities.Where(p => p.Id == id).Sum(l => l.Points);
-            var pointsDelta = points - originalPoints;
-
-            if (pointsDelta > 0)
-            {
-                ApplyChange(new PointsGranted(Id, pointsDelta, PointsSource.Activity, id));
-            }
-
-            if (pointsDelta < 0)
-            {
-                ApplyChange(new PointsLost(Id, pointsDelta, PointsSource.Activity, id));
-            }
+            ApplyChange(new ActivityUpdated_V2(Id, activityId, distanceInMeters, movingTimeInMinutes, activityType, category, startDate, points, 
+                new BurnForMoney.Infrastructure.Events.PreviousActivityData(activity.DistanceInMeters,
+                    activity.MovingTimeInMinutes, activity.ActivityType, activity.Category, activity.StartDate, activity.Points)));
         }
 
-        public void DeleteActivity(Guid id)
+        public void DeleteActivity(Guid activityId)
         {
-            if (id == Guid.Empty)
+            if (activityId == Guid.Empty)
             {
                 throw new ArgumentNullException(nameof(Id));
             }
@@ -212,16 +229,14 @@ namespace BurnForMoney.Functions.Domain
                 throw new InvalidOperationException("Athlete is deactivated.");
             }
 
-            var activity = Activities.SingleOrDefault(a => a.Id == id);
+            var activity = Activities.SingleOrDefault(a => a.Id == activityId);
             if (activity == null)
             {
-                throw new InvalidOperationException($"Activity with id: {id} does not exists.");
+                throw new InvalidOperationException($"Activity with id: {activityId} does not exists.");
             }
 
-            ApplyChange(new ActivityDeleted(id));
-
-            var originalPoints = Activities.Where(p => p.Id == id).Sum(l => l.Points);
-            ApplyChange(new PointsLost(Id, originalPoints, PointsSource.Activity, id));
+            ApplyChange(new ActivityDeleted_V2(Id, activityId, new BurnForMoney.Infrastructure.Events.PreviousActivityData(activity.DistanceInMeters,
+                activity.MovingTimeInMinutes, activity.ActivityType, activity.Category, activity.StartDate, activity.Points)));
         }
 
         public void Activate()
@@ -234,7 +249,6 @@ namespace BurnForMoney.Functions.Domain
             ApplyChange(new AthleteActivated(Id));
         }
 
-
         public void Deactivate()
         {
             if (!IsActive)
@@ -243,6 +257,28 @@ namespace BurnForMoney.Functions.Domain
             }
 
             ApplyChange(new AthleteDeactivated(Id));
+        }
+
+        public void AddStravaAccount(string stravaId)
+        {
+            if (!string.IsNullOrEmpty(StravaId))
+                throw new InvalidOperationException("Athlete has already a stravaId account.");
+            
+            ApplyChange(new StravaIdAdded
+            {
+                AthleteId = Id,
+                StravaId = stravaId
+            });
+        }
+
+        public void AssignActiveDirectoryId(Guid activeDirectoryId)
+        {
+            if (activeDirectoryId == Guid.Empty)
+            {
+                throw new ArgumentNullException(nameof(activeDirectoryId));
+            }
+
+            ApplyChange(new ActiveDirectoryIdAssigned(Id, activeDirectoryId));
         }
 
         private static ActivityCategory MapToActivityCategory(string activityType, Source source)

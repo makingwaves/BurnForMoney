@@ -2,9 +2,11 @@
 using System.Threading.Tasks;
 using BurnForMoney.Domain;
 using BurnForMoney.Functions.Infrastructure.Queues;
+using BurnForMoney.Functions.InternalApi.Configuration;
 using BurnForMoney.Functions.InternalApi.Commands;
 using BurnForMoney.Functions.InternalApi.Functions.Activities.Dto;
 using BurnForMoney.Functions.Shared.Extensions;
+using BurnForMoney.Functions.Shared.Functions.Extensions;
 using BurnForMoney.Identity;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -19,13 +21,14 @@ namespace BurnForMoney.Functions.InternalApi.Functions.Activities
     public static class AddActivityFunc
     {
         [FunctionName(FunctionsNames.AddActivity)]
-        public static async Task<IActionResult> AddActivityAsync([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "athlete/{athleteId:guid}/activities")] HttpRequest req, ExecutionContext executionContext,
-            ILogger log,
-            string athleteId,
+        public static async Task<IActionResult> AddActivityAsync([HttpTrigger(AuthorizationLevel.Function, "post", Route = "athlete/{athleteId:guid}/activities")] HttpRequest req, 
+            ILogger log, string athleteId,
+            [Configuration] ConfigurationRoot configuration,
             [Queue(AppQueueNames.AddActivityRequests, Connection = "AppQueuesStorage")] CloudQueue outputQueue)
         {
+            var athleteGuid = Guid.Parse(athleteId);         
             var requestData = await req.ReadAsStringAsync();
-
+            
             ActivityAddOrUpdateRequest model;
             try
             {
@@ -49,7 +52,7 @@ namespace BurnForMoney.Functions.InternalApi.Functions.Activities
             var addActivityCommand = new AddActivityCommand
             {
                 Id = ActivityIdentity.Next(),
-                AthleteId = Guid.Parse(athleteId),
+                AthleteId = athleteGuid,
                 ActivityType = model.Type,
                 // ReSharper disable once PossibleInvalidOperationException
                 StartDate = model.StartDate.Value,

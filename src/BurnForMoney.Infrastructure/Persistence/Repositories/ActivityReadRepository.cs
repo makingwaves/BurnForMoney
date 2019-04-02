@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 using System.Threading.Tasks;
 using BurnForMoney.Domain;
 using BurnForMoney.Infrastructure.Persistence.Repositories;
@@ -9,7 +10,7 @@ using Dapper;
 
 namespace BurnForMoney.Infrastructure.Persistence.Repositories
 {
-    public class ActivityReadRepository : IReadFacade<ActivityRow>
+    public class ActivityReadRepository
     {
         private readonly string _sqlConnectionString;
 
@@ -40,13 +41,15 @@ FROM dbo.Activities WHERE ExternalId=@ExternalId", new
             }
         }
 
-        public async Task<IEnumerable<ActivityRow>> GetAthleteActivitiesAsync(Guid id, Source source, int month, int year)
+        public async Task<IEnumerable<ActivityRow>> GetAthleteActivitiesAsync(Guid id, Source source, int month,
+            int year)
         {
             using (var conn = SqlConnectionFactory.Create(_sqlConnectionString))
             {
                 await conn.OpenWithRetryAsync();
 
-                var activities = conn.Query<ActivityRow>(@"SELECT Id, AthleteId, ExternalId, Distance AS DistanceInMeters, MovingTime AS MovingTimeInMinutes, ActivityType, ActivityTime as StartDate, Source
+                var activities = conn.Query<ActivityRow>(
+                    @"SELECT Id, AthleteId, ExternalId, Distance AS DistanceInMeters, MovingTime AS MovingTimeInMinutes, ActivityType, ActivityTime as StartDate, Source
 FROM dbo.Activities WHERE AthleteId=@AthleteId AND Source=@Source AND MONTH(ActivityTime)=@Month AND YEAR(ActivityTime)=@Year",
                     new
                     {
@@ -60,12 +63,18 @@ FROM dbo.Activities WHERE AthleteId=@AthleteId AND Source=@Source AND MONTH(Acti
         }
     }
 
-    internal class ActivityNotFoundException : Exception 
+    [Serializable]
+    internal class ActivityNotFoundException : Exception
     {
         public ActivityNotFoundException(string externalId)
             : base($"Activity with external id: {externalId} does not exists.")
         {
+        }
 
+        protected ActivityNotFoundException(
+            SerializationInfo info,
+            StreamingContext context) : base(info, context)
+        {
         }
     }
 }

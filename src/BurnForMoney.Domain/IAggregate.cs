@@ -9,6 +9,6 @@ namespace BurnForMoney.Domain
         bool HasPendingChanges { get; }
         IEnumerable<DomainEvent> GetUncommittedEvents();
         void MarkChangesAsCommitted();
-        void LoadsFromHistory(IEnumerable<DomainEvent> history);
+        void LoadFromHistory(IEnumerable<DomainEvent> history);
     }
 }

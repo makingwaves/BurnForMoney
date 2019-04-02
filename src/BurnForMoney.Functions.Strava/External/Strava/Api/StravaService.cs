@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Runtime.Serialization;
 using BurnForMoney.Functions.Shared.Helpers;
 using BurnForMoney.Functions.Shared.Web;
 using BurnForMoney.Functions.Strava.Configuration;
@@ -17,26 +18,29 @@ namespace BurnForMoney.Functions.Strava.External.Strava.Api
         private const string StravaBaseUrl = "https://www.strava.com";
         private const int ActivitiesPerPage = 50;
         private readonly RestClient _restClient;
-        private string[] _notFoundActivityCodes = new[] { "invalid", "not found" };
+        private string[] _notFoundActivityCodes = new[] {"invalid", "not found"};
 
         public StravaService()
         {
             _restClient = new RestClient(StravaBaseUrl);
         }
 
-        public TokenExchangeResult ExchangeToken(int clientId, string clientSecret,  string code)
+        public TokenExchangeResult ExchangeToken(int clientId, string clientSecret, string code)
         {
             var request = new RestRequest("/oauth/token", Method.POST)
             {
                 RequestFormat = DataFormat.Json
             };
+
             var payLoad = new TokenExchangeRequest
             {
                 ClientId = clientId,
                 ClientSecret = clientSecret,
                 Code = code
             };
+
             request.AddParameter("application/json", payLoad.ToJson(), ParameterType.RequestBody);
+
             var response = _restClient.ExecuteWithRetry(request);
             response.ThrowExceptionIfNotSuccessful();
 
@@ -61,7 +65,7 @@ namespace BurnForMoney.Functions.Strava.External.Strava.Api
 
             return TokenRefreshResult.FromJson(response.Content);
         }
-        
+
         public StravaActivity GetActivity(string accessToken, string activityId)
         {
             var request = new RestRequest($"api/v3/activities/{activityId}");
@@ -72,12 +76,15 @@ namespace BurnForMoney.Functions.Strava.External.Strava.Api
             if (response.StatusCode == HttpStatusCode.NotFound)
             {
                 var fault = JsonConvert.DeserializeObject<Fault>(response.Content);
-                if (fault.Errors.Any(error => _notFoundActivityCodes.Any(code => code.Equals(error.Code, StringComparison.InvariantCultureIgnoreCase)) &&
-                                              error.Resource.Equals("Activity", StringComparison.InvariantCultureIgnoreCase)))
+                if (fault.Errors.Any(error =>
+                    _notFoundActivityCodes.Any(code =>
+                        code.Equals(error.Code, StringComparison.InvariantCultureIgnoreCase)) &&
+                    error.Resource.Equals("Activity", StringComparison.InvariantCultureIgnoreCase)))
                 {
                     throw new ActivityNotFoundException(activityId);
                 }
             }
+
             response.ThrowExceptionIfNotSuccessful();
 
             var activity = JsonConvert.DeserializeObject<StravaActivity>(response.Content, new JsonSettings());
@@ -92,6 +99,7 @@ namespace BurnForMoney.Functions.Strava.External.Strava.Api
             {
                 request.AddQueryParameter("after", UnitsConverter.ConvertDateTimeToEpoch(from.Value).ToString());
             }
+
             request.AddQueryParameter("per_page", ActivitiesPerPage.ToString());
             request.AddQueryParameter("page", page.ToString());
 
@@ -108,21 +116,26 @@ namespace BurnForMoney.Functions.Strava.External.Strava.Api
             return activities;
         }
 
-        public void DeauthorizeAthlete(string accessToken)
-        {
-            var request = new RestRequest("/oauth/deauthorize", Method.POST);
-            request.AddQueryParameter("access_token", accessToken);
-            var response = _restClient.ExecuteWithRetry(request);
-            response.ThrowExceptionIfNotSuccessful();
-        }
+//        public void DeauthorizeAthlete(string accessToken)
+//        {
+//            var request = new RestRequest("/oauth/deauthorize", Method.POST);
+//            request.AddQueryParameter("access_token", accessToken);
+//            var response = _restClient.ExecuteWithRetry(request);
+//            response.ThrowExceptionIfNotSuccessful();
+//        }
     }
-
+//
     internal class ActivityNotFoundException : Exception 
     {
         public ActivityNotFoundException(string id)
             : base($"Activity with id: {id} does not exists.")
         {
+        }
 
+        protected ActivityNotFoundException(
+            SerializationInfo info,
+            StreamingContext context) : base(info, context)
+        {
         }
     }
 }

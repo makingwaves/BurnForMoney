@@ -23,7 +23,9 @@ namespace BurnForMoney.Functions.InternalApi.Configuration
                     ConnectionStrings = new ConnectionStringsSection
                     {
                         SqlDbConnectionString = config["ConnectionStrings:Sql"]
-                    }
+                    },
+                    PointsThreshold = int.Parse(config["PointsThreshold"]),
+                    Payment = decimal.Parse(config["Payment"])
                 };
 
                 if (!_settings.IsValid())

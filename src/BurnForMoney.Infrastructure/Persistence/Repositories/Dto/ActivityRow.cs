@@ -2,8 +2,9 @@
 
 namespace BurnForMoney.Infrastructure.Persistence.Repositories.Dto
 {
-    public class ActivityRow : Row
+    public class ActivityRow
     {
+        public Guid Id { get; set; }
         public Guid AthleteId { get; set; }
         public string ExternalId { get; set; }
         public double DistanceInMeters { get; set; }

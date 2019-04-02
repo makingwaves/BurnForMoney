@@ -1,0 +1,47 @@
+@import "style/variables.scss";
+
+.ProgressBonus{
+  background-color: #fff;
+  box-shadow: $dashboard-shadow;
+  padding: 10px 15px;
+  box-sizing: border-box;
+  height: 100%;
+  display: grid;
+  grid-template-areas:
+    "motivationText finishingLine"
+    "progressBar finishingLine";
+  grid-template-columns: 1fr 50px;
+  grid-column-gap: 20px;
+
+  &-motivationText{
+    grid-area: motivationText;
+    font-size: 14px;
+    line-height: 1;
+    font-family: "AftenScreen";
+    margin: 0 0 10px;
+  }
+
+  &-bar{
+    grid-area: progressBar;
+    background-color: #F5F6FA;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+    width:100%;
+    height:20px;
+    border-radius: 20px;
+    overflow: hidden;
+    &Progress{
+      width:50%;
+      height: 100%;
+      border-radius: 20px;
+      background: linear-gradient(to right, #EDA697 0%, #FCC5BA 100%)
+    }
+  }
+
+  &-finishingLine{
+    grid-area: finishingLine;
+    width:50px;
+    img{
+      width: 100%;
+    }
+  }
+}

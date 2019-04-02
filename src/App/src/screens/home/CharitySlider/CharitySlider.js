@@ -32,13 +32,17 @@ class CharitySlider extends Component {
       <div className="CharitySlider">
         <div className="CharitySlider__container container">
           <h2 className="CharitySlider__header Header"><strong>... {t('for charity')}</strong></h2>
-          <Slider className="CharitySlider__slider" {...settings}>
+          <Slider className="CharitySlider__slider" ref={c => (this.slider = c)} {...settings}>
             {slides}
           </Slider>
         </div>
       </div>
 
     );
+  }
+
+  componentWillUpdate() {
+    this.slider.slickGoTo(0);
   }
 }
 

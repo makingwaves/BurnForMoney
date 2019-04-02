@@ -1,4 +1,5 @@
 # Burn for money
+[![Build Status](https://dev.azure.com/burnformoney/burnformoney/_apis/build/status/BFM-CI?branchName=master&jobName=Build)](https://dev.azure.com/burnformoney/burnformoney/_build/latest?definitionId=1&branchName=master)
 
 [![burn-for-money-video](https://img.youtube.com/vi/8d6wT1Iu0-A/0.jpg)](https://www.youtube.com/watch?v=8d6wT1Iu0-A)
 
@@ -24,7 +25,11 @@ GitHub wiki: https://github.com/makingwaves/BurnForMoney/wiki
 ### Environments
 
 - **Test:** https://burnformoney-test.azurewebsites.net/
+
+[![Build Status](https://dev.azure.com/burnformoney/burnformoney/_apis/build/status/BFM-Frontend-Test?branchName=master)](https://dev.azure.com/burnformoney/burnformoney/_build/latest?definitionId=2&branchName=master)
 - **Production:** https://bfm.makingwaves.com/
+
+[![Build Status](https://dev.azure.com/burnformoney/burnformoney/_apis/build/status/BFM-Frontend-Prod?branchName=master&jobName=Build)](https://dev.azure.com/burnformoney/burnformoney/_build/latest?definitionId=3&branchName=master)
 
 ## Code of conduct
 

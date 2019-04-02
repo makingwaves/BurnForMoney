@@ -14,7 +14,7 @@ using Newtonsoft.Json.Linq;
 namespace BurnForMoney.Functions.Presentation.Functions
 {
     public static class RankingSubscription
-    {      
+    {
         [FunctionName("EventGrid_RankingSubscription")]
         public static async Task EventGrid_RankingSubscription([EventGridTrigger] EventGridEvent @event, ILogger log,
             [Configuration] ConfigurationRoot configuration)
