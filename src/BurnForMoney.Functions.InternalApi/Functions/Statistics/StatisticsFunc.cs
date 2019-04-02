@@ -8,12 +8,12 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
 
-namespace BurnForMoney.Functions.InternalApi.Functions.Dashboard
+namespace BurnForMoney.Functions.InternalApi.Functions.Statistics
 {
-    public class DashboardFunc
+    public class StatisticsFunc
     {
-        [FunctionName(FunctionsNames.GetDashboardTop)]
-        public static async Task<IActionResult> GetDashboardTop([HttpTrigger(AuthorizationLevel.Function, "get", Route = "dashboardtop")] HttpRequest req,  
+        [FunctionName(FunctionsNames.GetStatistics)]
+        public static async Task<IActionResult> GetStatistics([HttpTrigger(AuthorizationLevel.Function, "get", Route = "statistics")] HttpRequest req,  
             ILogger log, [Configuration] ConfigurationRoot configuration)
         {
             int? month = null;
