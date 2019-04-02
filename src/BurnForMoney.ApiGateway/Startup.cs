@@ -30,11 +30,18 @@ namespace BurnForMoney.ApiGateway
             var dataProtectionConfiguration = new DataProtectionConfiguration();
             _configuration.Bind("DataProtection", dataProtectionConfiguration);
 
-            var keyVaultClient = new KeyVaultClient(new KeyVaultClient.AuthenticationCallback(new AzureServiceTokenProvider().KeyVaultTokenCallback));;
-            
+            var keyVaultClient = new KeyVaultClient(
+                new KeyVaultClient.AuthenticationCallback(
+                    new AzureServiceTokenProvider().KeyVaultTokenCallback
+                )
+            );
+
             services
                 .AddDataProtection()
-                .PersistKeysToAzureBlobStorage(new CloudBlobContainer(dataProtectionConfiguration.KeyPersistanceBlobAddress), dataProtectionConfiguration.KeyPersistanceBlobName)
+                .PersistKeysToAzureBlobStorage(
+                    new CloudBlobContainer(dataProtectionConfiguration.KeyPersistanceBlobAddress),
+                    dataProtectionConfiguration.KeyPersistanceBlobName
+                )
                 .ProtectKeysWithAzureKeyVault(keyVaultClient, dataProtectionConfiguration.KeysProtectionKeyVault);
 
             services
@@ -43,7 +50,7 @@ namespace BurnForMoney.ApiGateway
             services
                 .AddAuthentication()
                 .AddBfmAuth(_configuration);
-            
+
             services.AddScoped<BfmOidcServerProvider>();
             services.AddSingleton<IRedirectUriValdiator, RedirectUriValdiator>();
             services
@@ -64,9 +71,14 @@ namespace BurnForMoney.ApiGateway
                     options.WithOrigins("http://localhost:3000", "http://localhost");
                 });
             }
+            else
+            {
+                app.UseHsts();
+            }
 
             app.UseAuthentication()
-                .UseMvc();
+                .UseMvc()
+                .UseHttpsRedirection();
         }
     }
 }
