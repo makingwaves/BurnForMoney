@@ -46,7 +46,7 @@ namespace BurnForMoney.ApiGateway.Controllers
             if (stravaId == 0)
                 return BadRequest();
 
-            return Ok();
+            return Ok(stravaId);
         }
 
         [HttpPost]

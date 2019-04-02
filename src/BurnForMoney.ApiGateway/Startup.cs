@@ -34,7 +34,7 @@ namespace BurnForMoney.ApiGateway
             
             services
                 .AddDataProtection()
-                .PersistKeysToAzureBlobStorage(new CloudBlobContainer(dataProtectionConfiguration.KeyPersistanceBlobAddress), dataProtectionConfiguration.KeyPersistanceBlobName)
+                .PersistKeysToAzureBlobStorage(new CloudBlobContainer(dataProtectionConfiguration.KeyPersistenceBlobAddress), dataProtectionConfiguration.KeyPersistenceBlobName)
                 .ProtectKeysWithAzureKeyVault(keyVaultClient, dataProtectionConfiguration.KeysProtectionKeyVault);
 
             services
@@ -45,7 +45,7 @@ namespace BurnForMoney.ApiGateway
                 .AddBfmAuth(_configuration);
             
             services.AddScoped<BfmOidcServerProvider>();
-            services.AddSingleton<IRedirectUriValdiator, RedirectUriValdiator>();
+            services.AddSingleton<IRedirectUriValidator, RedirectUriValidator>();
             services
                 .AddProxies()
                 .AddMvc();
