@@ -1,7 +1,5 @@
-﻿using System.Collections.Generic;
-using AspNetCore.Proxy;
+﻿using AspNetCore.Proxy;
 using BurnForMoney.ApiGateway.Authentication;
-using BurnForMoney.ApiGateway.Authentication.AzureActiveDirectory;
 using BurnForMoney.ApiGateway.Clients;
 using BurnForMoney.ApiGateway.Utils;
 using Microsoft.AspNetCore.Builder;
@@ -47,10 +45,6 @@ namespace BurnForMoney.ApiGateway
                 .ProtectKeysWithAzureKeyVault(keyVaultClient, dataProtectionConfiguration.KeysProtectionKeyVault);
 
             services
-                .AddSingleton<IAuthProviderHandler>(new AuthProviderHandlerComposition(
-                        new List<IAuthProviderHandler> {new AadAuthProviderHandler()}
-                    )
-                )
                 .AddSingleton<IBfmApiClient, HttpBfmApiClient>();
 
             services

@@ -43,7 +43,7 @@ namespace BurnForMoney.Functions.Strava.Functions.AddStravaAccount
             await AssignStravaAccountToAthlete(existingAthlete.Id, tokenExchangeResult, outputQueue, configuration);
             await PullStravaActivities(existingAthlete.Id, collectActivitiesQueues);
 
-            return new OkResult();
+            return new OkObjectResult(configuration.Strava.ClientId);
         }
 
         private static async Task EnsureThatStravaAccountIsNotAlreadyRegistered(int stravaId, AthleteReadRepository repository)
