@@ -2,16 +2,19 @@
 using System.Threading.Tasks;
 using BurnForMoney.Domain;
 using BurnForMoney.Domain.Events;
+using Microsoft.Extensions.Logging;
 
 namespace BurnForMoney.Functions.Presentation.Views
 {
     public class PresentationEventsDispatcher
     {
         private readonly string _sqlDbConnectionString;
+        private readonly ILogger _log;
 
-        public PresentationEventsDispatcher(string sqlDbConnectionString)
+        public PresentationEventsDispatcher(string sqlDbConnectionString, ILogger log)
         {
             _sqlDbConnectionString = sqlDbConnectionString;
+            _log = log;
         }
 
         public async Task<bool> DispatchActivityEvent(DomainEvent @event)
@@ -21,10 +24,10 @@ namespace BurnForMoney.Functions.Presentation.Views
                 case ActivityAdded activityAdded:
                     await new RankingView(_sqlDbConnectionString).HandleAsync(activityAdded);
                     return true;
-                case ActivityUpdated activityUpdated:
+                case ActivityUpdated_V2 activityUpdated:
                     await new RankingView(_sqlDbConnectionString).HandleAsync(activityUpdated);
                     return true;
-                case ActivityDeleted activityDeleted:
+                case ActivityDeleted_V2 activityDeleted:
                     await new RankingView(_sqlDbConnectionString).HandleAsync(activityDeleted);
                     return true;
                 default:
@@ -46,13 +49,13 @@ namespace BurnForMoney.Functions.Presentation.Views
                     await new AthleteView(_sqlDbConnectionString).HandleAsync(activated);
                     return true;
                 case ActivityAdded activityAdded:
-                    await new ActivityView(_sqlDbConnectionString).HandleAsync(activityAdded);
+                    await new ActivityView(_sqlDbConnectionString, _log).HandleAsync(activityAdded);
                     return true;
-                case ActivityUpdated activityUpdated:
-                    await new ActivityView(_sqlDbConnectionString).HandleAsync(activityUpdated);
+                case ActivityUpdated_V2 activityUpdated:
+                    await new ActivityView(_sqlDbConnectionString, _log).HandleAsync(activityUpdated);
                     return true;
-                case ActivityDeleted activityDeleted:
-                    await new ActivityView(_sqlDbConnectionString).HandleAsync(activityDeleted);
+                case ActivityDeleted_V2 activityDeleted:
+                    await new ActivityView(_sqlDbConnectionString, _log).HandleAsync(activityDeleted);
                     return true;
                 case PointsGranted _:
                     return true;

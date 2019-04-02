@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
 using BurnForMoney.Domain;
-using BurnForMoney.Domain.Events;
 using BurnForMoney.Functions.Presentation.Configuration;
 using BurnForMoney.Functions.Presentation.Views;
 using BurnForMoney.Functions.Shared.Functions.Extensions;
@@ -33,7 +32,8 @@ namespace BurnForMoney.Functions.Presentation.Functions
                 throw new ArgumentException(@event.EventType);
             }
 
-            if(!await new PresentationEventsDispatcher(configuration.ConnectionStrings.SqlDbConnectionString).DispatchAthleteEvent(receivedEvent))
+            var dispatcher = new PresentationEventsDispatcher(configuration.ConnectionStrings.SqlDbConnectionString, log);
+            if (!await dispatcher.DispatchAthleteEvent(receivedEvent))
                 throw new NotSupportedException($"Event type: {receivedEvent.GetType()} is not supported.");
         }
     }

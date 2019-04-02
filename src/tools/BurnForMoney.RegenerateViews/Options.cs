@@ -13,7 +13,7 @@ namespace BurnForMoney.RegenerateViews
         [Option("verbose", Required = false, HelpText = "Set output level to verbose.", Default = false)]
         public bool Verbose {get; set;}
 
-        [Option("extra_verbose", Required = false, HelpText = "Set output level to extra verbose This will serialize and log all events.", Default = false)]
+        [Option("extra_verbose", Required = false, HelpText = "Set output level to extra verbose. This will serialize and log all events.", Default = false)]
         public bool ExtraVerbose {get; set;}
 
         [Option('l', "log", Required = false, HelpText = "Output log file name.", Default = null)]

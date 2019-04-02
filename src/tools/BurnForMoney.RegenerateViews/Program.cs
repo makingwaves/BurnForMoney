@@ -1,36 +1,42 @@
 ﻿using System;
+using System.Collections.Generic;
 using BurnForMoney.Domain;
 using BurnForMoney.Functions.Presentation.Views;
 using BurnForMoney.Infrastructure.Persistence;
 using CommandLine;
 using Newtonsoft.Json;
 using Serilog;
+using Serilog.Core;
+using Serilog.Extensions.Logging;
+using ILogger = Serilog.ILogger;
 
 namespace BurnForMoney.RegenerateViews
 {
-    public static partial class Program
+    public static class Program
     {
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
-            Parser.Default.ParseArguments<Options>(args).WithParsed(options => {
+            Parser.Default.ParseArguments<Options>(args).WithParsed(options =>
+            {
                 var configuration = new LoggerConfiguration();
-                
-                if(!options.Silent)
-                    configuration.WriteTo.Console();
-                
-                if(!string.IsNullOrEmpty(options.LogFileName))
-                     configuration.WriteTo.File(options.LogFileName);
 
-                if(options.Verbose || options.ExtraVerbose)
+                if (!options.Silent)
+                    configuration.WriteTo.Console();
+
+                if (!string.IsNullOrEmpty(options.LogFileName))
+                    configuration.WriteTo.File(options.LogFileName);
+
+                if (options.Verbose || options.ExtraVerbose)
                     configuration.MinimumLevel.Verbose();
-                
-                using(var logger = configuration.CreateLogger())
+
+                using (Logger logger = configuration.CreateLogger())
                 {
                     try
                     {
                         //ClearView(options, logger);
                         RegenerateViews(options, logger);
-                    }catch(Exception e)
+                    }
+                    catch (Exception e)
                     {
                         logger.Error(e.ToString());
                         throw;
@@ -48,45 +54,48 @@ namespace BurnForMoney.RegenerateViews
         {
             logger.Information("Starting regenerate BFM views.");
             logger.Verbose("Verbose logging level enabled.");
-            
+
             logger.Verbose($"Azure Store connection String: '{options.AzureStorageConnectionString}'");
             logger.Verbose($"MsSql connection string: '{options.MsSqlConnectionString}'");
-            
-            if(!string.IsNullOrEmpty(options.LogFileName))
+
+            if (!string.IsNullOrEmpty(options.LogFileName))
                 logger.Verbose($"Log output file: '{options.LogFileName}'");
 
-            var domainEventsDispacher = new PresentationEventsDispatcher(options.MsSqlConnectionString);
-            var  eventStore = (EventStore)EventStore.Create(options.AzureStorageConnectionString, null);
+            Microsoft.Extensions.Logging.ILogger melLogger =
+                new SerilogLoggerProvider(logger).CreateLogger(nameof(Program));
+            var domainEventsDispatcher = new PresentationEventsDispatcher(options.MsSqlConnectionString, melLogger);
+            var eventStore = (EventStore) EventStore.Create(options.AzureStorageConnectionString, null);
 
             logger.Verbose($"Listing all aggregates from azure store.");
-            var aggregatesIds = eventStore.ListAggregates().Result;
+            List<Guid> aggregatesIds = eventStore.ListAggregates().Result;
 
             logger.Information($"{aggregatesIds.Count} aggregates listed.");
             logger.Information("Reprocessing events for aggregates.");
 
-            foreach(var aggregateId in aggregatesIds)
+            foreach (Guid aggregateId in aggregatesIds)
             {
                 logger.Verbose($"Reading events for aggregate: '{aggregateId}'");
-                var events = eventStore.GetEventsForAggregateAsync(aggregateId).Result;
+                List<DomainEvent> events = eventStore.GetEventsForAggregateAsync(aggregateId).Result;
                 logger.Verbose($"{events.Count} events read for aggregate: '{aggregateId}'");
-                
-                foreach(var @event in events)
+
+                foreach (DomainEvent @event in events)
                 {
                     logger.Verbose($"Apply event '{@event.GetType().Name}' for aggregate '{aggregateId}'");
-                    if(options.ExtraVerbose)
+                    if (options.ExtraVerbose)
                         logger.LogEventDetails(@event);
-                    domainEventsDispacher.SafeDispatch(@event, logger);
+                    domainEventsDispatcher.SafeDispatch(@event, logger);
                 }
             }
         }
 
-        private static void SafeDispatch(this PresentationEventsDispatcher dispatcher,  DomainEvent @event, ILogger logger)
+        private static void SafeDispatch(this PresentationEventsDispatcher dispatcher, DomainEvent @event,
+            ILogger logger)
         {
             try
             {
                 dispatcher.DispatchAthleteEvent(@event).Wait();
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 logger.LogErrorDetails(e, @event);
             }
@@ -95,7 +104,7 @@ namespace BurnForMoney.RegenerateViews
             {
                 dispatcher.DispatchActivityEvent(@event).Wait();
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 logger.LogErrorDetails(e, @event);
             }
@@ -103,13 +112,16 @@ namespace BurnForMoney.RegenerateViews
 
         private static void LogErrorDetails(this ILogger logger, Exception e, DomainEvent @event)
         {
-            var eventString = JsonConvert.SerializeObject(@event, new JsonSerializerSettings{TypeNameHandling = TypeNameHandling.All});
-            logger.Error($"An exception occurred while processing event '{@event.GetType().FullName}':{Environment.NewLine}{eventString}{Environment.NewLine}Exception: {e}");
+            string eventString = JsonConvert.SerializeObject(@event,
+                new JsonSerializerSettings {TypeNameHandling = TypeNameHandling.All});
+            logger.Error(
+                $"An exception occurred while processing event '{@event.GetType().FullName}':{Environment.NewLine}{eventString}{Environment.NewLine}Exception: {e}");
         }
 
         private static void LogEventDetails(this ILogger logger, DomainEvent @event)
         {
-            var eventString = JsonConvert.SerializeObject(@event, new JsonSerializerSettings{TypeNameHandling = TypeNameHandling.All});
+            string eventString = JsonConvert.SerializeObject(@event,
+                new JsonSerializerSettings {TypeNameHandling = TypeNameHandling.All});
             logger.Verbose($"Event details: {eventString}");
         }
     }
