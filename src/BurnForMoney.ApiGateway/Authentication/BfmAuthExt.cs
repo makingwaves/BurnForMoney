@@ -7,7 +7,6 @@ using System.Security.Claims;
 
 namespace BurnForMoney.ApiGateway.Authentication
 {
-
     public static class BfmAuthExt
     {
         private static readonly string ObjectIdentifierClaimType = "http://schemas.microsoft.com/identity/claims/objectidentifier";
@@ -50,9 +49,6 @@ namespace BurnForMoney.ApiGateway.Authentication
                     options.UserinfoEndpointPath = oidcConfiguration.UserinfoEndpointPath;
 
                     options.SigningCredentials.AddEphemeralKey();
-
-                    //TODO fix this
-                    options.AllowInsecureHttp = true;
                 });
         }
     }
