@@ -141,10 +141,15 @@ namespace BurnForMoney.Functions.Strava.Security
     }
 
     [Serializable]
-    public class SecretDisabledException : KeyVaultErrorException
+    public class SecretDisabledException : Exception
     {
         public SecretDisabledException(Guid athleteId, Exception inner)
             :base($"Access token for athlete with id: {athleteId} is disabled.", inner)
         {}
+
+        protected SecretDisabledException(
+            SerializationInfo info,
+            StreamingContext context) : base(info, context)
+        { }
     }
 }

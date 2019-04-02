@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Data;
+using System.Runtime.Serialization;
 
 namespace BurnForMoney.Functions.Presentation.Exceptions
 {
@@ -9,5 +10,11 @@ namespace BurnForMoney.Functions.Presentation.Exceptions
         public FailedToAddStravaAccountException(Guid athleteId, string stravaId)
             : base($"Failed to add a strava AthleteId: [{athleteId}], StravaId: [{stravaId}].")
         {}
+
+        protected FailedToAddStravaAccountException(
+            SerializationInfo info,
+            StreamingContext context) : base(info, context)
+        {
+        }
     }
 }

@@ -15,7 +15,6 @@ namespace BurnForMoney.Functions.Exceptions
         protected EmailException(
             SerializationInfo info,
             StreamingContext context) : base(info, context)
-        {
-        }
+        {}
     }
 }
