@@ -39,8 +39,8 @@ namespace BurnForMoney.ApiGateway
             services
                 .AddDataProtection()
                 .PersistKeysToAzureBlobStorage(
-                    new CloudBlobContainer(dataProtectionConfiguration.KeyPersistanceBlobAddress),
-                    dataProtectionConfiguration.KeyPersistanceBlobName
+                    new CloudBlobContainer(dataProtectionConfiguration.KeyPersistenceBlobAddress),
+                    dataProtectionConfiguration.KeyPersistenceBlobName
                 )
                 .ProtectKeysWithAzureKeyVault(keyVaultClient, dataProtectionConfiguration.KeysProtectionKeyVault);
 
