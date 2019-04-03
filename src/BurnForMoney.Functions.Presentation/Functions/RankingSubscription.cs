@@ -1,7 +1,6 @@
 using System;
 using System.Threading.Tasks;
 using BurnForMoney.Domain;
-using BurnForMoney.Domain.Events;
 using BurnForMoney.Functions.Presentation.Configuration;
 using BurnForMoney.Functions.Presentation.Views;
 using BurnForMoney.Functions.Shared.Functions.Extensions;
@@ -33,29 +32,8 @@ namespace BurnForMoney.Functions.Presentation.Functions
                 throw new ArgumentException(@event.EventType);
             }
 
-            try
-            {
-                switch (receivedEvent)
-                {
-                    case ActivityAdded activityAdded:
-                        await new RankingView(configuration.ConnectionStrings.SqlDbConnectionString).HandleAsync(
-                            activityAdded);
-                        break;
-                    case ActivityUpdated_V2 activityUpdated:
-                        await new RankingView(configuration.ConnectionStrings.SqlDbConnectionString).HandleAsync(
-                            activityUpdated);
-                        break;
-                    case ActivityDeleted_V2 activityDeleted:
-                        await new RankingView(configuration.ConnectionStrings.SqlDbConnectionString).HandleAsync(
-                            activityDeleted);
-                        break;
-                }
-            }
-            catch (Exception ex)
-            {
-                log.LogError(ex, $"{ex.Message}");
-                throw;
-            }
+            var dispatcher = new PresentationEventsDispatcher(configuration.ConnectionStrings.SqlDbConnectionString, log);
+            await dispatcher.DispatchActivityEvent(receivedEvent);
         }
     }
 }
