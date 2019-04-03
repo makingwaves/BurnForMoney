@@ -9,7 +9,7 @@
 
     public static class Globals
     {
-        public const string TokenAuthShecme = "token_auth_scheme";
+        public const string TokenAuthScheme = "token_auth_scheme";
         public const string OidAuthScheme = "oidc_auth_scheme";
         public const string AzureScheme = "oidc_azure_scheme";
 
