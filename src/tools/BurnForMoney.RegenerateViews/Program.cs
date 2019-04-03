@@ -14,7 +14,6 @@ namespace BurnForMoney.RegenerateViews
         {
             "Activities",
             "IndividualResults",
-            "MonthlyResultsSnapshots",
             "Athletes"
         };
 
