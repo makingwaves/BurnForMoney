@@ -5,6 +5,7 @@ using BurnForMoney.ApiGateway.Clients;
 using BurnForMoney.ApiGateway.Utils;
 using BurnForMoney.ApiGateway.Utils.Extensions;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 
@@ -66,9 +67,17 @@ namespace BurnForMoney.ApiGateway.Controllers
 
         [HttpGet]
         [Route("ranking")]
-        public Task GetRanking()
+        public Task GetRanking([FromQuery] string month=null, [FromQuery]int? year=null)
         {
-            return this.AuthorizedProxyAsync($"{_appConfiguration.InternalApiUri}/ranking", _appConfiguration.InternalApiMasterKey);
+            var queryString = new QueryString();
+
+            if (!string.IsNullOrEmpty(month))
+                queryString = queryString.Add("month", month);
+
+            if (year.HasValue)
+                queryString = queryString.Add("year", year.ToString());
+
+            return (this).AuthorizedProxyAsync($"{_appConfiguration.InternalApiUri}/ranking", _appConfiguration.InternalApiMasterKey, queryString);
         }
 
         [HttpGet]
