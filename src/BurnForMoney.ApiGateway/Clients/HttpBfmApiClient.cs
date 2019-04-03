@@ -19,7 +19,7 @@ namespace BurnForMoney.ApiGateway.Clients
         private readonly int _maxAwaitSeconds = 61;
         private readonly int _checkIntervalSeconds = 5;
 
-        private readonly string defaultAthleteSource = "bfm";
+        private readonly string defaultAthleteSource = AthleteSourceNames.BurnForMoneySystem;
 
         public HttpBfmApiClient(IOptions<AppConfiguration> appConfiguration)
         {
@@ -104,7 +104,7 @@ namespace BurnForMoney.ApiGateway.Clients
             while (sw.Elapsed.TotalSeconds < _maxAwaitSeconds)
             {
                 await Task.Delay(_checkIntervalSeconds * 1000, cancellationToken);
-                var existingAthlete = await GetAthleteAsync(stravaId.ToString(), "strava");
+                var existingAthlete = await GetAthleteAsync(stravaId.ToString(), AthleteSourceNames.Strava);
 
                 if (existingAthlete != null)
                     return stravaId;

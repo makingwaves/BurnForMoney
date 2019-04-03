@@ -22,11 +22,11 @@ namespace BurnForMoney.ApiGateway.Controllers
     [Route("auth")]
     public class LoginController : ControllerBase
     {
-        private readonly IRedirectUriValdiator _uriValdiator;
+        private readonly IRedirectUriValidator _uriValidator;
 
-        public LoginController(IRedirectUriValdiator uriValdiator)
+        public LoginController(IRedirectUriValidator uriValidator)
         {
-            _uriValdiator = uriValdiator;
+            _uriValidator = uriValidator;
         }
 
         
@@ -36,11 +36,11 @@ namespace BurnForMoney.ApiGateway.Controllers
             [FromQuery(Name = "redirect_uri")] string redirectUri,
             [FromQuery(Name = "provider")] string provider = null)
         {
-            var valdiatedRedirectUri = _uriValdiator.GetDefaultIfNotValid(redirectUri);
+            var valdiatedRedirectUri = _uriValidator.GetDefaultIfNotValid(redirectUri);
             if (User.Identity.IsAuthenticated)
                 return Redirect(valdiatedRedirectUri);
 
-            if (provider == null || provider == "azure_ad")
+            if (provider == null || provider == AthleteSourceNames.AzureActiveDirectory)
             {
                 return Challenge(new AuthenticationProperties
                 {
@@ -57,7 +57,7 @@ namespace BurnForMoney.ApiGateway.Controllers
         public async Task<IActionResult> Logout([FromQuery(Name = "redirect_uri")] string redirectUri)
         {
             await HttpContext.SignOutAsync(Globals.OidAuthScheme);
-            return Redirect(_uriValdiator.GetDefaultIfNotValid(redirectUri));
+            return Redirect(_uriValidator.GetDefaultIfNotValid(redirectUri));
         }
         
         [HttpGet]

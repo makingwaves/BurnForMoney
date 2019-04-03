@@ -13,8 +13,8 @@ namespace BurnForMoney.ApiGateway.Utils
 
     public class DataProtectionConfiguration
     {
-        public string KeyPersistanceBlobName { get; set; }
-        public Uri KeyPersistanceBlobAddress { get; set; }
+        public string KeyPersistenceBlobName { get; set; }
+        public Uri KeyPersistenceBlobAddress { get; set; }
         public string KeysProtectionKeyVault { get; set; }
     }
     

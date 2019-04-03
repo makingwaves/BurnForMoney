@@ -9,12 +9,12 @@ namespace BurnForMoney.ApiGateway.Authentication
 {
     public class BfmOidcServerProvider : OpenIdConnectServerProvider
     {
-        private readonly IRedirectUriValdiator _redirectUriValdiator;
+        private readonly IRedirectUriValidator _redirectUriValidator;
         private readonly OidcConfiguration _openIdConnectConfiguration;
         
-        public BfmOidcServerProvider(IOptions<OidcConfiguration> openIdConnectConfiguration, IRedirectUriValdiator redirectUriValdiator)
+        public BfmOidcServerProvider(IOptions<OidcConfiguration> openIdConnectConfiguration, IRedirectUriValidator redirectUriValidator)
         {
-            _redirectUriValdiator = redirectUriValdiator;
+            _redirectUriValidator = redirectUriValidator;
             _openIdConnectConfiguration = openIdConnectConfiguration.Value;
         }
 
@@ -42,7 +42,7 @@ namespace BurnForMoney.ApiGateway.Authentication
 
         private bool IsRedirectUriValid(ValidateAuthorizationRequestContext context)
         {
-            return _redirectUriValdiator.IsValid(context.RedirectUri);
+            return _redirectUriValidator.IsValid(context.RedirectUri);
         }
 
         private bool IsClientValid(ValidateAuthorizationRequestContext context)

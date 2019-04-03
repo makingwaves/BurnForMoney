@@ -3,18 +3,18 @@ using Microsoft.Extensions.Options;
 
 namespace BurnForMoney.ApiGateway.Utils
 {
-    public interface IRedirectUriValdiator
+    public interface IRedirectUriValidator
     {
         bool IsValid(string url);
         string GetDefaultIfNotValid(string url);
     }
 
-    public class RedirectUriValdiator : IRedirectUriValdiator
+    public class RedirectUriValidator : IRedirectUriValidator
     {
         private readonly AppConfiguration _configuration;
 
         
-        public RedirectUriValdiator(IOptions<AppConfiguration> configuration)
+        public RedirectUriValidator(IOptions<AppConfiguration> configuration)
         {
             _configuration = configuration.Value;
         }
