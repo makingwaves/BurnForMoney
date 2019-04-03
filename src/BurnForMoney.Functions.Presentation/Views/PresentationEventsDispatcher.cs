@@ -39,7 +39,7 @@ namespace BurnForMoney.Functions.Presentation.Views
         {
             switch (@event)
             {
-                 case AthleteCreated created:
+                case AthleteCreated_V2 created:
                     await new AthleteView(_sqlDbConnectionString).HandleAsync(created);
                     return true;
                 case AthleteDeactivated deactivated:
