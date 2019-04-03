@@ -10,6 +10,7 @@ using Microsoft.Azure.Services.AppAuthentication;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.WindowsAzure.Storage.Blob;
+using Swashbuckle.AspNetCore.Swagger;
 
 namespace BurnForMoney.ApiGateway
 {
@@ -56,6 +57,15 @@ namespace BurnForMoney.ApiGateway
             services
                 .AddProxies()
                 .AddMvc();
+
+            services.AddSwaggerGen(setup =>
+            {
+                setup.SwaggerDoc("v1", new Info
+                {
+                    Title = "API Gateway",
+                    Version = "v1"
+                });
+            });
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
@@ -78,7 +88,13 @@ namespace BurnForMoney.ApiGateway
 
             app.UseAuthentication()
                 .UseMvc()
-                .UseHttpsRedirection();
+                .UseHttpsRedirection()
+                .UseSwagger()
+                .UseSwaggerUI(setup =>
+                {
+                    setup.SwaggerEndpoint("/swagger/v1/swagger.json", "API Gateway v1");
+                    setup.RoutePrefix = string.Empty;
+                });
         }
     }
 }
