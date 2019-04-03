@@ -33,8 +33,7 @@ namespace BurnForMoney.Functions.Presentation.Functions
             }
 
             var dispatcher = new PresentationEventsDispatcher(configuration.ConnectionStrings.SqlDbConnectionString, log);
-            if (!await dispatcher.DispatchAthleteEvent(receivedEvent))
-                throw new NotSupportedException($"Event type: {receivedEvent.GetType()} is not supported.");
+            await dispatcher.DispatchAthleteEvent(receivedEvent);
         }
     }
 }
