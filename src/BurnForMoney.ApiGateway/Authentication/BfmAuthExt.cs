@@ -38,7 +38,7 @@ namespace BurnForMoney.ApiGateway.Authentication
                         ctx.Principal = new ClaimsPrincipal(new ClaimsIdentity(claims, ctx.Principal.Identity.AuthenticationType));
                     };
                 })
-                .AddOAuthValidation(Globals.TokenAuthShecme)
+                .AddOAuthValidation(Globals.TokenAuthScheme)
                 .AddOpenIdConnectServer(options =>
                 {
                     var oidcConfiguration = new OidcConfiguration();

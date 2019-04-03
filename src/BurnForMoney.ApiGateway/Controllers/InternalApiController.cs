@@ -13,7 +13,7 @@ namespace BurnForMoney.ApiGateway.Controllers
 {
     [ApiController]
     [Route("internal/api")]
-    [Authorize(AuthenticationSchemes = Globals.TokenAuthShecme)]
+    [Authorize(AuthenticationSchemes = Globals.TokenAuthScheme)]
     public class InternalApiController : Controller
     {
         private readonly AppConfiguration _appConfiguration;
