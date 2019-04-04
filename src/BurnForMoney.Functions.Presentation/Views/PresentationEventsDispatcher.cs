@@ -22,12 +22,15 @@ namespace BurnForMoney.Functions.Presentation.Views
             {
                 case ActivityAdded activityAdded:
                     await new RankingView(_sqlDbConnectionString).HandleAsync(activityAdded);
+                    await new MonthlyResultsView(_sqlDbConnectionString).HandleAsync(activityAdded);
                     break;
                 case ActivityUpdated_V2 activityUpdated:
                     await new RankingView(_sqlDbConnectionString).HandleAsync(activityUpdated);
+                    await new MonthlyResultsView(_sqlDbConnectionString).HandleAsync(activityUpdated);
                     break;
                 case ActivityDeleted_V2 activityDeleted:
                     await new RankingView(_sqlDbConnectionString).HandleAsync(activityDeleted);
+                    await new MonthlyResultsView(_sqlDbConnectionString).HandleAsync(activityDeleted);
                     break;
             }
         }
