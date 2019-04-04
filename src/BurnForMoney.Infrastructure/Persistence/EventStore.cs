@@ -15,6 +15,8 @@ namespace BurnForMoney.Infrastructure.Persistence
     {
         Task SaveAsync(Guid aggregateId, DomainEvent[] events, int expectedVersion);
         Task<List<DomainEvent>> GetEventsForAggregateAsync(Guid aggregateId);
+
+        Task<List<Guid>> ListAggregates();
     }
 
     public class EventStore : IEventStore
@@ -30,6 +32,27 @@ namespace BurnForMoney.Infrastructure.Persistence
             _domainEventsTable = tableClient.GetTableReference("DomainEvents");
         }
 
+        public async Task<List<Guid>> ListAggregates()
+        {
+            var partitionsIds = new List<Guid>();
+
+            var headQuery = new TableQuery<DynamicTableEntity>().Where(
+                TableQuery.GenerateFilterCondition(nameof(DynamicTableEntity.RowKey), QueryComparisons.Equal, "SS-HEAD"));
+
+            TableContinuationToken continuationToken = null;
+            do
+            {
+                var segment = await _domainEventsTable.ExecuteQuerySegmentedAsync<DynamicTableEntity>(headQuery, continuationToken);
+                partitionsIds.AddRange(
+                    segment.Select(s =>  Guid.TryParse(s.PartitionKey, out var guid) ? guid : Guid.Empty)
+                    .Where(id => id != Guid.Empty));
+
+                continuationToken = segment.ContinuationToken;
+            } while(continuationToken != null);
+
+            return partitionsIds;
+        }
+
         public async Task SaveAsync(Guid aggregateId, DomainEvent[] events, int expectedVersion)
         {
             var i = expectedVersion;
@@ -40,8 +63,8 @@ namespace BurnForMoney.Infrastructure.Persistence
                 @event.Version = i;
             }
 
-            var paritionKey = aggregateId.ToString("D");
-            var partition = new Partition(_domainEventsTable, paritionKey);
+            var partionKey = aggregateId.ToString("D");
+            var partition = new Partition(_domainEventsTable, partionKey);
 
             var existent = await Stream.TryOpenAsync(partition);
             var stream = existent.Found
@@ -85,8 +108,8 @@ namespace BurnForMoney.Infrastructure.Persistence
 
         public async Task<List<DomainEvent>> GetEventsForAggregateAsync(Guid aggregateId)
         {
-            var paritionKey = aggregateId.ToString("D");
-            var partition = new Partition(_domainEventsTable, paritionKey);
+            var partionKey = aggregateId.ToString("D");
+            var partition = new Partition(_domainEventsTable, partionKey);
 
             if (!await Stream.ExistsAsync(partition))
             {
