@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Logging;
 
 namespace BurnForMoney.ApiGateway
 {
@@ -12,6 +13,12 @@ namespace BurnForMoney.ApiGateway
 
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
+                .UseApplicationInsights()
+                .ConfigureLogging(logging =>
+                {
+                    logging.AddApplicationInsights();
+                    logging.AddConsole();
+                })
                 .UseStartup<Startup>();
     }
 }
