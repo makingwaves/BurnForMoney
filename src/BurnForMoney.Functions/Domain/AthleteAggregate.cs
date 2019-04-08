@@ -137,9 +137,9 @@ namespace BurnForMoney.Functions.Domain
                 throw new InvalidOperationException("Moving time must be greater than 0.");
             }
 
-            if (startDate.Year < 2018)
+            if (startDate.Month != DateTime.UtcNow.Month || startDate.Year != DateTime.UtcNow.Year)
             {
-                throw new InvalidOperationException("Year must be greater than 2017.");
+                throw new InvalidOperationException("Activity start must be within current month and year.");
             }
 
             if (Activities.Any(activity => activity.Id.Equals(id)))
@@ -189,15 +189,20 @@ namespace BurnForMoney.Functions.Domain
                 throw new InvalidOperationException("Moving time must be greater than 0.");
             }
 
-            if (startDate.Year < 2018)
+            if (startDate.Month != DateTime.UtcNow.Month || startDate.Year != DateTime.UtcNow.Year)
             {
-                throw new InvalidOperationException("Year must be greater than 2017.");
+                throw new InvalidOperationException("Activity start must be within current month and year.");
             }
 
             var activity = Activities.SingleOrDefault(a => a.Id == activityId);
             if (activity == null)
             {
                 throw new InvalidOperationException($"Activity with id: {activityId} does not exists.");
+            }
+
+            if (activity.StartDate.Month != DateTime.UtcNow.Month || activity.StartDate.Year != DateTime.UtcNow.Year)
+            {
+                throw new InvalidOperationException("Cannot update activities apart from current month's.");
             }
 
             if (activity.Id == activityId &&

@@ -9,13 +9,10 @@ namespace BurnForMoney.Functions.Presentation.Functions.ResultsSnapshots.Monthly
         {
         }
 
-        protected override AthleteMonthlyResult GetMonthlyResult(AthleteMonthlyResult result,
-            MonthlyResultsChangeRequest request)
+        protected override void UpdateResult(AthleteMonthlyResult result, MonthlyResultsChangeRequest request)
         {
             AthleteResult athleteResult = UpdateAthleteResult(result, request);
             UpdateAthleteActivity(request, athleteResult);
-
-            return result;
         }
 
         private static void UpdateAthleteActivity(MonthlyResultsChangeRequest request, AthleteResult athleteResult)

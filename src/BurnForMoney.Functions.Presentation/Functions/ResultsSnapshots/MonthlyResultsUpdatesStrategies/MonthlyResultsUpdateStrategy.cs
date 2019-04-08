@@ -9,15 +9,13 @@ namespace BurnForMoney.Functions.Presentation.Functions.ResultsSnapshots.Monthly
         {
         }
 
-        protected override AthleteMonthlyResult GetMonthlyResult(AthleteMonthlyResult result, MonthlyResultsChangeRequest request)
+        protected override void UpdateResult(AthleteMonthlyResult result, MonthlyResultsChangeRequest request)
         {
             AthleteResult athleteResult = result.AthleteResults.Single(x => x.Id == request.AthleteId);
             UpdateAthleteResultMetrics(request, athleteResult);
 
             AthleteMonthlyResultActivity activity = athleteResult.Activities.Single(x => x.Category == request.Category);
             UpdateActivityMetrics(request, activity);
-
-            return result;
         }
     }
 }

@@ -9,7 +9,7 @@ namespace BurnForMoney.Functions.Presentation.Functions.ResultsSnapshots.Monthly
         {
         }
 
-        protected override AthleteMonthlyResult GetMonthlyResult(AthleteMonthlyResult result, MonthlyResultsChangeRequest request)
+        protected override void UpdateResult(AthleteMonthlyResult result, MonthlyResultsChangeRequest request)
         {
             AthleteResult athleteResult = result.AthleteResults.Single(x => x.Id == request.AthleteId);
             int athleteResultIndex = result.AthleteResults.IndexOf(athleteResult);
@@ -32,8 +32,6 @@ namespace BurnForMoney.Functions.Presentation.Functions.ResultsSnapshots.Monthly
                     athleteResult.Activities.RemoveAt(activityIndex);
                 }
             }
-
-            return result;
         }
     }
 }
