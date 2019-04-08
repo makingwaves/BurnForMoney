@@ -32,7 +32,7 @@ class StravaAuth extends Component {
 
     this._authManager.getUser()
     .then(user => 
-      authFetch(`${process.env.REACT_APP_DASHBOARD_API_URL}api/athletes/${user.profile.sub}/strava_code?code=${code}`, "POST"))
+      authFetch(`${process.env.REACT_APP_DASHBOARD_API_URL}api/athletes/${user.profile.sub}/strava_code`, "POST", JSON.stringify(code)))
     .then((r)=>{
       if(r.status == 200)
         this.setState({strava_auth_finished: true});

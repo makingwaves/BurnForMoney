@@ -9,6 +9,7 @@ function authFetch(url, method, body){
                 body: body,
                 headers: {
                     'Authorization': 'Bearer '+ user.access_token,
+                    "Content-Type": "application/json"
                 }
             })
             .then(resp => new Promise((resolve, reject)=>{
@@ -21,6 +22,7 @@ function authFetch(url, method, body){
                             body: body,
                             headers: {
                                 'Authorization': 'Bearer '+ user.access_token,
+                                "Content-Type": "application/json"
                             }
                         }));
                     });
