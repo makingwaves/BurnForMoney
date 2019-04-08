@@ -25,7 +25,8 @@ namespace BurnForMoney.Functions.Presentation.Views
                     Distance = Convert.ToInt32(message.DistanceInMeters),
                     Category = message.ActivityCategory.ToString(),
                     Month = message.StartDate.Month,
-                    Year = message.StartDate.Year
+                    Year = message.StartDate.Year,
+                    PreviousData = null
                 });
         }
 
@@ -40,7 +41,8 @@ namespace BurnForMoney.Functions.Presentation.Views
                     Distance = Convert.ToInt32(message.PreviousData.DistanceInMeters) * -1,
                     Category = message.PreviousData.ActivityCategory.ToString(),
                     Month = message.PreviousData.StartDate.Month,
-                    Year = message.PreviousData.StartDate.Year
+                    Year = message.PreviousData.StartDate.Year,
+                    PreviousData = message.PreviousData
                 });
         }
 
@@ -59,7 +61,8 @@ namespace BurnForMoney.Functions.Presentation.Views
                     Distance = deltaDistance,
                     Category = message.ActivityCategory.ToString(),
                     Month = message.StartDate.Month,
-                    Year = message.StartDate.Year
+                    Year = message.StartDate.Year,
+                    PreviousData = message.PreviousData
                 });
         }
     }

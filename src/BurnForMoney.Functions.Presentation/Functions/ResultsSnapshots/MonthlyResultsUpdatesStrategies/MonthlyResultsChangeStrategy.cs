@@ -3,6 +3,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Threading.Tasks;
 using BurnForMoney.Functions.Presentation.Exceptions;
+using BurnForMoney.Infrastructure.Events;
 using BurnForMoney.Infrastructure.Persistence.Repositories.Dto;
 using BurnForMoney.Infrastructure.Persistence.Sql;
 using Dapper;
@@ -20,6 +21,7 @@ namespace BurnForMoney.Functions.Presentation.Functions.ResultsSnapshots.Monthly
         public int Distance { get; set; }
         public int MovingTime { get; set; }
         public int Points { get; set; }
+        public PreviousActivityData PreviousData { get; set; }
     }
 
     public abstract class MonthlyResultsChangeStrategy
