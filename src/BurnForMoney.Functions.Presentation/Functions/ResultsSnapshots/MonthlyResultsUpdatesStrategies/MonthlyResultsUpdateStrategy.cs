@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Data;
 using System.Linq;
+using System.Threading.Tasks;
 using BurnForMoney.Infrastructure.Persistence.Repositories.Dto;
 
 namespace BurnForMoney.Functions.Presentation.Functions.ResultsSnapshots.MonthlyResultsUpdatesStrategies
@@ -10,7 +12,8 @@ namespace BurnForMoney.Functions.Presentation.Functions.ResultsSnapshots.Monthly
         {
         }
 
-        protected override void UpdateResult(AthleteMonthlyResult result, MonthlyResultsChangeRequest request)
+        protected override async Task UpdateResult(AthleteMonthlyResult result, MonthlyResultsChangeRequest request,
+            IDbConnection connection, IDbTransaction transaction)
         {
             AthleteResult athleteResult = result.AthleteResults.Single(x => x.Id == request.AthleteId);
             UpdateAthleteResultMetrics(request, athleteResult);

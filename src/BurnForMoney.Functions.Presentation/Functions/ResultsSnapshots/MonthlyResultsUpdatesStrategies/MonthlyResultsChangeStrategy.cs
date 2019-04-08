@@ -33,7 +33,8 @@ namespace BurnForMoney.Functions.Presentation.Functions.ResultsSnapshots.Monthly
             _sqlConnectionString = sqlConnectionString;
         }
 
-        protected abstract void UpdateResult(AthleteMonthlyResult result, MonthlyResultsChangeRequest request);
+        protected abstract Task UpdateResult(AthleteMonthlyResult result, MonthlyResultsChangeRequest request,
+            IDbConnection connection, IDbTransaction transaction);
 
         public async Task CreateOrUpdateResults(MonthlyResultsChangeRequest request)
         {
@@ -47,8 +48,8 @@ namespace BurnForMoney.Functions.Presentation.Functions.ResultsSnapshots.Monthly
                         await AcquireTableLock(connection, transaction);
                         string date = $"{request.Year}/{request.Month}";
                         AthleteMonthlyResult result = await GetCurrentSnapshot(connection, date, transaction);
-                        PerformInitialUpdate(request, result);
-                        UpdateResult(result, request);
+                        PerformInitialUpdate(request, result);                        
+                        await UpdateResult(result, request, connection, transaction);
 
                         string json = JsonConvert.SerializeObject(result);
                         int affectedRows = await ExecuteUpsert(connection, date, json, transaction);

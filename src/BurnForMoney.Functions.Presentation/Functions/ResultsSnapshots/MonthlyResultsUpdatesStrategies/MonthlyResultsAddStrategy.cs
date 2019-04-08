@@ -1,5 +1,8 @@
 ﻿using System.Collections.Generic;
+using System.Data;
+using System.Threading.Tasks;
 using BurnForMoney.Infrastructure.Persistence.Repositories.Dto;
+using Dapper;
 
 namespace BurnForMoney.Functions.Presentation.Functions.ResultsSnapshots.MonthlyResultsUpdatesStrategies
 {
@@ -9,9 +12,11 @@ namespace BurnForMoney.Functions.Presentation.Functions.ResultsSnapshots.Monthly
         {
         }
 
-        protected override void UpdateResult(AthleteMonthlyResult result, MonthlyResultsChangeRequest request)
+        protected override async Task UpdateResult(AthleteMonthlyResult result, MonthlyResultsChangeRequest request,
+            IDbConnection connection, IDbTransaction transaction)
         {
-            AthleteResult athleteResult = UpdateAthleteResult(result, request);
+            AthleteResult athleteResult = await UpdateAthleteResult(result, request, connection, transaction)
+                .ConfigureAwait(false);
             UpdateAthleteActivity(request, athleteResult);
         }
 
@@ -28,13 +33,14 @@ namespace BurnForMoney.Functions.Presentation.Functions.ResultsSnapshots.Monthly
             activity.NumberOfTrainings += 1;
         }
 
-        private static AthleteResult UpdateAthleteResult(AthleteMonthlyResult result,
-            MonthlyResultsChangeRequest request)
+        private static async Task<AthleteResult> UpdateAthleteResult(AthleteMonthlyResult result,
+            MonthlyResultsChangeRequest request,
+            IDbConnection connection, IDbTransaction transaction)
         {
             AthleteResult athleteResult = result.AthleteResults.Find(x => x.Id == request.AthleteId);
             if (athleteResult == null)
             {
-                athleteResult = CreateInitialResult(request);
+                athleteResult = await CreateInitialResult(request, connection, transaction).ConfigureAwait(false);
                 result.AthleteResults.Add(athleteResult);
             }
 
@@ -43,11 +49,22 @@ namespace BurnForMoney.Functions.Presentation.Functions.ResultsSnapshots.Monthly
             return athleteResult;
         }
 
-        private static AthleteResult CreateInitialResult(MonthlyResultsChangeRequest request)
+        private static async Task<AthleteResult> CreateInitialResult(MonthlyResultsChangeRequest request,
+            IDbConnection connection, IDbTransaction transaction)
         {
+            dynamic athlete = await connection.QuerySingleAsync(
+                "SELECT FirstName, LastName from Athletes where Id = @Id", new
+                {
+                    Id = request.AthleteId
+                }, transaction).ConfigureAwait(false);
+
+            string firstName = athlete.FirstName;
+            string lastName = athlete.LastName;
+
             return new AthleteResult
             {
                 Id = request.AthleteId,
+                AthleteName = $"{firstName} {lastName}",
                 Activities = new List<AthleteMonthlyResultActivity>()
             };
         }
