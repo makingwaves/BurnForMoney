@@ -38,20 +38,19 @@ namespace BurnForMoney.Functions.Presentation.Functions.ResultsSnapshots.Monthly
         public async Task CreateOrUpdateResults(MonthlyResultsChangeRequest request)
         {
             using (SqlConnection connection = SqlConnectionFactory.Create(_sqlConnectionString))
-            {             
+            {
                 await connection.OpenWithRetryAsync();
                 using (SqlTransaction transaction = connection.BeginTransaction(IsolationLevel.Serializable))
                 {
                     try
                     {
                         string date = $"{request.Year}/{request.Month}";
-
-                        AthleteMonthlyResult result = await GetCurrentSnapshot(connection, date);
+                        AthleteMonthlyResult result = await GetCurrentSnapshot(connection, date, transaction);
                         PerformInitialUpdate(request, result);
                         UpdateResult(result, request);
 
                         string json = JsonConvert.SerializeObject(result);
-                        int affectedRows = await ExecuteUpsert(connection, date, json);
+                        int affectedRows = await ExecuteUpsert(connection, date, json, transaction);
 
                         if (affectedRows == 0)
                         {
@@ -69,13 +68,14 @@ namespace BurnForMoney.Functions.Presentation.Functions.ResultsSnapshots.Monthly
             }
         }
 
-        private static async Task<int> ExecuteUpsert(SqlConnection connection, string date, string json)
+        private static async Task<int> ExecuteUpsert(IDbConnection connection, string date, string json,
+            SqlTransaction transaction)
         {
             int affectedRows = await connection.ExecuteAsync("MonthlyResultsSnapshots_Upsert", new
                 {
                     Date = date,
                     Results = json
-                }, commandType: CommandType.StoredProcedure)
+                }, transaction, commandType: CommandType.StoredProcedure)
                 .ConfigureAwait(false);
             return affectedRows;
         }
@@ -103,11 +103,14 @@ namespace BurnForMoney.Functions.Presentation.Functions.ResultsSnapshots.Monthly
             activity.Time += request.MovingTime;
         }
 
-        private static async Task<AthleteMonthlyResult> GetCurrentSnapshot(IDbConnection connection, string date)
+        private static async Task<AthleteMonthlyResult> GetCurrentSnapshot(IDbConnection connection, string date,
+            IDbTransaction transaction)
         {
             string snapshot = await connection.QuerySingleOrDefaultAsync<string>(
-                @"SELECT Results FROM MonthlyResultsSnapshots WITH (TABLOCK, HOLDLOCK) WHERE Date = @Date;", new {Date = date}
-            );
+                @"SELECT Results FROM MonthlyResultsSnapshots WITH (TABLOCKX, HOLDLOCK) WHERE Date = @Date;",
+                new {Date = date},
+                transaction
+            ).ConfigureAwait(false);
             AthleteMonthlyResult result = MapToAthleteMonthlyResults(snapshot);
             return result;
         }
