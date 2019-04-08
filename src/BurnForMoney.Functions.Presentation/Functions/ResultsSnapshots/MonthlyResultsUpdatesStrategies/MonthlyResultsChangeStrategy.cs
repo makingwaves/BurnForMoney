@@ -44,6 +44,7 @@ namespace BurnForMoney.Functions.Presentation.Functions.ResultsSnapshots.Monthly
                 {
                     try
                     {
+                        await AcquireTableLock(connection, transaction);
                         string date = $"{request.Year}/{request.Month}";
                         AthleteMonthlyResult result = await GetCurrentSnapshot(connection, date, transaction);
                         PerformInitialUpdate(request, result);
@@ -68,8 +69,14 @@ namespace BurnForMoney.Functions.Presentation.Functions.ResultsSnapshots.Monthly
             }
         }
 
+        private static async Task AcquireTableLock(IDbConnection connection, IDbTransaction transaction)
+        {
+            await connection.ExecuteAsync("SELECT 0 FROM MonthlyResultsSnapshots WITH (TABLOCKX, HOLDLOCK);",
+                transaction: transaction).ConfigureAwait(false);
+        }
+
         private static async Task<int> ExecuteUpsert(IDbConnection connection, string date, string json,
-            SqlTransaction transaction)
+            IDbTransaction transaction)
         {
             int affectedRows = await connection.ExecuteAsync("MonthlyResultsSnapshots_Upsert", new
                 {
@@ -107,7 +114,7 @@ namespace BurnForMoney.Functions.Presentation.Functions.ResultsSnapshots.Monthly
             IDbTransaction transaction)
         {
             string snapshot = await connection.QuerySingleOrDefaultAsync<string>(
-                @"SELECT Results FROM MonthlyResultsSnapshots WITH (TABLOCKX, HOLDLOCK) WHERE Date = @Date;",
+                @"SELECT Results FROM MonthlyResultsSnapshots WHERE Date = @Date;",
                 new {Date = date},
                 transaction
             ).ConfigureAwait(false);
