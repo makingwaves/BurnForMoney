@@ -57,7 +57,7 @@ class NewActivity extends Component {
     console.log("AthleteId: ", this.state.athleteId);
 
     if(this.validate() ){
-      authFetch(`${this.api_url}/api/athletes/${this.state.user.profile.sub}/activities`, 'POST', JSON.stringify(newEntry)).
+      authFetch(`${this.api_url}api/athletes/${this.state.user.profile.sub}/activities`, 'POST', JSON.stringify(newEntry)).
       then(
           (result) => { console.log('RESULT:', result)},
           (error) => { console.error('Error:', error) }

@@ -80,8 +80,8 @@ namespace BurnForMoney.ApiGateway.Controllers
         }
 
         [HttpGet]
-        [Route("ranking")]
-        public Task GetRanking([FromQuery] string month=null, [FromQuery]int? year=null)
+        [Route("ranking/{activityCategory?}")]
+        public Task GetRanking(string activityCategory, [FromQuery] string month=null, [FromQuery]int? year=null)
         {
             var queryString = new QueryString();
 
@@ -91,7 +91,9 @@ namespace BurnForMoney.ApiGateway.Controllers
             if (year.HasValue)
                 queryString = queryString.Add("year", year.ToString());
 
-            return (this).AuthorizedProxyAsync($"{_appConfiguration.InternalApiUri}/ranking", _appConfiguration.InternalApiMasterKey, queryString);
+            string activityPart = string.IsNullOrWhiteSpace(activityCategory) ? string.Empty : $"/{activityCategory}";
+
+            return this.AuthorizedProxyAsync($"{_appConfiguration.InternalApiUri}/ranking{activityPart}", _appConfiguration.InternalApiMasterKey, queryString);
         }
 
         [HttpGet]
