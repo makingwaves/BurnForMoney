@@ -5,7 +5,7 @@ import './AppTvboard.css'
 import MonthCategoryStats from "./MonthStats/MonthCategoryStats";
 import MonthSummaryStats from "./MonthStats/MonthSummaryStats";
 
-import RankingList from '../dashboard/RankingList/RankingList.js';
+import RankingList from '../bfmPanel/RankingList/RankingList.js';
 import { withNamespaces } from 'react-i18next';
 
 import authFetch from "../../components/Authentication/AuthFetch"
