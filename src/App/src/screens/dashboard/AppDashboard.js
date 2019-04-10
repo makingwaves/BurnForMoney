@@ -2,17 +2,17 @@ import React, { Component } from 'react';
 import { Route, Link, Switch } from 'react-router-dom';
 
 import './Dashboard/Dashboard.css';
-import logo from 'img/logo-white.svg';
-import iconRun from 'img/icon-run.svg';
-import iconRide from 'img/icon-bike.svg';
-import iconWalk from 'img/icon-walk.svg';
-import iconWinterSports from 'img/icon-winter.svg';
-import iconWaterSports from 'img/icon-water.svg';
-import iconTeamSports from 'img/icon-team.svg';
-import iconGym from 'img/icon-gym.svg';
-import iconHike from 'img/icon-hike.svg';
-import iconFitness from 'img/icon-fitness.svg';
-import iconOther from 'img/icon-other.svg';
+import logo from 'static/img/logo-white.svg';
+import iconRun from 'static/img/icon-run.svg';
+import iconRide from 'static/img/icon-bike.svg';
+import iconWalk from 'static/img/icon-walk.svg';
+import iconWinterSports from 'static/img/icon-winter.svg';
+import iconWaterSports from 'static/img/icon-water.svg';
+import iconTeamSports from 'static/img/icon-team.svg';
+import iconGym from 'static/img/icon-gym.svg';
+import iconHike from 'static/img/icon-hike.svg';
+import iconFitness from 'static/img/icon-fitness.svg';
+import iconOther from 'static/img/icon-other.svg';
 
 import Dashboard from './Dashboard/Dashboard.js';
 import Participants from './Participants/Participants.js';
@@ -20,21 +20,21 @@ import NewActivity from './NewActivity/NewActivity';
 import AthletesList from './AthletesList/AthletesList';
 import AthleteProfile from './AthleteProfile/AthleteProfile';
 
-import IconRun from "img/IconRun";
-import IconRide from "img/IconBike";
-import IconWalk from "img/IconWalk";
-import IconWinterSports from "img/IconWinter";
-import IconWaterSports from "img/IconWater";
-import IconTeamSports from "img/IconTeam";
-import IconGym from "img/IconGym";
-import IconHike from "img/IconHike";
-import IconFitness from "img/IconFitness";
-import IconOther from "img/IconOther";
-import IconNewActivity from 'img/IconNewActivity';
-import IconParticipants from 'img/IconParticipants';
-import IconDashboard from 'img/IconDashboard';
-import IconBeneficiaries from 'img/IconBeneficiaries';
-import IconRules from 'img/IconRules';
+import IconRun from "static/img/IconRun";
+import IconRide from "static/img/IconBike";
+import IconWalk from "static/img/IconWalk";
+import IconWinterSports from "static/img/IconWinter";
+import IconWaterSports from "static/img/IconWater";
+import IconTeamSports from "static/img/IconTeam";
+import IconGym from "static/img/IconGym";
+import IconHike from "static/img/IconHike";
+import IconFitness from "static/img/IconFitness";
+import IconOther from "static/img/IconOther";
+import IconNewActivity from 'static/img/IconNewActivity';
+import IconParticipants from 'static/img/IconParticipants';
+import IconDashboard from 'static/img/IconDashboard';
+import IconBeneficiaries from 'static/img/IconBeneficiaries';
+import IconRules from 'static/img/IconRules';
 
 import authFetch from "../../components/Authentication/AuthFetch"
 

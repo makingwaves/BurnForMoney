@@ -3,7 +3,7 @@ const appManager = new AuthManager();
 
 function authFetch(url, method, body){
     return appManager.getUser()
-        .then(user => 
+        .then(user =>
             fetch(url, {
                 method:  method,
                 body: body,
@@ -13,7 +13,7 @@ function authFetch(url, method, body){
                 }
             })
             .then(resp => new Promise((resolve, reject)=>{
-                if(resp.status == 401) {
+                if(resp.status === 401) {
                     appManager.renewToken()
                     .then(user => {
                         resolve(
@@ -26,12 +26,12 @@ function authFetch(url, method, body){
                             }
                         }));
                     });
-                } 
+                }
                 else {
                     resolve(resp);
                 }
             })
             ))}
-            
+
 
 export default authFetch;

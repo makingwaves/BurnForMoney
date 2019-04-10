@@ -3,8 +3,8 @@ import './NewActivity.css';
 
 import DashboardHeader from '../DashboardHeader/DashboardHeader.js';
 
-import iconDistance from 'img/icon-distance.svg';
-import iconDuration from 'img/icon-duration.svg';
+import iconDistance from 'static/img/icon-distance.svg';
+import iconDuration from 'static/img/icon-duration.svg';
 
 import authFetch from "../../../components/Authentication/AuthFetch"
 import {AuthManager} from "../../../components/Authentication/AuthManager"
@@ -74,7 +74,7 @@ class NewActivity extends Component {
     while(elements.length > 0){
         elements[0].parentNode.removeChild(elements[0]);
     }
-    
+
     if(this.state.startDate === ''){
       this.showError('Type correct date', 'activityDateDiv');
       isValid = false;

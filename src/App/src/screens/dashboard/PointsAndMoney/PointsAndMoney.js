@@ -1,10 +1,6 @@
 import React from 'react';
 import './PointsAndMoney.css';
 
-import money from 'img/money.svg';
-import medal from 'img/medal.svg';
-
-
 const PointsAndMoney = (props) =>{
   return (
     <div className="PointsAndMoney">

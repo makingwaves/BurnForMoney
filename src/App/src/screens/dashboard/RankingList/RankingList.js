@@ -1,8 +1,9 @@
 import React from 'react';
 import './RankingList.css';
-import loader from 'img/loader.gif';
+import loader from 'static/img/loader.gif';
 
 const RankingList = (props) =>{
+  console.log('PROPS', props);
   let rank = 0;
   let rankSkip = 1;
   let prevPoints = 0;
