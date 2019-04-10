@@ -1,7 +1,7 @@
 import React from 'react';
 import './ProgressBonus.css';
 
-import finishingLine from 'img/finishing-line.svg';
+import finishingLine from 'static/img/finishing-line.svg';
 
 
 const ProgressBonus = (props) =>{

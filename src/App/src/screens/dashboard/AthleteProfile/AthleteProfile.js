@@ -28,7 +28,7 @@ class AthleteProfile extends Component {
   componentDidMount(){
     // internal api_url
     const api_url = process.env.REACT_APP_DASHBOARD_API_URL;
-    authFetch(api_url+"api/athlete/"+this.props.match.params.athleteId+"/activities")
+    authFetch(api_url+"api/athletes/"+this.props.match.params.athleteId+"/activities")
       .then(res => res.json())
       .then(
         (result) => {console.log("RESULT:",result); this.setState({activities: result}); console.log('ACTIVITIES',this.state.activities); },

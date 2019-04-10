@@ -2,16 +2,16 @@ import React, { Component } from 'react';
 
 import './CurrentCharts.css';
 
-import iconRide from 'img/icon-bike.svg';
-import iconRun from 'img/icon-run.svg';
-import iconWalk from 'img/icon-walk.svg';
-import iconWinterSports from 'img/icon-winter.svg';
-import iconWaterSports from 'img/icon-water.svg';
-import iconTeamSports from 'img/icon-team.svg';
-import iconGym from 'img/icon-gym.svg';
-import iconHike from 'img/icon-hike.svg';
-import iconFitness from 'img/icon-fitness.svg';
-import iconOther from 'img/icon-other.svg';
+import iconRide from 'static/img/icon-bike.svg';
+import iconRun from 'static/img/icon-run.svg';
+import iconWalk from 'static/img/icon-walk.svg';
+import iconWinterSports from 'static/img/icon-winter.svg';
+import iconWaterSports from 'static/img/icon-water.svg';
+import iconTeamSports from 'static/img/icon-team.svg';
+import iconGym from 'static/img/icon-gym.svg';
+import iconHike from 'static/img/icon-hike.svg';
+import iconFitness from 'static/img/icon-fitness.svg';
+import iconOther from 'static/img/icon-other.svg';
 import { withNamespaces, Trans } from 'react-i18next';
 
 class CurrentCharts extends Component {

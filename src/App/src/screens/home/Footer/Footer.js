@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 
-import logoMW from 'img/mw-logo-black.svg';
-import NoA_member from 'img/noa-member.svg';
+import logoMW from 'static/img/mw-logo-black.svg';
+import NoA_member from 'static/img/noa-member.svg';
 import { withNamespaces } from 'react-i18next';
 import './Footer.css';
 

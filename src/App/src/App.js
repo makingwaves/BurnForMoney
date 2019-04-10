@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React from 'react';
 import {
   BrowserRouter as Router,
   Route,
@@ -27,7 +27,7 @@ function  App(){
           <Route path="/strava-confirmation" component={StravaConfirmation} />
           <Route path="/dashboard" component={authDashboard} />
           <Route path="/tvboard" component={authTvboard} />
-          
+
           <Route path="/auth/signin" component={SignInHandler} />
           <Route path="/auth/silent" component={SilentCallbackHandler} />
         </Switch>

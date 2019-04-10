@@ -1,4 +1,4 @@
-@import "style/variables.scss";
+@import "static/style/variables.scss";
 
 .PointsAndMoney{
   display: grid;
@@ -20,10 +20,10 @@
     background-repeat: none;
 
     .PointsAndMoney-Points &{
-      background-image: url("~img/medal.svg");
+      background-image: url("~static/img/medal.svg");
     }
     .PointsAndMoney-Money &{
-      background-image: url("~img/money.svg");
+      background-image: url("~static/img/money.svg");
     }
   }
 

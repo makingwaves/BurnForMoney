@@ -1,4 +1,4 @@
-@import "style/variables.scss";
+@import "static/style/variables.scss";
 
 .RankingList{
   list-style: none;
@@ -35,12 +35,12 @@
           top:15px;
         }
         &:before{
-          background-image: url('~img/iconBicepsR.svg');
+          background-image: url('~static/img/iconBicepsR.svg');
           transform: scaleX(-1);
           right: -3px;
         }
         &:after{
-          background-image: url('~img/iconBicepsR.svg');
+          background-image: url('~static/img/iconBicepsR.svg');
           left:-3px;
         }
       }

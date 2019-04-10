@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import logo from 'img/logo-white.svg';
+import logo from 'static/img/logo-white.svg';
 import './AppTvboard.css'
 
 import MonthCategoryStats from "./MonthStats/MonthCategoryStats";
@@ -26,7 +26,7 @@ class AppTvboard extends Component {
             ranking: [],
             rankingLoading: true,
             current_month: ''
-          };      
+          };
     }
 
     render() {
@@ -35,17 +35,17 @@ class AppTvboard extends Component {
         return (
           <div className="Tvboard">
             <div className="Tvboard__layout">
-              <div className="Tvboard__layout-head"> 
-                <div className="Tvboard__layout-head_layout"> 
+              <div className="Tvboard__layout-head">
+                <div className="Tvboard__layout-head_layout">
                   <img className="Tvboard__layout-head-logo" src={logo} alt="Burn for Money" />
                   <div className="Tvboard__layout-head-date" >
                     {this.state.current_month}
                   </div>
-                </div> 
-              </div> 
+                </div>
+              </div>
               <div className="Tvboard__layout-board">
                 <div className="Tvboard__layout-board__inner-layout">
-                  <div className="Tvboard__layout-board__summary"> 
+                  <div className="Tvboard__layout-board__summary">
                     <h4 className="Tvboard__layout-board__header">
                       {t("TV_Summary")}
                     </h4>
@@ -65,7 +65,7 @@ class AppTvboard extends Component {
                       {t("TV_TOP_10")}
                     </h4>
                     <div className="Tvboard__layout-board__ranking-content">
-                      <RankingList ranking={this.state.ranking} rankingLoading={this.state.rankingLoading} /> 
+                      <RankingList ranking={this.state.ranking} rankingLoading={this.state.rankingLoading} />
                     </div>
                   </div>
                 </div>
@@ -77,10 +77,10 @@ class AppTvboard extends Component {
 
     fetchStats(){
       const { t } = this.props;
-      
+
       const currentDate = new Date();
       this.setState({current_month: `${t(this.monthNames[currentDate.getMonth()])} ${currentDate.getFullYear()}`});
-      
+
       authFetch(`${this.public_api_url}/api/totalnumbers`)
         .then(res => res.json())
         .then(
