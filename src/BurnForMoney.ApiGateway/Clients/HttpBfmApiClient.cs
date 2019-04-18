@@ -31,8 +31,8 @@ namespace BurnForMoney.ApiGateway.Clients
             var dto = new
             {
                 AadId = activeDirectoryId,
-                FirstName = athlete.FirstName,
-                LastName = athlete.LastName
+                FirstName = athlete.FirstName ?? "Rocky",
+                LastName = athlete.LastName ?? "Balboa"
             };
 
             var response = await
@@ -58,8 +58,10 @@ namespace BurnForMoney.ApiGateway.Clients
             while (sw.Elapsed.TotalSeconds < _maxAwaitSeconds)
             {
                 await Task.Delay(_checkIntervalSeconds * 1000, cancellationToken);
-                Athlete createdAthlete = await GetAthleteAsync(athleteId.ToString(), defaultAthleteSource);
+                if (cancellationToken.IsCancellationRequested)
+                    return null;
 
+                Athlete createdAthlete = await GetAthleteAsync(athleteId.ToString(), defaultAthleteSource);
                 if (createdAthlete != null)
                     return createdAthlete;
             }
@@ -104,8 +106,10 @@ namespace BurnForMoney.ApiGateway.Clients
             while (sw.Elapsed.TotalSeconds < _maxAwaitSeconds)
             {
                 await Task.Delay(_checkIntervalSeconds * 1000, cancellationToken);
-                var existingAthlete = await GetAthleteAsync(stravaId.ToString(), AthleteSourceNames.Strava);
+                if (cancellationToken.IsCancellationRequested)
+                    return 0;
 
+                var existingAthlete = await GetAthleteAsync(stravaId.ToString(), AthleteSourceNames.Strava);
                 if (existingAthlete != null)
                     return stravaId;
             }
