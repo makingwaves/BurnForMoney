@@ -3,8 +3,8 @@ import Modal from 'react-modal';
 
 import './VideoHeader.css';
 import logoMW from 'static/img/mw-logo-white.svg';
-import logoBFMblue from '../img/bfm-logo-blue.svg';
-import awardCSR from '../img/award-csr.svg';
+import logoBFMblue from '../../img/bfm-logo-blue.svg';
+import awardCSR from '../../img/award-csr.svg';
 import bfmVideoBg from 'static/video/bfm-www-movie.mp4';
 import bfmVideo from 'static/video/bfm-www-movie-full.mp4';
 

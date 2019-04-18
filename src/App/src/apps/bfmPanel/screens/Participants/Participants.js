@@ -1,10 +1,10 @@
 import React from 'react';
 import './Participants.css';
 
-import DashboardHeader from '../DashboardHeader/DashboardHeader.js';
-import RankingList from '../RankingList/RankingList.js';
-import RankingFilter from '../RankingFilter/RankingFilter.js';
-import RankingSearch from '../RankingSearch/RankingSearch.js';
+import DashboardHeader from '../../components/DashboardHeader/DashboardHeader.js';
+import RankingList from '../../../../components/Ranking/RankingList/RankingList';
+import RankingFilter from '../../components/RankingFilter/RankingFilter.js';
+import RankingSearch from './components/RankingSearch/RankingSearch.js';
 
 
 const Participants = (props) =>{

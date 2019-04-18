@@ -2,15 +2,15 @@ import React, { Component } from 'react';
 
 import './Home.css';
 import * as contentful from 'contentful';
-import VideoHeader from './VideoHeader/VideoHeader.js';
-import TotalNumbers from './TotalNumbers/TotalNumbers.js';
-import CurrentCharts from './CurrentCharts/CurrentCharts.js';
-import CharitySlider from './CharitySlider/CharitySlider.js';
-import TeamGoals from './TeamGoals/TeamGoals.js';
-import HowItWorks from './HowItWorks/HowItWorks.js';
-import InstaGallery from './InstaGallery/InstaGallery.js';
-import OtherInitiatives from './OtherInitiatives/OtherInitiatives.js';
-import Footer from './Footer/Footer.js';
+import VideoHeader from './components/VideoHeader/VideoHeader.js';
+import TotalNumbers from './components/TotalNumbers/TotalNumbers.js';
+import CurrentCharts from './components/CurrentCharts/CurrentCharts.js';
+import CharitySlider from './components/CharitySlider/CharitySlider.js';
+import TeamGoals from './components/TeamGoals/TeamGoals.js';
+import HowItWorks from './components/HowItWorks/HowItWorks.js';
+import InstaGallery from './components/InstaGallery/InstaGallery.js';
+import OtherInitiatives from './components/OtherInitiatives/OtherInitiatives.js';
+import Footer from './components/Footer/Footer.js';
 
 import i18n from 'i18n';
 import { withNamespaces } from 'react-i18next';

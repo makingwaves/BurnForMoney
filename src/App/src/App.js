@@ -5,11 +5,11 @@ import {
   Switch
 } from 'react-router-dom';
 
-import Home from './screens/home/Home';
-import StravaAuth from './screens/stravaAuth/StravaAuth';
-import StravaConfirmation from './screens/stravaAuth/StravaConfirmation';
-import BfmPanel from './screens/bfmPanel/BfmPanel';
-import AppTvboard from './screens/tvboard/AppTvboard';
+import Home from './apps/home/Home';
+import StravaAuth from './apps/stravaAuth/StravaAuth';
+import StravaConfirmation from './apps/stravaAuth/StravaConfirmation';
+import BfmPanel from './apps/bfmPanel/BfmPanel';
+import AppTvboard from './apps/tvboard/AppTvboard';
 
 import {authComponent, SignInHandler, SilentCallbackHandler} from "./components/Authentication/AuthComponent";
 import SimpleLoginPage from "./components/Authentication/SimpleLoginPage";

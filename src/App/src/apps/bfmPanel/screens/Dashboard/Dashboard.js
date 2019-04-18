@@ -2,11 +2,11 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import './Dashboard.css';
 
-import DashboardHeader from '../DashboardHeader/DashboardHeader.js';
-import RankingList from '../RankingList/RankingList.js';
-import RankingFilter from '../RankingFilter/RankingFilter.js';
-import PointsAndMoney from '../PointsAndMoney/PointsAndMoney.js';
-import ProgressBonus from '../ProgressBonus/ProgressBonus.js';
+import DashboardHeader from '../../components/DashboardHeader/DashboardHeader.js';
+import RankingList from '../../../../components/Ranking/RankingList/RankingList';
+import RankingFilter from '../../components/RankingFilter/RankingFilter.js';
+import PointsAndMoney from './components/PointsAndMoney/PointsAndMoney';
+import ProgressBonus from './components/ProgressBonus/ProgressBonus.js';
 
 const Dashboard = (props) =>{
   return (

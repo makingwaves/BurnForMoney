@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 
 import './AthleteProfile.css';
-import authFetch from "../../../components/Authentication/AuthFetch"
+import authFetch from "../../../../components/Authentication/AuthFetch"
 
 class AthleteProfile extends Component {
   constructor(props) {

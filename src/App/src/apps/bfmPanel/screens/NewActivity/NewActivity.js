@@ -1,13 +1,13 @@
 import React, { Component } from 'react';
 import './NewActivity.css';
 
-import DashboardHeader from '../DashboardHeader/DashboardHeader.js';
+import DashboardHeader from '../../components/DashboardHeader/DashboardHeader';
 
 import iconDistance from 'static/img/icon-distance.svg';
 import iconDuration from 'static/img/icon-duration.svg';
 
-import authFetch from "../../../components/Authentication/AuthFetch"
-import {AuthManager} from "../../../components/Authentication/AuthManager"
+import authFetch from "../../../../components/Authentication/AuthFetch"
+import {AuthManager} from "../../../../components/Authentication/AuthManager"
 
 
 class NewActivity extends Component {

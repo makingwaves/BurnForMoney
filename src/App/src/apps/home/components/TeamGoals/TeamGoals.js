@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { withNamespaces, Trans } from 'react-i18next';
 
 import './TeamGoals.css';
-import team from '../img/team.jpg';
+import team from '../../img/team.jpg';
 
 class TeamGoals extends Component {
   render() {

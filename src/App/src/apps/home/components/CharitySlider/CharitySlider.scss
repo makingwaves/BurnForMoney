@@ -43,14 +43,14 @@
     .slick-prev{
       left: -40px;
       &:before{
-        background-image:url("../img/arrow-right-black.svg");
+        background-image:url("../../img/arrow-right-black.svg");
         transform: rotate(180deg);
       }
     }
     .slick-next{
       right: -40px;
       &:before{
-        background-image:url("../img/arrow-right-black.svg");
+        background-image:url("../../img/arrow-right-black.svg");
       }
     }
   }

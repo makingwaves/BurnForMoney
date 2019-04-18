@@ -2,10 +2,10 @@ import React, { Component } from 'react';
 import logo from 'static/img/logo-white.svg';
 import './AppTvboard.css'
 
-import MonthCategoryStats from "./MonthStats/MonthCategoryStats";
-import MonthSummaryStats from "./MonthStats/MonthSummaryStats";
+import MonthCategoryStats from "./components/MonthStats/MonthCategoryStats";
+import MonthSummaryStats from "./components/MonthStats/MonthSummaryStats";
 
-import RankingList from '../bfmPanel/RankingList/RankingList.js';
+import RankingList from '../../components/Ranking/RankingList/RankingList.js';
 import { withNamespaces } from 'react-i18next';
 
 import authFetch from "../../components/Authentication/AuthFetch"

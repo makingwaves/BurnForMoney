@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Route, Link, Switch } from 'react-router-dom';
 
-import './Dashboard/Dashboard.css';
+import './screens/Dashboard/Dashboard.css';
 import logo from 'static/img/logo-white.svg';
 import iconRun from 'static/img/icon-run.svg';
 import iconRide from 'static/img/icon-bike.svg';
@@ -14,11 +14,11 @@ import iconHike from 'static/img/icon-hike.svg';
 import iconFitness from 'static/img/icon-fitness.svg';
 import iconOther from 'static/img/icon-other.svg';
 
-import Dashboard from './Dashboard/Dashboard.js';
-import Participants from './Participants/Participants.js';
-import NewActivity from './NewActivity/NewActivity';
-import AthletesList from './AthletesList/AthletesList';
-import AthleteProfile from './AthleteProfile/AthleteProfile';
+import Dashboard from './screens/Dashboard/Dashboard';
+import Participants from './screens/Participants/Participants';
+import NewActivity from './screens/NewActivity/NewActivity';
+import AthletesList from './screens/AthletesList/AthletesList';
+import AthleteProfile from './screens/AthleteProfile/AthleteProfile';
 
 import IconRun from "static/img/IconRun";
 import IconRide from "static/img/IconBike";
