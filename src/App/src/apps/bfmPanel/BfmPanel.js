@@ -36,16 +36,15 @@ import IconDashboard from 'static/img/IconDashboard';
 import IconBeneficiaries from 'static/img/IconBeneficiaries';
 import IconRules from 'static/img/IconRules';
 
-import authFetch from "../../components/Authentication/AuthFetch"
+import * as api from "../../api/endpoints/internal";
 
 class AppDashboard extends Component {
-  api_url = process.env.REACT_APP_DASHBOARD_API_URL;
   mobileViewport = window.matchMedia("screen and (max-width: 600px)");
   resizeTimeout;
 
-  setCategoryDetails(category){
+  setCategoryDetails(category) {
     let icon, iconComponent, description;
-    switch(category){
+    switch (category) {
       case 'Ride':
         icon = iconRide;
         iconComponent = IconRide;
@@ -103,22 +102,22 @@ class AppDashboard extends Component {
         break;
     }
     const obj = {
-      category:  category,
+      category: category,
       categoryIcon: icon,
-      categoryIconComponent: iconComponent ,
+      categoryIconComponent: iconComponent,
       categoryDescription: description
     };
     return obj;
   }
-  setRankinkCategory = (category) =>{
-    if(category === this.state.rankingCategory){return false;}
+  setRankinkCategory = (category) => {
+    if (category === this.state.rankingCategory) { return false; }
     this.setState({
       rankingCategory: category
     });
   }
 
-  setRankingInputFilter = (input) =>{
-    this.setState({rankingInputFilter: input})
+  setRankingInputFilter = (input) => {
+    this.setState({ rankingInputFilter: input })
   }
 
   handleResize = () => {
@@ -178,7 +177,7 @@ class AppDashboard extends Component {
             </li>
             <li className="NavigationItem NavigationItem__addActivity">
               <Link exact="true" to="/dashboard/new-activity" className="Button NavigationItem-link">
-                <IconNewActivity className="NavigationItem-icon" {...(this.state.windowWidth <= 600 && {fill: '#EDA697'})} />
+                <IconNewActivity className="NavigationItem-icon" {...(this.state.windowWidth <= 600 && { fill: '#EDA697' })} />
                 <span className="NavigationItem-text">Add activity</span>
               </Link>
             </li>
@@ -205,7 +204,7 @@ class AppDashboard extends Component {
                 rankingInputFilter={this.state.rankingInputFilter}
                 setRankingInputFilter={this.setRankingInputFilter}
                 categories={this.state.categories}
-            />
+              />
             )} />
             <Route exact path="/dashboard/new-activity" render={(props) => (
               <NewActivity {...props}
@@ -225,46 +224,63 @@ class AppDashboard extends Component {
     )
   }
 
-  componentDidMount(){
+  componentDidMount() {
     this.handleResize();
     window.addEventListener("resize", this.handleResize);
 
-    // internal api_url
-    authFetch(this.api_url+"api/activities/categories")
-      .then(res => res.json())
+    
+
+    api.getCategories()
       .then(
-        (result) => { let categories = result.map( (i) => { return this.setCategoryDetails(i)}); this.setState({categories: categories }); },
-        (error) => {this.setState({categories: null}); console.error('Error:', error); }
+        (result) => {
+        let categories = result.map((i) => { return this.setCategoryDetails(i) });
+        this.setState({categories: categories});
+      },
+        (error) => {
+          this.setState({categories: null});
+          console.error('Error:', error);
+        }
       );
 
-    authFetch(this.api_url+"api/athletes")
-      .then(res => res.json())
+    api.getAthletes()
       .then(
-        (result) => {this.setState({athletes: result }); console.log('athletes', this.state.athletes)},
-        (error) => {this.setState({athletes: null}); console.error('Error:', error); }
+        (result) => {
+          this.setState({athletes: result});
+          console.log('athletes', this.state.athletes)
+        },
+        (error) => {
+          this.setState({athletes: null});
+          console.error('Error:', error);
+        }
       );
 
-    authFetch(this.api_url+"api/ranking")
-      .then(res => res.json())
+    api.getRanking()
       .then(
-        (result) => {this.setState({ranking: result,  rankingLoading: false }); console.log('ranking', this.state.ranking)},
-        (error) => {this.setState({ranking: null}); console.error('Error:', error); }
+        (result) => {
+          this.setState({ ranking: result, rankingLoading: false });
+          console.log('ranking', this.state.ranking)
+        },
+        (error) => {
+          this.setState({ ranking: null });
+          console.error('Error:', error);
+        }
       );
   }
+
   componentWillUnmount() {
     window.removeEventListener("resize", this.handleResize);
   }
 
   componentDidUpdate(prevProps, prevState) {
     if (this.state.rankingCategory !== prevState.rankingCategory) {
-      this.setState({rankingLoading: true });
+      this.setState({ rankingLoading: true });
       let category = this.state.rankingCategory;
-      if(category === 'All') category = '';
-      authFetch(this.api_url+"api/ranking/"+category)
-        .then(res => res.json())
+      if (category === 'All') category = '';
+
+      api.getCategoryRanking()
         .then(
-          (result) => {this.setState({ranking: result, rankingLoading: false }); console.log('ranking', this.state.ranking)},
-          (error) => {this.setState({ranking: null}); console.error('Error:', error); }
+          (result) => { this.setState({ ranking: result, rankingLoading: false }); console.log('ranking', this.state.ranking) },
+          (error) => { this.setState({ ranking: null }); console.error('Error:', error); }
         );
     }
   }

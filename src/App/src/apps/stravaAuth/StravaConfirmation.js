@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import authFetch from "../../components/Authentication/AuthFetch"
+import * as api from "../../api/endpoints/internal";
 
 import './StravaAuth.css';
 import logo from 'static/img/logo.svg';
@@ -32,7 +32,7 @@ class StravaAuth extends Component {
 
     this._authManager.getUser()
     .then(user =>
-      authFetch(`${process.env.REACT_APP_DASHBOARD_API_URL}api/athletes/${user.profile.sub}/strava_code`, "POST", JSON.stringify(code)))
+      api.authorizeWithStrava(user.profile.sub, code))
     .then((r)=>{
       if(r.status === 200)
         this.setState({strava_auth_finished: true});

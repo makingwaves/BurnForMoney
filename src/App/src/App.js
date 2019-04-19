@@ -25,8 +25,8 @@ function App(){
           <Route exact path="/" component={Home} />
           <Route path="/strava" component={StravaAuth} />
           <Route path="/strava-confirmation" component={StravaConfirmation} />
-          <Route path="/dashboard" component={authBfmPanel} />
-          <Route path="/tvboard" component={authTvboard} />
+          <Route path="/dashboard" component={authBfmPanel} /> //protect route
+          <Route path="/tvboard" component={authTvboard} /> //protect route
 
           <Route path="/auth/signin" component={SignInHandler} />
           <Route path="/auth/silent" component={SilentCallbackHandler} />

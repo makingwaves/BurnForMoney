@@ -14,6 +14,7 @@ import Footer from './components/Footer/Footer.js';
 
 import i18n from 'i18n';
 import { withNamespaces } from 'react-i18next';
+import * as api_public from "../../api/endpoints/public"
 
 
 class Home extends Component {
@@ -80,11 +81,7 @@ class Home extends Component {
     console.log(this.client)
     this.setContentfulEntries();
 
-    // internal api_url
-    const api_url = process.env.REACT_APP_API_URL;
-
-    fetch(api_url+"api/totalnumbers")
-      .then(res => res.json())
+    api_public.getTotalNumbers()
       .then(
         (result) => { this.setState({ bfmStats: result}); },
         (error) => { this.setState({ bfmStats: null,}); console.error('Error:', error); }

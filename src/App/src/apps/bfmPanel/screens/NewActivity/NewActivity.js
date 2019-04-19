@@ -6,12 +6,11 @@ import DashboardHeader from '../../components/DashboardHeader/DashboardHeader';
 import iconDistance from 'static/img/icon-distance.svg';
 import iconDuration from 'static/img/icon-duration.svg';
 
-import authFetch from "../../../../components/Authentication/AuthFetch"
+import * as api from "../../../../api/endpoints/internal";
 import {AuthManager} from "../../../../components/Authentication/AuthManager"
 
 
 class NewActivity extends Component {
-  api_url = process.env.REACT_APP_DASHBOARD_API_URL;
   categoriesWithDistance = ['Run', 'Ride', 'Walk'];
 
   constructor(props) {
@@ -56,12 +55,12 @@ class NewActivity extends Component {
     console.log("Adding new ENTRY: ",newEntry);
     console.log("AthleteId: ", this.state.athleteId);
 
-    if(this.validate() ){
-      authFetch(`${this.api_url}api/athletes/${this.state.user.profile.sub}/activities`, 'POST', JSON.stringify(newEntry)).
-      then(
-          (result) => { console.log('RESULT:', result)},
+    if (this.validate()) {
+      api.addNewActivity(this.state.user.profile.sub, newEntry)
+        .then(
+          (result) => { console.log('RESULT:', result) },
           (error) => { console.error('Error:', error) }
-      );
+        );
     }
   };
 
@@ -167,9 +166,8 @@ class NewActivity extends Component {
   }
 
   componentDidMount(){
-    // internal api_url
-    authFetch(this.api_url+"api/activities/categories")
-      .then(res => res.json())
+  
+    api.getCategories()
       .then(
         (result) => {this.setState({categories: result }); },
         (error) => {this.setState({categories: null}); console.error('Error:', error); }

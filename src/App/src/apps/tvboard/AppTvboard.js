@@ -8,11 +8,12 @@ import MonthSummaryStats from "./components/MonthStats/MonthSummaryStats";
 import RankingList from '../../components/Ranking/RankingList/RankingList.js';
 import { withNamespaces } from 'react-i18next';
 
-import authFetch from "../../components/Authentication/AuthFetch"
+
+import * as api from "../../api/endpoints/internal";
+import * as api_public from "../../api/endpoints/public";
 
 class AppTvboard extends Component {
-    internal_api_url = process.env.REACT_APP_DASHBOARD_API_URL;
-    public_api_url = process.env.REACT_APP_API_URL;
+  
 
     monthNames = ["January", "February", "March", "April", "May", "June",
       "July", "August", "September", "October", "November", "December"
@@ -81,15 +82,14 @@ class AppTvboard extends Component {
       const currentDate = new Date();
       this.setState({current_month: `${t(this.monthNames[currentDate.getMonth()])} ${currentDate.getFullYear()}`});
 
-      authFetch(`${this.public_api_url}/api/totalnumbers`)
-        .then(res => res.json())
+      api_public.getTotalNumbersAuth()
         .then(
           (result) => {this.setState({ bfmStats: result}); },
           (error) => {this.setState({ bfmStats: null,}); console.error('Error:', error); }
         );
 
-        authFetch(`${this.internal_api_url}/api/ranking?month=${currentDate.getMonth()+1}&year=${currentDate.getFullYear()}`)
-        .then(res => res.json())
+
+      api.getRankingByDate(currentDate.getMonth() + 1, currentDate.getFullYear() )
         .then(
           (result) => {this.setState({ranking: result,  rankingLoading: false });},
           (error) => {this.setState({ranking: null}); console.error('Error:', error); }
