@@ -648,25 +648,5 @@ namespace BurnForMoney.Functions.UnitTests.Domain
             await Assert.ThrowsAsync<InvalidOperationException>(() =>
                 HandleCommand(command2));
         }
-        [Fact]
-        public async Task Cant_AssignActiveDirectoryId_WithEmptyId()
-        {
-            var athleteId = await CreateNewAthleteAsync();
-
-            await Assert.ThrowsAsync<ArgumentNullException>("activeDirectoryId",
-                () => HandleCommand(new AssignActiveDirectoryIdToAthleteCommand(athleteId, Guid.Empty)));
-        }
-
-        [Fact]
-        public async Task Can_AssignActiveDirectoryId()
-        {
-            var athleteId = await CreateNewAthleteAsync();
-            var athleteActiveDirectoryId = Guid.NewGuid();
-
-            await HandleCommand(new AssignActiveDirectoryIdToAthleteCommand(athleteId, athleteActiveDirectoryId));
-
-            var athlete = await GetAthleteAsync(athleteId);
-            Assert.Equal(athleteActiveDirectoryId, athlete.ActiveDirectoryId);
-        }
     }
 }
