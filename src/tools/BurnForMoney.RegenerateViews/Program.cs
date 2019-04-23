@@ -12,6 +12,7 @@ namespace BurnForMoney.RegenerateViews
         //order is important due to key constraints!
         private static readonly string[] Tables =
         {
+            "MonthlyResultsSnapshots",
             "Activities",
             "IndividualResults",
             "Athletes"
