@@ -5,6 +5,7 @@ using BurnForMoney.Domain;
 using BurnForMoney.Functions.Commands;
 using BurnForMoney.Infrastructure.Persistence;
 using Xunit;
+using FailedToAddAthleteException = BurnForMoney.Functions.Exceptions.FailedToAddAthleteException;
 
 namespace BurnForMoney.Functions.UnitTests.Domain
 {

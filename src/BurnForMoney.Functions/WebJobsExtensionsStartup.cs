@@ -9,6 +9,7 @@ using BurnForMoney.Functions.Shared.Functions.Extensions;
 using BurnForMoney.Infrastructure.Persistence;
 using BurnForMoney.Infrastructure.Persistence.Repositories;
 using BurnForMoney.Infrastructure.Persistence.Sql;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -33,13 +34,12 @@ namespace BurnForMoney.Functions
                 .AddConfiguration(rootConfig).AddAzureKeyVault($"https://{keyvaultName}.vault.azure.net/").Build();
 
             builder.Services.AddSingleton<IConfiguration>(config);
-            builder.Services.AddSingleton(factory => ApplicationConfiguration.GetSettings());
+            
             builder.AddExtension(new ConfigurationExtensionConfigProvider<ConfigurationRoot>(
                 ApplicationConfiguration.GetSettings()));
 
             InitEventSource(config);
-
-            builder.AddDependencyInjection(ConfigureServices);
+            builder.AddDependencyInjection(x => ConfigureServices(x, ApplicationConfiguration.GetSettings()));       
         }
 
         private static void InitEventSource(IConfigurationRoot config)
@@ -48,36 +48,48 @@ namespace BurnForMoney.Functions
             var tableClient = storageAccount.CreateCloudTableClient();
             var domainEventsTable = tableClient.GetTableReference("DomainEvents");
             domainEventsTable.CreateIfNotExistsAsync().GetAwaiter().GetResult();
+            var accountsTable = tableClient.GetTableReference("Accounts");
+            accountsTable.CreateIfNotExistsAsync().GetAwaiter().GetResult();
         }
 
-        private void ConfigureServices(IServiceCollection services)
+        private void ConfigureServices(IServiceCollection services, ConfigurationRoot root)
         {
-            services.AddTransient<IConnectionFactory<SqlConnection>, SqlConnectionFactory>();
-            services.AddTransient<IRepository<Athlete>, Repository<Athlete>>();
-            services.AddTransient<IEventPublisher>(factory =>
+            services.AddSingleton(root);
+            services.AddScoped<IConnectionFactory<SqlConnection>, SqlConnectionFactory>();
+            services.AddScoped<IRepository<Athlete>>(factory =>
+            {
+                var store = factory.GetService<IEventStore>();
+                return new Repository<Athlete>(store);
+            });
+            services.AddScoped<IEventPublisher>(factory =>
             {
                 var configuration = factory.GetService<ConfigurationRoot>();
                 return new EventsDispatcher(configuration.EventGrid.SasKey, configuration.EventGrid.TopicEndpoint);
             });
-            services.AddTransient(factory =>
+            services.AddScoped(factory =>
             {
                 var configuration = factory.GetService<ConfigurationRoot>();
                 var publisher = factory.GetService<IEventPublisher>();
                 return EventStore.Create(configuration.ConnectionStrings.AzureWebJobsStorage, publisher);
             });
-            services.AddTransient<IAthleteReadRepository>(factory =>
+            services.AddScoped<IAccountsStore>(factory =>
+            {
+                var configuration = factory.GetService<ConfigurationRoot>();
+                return new AccountsStore(configuration.ConnectionStrings.AzureWebJobsStorage);
+            });
+            services.AddScoped<IAthleteReadRepository>(factory =>
             {
                 var configuration = factory.GetService<ConfigurationRoot>();
                 return new AthleteReadRepository(configuration.ConnectionStrings.SqlDbConnectionString);
             });
-            services.AddTransient<ICommandHandler<ActivateAthleteCommand>, ActivateAthleteCommandHandler>();
-            services.AddTransient<ICommandHandler<AddActivityCommand>, AddActivityCommandHandler>();
-            services.AddTransient<ICommandHandler<AddStravaAccountCommand>, AddStravaAccountCommandHandler>();
-            services.AddTransient<ICommandHandler<AssignActiveDirectoryIdToAthleteCommand>, AssignActiveDirectoryIdToAthleteCommandHandler>();
-            services.AddTransient<ICommandHandler<CreateAthleteCommand>, CreateAthleteCommandHandler>();
-            services.AddTransient<ICommandHandler<DeactivateAthleteCommand>, DeactivateAthleteCommandHandler>();
-            services.AddTransient<ICommandHandler<DeleteActivityCommand>, DeleteActivityCommandHandler>();
-            services.AddTransient<ICommandHandler<UpdateActivityCommand>, UpdateActivityCommandHandler>();
+            services.AddScoped<ICommandHandler<ActivateAthleteCommand>, ActivateAthleteCommandHandler>();
+            services.AddScoped<ICommandHandler<AddActivityCommand>, AddActivityCommandHandler>();
+            services.AddScoped<ICommandHandler<AddStravaAccountCommand>, AddStravaAccountCommandHandler>();
+            services.AddScoped<ICommandHandler<AssignActiveDirectoryIdToAthleteCommand>, AssignActiveDirectoryIdToAthleteCommandHandler>();
+            services.AddScoped<ICommandHandler<CreateAthleteCommand>, CreateAthleteCommandHandler>();
+            services.AddScoped<ICommandHandler<DeactivateAthleteCommand>, DeactivateAthleteCommandHandler>();
+            services.AddScoped<ICommandHandler<DeleteActivityCommand>, DeleteActivityCommandHandler>();
+            services.AddScoped<ICommandHandler<UpdateActivityCommand>, UpdateActivityCommandHandler>();
         }
     }
 }

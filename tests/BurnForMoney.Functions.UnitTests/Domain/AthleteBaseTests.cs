@@ -11,6 +11,7 @@ namespace BurnForMoney.Functions.UnitTests.Domain
     public abstract  class AthleteBaseTests
     {
         
+        protected readonly IAccountsStore _accountsStore = new MemoryAccountsStore();
         protected readonly IRepository<Athlete> _athleteRepo = new Repository<Athlete>(new MemoryEventStore());
 
         protected async Task<Athlete> GetAthleteAsync(Guid id) =>  await _athleteRepo.GetByIdAsync(id);
@@ -29,7 +30,7 @@ namespace BurnForMoney.Functions.UnitTests.Domain
             switch(command)
             {
                 case CreateAthleteCommand cmd:
-                    await new CreateAthleteCommandHandler(_athleteRepo).HandleAsync(cmd);
+                    await new CreateAthleteCommandHandler(_athleteRepo, _accountsStore).HandleAsync(cmd);
                     break;
                 case ActivateAthleteCommand cmd:
                     await new ActivateAthleteCommandHandler(_athleteRepo).HandleAsync(cmd);
