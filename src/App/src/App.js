@@ -8,14 +8,14 @@ import {
 import Home from './screens/home/Home';
 import StravaAuth from './screens/stravaAuth/StravaAuth';
 import StravaConfirmation from './screens/stravaAuth/StravaConfirmation';
-import AppDashboard from './screens/dashboard/AppDashboard';
+import BfmPanel from './screens/bfmPanel/BfmPanel';
 import AppTvboard from './screens/tvboard/AppTvboard';
 
 import {authComponent, SignInHandler, SilentCallbackHandler} from "./components/Authentication/AuthComponent";
 import SimpleLoginPage from "./components/Authentication/SimpleLoginPage";
 
-function  App(){
-  let authDashboard = authComponent(AppDashboard, SimpleLoginPage);
+function App(){
+  let authBfmPanel = authComponent(BfmPanel, SimpleLoginPage);
   let authTvboard = authComponent(AppTvboard, SimpleLoginPage);
 
   return (
@@ -25,7 +25,7 @@ function  App(){
           <Route exact path="/" component={Home} />
           <Route path="/strava" component={StravaAuth} />
           <Route path="/strava-confirmation" component={StravaConfirmation} />
-          <Route path="/dashboard" component={authDashboard} />
+          <Route path="/dashboard" component={authBfmPanel} />
           <Route path="/tvboard" component={authTvboard} />
 
           <Route path="/auth/signin" component={SignInHandler} />
