@@ -17,7 +17,7 @@ namespace BurnForMoney.Functions.UnitTests.Domain
         private const int PositiveDistanceInMeters = 123;
         private const int PositiveMovingTimeInMinutes = 61;
 
-        private readonly DateTime _testStartDate  = new DateTime(2019,1,1);
+        private readonly DateTime _testStartDate = DateTime.Now;
 
         [Fact]
         public async Task Cant_CreateAthlete_WithEmptyId()
