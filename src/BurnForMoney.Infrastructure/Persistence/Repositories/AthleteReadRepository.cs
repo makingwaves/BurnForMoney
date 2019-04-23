@@ -7,7 +7,16 @@ using Dapper;
 
 namespace BurnForMoney.Infrastructure.Persistence.Repositories
 {
-    public class AthleteReadRepository
+    public interface IAthleteReadRepository
+    {
+        Task<IEnumerable<AthleteRow>> GetAllActiveAsync();
+        Task<bool> AthleteWithStravaIdExistsAsync(string id);
+        Task<AthleteRow> GetAthleteByIdAsync(Guid id);
+        Task<AthleteRow> GetAthleteByStravaIdAsync(string id);
+        Task<AthleteRow> GetAthleteByAadIdAsync(Guid aadId);
+    }
+
+    public class AthleteReadRepository : IAthleteReadRepository
     {
         private readonly string _connectionString;
 

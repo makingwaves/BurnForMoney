@@ -1,12 +1,10 @@
 ﻿using System.Threading.Tasks;
 using BurnForMoney.Functions.CommandHandlers;
 using BurnForMoney.Functions.Commands;
-using BurnForMoney.Functions.Configuration;
 using BurnForMoney.Functions.Infrastructure.Queues;
-using BurnForMoney.Functions.Repositories;
-using BurnForMoney.Functions.Shared.Functions.Extensions;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
+using Willezone.Azure.WebJobs.Extensions.DependencyInjection;
 
 namespace BurnForMoney.Functions.Functions.CommandHandlers
 {
@@ -16,12 +14,9 @@ namespace BurnForMoney.Functions.Functions.CommandHandlers
         public static async Task Q_AddStravaAccountCommandHandler(ILogger log,
             [QueueTrigger(AppQueueNames.AddStravaAccountRequests)]
             AddStravaAccountCommand message,
-            [Configuration] ConfigurationRoot configuration)
+            [Inject] ICommandHandler<AddStravaAccountCommand> commandHandler)
         {
-            var repository = AthleteRepositoryFactory.Create();
-            var handler = new AddStravaAccountCommandHandler(repository);
-
-            await handler.HandleAsync(message);
+            await commandHandler.HandleAsync(message);
         }
     }
 }

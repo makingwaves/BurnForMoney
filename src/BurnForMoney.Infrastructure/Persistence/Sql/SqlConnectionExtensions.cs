@@ -2,6 +2,7 @@
 using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
+using Dapper;
 using Polly;
 
 namespace BurnForMoney.Infrastructure.Persistence.Sql
@@ -9,6 +10,12 @@ namespace BurnForMoney.Infrastructure.Persistence.Sql
     public static class SqlConnectionExtensions
     {
         private static readonly Policy DefaultSqlRetryPolicy = CreatePolicy(5);
+
+        public static async Task AcquireTableLock(this SqlTransaction transaction, string tableName)
+        {
+            await transaction.Connection.ExecuteAsync($"SELECT 0 FROM {tableName} WITH (TABLOCKX, HOLDLOCK);",
+                transaction: transaction).ConfigureAwait(false);
+        }
 
         public static async Task<SqlConnection> OpenWithRetryAsync(this SqlConnection @this)
         {
