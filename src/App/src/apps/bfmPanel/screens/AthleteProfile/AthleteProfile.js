@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 
 import './AthleteProfile.css';
-import * as api from "../../../../api/endpoints/internal";
+import * as athletes_api from "../../../../api/endpoints/internal/athletes";
 
 class AthleteProfile extends Component {
   constructor(props) {
@@ -28,7 +28,7 @@ class AthleteProfile extends Component {
   componentDidMount(){
    
  
-    api.getAthleteActivities(this.props.match.params.athleteId)
+    athletes_api.getAthleteActivities(this.props.match.params.athleteId)
       .then(
         (result) => {console.log("RESULT:",result); this.setState({activities: result}); console.log('ACTIVITIES',this.state.activities); },
         (error) => {console.error('Error:', error); }

@@ -6,10 +6,10 @@ import {
 } from 'react-router-dom';
 
 import Home from './apps/home/Home';
-import StravaAuth from './apps/stravaAuth/StravaAuth';
-import StravaConfirmation from './apps/stravaAuth/StravaConfirmation';
 import BfmPanel from './apps/bfmPanel/BfmPanel';
 import AppTvboard from './apps/tvboard/AppTvboard';
+
+
 
 import {authComponent, SignInHandler, SilentCallbackHandler} from "./components/Authentication/AuthComponent";
 import SimpleLoginPage from "./components/Authentication/SimpleLoginPage";
@@ -23,8 +23,6 @@ function App(){
       <div className="App">
         <Switch>
           <Route exact path="/" component={Home} />
-          <Route path="/strava" component={StravaAuth} />
-          <Route path="/strava-confirmation" component={StravaConfirmation} />
           <Route path="/dashboard" component={authBfmPanel} /> //protect route
           <Route path="/tvboard" component={authTvboard} /> //protect route
 

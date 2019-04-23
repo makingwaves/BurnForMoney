@@ -9,8 +9,8 @@ import RankingList from '../../components/Ranking/RankingList/RankingList.js';
 import { withNamespaces } from 'react-i18next';
 
 
-import * as api from "../../api/endpoints/internal";
-import * as api_public from "../../api/endpoints/public";
+import * as ranking_api from "../../api/endpoints/internal/ranking";
+import * as public_api from "../../api/endpoints/public";
 
 class AppTvboard extends Component {
   
@@ -82,14 +82,14 @@ class AppTvboard extends Component {
       const currentDate = new Date();
       this.setState({current_month: `${t(this.monthNames[currentDate.getMonth()])} ${currentDate.getFullYear()}`});
 
-      api_public.getTotalNumbersAuth()
+      public_api.getTotalNumbersAuth()
         .then(
           (result) => {this.setState({ bfmStats: result}); },
           (error) => {this.setState({ bfmStats: null,}); console.error('Error:', error); }
         );
 
 
-      api.getRankingByDate(currentDate.getMonth() + 1, currentDate.getFullYear() )
+      ranking_api.getRankingByDate(currentDate.getMonth() + 1, currentDate.getFullYear() )
         .then(
           (result) => {this.setState({ranking: result,  rankingLoading: false });},
           (error) => {this.setState({ranking: null}); console.error('Error:', error); }

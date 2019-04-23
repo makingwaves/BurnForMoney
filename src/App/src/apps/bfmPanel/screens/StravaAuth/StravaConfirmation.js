@@ -1,18 +1,20 @@
 import React, { Component } from 'react';
-import * as api from "../../api/endpoints/internal";
+import * as athletes_api from "../../../../api/endpoints/internal/athletes";
 
 import './StravaAuth.css';
 import logo from 'static/img/logo.svg';
 
-import {AuthManager} from "../../components/Authentication/AuthManager"
+import {AuthManager} from "../../../../components/Authentication/AuthManager"
 
 class StravaAuth extends Component {
 
   getParameterByName(name, url) {
     if (!url) url = window.location.href;
+   
     name = name.replace(/[\[\]]/g, '\\$&');
     var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
         results = regex.exec(url);
+    console.log(results);
     if (!results) return null;
     if (!results[2]) return '';
     return decodeURIComponent(results[2].replace(/\+/g, ' '));
@@ -32,10 +34,13 @@ class StravaAuth extends Component {
 
     this._authManager.getUser()
     .then(user =>
-      api.authorizeWithStrava(user.profile.sub, code))
+      athletes_api.authorizeWithStrava(user.profile.sub, code))
     .then((r)=>{
-      if(r.status === 200)
-        this.setState({strava_auth_finished: true});
+      if(r.status === 200) 
+      
+        this.setState({ strava_auth_finished: true });
+      
+      
       else {
         console.log(r);
         alert("Strava account synchronization failed !");

@@ -20,6 +20,9 @@ import NewActivity from './screens/NewActivity/NewActivity';
 import AthletesList from './screens/AthletesList/AthletesList';
 import AthleteProfile from './screens/AthleteProfile/AthleteProfile';
 
+import StravaAuth from './screens/StravaAuth/StravaAuth';
+import StravaConfirmation from './screens/StravaAuth/StravaConfirmation';
+
 import IconRun from "static/img/IconRun";
 import IconRide from "static/img/IconBike";
 import IconWalk from "static/img/IconWalk";
@@ -36,7 +39,9 @@ import IconDashboard from 'static/img/IconDashboard';
 import IconBeneficiaries from 'static/img/IconBeneficiaries';
 import IconRules from 'static/img/IconRules';
 
-import * as api from "../../api/endpoints/internal";
+import * as athletes_api from "../../api/endpoints/internal/athletes"
+import * as categories_api from "../../api/endpoints/internal/categories";
+import * as ranking_api from "../../api/endpoints/internal/ranking";
 
 class AppDashboard extends Component {
   mobileViewport = window.matchMedia("screen and (max-width: 600px)");
@@ -218,6 +223,8 @@ class AppDashboard extends Component {
               />
             )} />
             <Route path="/dashboard/athlete/:athleteId" component={AthleteProfile} />
+            <Route path="/dashboard/strava" component={StravaAuth} />
+            <Route path="/dashboard/strava-confirmation" component={StravaConfirmation} />
           </Switch>
         </section>
       </div>
@@ -230,7 +237,7 @@ class AppDashboard extends Component {
 
     
 
-    api.getCategories()
+    categories_api.getCategories()
       .then(
         (result) => {
         let categories = result.map((i) => { return this.setCategoryDetails(i) });
@@ -242,7 +249,7 @@ class AppDashboard extends Component {
         }
       );
 
-    api.getAthletes()
+    athletes_api.getAthletes()
       .then(
         (result) => {
           this.setState({athletes: result});
@@ -254,7 +261,7 @@ class AppDashboard extends Component {
         }
       );
 
-    api.getRanking()
+    ranking_api.getRanking()
       .then(
         (result) => {
           this.setState({ ranking: result, rankingLoading: false });
@@ -277,7 +284,7 @@ class AppDashboard extends Component {
       let category = this.state.rankingCategory;
       if (category === 'All') category = '';
 
-      api.getCategoryRanking()
+      ranking_api.getCategoryRanking()
         .then(
           (result) => { this.setState({ ranking: result, rankingLoading: false }); console.log('ranking', this.state.ranking) },
           (error) => { this.setState({ ranking: null }); console.error('Error:', error); }

@@ -6,7 +6,8 @@ import DashboardHeader from '../../components/DashboardHeader/DashboardHeader';
 import iconDistance from 'static/img/icon-distance.svg';
 import iconDuration from 'static/img/icon-duration.svg';
 
-import * as api from "../../../../api/endpoints/internal";
+import * as athletes_api from "../../../../api/endpoints/internal/athletes";
+import * as categories_api from "../../../../api/endpoints/internal/categories";
 import {AuthManager} from "../../../../components/Authentication/AuthManager"
 
 
@@ -56,7 +57,7 @@ class NewActivity extends Component {
     console.log("AthleteId: ", this.state.athleteId);
 
     if (this.validate()) {
-      api.addNewActivity(this.state.user.profile.sub, newEntry)
+      athletes_api.addNewActivity(this.state.user.profile.sub, newEntry)
         .then(
           (result) => { console.log('RESULT:', result) },
           (error) => { console.error('Error:', error) }
@@ -167,7 +168,7 @@ class NewActivity extends Component {
 
   componentDidMount(){
   
-    api.getCategories()
+    categories_api.getCategories()
       .then(
         (result) => {this.setState({categories: result }); },
         (error) => {this.setState({categories: null}); console.error('Error:', error); }
