@@ -5,8 +5,8 @@ namespace BurnForMoney.Infrastructure.Persistence
 {
     public class AccountEntity : TableEntity
     {
-        public Guid Id { get; }
-        public Guid ActiveDirectoryId { get; }
+        public Guid Id => Guid.Parse(RowKey);
+        public Guid ActiveDirectoryId => Guid.Parse(PartitionKey);
 
         // Required by Table Storage API
         public AccountEntity()
@@ -15,8 +15,6 @@ namespace BurnForMoney.Infrastructure.Persistence
 
         public AccountEntity(Guid id, Guid activeDirectoryId)
         {
-            Id = id;
-            ActiveDirectoryId = activeDirectoryId;
             RowKey = id.ToString("D");
             PartitionKey = activeDirectoryId.ToString("D");
         }

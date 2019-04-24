@@ -50,6 +50,9 @@ namespace BurnForMoney.Functions.UnitTests.Domain
                 case AddStravaAccountCommand cmd:
                     await new AddStravaAccountCommandHandler(_athleteRepo).HandleAsync(cmd);
                     break;
+                case AssignActiveDirectoryIdToAthleteCommand cmd:
+                    await new AssignActiveDirectoryIdToAthleteCommandHandler(_athleteRepo).HandleAsync(cmd);
+                    break;
                 default:
                     throw new NotImplementedException();
             }

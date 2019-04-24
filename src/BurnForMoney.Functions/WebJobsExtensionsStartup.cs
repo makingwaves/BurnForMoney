@@ -91,6 +91,7 @@ namespace BurnForMoney.Functions
             services.AddScoped<ICommandHandler<ActivateAthleteCommand>, ActivateAthleteCommandHandler>();
             services.AddScoped<ICommandHandler<AddActivityCommand>, AddActivityCommandHandler>();
             services.AddScoped<ICommandHandler<AddStravaAccountCommand>, AddStravaAccountCommandHandler>();
+            services.AddScoped<ICommandHandler<AssignActiveDirectoryIdToAthleteCommand>, AssignActiveDirectoryIdToAthleteCommandHandler>();
             services.AddScoped<ICommandHandler<CreateAthleteCommand>, CreateAthleteCommandHandler>();
             services.AddScoped<ICommandHandler<DeactivateAthleteCommand>, DeactivateAthleteCommandHandler>();
             services.AddScoped<ICommandHandler<DeleteActivityCommand>, DeleteActivityCommandHandler>();

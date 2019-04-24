@@ -61,6 +61,9 @@ namespace BurnForMoney.Infrastructure.Persistence.Repositories
         {
             using (var conn = _connectionProvider.Create())
             {
+                AccountEntity account = await _accountsStore.GetAccountById(id);
+                if (account == null) return null;
+
                 await conn.OpenWithRetryAsync();
 
                 var athlete = await conn.QuerySingleOrDefaultAsync<AthleteRow>("SELECT Id, FirstName, LastName, Active FROM dbo.Athletes WHERE Id=@Id", new
@@ -73,6 +76,8 @@ namespace BurnForMoney.Infrastructure.Persistence.Repositories
 
                 if (!athlete.Active)
                     return AthleteRow.NonActive;
+
+                athlete.ActiveDirectoryId = account.ActiveDirectoryId;
 
                 return athlete;
             }
@@ -95,6 +100,11 @@ namespace BurnForMoney.Infrastructure.Persistence.Repositories
                 if (!athlete.Active)
                     return AthleteRow.NonActive;
 
+                AccountEntity account = await _accountsStore.GetAccountById(athlete.Id);
+                if (account == null) return null;
+
+                athlete.ActiveDirectoryId = account.ActiveDirectoryId;
+
                 return athlete;
             }
         }
@@ -104,11 +114,13 @@ namespace BurnForMoney.Infrastructure.Persistence.Repositories
             using (var conn = _connectionProvider.Create())
             {
                 AccountEntity account = await _accountsStore.GetAccountByActiveDirectoryId(aadId);
+                if (account == null) return null;
+
                 await conn.OpenWithRetryAsync();
 
                 var athlete = await conn.QuerySingleOrDefaultAsync<AthleteRow>("SELECT Id, FirstName, LastName, Active FROM dbo.Athletes WHERE Id=@Id", new
                 {
-                    account.Id
+                    Id = account.Id
                 });
 
                 if (athlete == null)
@@ -116,6 +128,8 @@ namespace BurnForMoney.Infrastructure.Persistence.Repositories
 
                 if (!athlete.Active)
                     return AthleteRow.NonActive;
+
+                athlete.ActiveDirectoryId = account.ActiveDirectoryId;
 
                 return athlete;
             }

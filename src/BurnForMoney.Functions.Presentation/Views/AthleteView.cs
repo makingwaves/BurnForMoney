@@ -53,8 +53,7 @@ namespace BurnForMoney.Functions.Presentation.Views
                     FirstName = message.FirstName,
                     LastName = message.LastName,
                     ProfilePictureUrl = string.Empty,
-                    Active = true,
-                    
+                    Active = true,                   
                     System = "None"
                 };
 

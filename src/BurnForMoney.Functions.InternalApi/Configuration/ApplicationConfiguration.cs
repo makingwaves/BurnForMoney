@@ -23,7 +23,7 @@ namespace BurnForMoney.Functions.InternalApi.Configuration
                     ConnectionStrings = new ConnectionStringsSection
                     {
                         SqlDbConnectionString = config["ConnectionStrings:Sql"],
-                        AzureAccountsStorage = config["AzureAccountsStorage"]
+                        AzureAccountsStorage = config["AppStorage"]
                     },
                     PointsThreshold = int.Parse(config["PointsThreshold"]),
                     Payment = decimal.Parse(config["Payment"])
