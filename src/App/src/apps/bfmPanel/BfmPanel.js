@@ -284,7 +284,7 @@ class AppDashboard extends Component {
       let category = this.state.rankingCategory;
       if (category === 'All') category = '';
 
-      ranking_api.getCategoryRanking()
+      ranking_api.getCategoryRanking(category)
         .then(
           (result) => { this.setState({ ranking: result, rankingLoading: false }); console.log('ranking', this.state.ranking) },
           (error) => { this.setState({ ranking: null }); console.error('Error:', error); }

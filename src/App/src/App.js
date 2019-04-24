@@ -5,32 +5,17 @@ import {
   Switch
 } from 'react-router-dom';
 
-import Home from './apps/home/Home';
-import BfmPanel from './apps/bfmPanel/BfmPanel';
-import AppTvboard from './apps/tvboard/AppTvboard';
-
-
-
-import {authComponent, SignInHandler, SilentCallbackHandler} from "./components/Authentication/AuthComponent";
-import SimpleLoginPage from "./components/Authentication/SimpleLoginPage";
+import { AuthProvider } from "./providers/authProvider";
+import { BrowserRouter } from "react-router-dom";
+import { Routes } from "./routes/routes";
 
 function App(){
-  let authBfmPanel = authComponent(BfmPanel, SimpleLoginPage);
-  let authTvboard = authComponent(AppTvboard, SimpleLoginPage);
+ 
+  return (  
+    <AuthProvider>
+      <BrowserRouter children={Routes} basename={"/"} />
+    </AuthProvider>
 
-  return (
-    <Router>
-      <div className="App">
-        <Switch>
-          <Route exact path="/" component={Home} />
-          <Route path="/dashboard" component={authBfmPanel} /> //protect route
-          <Route path="/tvboard" component={authTvboard} /> //protect route
-
-          <Route path="/auth/signin" component={SignInHandler} />
-          <Route path="/auth/silent" component={SilentCallbackHandler} />
-        </Switch>
-      </div>
-    </Router>
   );
 }
 

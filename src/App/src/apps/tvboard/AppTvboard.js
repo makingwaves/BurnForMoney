@@ -82,7 +82,7 @@ class AppTvboard extends Component {
       const currentDate = new Date();
       this.setState({current_month: `${t(this.monthNames[currentDate.getMonth()])} ${currentDate.getFullYear()}`});
 
-      public_api.getTotalNumbersAuth()
+      public_api.getTotalNumbers()
         .then(
           (result) => {this.setState({ bfmStats: result}); },
           (error) => {this.setState({ bfmStats: null,}); console.error('Error:', error); }

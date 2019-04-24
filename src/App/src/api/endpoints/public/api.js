@@ -1,8 +1,8 @@
 import axios from 'axios'
-import auth from '../../../services/authService'
+import auth from '../../../services/authService';
 
 function getApiOptions() {
-    const apiUrl = process.env.REACT_APP_DASHBOARD_API_URL;
+    const apiUrl = process.env.REACT_APP_API_URL;
 
     const options = {
         baseURL: apiUrl,
