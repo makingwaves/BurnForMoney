@@ -31,7 +31,7 @@ namespace BurnForMoney.Functions.Configuration
     public class ConnectionStringsSection
     {
         public string SqlDbConnectionString { get; set; }
-        public string AzureWebJobsStorage { get; set; }
+        public string AzureAppStorage { get; set; }
     }
 
     public class StravaConfigurationSection

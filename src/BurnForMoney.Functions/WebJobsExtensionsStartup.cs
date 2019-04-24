@@ -39,7 +39,7 @@ namespace BurnForMoney.Functions
                 ApplicationConfiguration.GetSettings()));
 
             InitEventSource(config);
-            builder.AddDependencyInjection(x => ConfigureServices(x, ApplicationConfiguration.GetSettings()));       
+            builder.AddDependencyInjection(ConfigureServices);       
         }
 
         private static void InitEventSource(IConfigurationRoot config)
@@ -52,10 +52,15 @@ namespace BurnForMoney.Functions
             accountsTable.CreateIfNotExistsAsync().GetAwaiter().GetResult();
         }
 
-        private void ConfigureServices(IServiceCollection services, ConfigurationRoot root)
+        private void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton(root);
+            services.AddSingleton(ApplicationConfiguration.GetSettings());
             services.AddScoped<IConnectionFactory<SqlConnection>, SqlConnectionFactory>();
+            services.AddScoped<IConnectionProvider<SqlConnection>>(factory =>
+            {
+                var config = factory.GetService<ConfigurationRoot>();
+                return new SqlConnectionProvider(config.ConnectionStrings.SqlDbConnectionString);
+            });
             services.AddScoped<IRepository<Athlete>>(factory =>
             {
                 var store = factory.GetService<IEventStore>();
@@ -70,17 +75,18 @@ namespace BurnForMoney.Functions
             {
                 var configuration = factory.GetService<ConfigurationRoot>();
                 var publisher = factory.GetService<IEventPublisher>();
-                return EventStore.Create(configuration.ConnectionStrings.AzureWebJobsStorage, publisher);
+                return EventStore.Create(configuration.ConnectionStrings.AzureAppStorage, publisher);
             });
             services.AddScoped<IAccountsStore>(factory =>
             {
                 var configuration = factory.GetService<ConfigurationRoot>();
-                return new AccountsStore(configuration.ConnectionStrings.AzureWebJobsStorage);
+                return new AccountsStore(configuration.ConnectionStrings.AzureAppStorage);
             });
             services.AddScoped<IAthleteReadRepository>(factory =>
             {
-                var configuration = factory.GetService<ConfigurationRoot>();
-                return new AthleteReadRepository(configuration.ConnectionStrings.SqlDbConnectionString);
+                var connectionProvider = factory.GetService<IConnectionProvider<SqlConnection>>();
+                var accountsStore = factory.GetService<IAccountsStore>();
+                return new AthleteReadRepository(connectionProvider, accountsStore);
             });
             services.AddScoped<ICommandHandler<ActivateAthleteCommand>, ActivateAthleteCommandHandler>();
             services.AddScoped<ICommandHandler<AddActivityCommand>, AddActivityCommandHandler>();

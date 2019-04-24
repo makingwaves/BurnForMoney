@@ -27,7 +27,7 @@ namespace BurnForMoney.Functions.Configuration
                     ConnectionStrings = new ConnectionStringsSection
                     {
                         SqlDbConnectionString = config["ConnectionStrings:Sql"],
-                        AzureWebJobsStorage = config["AzureWebJobsStorage"]
+                        AzureAppStorage = config["AppStorage"]
                     },
                     Email = config.Get<EmailSection>("Email"),
                     ApplicationInsightsInstrumentationKey = config["APPINSIGHTS_INSTRUMENTATIONKEY"],

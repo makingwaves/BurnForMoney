@@ -19,6 +19,7 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 using Microsoft.WindowsAzure.Storage.Queue;
 using Newtonsoft.Json;
+using Willezone.Azure.WebJobs.Extensions.DependencyInjection;
 
 namespace BurnForMoney.Functions.Strava.Functions.EventsHub
 {
@@ -33,11 +34,10 @@ namespace BurnForMoney.Functions.Strava.Functions.EventsHub
             [Queue(QueueNames.StravaEventsActivityUpdate)] CloudQueue updateActivityQueue,
             [Queue(QueueNames.StravaEventsActivityDelete)] CloudQueue deleteActivityQueue,
             [Queue(QueueNames.DeactivateAthleteRequests)] CloudQueue deauthorizationQueue,
+            [Inject] IAthleteReadRepository repository,
             [Configuration] ConfigurationRoot configuration)
         {
             var stravaAthleteId = @event.OwnerId.ToString();
-            
-            var repository = new AthleteReadRepository(configuration.ConnectionStrings.SqlDbConnectionString);
             var athlete = await repository.GetAthleteByStravaIdAsync(stravaAthleteId);
             if (athlete == null)
             {

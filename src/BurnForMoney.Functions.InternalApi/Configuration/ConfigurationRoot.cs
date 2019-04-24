@@ -15,5 +15,6 @@ namespace BurnForMoney.Functions.InternalApi.Configuration
     public class ConnectionStringsSection
     {
         public string SqlDbConnectionString { get; set; }
+        public string AzureAccountsStorage { get; set; }
     }
 }

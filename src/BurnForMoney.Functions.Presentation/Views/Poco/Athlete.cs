@@ -5,8 +5,6 @@ namespace BurnForMoney.Functions.Presentation.Views.Poco
     public class Athlete
     {
         public Guid Id { get; set; }
-        public Guid ActiveDirectoryId { get; set; }
-
         public string ExternalId { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Threading.Tasks;
 using BurnForMoney.Infrastructure.Persistence.Repositories.Dto;
 using BurnForMoney.Infrastructure.Persistence.Sql;
@@ -18,16 +19,19 @@ namespace BurnForMoney.Infrastructure.Persistence.Repositories
 
     public class AthleteReadRepository : IAthleteReadRepository
     {
-        private readonly string _connectionString;
+        private readonly IConnectionProvider<SqlConnection> _connectionProvider;
+        private readonly IAccountsStore _accountsStore;
 
-        public AthleteReadRepository(string connectionString)
+        public AthleteReadRepository(IConnectionProvider<SqlConnection> connectionProvider,
+            IAccountsStore accountsStore)
         {
-            _connectionString = connectionString;
+            _connectionProvider = connectionProvider;
+            _accountsStore = accountsStore;
         }
 
         public async Task<IEnumerable<AthleteRow>> GetAllActiveAsync()
         {
-            using (var conn = SqlConnectionFactory.Create(_connectionString))
+            using (var conn = _connectionProvider.Create())
             {
                 await conn.OpenWithRetryAsync();
 
@@ -40,7 +44,7 @@ namespace BurnForMoney.Infrastructure.Persistence.Repositories
 
         public async Task<bool> AthleteWithStravaIdExistsAsync(string id)
         {
-            using (var conn = SqlConnectionFactory.Create(_connectionString))
+            using (var conn = _connectionProvider.Create())
             {
                 await conn.OpenWithRetryAsync();
 
@@ -55,7 +59,7 @@ namespace BurnForMoney.Infrastructure.Persistence.Repositories
 
         public async Task<AthleteRow> GetAthleteByIdAsync(Guid id)
         {
-            using (var conn = SqlConnectionFactory.Create(_connectionString))
+            using (var conn = _connectionProvider.Create())
             {
                 await conn.OpenWithRetryAsync();
 
@@ -76,7 +80,7 @@ namespace BurnForMoney.Infrastructure.Persistence.Repositories
 
         public async Task<AthleteRow> GetAthleteByStravaIdAsync(string id)
         {
-            using (var conn = SqlConnectionFactory.Create(_connectionString))
+            using (var conn = _connectionProvider.Create())
             {
                 await conn.OpenWithRetryAsync();
 
@@ -97,13 +101,14 @@ namespace BurnForMoney.Infrastructure.Persistence.Repositories
 
         public async Task<AthleteRow> GetAthleteByAadIdAsync(Guid aadId)
         {
-            using (var conn = SqlConnectionFactory.Create(_connectionString))
+            using (var conn = _connectionProvider.Create())
             {
+                AccountEntity account = await _accountsStore.GetAccountByActiveDirectoryId(aadId);
                 await conn.OpenWithRetryAsync();
 
-                var athlete = await conn.QuerySingleOrDefaultAsync<AthleteRow>("SELECT Id, FirstName, LastName, Active FROM dbo.Athletes WHERE ActiveDirectoryId=@Id", new
+                var athlete = await conn.QuerySingleOrDefaultAsync<AthleteRow>("SELECT Id, FirstName, LastName, Active FROM dbo.Athletes WHERE Id=@Id", new
                 {
-                    Id = aadId
+                    account.Id
                 });
 
                 if (athlete == null)

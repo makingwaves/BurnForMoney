@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Data.SqlClient;
 using System.Dynamic;
 using System.IO;
@@ -34,12 +33,12 @@ namespace BurnForMoney.Functions.Functions.Reports
             [TimerTrigger("0 0 0 3 * *")] TimerInfo timer,
             [Configuration] ConfigurationRoot configuration,
             ILogger log,
-            [Inject] IConnectionFactory<SqlConnection> connectionFactory)
+            [Inject] IConnectionProvider<SqlConnection> connectionFactory)
         {
             var lastMonth = DateTime.UtcNow.AddMonths(-1);
 
             string json;
-            using (var conn = connectionFactory.Create(configuration.ConnectionStrings.SqlDbConnectionString))
+            using (var conn = connectionFactory.Create())
             {
                 await conn.OpenWithRetryAsync();
 
@@ -103,7 +102,7 @@ namespace BurnForMoney.Functions.Functions.Reports
                         csv.Flush();
                         streamWriter.Flush();
 
-                        var outputBlob = await GetBlobReportAsync(configuration.ConnectionStrings.AzureWebJobsStorage);
+                        var outputBlob = await GetBlobReportAsync(configuration.ConnectionStrings.AzureAppStorage);
                         await outputBlob.UploadFromByteArrayAsync(memoryStream.ToArray(), 0, (int)memoryStream.Length);
                     }
                 }

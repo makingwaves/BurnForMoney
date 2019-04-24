@@ -50,7 +50,6 @@ namespace BurnForMoney.Functions.Presentation.Views
                 var row = new Athlete
                 {
                     Id = message.Id,                    
-                    ActiveDirectoryId = message.AadId,
                     FirstName = message.FirstName,
                     LastName = message.LastName,
                     ProfilePictureUrl = string.Empty,
