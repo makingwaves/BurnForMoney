@@ -27,6 +27,7 @@
     <None Include="SqlScripts\Script0001 - Initial.sql" />
     <None Include="SqlScripts\Script0002- Create MonthlyResultsSnapshots_Upsert procedure .sql" />
     <None Include="SqlScripts\Script0004 - Add Active Directory Id to Athlete aggregate.sql" />
+    <None Include="SqlScripts\Script0006 - Remove Active Directory Id from Athlete.sql" />
     <None Include="SqlScripts\Script0005 - Drop Unique Constraint On ExternalId.sql" />
     <None Include="Upgrade-Database.ps1" />
     <None Include="Deploy-Credentials.ps1" />
