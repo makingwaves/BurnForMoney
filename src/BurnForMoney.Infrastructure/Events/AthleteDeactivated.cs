@@ -1,5 +1,4 @@
 ﻿using System;
-using BurnForMoney.Domain;
 using BurnForMoney.Infrastructure.CodeAnalysis;
 using BurnForMoney.Infrastructure.Events;
 
