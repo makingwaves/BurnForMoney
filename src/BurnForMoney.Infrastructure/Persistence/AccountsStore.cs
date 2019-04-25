@@ -36,13 +36,12 @@ namespace BurnForMoney.Infrastructure.Persistence
 
         public async Task<bool> DeleteIfExistsAsync(Guid activeDirectoryId)
         {
-            if (!await AccountExists(activeDirectoryId)) return false;
             AccountEntity entity = await GetAccountByActiveDirectoryId(activeDirectoryId);
             if (entity == null) return false;
 
             TableOperation delete = TableOperation.Delete(entity);
             TableResult result = await _accountsTable.ExecuteAsync(delete);
-            return result.HttpStatusCode == (int)HttpStatusCode.NoContent;
+            return result.HttpStatusCode == (int) HttpStatusCode.NoContent;
         }
 
         public async Task<AccountEntity> GetAccountByActiveDirectoryId(Guid activeDirectoryId)

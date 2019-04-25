@@ -5,7 +5,6 @@ using BurnForMoney.Domain;
 using BurnForMoney.Functions.Commands;
 using BurnForMoney.Infrastructure.Persistence;
 using Xunit;
-using FailedToAddAthleteException = BurnForMoney.Functions.Exceptions.FailedToAddAthleteException;
 
 namespace BurnForMoney.Functions.UnitTests.Domain
 {
@@ -653,6 +652,9 @@ namespace BurnForMoney.Functions.UnitTests.Domain
         {
             var athleteId = await CreateNewAthleteAsync();
 
+            var acc = await _accountsStore.GetAccountById(athleteId);
+            await _accountsStore.DeleteIfExistsAsync(acc.ActiveDirectoryId);
+
             await Assert.ThrowsAsync<ArgumentNullException>("activeDirectoryId",
                 () => HandleCommand(new AssignActiveDirectoryIdToAthleteCommand(athleteId, Guid.Empty)));
         }
@@ -661,8 +663,11 @@ namespace BurnForMoney.Functions.UnitTests.Domain
         public async Task Can_AssignActiveDirectoryId()
         {
             var athleteId = await CreateNewAthleteAsync();
-            var athleteActiveDirectoryId = Guid.NewGuid();
 
+            var acc = await _accountsStore.GetAccountById(athleteId);
+            await _accountsStore.DeleteIfExistsAsync(acc.ActiveDirectoryId);
+
+            var athleteActiveDirectoryId = Guid.NewGuid();
             await HandleCommand(new AssignActiveDirectoryIdToAthleteCommand(athleteId, athleteActiveDirectoryId));
 
             var athlete = await GetAthleteAsync(athleteId);
