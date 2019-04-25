@@ -58,6 +58,9 @@ namespace BurnForMoney.ApiGateway.Clients
             while (sw.Elapsed.TotalSeconds < _maxAwaitSeconds)
             {
                 await Task.Delay(_checkIntervalSeconds * 1000, cancellationToken);
+                if (cancellationToken.IsCancellationRequested)
+                    return null;
+
                 Athlete createdAthlete = await GetAthleteAsync(athleteId.ToString(), defaultAthleteSource);
 
                 if (createdAthlete != null)
@@ -104,6 +107,9 @@ namespace BurnForMoney.ApiGateway.Clients
             while (sw.Elapsed.TotalSeconds < _maxAwaitSeconds)
             {
                 await Task.Delay(_checkIntervalSeconds * 1000, cancellationToken);
+                if (cancellationToken.IsCancellationRequested)
+                    return 0;
+
                 var existingAthlete = await GetAthleteAsync(stravaId.ToString(), AthleteSourceNames.Strava);
 
                 if (existingAthlete != null)

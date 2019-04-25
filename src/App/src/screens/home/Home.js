@@ -10,7 +10,7 @@ import TeamGoals from './TeamGoals/TeamGoals.js';
 import HowItWorks from './HowItWorks/HowItWorks.js';
 import InstaGallery from './InstaGallery/InstaGallery.js';
 import OtherInitiatives from './OtherInitiatives/OtherInitiatives.js';
-import Footer from 'components/Footer/Footer.js';
+import Footer from './Footer/Footer.js';
 
 import i18n from 'i18n';
 import { withNamespaces } from 'react-i18next';

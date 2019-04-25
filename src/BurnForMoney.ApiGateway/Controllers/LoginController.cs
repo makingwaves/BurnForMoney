@@ -72,8 +72,7 @@ namespace BurnForMoney.ApiGateway.Controllers
                 OpenIdConnectServerDefaults.AuthenticationScheme,
                 OpenIdConnectConstants.Claims.Name,
                 OpenIdConnectConstants.Claims.Role);
-
-
+            
             var nameId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
             var idSource = User.Claims.FirstOrDefault(c => c.Type == Globals.FederatedProviderTypeClaims)?.Value;
 

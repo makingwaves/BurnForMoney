@@ -1,0 +1,10 @@
+@import "static/style/variables.scss";
+
+.NewActivity{
+  &__form{
+    &-submit{
+      background-color: $primary-color;
+    }
+  }
+
+}

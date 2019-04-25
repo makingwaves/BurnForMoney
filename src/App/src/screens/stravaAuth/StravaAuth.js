@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
 
 import './StravaAuth.css';
-import logo from 'img/logo.svg';
-
+import logo from 'static/img/logo.svg';
 import arrow from './img/arrow_down.svg';
 import bigButtonTop from './img/bigButton_top.svg';
 import bigButtonBottom from './img/bigButton_bottom.svg';

@@ -5,7 +5,7 @@ namespace BurnForMoney.Infrastructure.Persistence.Repositories.Dto
 {
     public class AthleteMonthlyResult
     {
-        public static AthleteMonthlyResult NoResults = new AthleteMonthlyResult
+        public static AthleteMonthlyResult NoResults => new AthleteMonthlyResult
         {
             Distance = 0,
             Time = 0,
