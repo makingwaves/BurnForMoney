@@ -32,7 +32,8 @@ namespace BurnForMoney.RegenerateViews
             {
                 try
                 {
-                    LogExecutionInfo(logger, options);
+                    LogExecutionInfo(options, logger);
+                    TestConnections(options, logger);
                     ClearDatabase(options, logger);
                     RegenerateViews(options, logger);
                 }
@@ -48,6 +49,15 @@ namespace BurnForMoney.RegenerateViews
             }
         }
 
+        private static void TestConnections(Options options, ILogger logger)
+        {
+            logger.Information("Testing Azure Tables connection (Input data).");
+            new ViewsRegenerator(options, logger).TestConnection();
+
+            logger.Information("Testing MS-SQL Database connection (Output data).");
+            new TableWiper(options, logger).TestConnection();
+        }
+        
         private static void HandleParseErrors(IEnumerable<Error> errors)
         {
             foreach (Error error in errors)
@@ -72,7 +82,7 @@ namespace BurnForMoney.RegenerateViews
             return configuration;
         }
 
-        private static void LogExecutionInfo(ILogger logger, Options options)
+        private static void LogExecutionInfo(Options options, ILogger logger)
         {
             logger.Information("Starting regenerate BFM views.");
             logger.Verbose("Verbose logging level enabled.");
@@ -86,14 +96,14 @@ namespace BurnForMoney.RegenerateViews
 
         private static void ClearDatabase(Options options, ILogger logger)
         {
-            var wiper = new TableWiper(options.MsSqlConnectionString, logger);
+            var wiper = new TableWiper(options, logger);
             wiper.Wipe(Tables);
         }
 
         private static void RegenerateViews(Options options, ILogger logger)
         {
-            var regenerator = new ViewsRegenerator(logger);
-            regenerator.Regenerate(options);
+            var regenerator = new ViewsRegenerator(options, logger);
+            regenerator.Regenerate();
         }
     }
 }

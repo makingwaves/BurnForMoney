@@ -11,11 +11,12 @@ namespace BurnForMoney.RegenerateViews
         private readonly string _connectionString;
         private readonly ILogger _logger;
 
-        public TableWiper(string connectionString, ILogger logger)
+        public TableWiper(Options options, ILogger logger)
         {
-            if (string.IsNullOrWhiteSpace(connectionString)) throw new ArgumentNullException(nameof(connectionString));
+            if (options == null) throw new ArgumentNullException(nameof(options));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            _connectionString = connectionString;
+
+            _connectionString = options.MsSqlConnectionString;
         }
 
         public void Wipe(IEnumerable<string> tables)
@@ -40,6 +41,14 @@ namespace BurnForMoney.RegenerateViews
                         }
                     }
                 }
+            }
+        }
+
+        public void TestConnection()
+        {
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                connection.Open();
             }
         }
 

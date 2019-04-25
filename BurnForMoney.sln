@@ -31,9 +31,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{22BBCADA-374
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tools", "tools", "{FF75C88F-1DE7-4301-8AF8-4B274FDCE0AA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BurnForMoney.RegenerateViews", "src\tools\BurnForMoney.RegenerateViews\BurnForMoney.RegenerateViews.csproj", "{C7BB5B4E-1515-4E28-89A9-31C7A4C38B9E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BurnForMoney.RegenerateViews", "src\tools\BurnForMoney.RegenerateViews\BurnForMoney.RegenerateViews.csproj", "{C7BB5B4E-1515-4E28-89A9-31C7A4C38B9E}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BurnForMoney.ApiGateway", "src\BurnForMoney.ApiGateway\BurnForMoney.ApiGateway.csproj", "{64CB9956-A777-4506-9F14-92BFC0040486}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BurnForMoney.ActiveDirectoryIdMigration", "src\tools\BurnForMoney.ActiveDirectoryIdMigration\BurnForMoney.ActiveDirectoryIdMigration.csproj", "{D6BE7B21-3C15-4FCB-8435-53FE4D323591}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BurnForMoney.EventsDump", "src\tools\BurnForMoney.EventsDump\BurnForMoney.EventsDump.csproj", "{C21FFC89-A5C5-4387-B951-A3067D0A2DB6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -93,19 +97,26 @@ Global
 		{64CB9956-A777-4506-9F14-92BFC0040486}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{64CB9956-A777-4506-9F14-92BFC0040486}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{64CB9956-A777-4506-9F14-92BFC0040486}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D6BE7B21-3C15-4FCB-8435-53FE4D323591}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D6BE7B21-3C15-4FCB-8435-53FE4D323591}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D6BE7B21-3C15-4FCB-8435-53FE4D323591}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D6BE7B21-3C15-4FCB-8435-53FE4D323591}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C21FFC89-A5C5-4387-B951-A3067D0A2DB6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C21FFC89-A5C5-4387-B951-A3067D0A2DB6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C21FFC89-A5C5-4387-B951-A3067D0A2DB6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C21FFC89-A5C5-4387-B951-A3067D0A2DB6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{4B759ECF-AC9E-4189-A49B-25D62F9DD865} = {F624F300-4820-42BA-AA33-51AAAD65468B}
+		{FF75C88F-1DE7-4301-8AF8-4B274FDCE0AA} = {22BBCADA-3742-43D0-A007-6C0532C680A9}
+		{C7BB5B4E-1515-4E28-89A9-31C7A4C38B9E} = {FF75C88F-1DE7-4301-8AF8-4B274FDCE0AA}
+		{D6BE7B21-3C15-4FCB-8435-53FE4D323591} = {FF75C88F-1DE7-4301-8AF8-4B274FDCE0AA}
+		{C21FFC89-A5C5-4387-B951-A3067D0A2DB6} = {FF75C88F-1DE7-4301-8AF8-4B274FDCE0AA}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B541DB8A-FD37-4F72-86E1-5628D28CE7E8}
-	EndGlobalSection
-	GlobalSection(NestedProjects) = preSolution
-		{4B759ECF-AC9E-4189-A49B-25D62F9DD865} = {F624F300-4820-42BA-AA33-51AAAD65468B}
-		{FF75C88F-1DE7-4301-8AF8-4B274FDCE0AA} = {22BBCADA-3742-43D0-A007-6C0532C680A9}
-		{C7BB5B4E-1515-4E28-89A9-31C7A4C38B9E} = {FF75C88F-1DE7-4301-8AF8-4B274FDCE0AA}
 	EndGlobalSection
 EndGlobal
