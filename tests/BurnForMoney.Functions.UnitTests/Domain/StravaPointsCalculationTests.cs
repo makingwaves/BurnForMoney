@@ -92,7 +92,7 @@ namespace BurnForMoney.Functions.UnitTests.Domain
                 Id = Guid.NewGuid(),
                 ExternalId = Guid.NewGuid().ToString(),
                 AthleteId = (await GetAthleteAsync(_athleteId)).Id,
-                StartDate = new DateTime(2018,1,1),
+                StartDate = DateTime.Now,
                 ActivityType = type,
                 DistanceInMeters = distance,
                 MovingTimeInMinutes = duration,

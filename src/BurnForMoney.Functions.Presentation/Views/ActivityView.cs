@@ -11,7 +11,7 @@ using Microsoft.Extensions.Logging;
 
 namespace BurnForMoney.Functions.Presentation.Views
 {
-    public class ActivityView : IHandles<ActivityAdded>, IHandles<ActivityDeleted_V2>, IHandles<ActivityUpdated_V2>
+    public class ActivityView : IHandles<ActivityAdded>, IHandles<ActivityDeleted_V2>, IHandles<ActivityUpdated_V2>, IHandles<ActivityDeleted>
     {
         private readonly string _sqlConnectionString;
         private readonly ILogger _log;
@@ -83,6 +83,22 @@ namespace BurnForMoney.Functions.Presentation.Views
         }
 
         public async Task HandleAsync(ActivityDeleted_V2 message)
+        {
+            using (var conn = SqlConnectionFactory.Create(_sqlConnectionString))
+            {
+                await conn.OpenWithRetryAsync();
+
+                var activity = conn.Get<Activity>(message.ActivityId);
+                var success = conn.Delete(activity);
+
+                if (!success)
+                {
+                    throw new FailedToDeleteActivityException(message.ActivityId);
+                }
+            }
+        }
+
+        public async Task HandleAsync(ActivityDeleted message)
         {
             using (var conn = SqlConnectionFactory.Create(_sqlConnectionString))
             {
