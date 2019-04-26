@@ -21,8 +21,8 @@ namespace BurnForMoney.RegenerateViews
         private static void Main(string[] args)
         {
             Parser.Default.ParseArguments<Options>(args)
-                .WithParsed(Run)
-                .WithNotParsed(HandleParseErrors);
+            .WithParsed(Run)
+            .WithNotParsed(HandleParseErrors);
         }
 
         private static void Run(Options options)

@@ -18,8 +18,7 @@ namespace BurnForMoney.EventsDump
     {
         static void Main(string[] args)
         {
-            var eventStoreConnectionString =
-                "DefaultEndpointsProtocol=https;AccountName=bfmfuncprod;AccountKey=CzEDLFzB8XBS9q5XODbcwtP3gxFnEjr5EhSa4XOYfOcbxatkbq2ygdrQbCef2AzGmMIJGPAkpWrvuIniQGwrZA==;EndpointSuffix=core.windows.net";
+            var eventStoreConnectionString ="";
             var outputFile = "events_dump.json";
             var eventStore = (EventStore) EventStore.Create(eventStoreConnectionString, null);
 
