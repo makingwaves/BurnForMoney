@@ -19,7 +19,7 @@ class SilentCallbackHandler extends Component {
 }
 
 class SignInHandler extends Component {
-    
+
     getParameterByName(name, url) {
         if (!url) url = window.location.href;
         name = name.replace(/[\[\]]/g, '\\$&');
@@ -32,7 +32,7 @@ class SignInHandler extends Component {
 
     updateBrowserLocation(){
         let returnUrl = this.getParameterByName("redirect");
-        
+
         window.history.replaceState({},
             window.document.title,
             window.location.origin);
@@ -70,8 +70,8 @@ function authComponent(WrappedComponent, LoginComponent) {
         componentDidMount() {
             this._authManager.getUser()
             .then(user => {
-                this.setState({state: user == null ? 
-                    "unauthenticated" : 
+                this.setState({state: user == null ?
+                    "unauthenticated" :
                     "authenticated"});
             })
             .catch(e => {
@@ -80,8 +80,7 @@ function authComponent(WrappedComponent, LoginComponent) {
         }
 
         render(){
-            switch(this.state.state)
-            {
+            switch(this.state.state) {
                 case null:
                     return null;
                 case "unauthenticated":

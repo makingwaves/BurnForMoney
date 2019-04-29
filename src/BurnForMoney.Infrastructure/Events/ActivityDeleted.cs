@@ -1,9 +1,6 @@
 ﻿using System;
-using BurnForMoney.Domain;
 using BurnForMoney.Infrastructure.CodeAnalysis;
 using BurnForMoney.Infrastructure.Events;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
 
 namespace BurnForMoney.Domain.Events
 {

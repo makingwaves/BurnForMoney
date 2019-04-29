@@ -1,7 +1,5 @@
 ﻿using System;
-using BurnForMoney.Domain;
 using BurnForMoney.Infrastructure.CodeAnalysis;
-using BurnForMoney.Infrastructure.Persistence;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 

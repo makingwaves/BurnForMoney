@@ -73,16 +73,15 @@ namespace BurnForMoney.ApiGateway.Controllers
 
             if (principalAthleteId != athleteId)
             {
-                Response.StatusCode = (int) HttpStatusCode.Forbidden;
+                Response.StatusCode = (int)HttpStatusCode.Forbidden;
                 return Task.CompletedTask;
             }
-
             return this.AuthorizedProxyAsync($"{_appConfiguration.InternalApiUri}/athlete/{athleteId}/activities", _appConfiguration.InternalApiMasterKey);
         }
 
         [HttpGet]
         [Route("ranking/{activityCategory?}")]
-        public Task GetRanking(string activityCategory, [FromQuery] string month = null, [FromQuery]int? year = null)
+        public Task GetRanking(string activityCategory, [FromQuery] string month=null, [FromQuery]int? year=null)
         {
             var queryString = new QueryString();
 

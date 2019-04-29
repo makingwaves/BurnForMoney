@@ -2,11 +2,11 @@ import React, { Component } from 'react';
 import Modal from 'react-modal';
 
 import './VideoHeader.css';
-import logoMW from 'img/mw-logo-white.svg';
+import logoMW from 'static/img/mw-logo-white.svg';
 import logoBFMblue from '../img/bfm-logo-blue.svg';
 import awardCSR from '../img/award-csr.svg';
-import bfmVideoBg from 'video/bfm-www-movie.mp4';
-import bfmVideo from 'video/bfm-www-movie-full.mp4';
+import bfmVideoBg from 'static/video/bfm-www-movie.mp4';
+import bfmVideo from 'static/video/bfm-www-movie-full.mp4';
 
 import { withNamespaces } from 'react-i18next';
 

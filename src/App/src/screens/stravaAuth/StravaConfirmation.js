@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import authFetch from "../../components/Authentication/AuthFetch"
 
 import './StravaAuth.css';
-import logo from 'img/logo.svg';
+import logo from 'static/img/logo.svg';
 
 import {AuthManager} from "../../components/Authentication/AuthManager"
 
@@ -20,7 +20,7 @@ class StravaAuth extends Component {
 
   constructor(props) {
       super(props);
-      this.state = { 
+      this.state = {
         strava_auth_finished: false
       };
 
@@ -31,10 +31,10 @@ class StravaAuth extends Component {
     let code = this.getParameterByName("code");
 
     this._authManager.getUser()
-    .then(user => 
+    .then(user =>
       authFetch(`${process.env.REACT_APP_DASHBOARD_API_URL}api/athletes/${user.profile.sub}/strava_code`, "POST", JSON.stringify(code)))
     .then((r)=>{
-      if(r.status == 200)
+      if(r.status === 200)
         this.setState({strava_auth_finished: true});
       else {
         console.log(r);
@@ -56,7 +56,7 @@ class StravaAuth extends Component {
         <div className="StravaAuth__confirmation">
           <div className="check_mark">
           {this.state.strava_auth_finished &&
-            
+
             <div className="sa-icon sa-success animate">
               <span className="sa-line sa-tip animateSuccessTip"></span>
               <span className="sa-line sa-long animateSuccessLong"></span>

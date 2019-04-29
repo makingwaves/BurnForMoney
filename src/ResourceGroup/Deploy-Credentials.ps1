@@ -114,11 +114,11 @@ function DeployCredentials {
 
 		AddNewSecret -SecretName "sqlServerPassword" `
 			-KeyVaultName $KeyVaultName `
-			-Password (ConvertTo-SecureString �String ([System.Web.Security.Membership]::GeneratePassword(20,5)) �AsPlainText -Force)
+			-Password (ConvertTo-SecureString -String ([System.Web.Security.Membership]::GeneratePassword(20,5)) -AsPlainText -Force)
 
 		AddNewSecret -SecretName "strava--AccessTokensEncryptionKey" `
 			-KeyVaultName $KeyVaultName `
-			-Password (ConvertTo-SecureString �String (GenerateEncryptionKey) �AsPlainText -Force)
+			-Password (ConvertTo-SecureString -String (GenerateEncryptionKey) -AsPlainText -Force)
 	}
     Catch {
         Write-Fail

@@ -39,8 +39,17 @@ namespace BurnForMoney.Functions.Presentation.Views
         {
             switch (@event)
             {
-                case AthleteCreated_V2 created:
+                case AthleteCreated created:
                     await new AthleteView(_sqlDbConnectionString).HandleAsync(created);
+                    break;
+                case AthleteCreated_V2 created2:
+                    await new AthleteView(_sqlDbConnectionString).HandleAsync(created2);
+                    break;
+                case ActiveDirectoryIdAssigned aadIdAssigned:
+                    await new AthleteView(_sqlDbConnectionString).HandleAsync(aadIdAssigned);
+                    break;
+                case StravaIdAdded stravaIdAdded:
+                    await new AthleteView(_sqlDbConnectionString).HandleAsync(stravaIdAdded);
                     break;
                 case AthleteDeactivated deactivated:
                     await new AthleteView(_sqlDbConnectionString).HandleAsync(deactivated);
@@ -53,6 +62,9 @@ namespace BurnForMoney.Functions.Presentation.Views
                     break;
                 case ActivityUpdated_V2 activityUpdated:
                     await new ActivityView(_sqlDbConnectionString, _log).HandleAsync(activityUpdated);
+                    break;
+                case ActivityDeleted activityDeleted:
+                    await new ActivityView(_sqlDbConnectionString, _log).HandleAsync(activityDeleted);
                     break;
                 case ActivityDeleted_V2 activityDeleted:
                     await new ActivityView(_sqlDbConnectionString, _log).HandleAsync(activityDeleted);
