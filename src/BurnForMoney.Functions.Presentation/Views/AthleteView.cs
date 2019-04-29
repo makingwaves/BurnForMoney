@@ -32,8 +32,7 @@ namespace BurnForMoney.Functions.Presentation.Views
                     LastName = message.LastName,
                     ProfilePictureUrl = message.ProfilePictureUrl,
                     Active = true,
-                    System = message.System.ToString(),
-                    ActiveDirectoryId = null
+                    System = message.System.ToString()
                 };
                 var inserted = conn.Insert(row);
                 if (inserted == null)
