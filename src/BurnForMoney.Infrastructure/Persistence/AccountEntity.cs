@@ -1,4 +1,5 @@
 ﻿using System;
+using BurnForMoney.Infrastructure.Extensions;
 using Microsoft.WindowsAzure.Storage.Table;
 
 namespace BurnForMoney.Infrastructure.Persistence
@@ -15,8 +16,8 @@ namespace BurnForMoney.Infrastructure.Persistence
 
         public AccountEntity(Guid id, Guid activeDirectoryId)
         {
-            RowKey = id.ToString("D");
-            PartitionKey = activeDirectoryId.ToString("D");
+            RowKey = id.ToUpperInvariant();
+            PartitionKey = activeDirectoryId.ToUpperInvariant();
         }
     }
 }

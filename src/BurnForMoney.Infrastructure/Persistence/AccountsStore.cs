@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using BurnForMoney.Infrastructure.Extensions;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Table;
 
@@ -72,7 +73,7 @@ namespace BurnForMoney.Infrastructure.Persistence
         private static TableQuery<AccountEntity> GuidEqualityQuery(string key, Guid value)
         {
             return new TableQuery<AccountEntity>().Where(
-                TableQuery.GenerateFilterCondition(key, QueryComparisons.Equal, value.ToString("D"))
+                TableQuery.GenerateFilterCondition(key, QueryComparisons.Equal, value.ToUpperInvariant())
             );
         }
 
