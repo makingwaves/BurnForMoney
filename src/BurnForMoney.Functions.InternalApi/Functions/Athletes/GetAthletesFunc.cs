@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using BurnForMoney.Domain;
 using BurnForMoney.Functions.InternalApi.Configuration;
 using BurnForMoney.Functions.Shared.Functions.Extensions;
 using BurnForMoney.Infrastructure.Persistence.Repositories;
@@ -11,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
+using Willezone.Azure.WebJobs.Extensions.DependencyInjection;
 
 namespace BurnForMoney.Functions.InternalApi.Functions.Athletes
 {
@@ -18,9 +18,8 @@ namespace BurnForMoney.Functions.InternalApi.Functions.Athletes
     {
         [FunctionName(FunctionsNames.GetAthletes)]
         public static async Task<IActionResult> GetAthletesAsync([HttpTrigger(AuthorizationLevel.Function, "get", Route = "athletes")] HttpRequest req,  
-            ILogger log, [Configuration] ConfigurationRoot configuration)
+            ILogger log, [Configuration] ConfigurationRoot configuration, [Inject] IAthleteReadRepository repository)
         {
-            var repository = new AthleteReadRepository(configuration.ConnectionStrings.SqlDbConnectionString);
             var athletes = await repository.GetAllActiveAsync();
        
             return new OkObjectResult(athletes.Select(athlete => new {
@@ -34,9 +33,8 @@ namespace BurnForMoney.Functions.InternalApi.Functions.Athletes
 
         [FunctionName(FunctionsNames.GetAthlete)]
         public static async Task<IActionResult> GetAthleteAsync([HttpTrigger(AuthorizationLevel.Function, "get", Route = "athletes/{id}")] HttpRequest req,
-            ILogger log, [Configuration] ConfigurationRoot configuration, string id)
+            ILogger log, [Configuration] ConfigurationRoot configuration, string id, [Inject] IAthleteReadRepository repository)
         {
-            var repository = new AthleteReadRepository(configuration.ConnectionStrings.SqlDbConnectionString);
             string source = req.Query["source"];
             source = string.IsNullOrWhiteSpace(source) ? SourceNames.BurnForMoneySystem : source;
 
@@ -65,7 +63,7 @@ namespace BurnForMoney.Functions.InternalApi.Functions.Athletes
             });
         }
 
-        private static async Task<AthleteRow> FetchAthlete(string id, string source, AthleteReadRepository repository)
+        private static async Task<AthleteRow> FetchAthlete(string id, string source, IAthleteReadRepository repository)
         {
             switch (source)
             {

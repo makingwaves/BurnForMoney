@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using BurnForMoney.Domain.Events;
 using BurnForMoney.Functions.Presentation.Exceptions;
 using BurnForMoney.Functions.Presentation.Views.Poco;
@@ -31,8 +32,7 @@ namespace BurnForMoney.Functions.Presentation.Views
                     LastName = message.LastName,
                     ProfilePictureUrl = message.ProfilePictureUrl,
                     Active = true,
-                    System = message.System.ToString(),
-                    ActiveDirectoryId = null
+                    System = message.System.ToString()
                 };
                 var inserted = conn.Insert(row);
                 if (inserted == null)
@@ -51,12 +51,10 @@ namespace BurnForMoney.Functions.Presentation.Views
                 var row = new Athlete
                 {
                     Id = message.Id,                    
-                    ActiveDirectoryId = message.AadId,
                     FirstName = message.FirstName,
                     LastName = message.LastName,
                     ProfilePictureUrl = string.Empty,
-                    Active = true,
-                    
+                    Active = true,                   
                     System = "None"
                 };
 
@@ -83,21 +81,9 @@ namespace BurnForMoney.Functions.Presentation.Views
             }
         }
         
+        [Obsolete("Saved for legacy reasons, will be removed after events migration.")]
         public async Task HandleAsync(ActiveDirectoryIdAssigned message)
         {
-            using (var conn = SqlConnectionFactory.Create(_sqlConnectionString))
-            {
-                await conn.OpenWithRetryAsync();
-
-                var affectedRows = await conn.ExecuteAsync(
-                    @"UPDATE dbo.Athletes SET ActiveDirectoryId=@activeDirectoryId WHERE Id=@Id",
-                    new {Id = message.AthleteId, activeDirectoryId = message.ActiveDirectoryId});
-
-                if (affectedRows != 1)
-                {
-                    throw new FailedToAssignActiveDirectoryIdException(message.AthleteId);
-                }
-            }
         }
 
         public async Task HandleAsync(AthleteDeactivated message)

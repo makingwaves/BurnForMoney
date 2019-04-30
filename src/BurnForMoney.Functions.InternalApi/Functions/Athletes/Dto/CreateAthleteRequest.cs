@@ -19,11 +19,6 @@ namespace BurnForMoney.Functions.InternalApi.Functions.Athletes.Dto
             {
                 throw new ArgumentNullException(nameof(FirstName));
             }
-
-            if (string.IsNullOrWhiteSpace(LastName))
-            {
-                throw new ArgumentNullException(nameof(LastName));
-            }
         }
     }
 }

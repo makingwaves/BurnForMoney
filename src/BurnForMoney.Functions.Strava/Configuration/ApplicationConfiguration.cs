@@ -27,7 +27,8 @@ namespace BurnForMoney.Functions.Strava.Configuration
                     ConnectionStrings = new ConnectionStringsSection
                     {
                         SqlDbConnectionString = config["ConnectionStrings:Sql"],
-                        AzureWebJobsStorage = config["AzureWebJobsStorage"]
+                        AzureWebJobsStorage = config["AzureWebJobsStorage"],
+                        AzureAppStorage = config["AppStorage"]
                     },
                     Strava = new StravaConfigurationSection
                     {

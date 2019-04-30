@@ -6,9 +6,11 @@
     "AppQueuesStorage": "UseDevelopmentStorage=true",
     "AzureWebJobsDashboard": "UseDevelopmentStorage=true",
     "KeyVaultName": "burnformoneykvdev",
-    "ConnectionStrings:Sql": "Data Source=localhost;Initial Catalog=BurnForMoney;User ID=sa;Password=strongPwd123!;"
+    "ConnectionStrings:Sql": "Data Source=localhost;Initial Catalog=BurnForMoney;User ID=sa;Password=strongPwd123!;",
+    "AppStorage": ""
   },
   "Host": {
-    "LocalHttpPort": 7074
+    "LocalHttpPort": 7074,
+    "CORS":  "*" 
   }
 }

@@ -62,7 +62,6 @@ namespace BurnForMoney.ApiGateway.Clients
                     return null;
 
                 Athlete createdAthlete = await GetAthleteAsync(athleteId.ToString(), defaultAthleteSource);
-
                 if (createdAthlete != null)
                     return createdAthlete;
             }
@@ -111,7 +110,6 @@ namespace BurnForMoney.ApiGateway.Clients
                     return 0;
 
                 var existingAthlete = await GetAthleteAsync(stravaId.ToString(), AthleteSourceNames.Strava);
-
                 if (existingAthlete != null)
                     return stravaId;
             }

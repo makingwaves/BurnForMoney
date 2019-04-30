@@ -12,6 +12,11 @@ namespace BurnForMoney.Functions.Exceptions
         {
         }
 
+        public FailedToAddAthleteException(string athleteId, string activeDirectoryId)
+            : base($"Athlete account already exists: Id: [{athleteId}], ActiveDirectoryId: [{activeDirectoryId}]")
+        {
+        }
+
         protected FailedToAddAthleteException(
             SerializationInfo info,
             StreamingContext context) : base(info, context)

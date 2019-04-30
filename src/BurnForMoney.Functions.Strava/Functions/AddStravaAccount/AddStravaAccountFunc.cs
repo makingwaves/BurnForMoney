@@ -9,7 +9,6 @@ using BurnForMoney.Functions.Strava.External.Strava.Api;
 using BurnForMoney.Functions.Strava.External.Strava.Api.Auth;
 using BurnForMoney.Functions.Strava.Security;
 using BurnForMoney.Infrastructure.Persistence.Repositories;
-using BurnForMoney.Infrastructure.Persistence.Repositories.Dto;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
@@ -17,6 +16,7 @@ using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.WindowsAzure.Storage.Queue;
 using Newtonsoft.Json;
+using Willezone.Azure.WebJobs.Extensions.DependencyInjection;
 
 namespace BurnForMoney.Functions.Strava.Functions.AddStravaAccount
 {
@@ -30,11 +30,10 @@ namespace BurnForMoney.Functions.Strava.Functions.AddStravaAccount
             HttpRequest req, ILogger log, string athleteId,
             [Queue(AppQueueNames.AddStravaAccountRequests, Connection = "AppQueuesStorage")] CloudQueue outputQueue,
             [Queue(StravaQueueNames.CollectAthleteActivities)] CloudQueue collectActivitiesQueues,
-            [Configuration] ConfigurationRoot configuration)
+            [Configuration] ConfigurationRoot configuration, [Inject] IAthleteReadRepository athleteReadRepository)
         {
             var athleteIdGuid = Guid.Parse(athleteId);
             string authCode = req.Query["authCode"]; 
-            var athleteReadRepository = new AthleteReadRepository(configuration.ConnectionStrings.SqlDbConnectionString);
             var existingAthlete = await athleteReadRepository.GetAthleteByIdAsync(athleteIdGuid);
 
             var tokenExchangeResult = StravaService.ExchangeToken(configuration.Strava.ClientId, configuration.Strava.ClientSecret, authCode);
@@ -46,7 +45,7 @@ namespace BurnForMoney.Functions.Strava.Functions.AddStravaAccount
             return new OkObjectResult(configuration.Strava.ClientId);
         }
 
-        private static async Task EnsureThatStravaAccountIsNotAlreadyRegistered(int stravaId, AthleteReadRepository repository)
+        private static async Task EnsureThatStravaAccountIsNotAlreadyRegistered(int stravaId, IAthleteReadRepository repository)
         {
             if(await repository.AthleteWithStravaIdExistsAsync(stravaId.ToString()))
                 throw new StravaAccountExistsException(stravaId.ToString());

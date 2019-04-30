@@ -15,7 +15,7 @@ namespace BurnForMoney.Functions.Functions.Monitoring
         public static async Task Run([TimerTrigger("0 */20 * * * *")]TimerInfo myTimer, ILogger log,
             [Configuration] ConfigurationRoot configuration)
         {
-            await PoisonQueueMessagesMonitor.RunAsync(configuration.ConnectionStrings.AzureWebJobsStorage,
+            await PoisonQueueMessagesMonitor.RunAsync(configuration.ConnectionStrings.AzureAppStorage,
                 configuration.ApplicationInsightsInstrumentationKey, log);
         }
     }

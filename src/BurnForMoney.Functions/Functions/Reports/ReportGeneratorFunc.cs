@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Dynamic;
 using System.IO;
 using System.Linq;
@@ -21,6 +22,7 @@ using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
 using Microsoft.WindowsAzure.Storage.Queue;
 using Newtonsoft.Json;
+using Willezone.Azure.WebJobs.Extensions.DependencyInjection;
 
 namespace BurnForMoney.Functions.Functions.Reports
 {
@@ -30,12 +32,13 @@ namespace BurnForMoney.Functions.Functions.Reports
         public static async Task Run(
             [TimerTrigger("0 0 0 3 * *")] TimerInfo timer,
             [Configuration] ConfigurationRoot configuration,
-            ILogger log)
+            ILogger log,
+            [Inject] IConnectionProvider<SqlConnection> connectionFactory)
         {
             var lastMonth = DateTime.UtcNow.AddMonths(-1);
 
             string json;
-            using (var conn = SqlConnectionFactory.Create(configuration.ConnectionStrings.SqlDbConnectionString))
+            using (var conn = connectionFactory.Create())
             {
                 await conn.OpenWithRetryAsync();
 
@@ -99,7 +102,7 @@ namespace BurnForMoney.Functions.Functions.Reports
                         csv.Flush();
                         streamWriter.Flush();
 
-                        var outputBlob = await GetBlobReportAsync(configuration.ConnectionStrings.AzureWebJobsStorage);
+                        var outputBlob = await GetBlobReportAsync(configuration.ConnectionStrings.AzureAppStorage);
                         await outputBlob.UploadFromByteArrayAsync(memoryStream.ToArray(), 0, (int)memoryStream.Length);
                     }
                 }
