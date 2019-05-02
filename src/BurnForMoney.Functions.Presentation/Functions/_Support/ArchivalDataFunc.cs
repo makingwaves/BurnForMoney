@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.SqlClient;
 using System.Threading.Tasks;
 using BurnForMoney.Functions.Presentation.Configuration;
 using BurnForMoney.Functions.Shared;
@@ -13,6 +14,7 @@ using Dapper;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Willezone.Azure.WebJobs.Extensions.DependencyInjection;
 
 namespace BurnForMoney.Functions.Presentation.Functions._Support
 {
@@ -25,9 +27,9 @@ namespace BurnForMoney.Functions.Presentation.Functions._Support
         [NoAutomaticTrigger]
         public static async Task SeedHistoricalData(ILogger log,
             string input, // workaround for invalid [NoAutomaticTrigger] binding https://github.com/Azure/azure-functions-vs-build-sdk/issues/168
-            [Configuration] ConfigurationRoot configuration)
+            [Inject] IConnectionProvider<SqlConnection> connectionProvider)
         {
-            using (var conn = SqlConnectionFactory.Create(configuration.ConnectionStrings.SqlDbConnectionString))
+            using (var conn = connectionProvider.Create())
             {
                 await conn.OpenWithRetryAsync();
 

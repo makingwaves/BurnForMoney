@@ -5,7 +5,13 @@ using Microsoft.Extensions.Logging;
 
 namespace BurnForMoney.Functions.Presentation.Views
 {
-    public class PresentationEventsDispatcher
+    public interface IPresentationEventsDispatcher
+    {
+        Task DispatchActivityEvent(DomainEvent @event);
+        Task DispatchAthleteEvent(DomainEvent @event);
+    }
+
+    public class PresentationEventsDispatcher : IPresentationEventsDispatcher
     {
         private readonly string _sqlDbConnectionString;
         private readonly ILogger _log;
