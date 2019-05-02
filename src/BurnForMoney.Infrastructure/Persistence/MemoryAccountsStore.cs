@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using BurnForMoney.Infrastructure.Extensions;
 
 namespace BurnForMoney.Infrastructure.Persistence
 {
@@ -18,12 +19,12 @@ namespace BurnForMoney.Infrastructure.Persistence
 
         public Task<AccountEntity> GetAccountByActiveDirectoryId(Guid activeDirectoryId)
         {
-            return Task.FromResult(_accounts.SingleOrDefault(x => x.PartitionKey == activeDirectoryId.ToString("D")));
+            return Task.FromResult(_accounts.SingleOrDefault(x => x.PartitionKey == activeDirectoryId.ToUpperInvariant()));
         }
 
         public Task<AccountEntity> GetAccountById(Guid accountId)
         {
-            return Task.FromResult(_accounts.SingleOrDefault(x => x.RowKey == accountId.ToString("D")));
+            return Task.FromResult(_accounts.SingleOrDefault(x => x.RowKey == accountId.ToUpperInvariant()));
         }
 
         public async Task<bool> DeleteIfExistsAsync(Guid activeDirectoryId)
