@@ -23,5 +23,13 @@
     <PackageReference Include="RestSharp" Version="106.6.9" />
     
     <PackageReference Include="Swashbuckle.AspNetCore" Version="4.0.1" />
+	
   </ItemGroup>
+  <Target Name="CreateLocalDevSettingsfile" BeforeTargets="BeforeBuild">
+    <PropertyGroup>
+      <TimeStamp>$([System.DateTime]::Now.ToString(yyyyMMdd-HHmmss))</TimeStamp>
+    </PropertyGroup>
+    <!-- Create appsettings.Development.json if not exist -->
+    <Copy Condition="!Exists('appsettings.Development.json')" SourceFiles="appsettings.Development.Base.json" DestinationFiles="appsettings.Development.json" OverwriteReadOnlyFiles="True" />
+  </Target>
 </Project>

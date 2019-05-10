@@ -276,3 +276,4 @@ addons/azurite/data/
 /src/BurnForMoney.Functions.PublicApi/local.settings.json
 /src/BurnForMoney.Functions.Strava/local.settings.json
 /src/BurnForMoney.Functions/local.settings.json
+/src/BurnForMoney.ApiGateway/appsettings.Development.json
