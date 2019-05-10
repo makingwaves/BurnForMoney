@@ -32,8 +32,19 @@
     <None Update="proxies.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+		<None Update="local.settings.base.json">
+		<CopyToPublishDirectory>Never</CopyToPublishDirectory>
+		<DependentUpon>local.settings.json</DependentUpon>
+	</None>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\PublishProfiles\" />
   </ItemGroup>
+      <Target Name="CreateLocalSettingsfile" BeforeTargets="BeforeBuild">
+    <PropertyGroup>
+      <TimeStamp>$([System.DateTime]::Now.ToString(yyyyMMdd-HHmmss))</TimeStamp>
+    </PropertyGroup>
+    <!-- local.settings.json if not exist -->
+    <Copy Condition="!Exists('local.settings.json')" SourceFiles="local.settings.base.json" DestinationFiles="local.settings.json" OverwriteReadOnlyFiles="True" />
+  </Target>
 </Project>

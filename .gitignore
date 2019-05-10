@@ -270,3 +270,9 @@ src/**/*.css
 .vscode/settings.json
 addons/azurite/data/
 .vscode
+/src/BurnForMoney.Functions/local.settings.json
+/src/BurnForMoney.Functions.InternalApi/local.settings.json
+/src/BurnForMoney.Functions.Presentation/local.settings.json
+/src/BurnForMoney.Functions.PublicApi/local.settings.json
+/src/BurnForMoney.Functions.Strava/local.settings.json
+/src/BurnForMoney.Functions/local.settings.json
