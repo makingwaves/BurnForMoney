@@ -61,8 +61,6 @@ export default class AuthService {
             ? localStorage.getItem("redirectUri")
             : "/dashboard";
 
-
-        console.log('redirectUri', redirectUri);
         window.location.replace(redirectUri)   
      
     };
