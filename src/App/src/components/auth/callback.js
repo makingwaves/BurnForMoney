@@ -1,11 +1,8 @@
 import React from "react";
-import { AuthConsumer } from "../../providers/authProvider";
+import { oidcAuthProvider } from '../../providers/oidcAuthProvider';
 
-export const Callback = () => (
-    <AuthConsumer>
-        {({ signinRedirectCallback }) => {
-            signinRedirectCallback();
+
+export const Callback = () =>  {
+            oidcAuthProvider.signinRedirectCallback();
             return <span>loading callback</span>;
-        }}
-    </AuthConsumer>
-);
+        };

@@ -8,7 +8,9 @@ import iconDuration from 'static/img/icon-duration.svg';
 
 import * as athletes_api from "../../../../api/endpoints/internal/athletes";
 import * as categories_api from "../../../../api/endpoints/internal/categories";
-import {AuthManager} from "../../../../components/Authentication/AuthManager"
+
+import {AuthService} from "../../../../services/authService"
+
 
 
 class NewActivity extends Component {
@@ -26,7 +28,7 @@ class NewActivity extends Component {
       movingTimeInMinutes: 0
     };
 
-    this._authManager = new AuthManager();
+  
   }
   setCategory = (e) => {
     if(this.categoriesWithDistance.includes(e.target.getAttribute('data-category'))){
@@ -174,7 +176,7 @@ class NewActivity extends Component {
         (error) => {this.setState({categories: null}); console.error('Error:', error); }
       );
 
-      this._authManager.getUser().then(user => {
+      AuthService.getUser().then(user => {
         if(user)
           this.setState({"user": user});
       });

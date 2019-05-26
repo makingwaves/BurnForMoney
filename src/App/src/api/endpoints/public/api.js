@@ -1,5 +1,5 @@
 import axios from 'axios'
-import auth from '../../../services/authService';
+import { AuthService } from '../../../services/authService'
 
 function getApiOptions() {
     const apiUrl = process.env.REACT_APP_API_URL;
@@ -12,8 +12,8 @@ function getApiOptions() {
         },
     };
 
-    if (auth.isAuthenticated()) {
-        options.headers['Authorization'] = `Bearer ${auth.getAuthToken()}`
+    if (AuthService.isAuthenticated()) {
+        options.headers['Authorization'] = `Bearer ${AuthService.getAuthToken()}`
        
   
     }
@@ -26,7 +26,7 @@ export const api = axios.create(getApiOptions());
 api.interceptors.response.use(
     response => response.data,
     error => {
-        if (error.response && error.response.status === 401 && auth.isAuthenticated()) {
+        if (error.response && error.response.status === 401 && AuthService.isAuthenticated()) {
             console.log(error);
         } else if (error.response && error.response.status >= 500) {
             console.log(error);

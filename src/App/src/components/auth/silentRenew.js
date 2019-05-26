@@ -1,10 +1,8 @@
 import React from "react";
-import { AuthConsumer } from "../../providers/authProvider";
-export const SilentRenew = () => (
-    <AuthConsumer>
-        {({ signinSilentCallback }) => {
-            signinSilentCallback();
+
+import { oidcAuthProvider } from '../../providers/oidcAuthProvider';
+
+export const SilentRenew = () => {
+            oidcAuthProvider.signinSilentCallback();
             return <span>loading renew</span>;
-        }}
-    </AuthConsumer>
-);
+        };

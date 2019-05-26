@@ -185,7 +185,7 @@ class AppDashboard extends Component {
                 <IconNewActivity className="NavigationItem-icon" {...(this.state.windowWidth <= 600 && { fill: '#EDA697' })} />
                 <span className="NavigationItem-text">Add activity</span>
               </Link>
-            </li>
+            </li>           
           </ul>
         </aside>
 

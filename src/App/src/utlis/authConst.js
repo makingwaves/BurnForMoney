@@ -7,7 +7,5 @@ export const IDENTITY_CONFIG = {
     post_logout_redirect_uri: window.location.origin,
     response_type: 'id_token token',
     scope: 'openid'
-
-
  }
 

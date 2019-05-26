@@ -4,7 +4,7 @@ import * as athletes_api from "../../../../api/endpoints/internal/athletes";
 import './StravaAuth.css';
 import logo from 'static/img/logo.svg';
 
-import {AuthManager} from "../../../../components/Authentication/AuthManager"
+import { AuthService } from "../../../../services/authService"
 
 class StravaAuth extends Component {
 
@@ -25,14 +25,13 @@ class StravaAuth extends Component {
       this.state = {
         strava_auth_finished: false
       };
-
-      this._authManager = new AuthManager();
+   
     }
 
   componentDidMount(){
     let code = this.getParameterByName("code");
 
-    this._authManager.getUser()
+    AuthService.getUser()
     .then(user =>
       athletes_api.authorizeWithStrava(user.profile.sub, code))
     .then((r)=>{

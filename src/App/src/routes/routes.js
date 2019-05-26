@@ -1,7 +1,6 @@
 import * as React from "react";
 import { Route, Switch } from "react-router-dom";
 
-
 import { Callback } from "../components/auth/callback";
 import { PrivateRoute } from "./privateRoute";
 import { SilentRenew } from "../components/auth/silentRenew";
