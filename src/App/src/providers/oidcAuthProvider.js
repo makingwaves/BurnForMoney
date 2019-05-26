@@ -45,8 +45,8 @@ class OidcAuthProvider {
         return access_token;
     }
 
-    getUser() {
-        return this._userManager.getUser();
+    getUser = () => {
+        return this.userManager.getUser();
     }
 
     signinRedirectCallback = () => {
@@ -83,6 +83,10 @@ class OidcAuthProvider {
     signinSilentCallback = () => {
         this.userManager.signinSilentCallback();
     };
+
+   signoutRedirect = () => {
+        this.userManager.signoutRedirect();
+    }
 
 
 }

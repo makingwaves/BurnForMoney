@@ -43,6 +43,7 @@ import * as athletes_api from "../../api/endpoints/internal/athletes"
 import * as categories_api from "../../api/endpoints/internal/categories";
 import * as ranking_api from "../../api/endpoints/internal/ranking";
 
+
 class AppDashboard extends Component {
   mobileViewport = window.matchMedia("screen and (max-width: 600px)");
   resizeTimeout;
@@ -185,7 +186,7 @@ class AppDashboard extends Component {
                 <IconNewActivity className="NavigationItem-icon" {...(this.state.windowWidth <= 600 && { fill: '#EDA697' })} />
                 <span className="NavigationItem-text">Add activity</span>
               </Link>
-            </li>           
+            </li>                 
           </ul>
         </aside>
 

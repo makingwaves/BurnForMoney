@@ -27,8 +27,8 @@ api.interceptors.response.use(
     response => response.data,
     error => {
         if (error.response && error.response.status === 401 && AuthService.isAuthenticated()) {
-            AuthService.logout();
-            console.log(error);
+            //AuthService.login();
+            console.log('logout',error);
         } else if (error.response && error.response.status >= 500) {
             console.log(error);
         }

@@ -176,10 +176,13 @@ class NewActivity extends Component {
         (error) => {this.setState({categories: null}); console.error('Error:', error); }
       );
 
-      AuthService.getUser().then(user => {
-        if(user)
-          this.setState({"user": user});
-      });
+      AuthService.getUser()
+      .then(user => {
+        if(user)     
+          this.setState({ "user": user});
+      })
+      
+       
   }
 }
 export default NewActivity;
