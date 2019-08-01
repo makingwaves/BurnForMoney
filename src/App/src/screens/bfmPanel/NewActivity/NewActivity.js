@@ -5,10 +5,22 @@ import DashboardHeader from '../DashboardHeader/DashboardHeader.js';
 
 import iconDistance from 'static/img/icon-distance.svg';
 import iconDuration from 'static/img/icon-duration.svg';
+import gifBravo from 'static/gif/bravo2.gif';
+import gifDontKnow from 'static/gif/dont-know.gif';
 
 import authFetch from "../../../components/Authentication/AuthFetch"
 import {AuthManager} from "../../../components/Authentication/AuthManager"
 
+const customStyles = {
+  content : {
+    top                   : '50%',
+    left                  : '52%',
+    right                 : 'auto',
+    bottom                : 'auto',
+    marginRight           : '-50%',
+    transform             : 'translate(-52%, -50%)'
+  }
+};
 
 class NewActivity extends Component {
   api_url = process.env.REACT_APP_DASHBOARD_API_URL;
@@ -23,11 +35,13 @@ class NewActivity extends Component {
       category: '',
       distanceInKiloMeteres: '',
       movingTimeInHours: 0,
-      movingTimeInMinutes: 0
+      movingTimeInMinutes: 0,
+      addingActivityStatus: 'normal'
     };
 
     this._authManager = new AuthManager();
   }
+
   setCategory = (e) => {
     if(this.categoriesWithDistance.includes(e.target.getAttribute('data-category'))){
       this.setState({
@@ -57,10 +71,10 @@ class NewActivity extends Component {
     console.log("AthleteId: ", this.state.athleteId);
 
     if(this.validate() ){
-      authFetch(`${this.api_url}api/athletes/${this.state.user.profile.sub}/activities`, 'POST', JSON.stringify(newEntry)).
-      then(
-          (result) => { console.log('RESULT:', result)},
-          (error) => { console.error('Error:', error) }
+      authFetch(`${this.api_url}api/athletes/${this.state.user.profile.sub}/activities`, 'POST', JSON.stringify(newEntry))
+      .then(
+          (result) => { console.log('RESULT:', result); this.setState({addingActivityStatus: 'success'})},
+          (error) => { console.log('Something went wrong with adding new activity', error); this.setState({addingActivityStatus: 'fail'})}
       );
     }
   };
@@ -70,7 +84,7 @@ class NewActivity extends Component {
     let distanceInMeters = parseFloat(this.state.distanceInKiloMeteres, 10)*1000;
     let isValid = true;
 
-    var elements = document.getElementsByClassName('error');``
+    var elements = document.getElementsByClassName('error');
     while(elements.length > 0){
         elements[0].parentNode.removeChild(elements[0]);
     }
@@ -108,10 +122,10 @@ class NewActivity extends Component {
       <React.Fragment>
         <DashboardHeader header="Add activity" />
         <div className="Dashboard-content NewActivity">
-          <div className="NewActivity__form">
+          <div className={`NewActivity__form ${this.state.addingActivityStatus === 'normal' ? '' : 'hide'}`}>
             <div className="NewActivity__form-row" id="activityAthlete">
               <label htmlFor="activityAthletesName" className="NewActivity__form-label">I am</label>
-              <p>{this.state.user ? this.state.user.profile.name : '?'}</p>
+              <span>{this.state.user ? this.state.user.profile.name : '?'}</span>
             </div>
 
             <div className="NewActivity__form-row" id="activityDateDiv">
@@ -161,7 +175,21 @@ class NewActivity extends Component {
               <input type="button" value="Save" className="Button NewActivity__form-save" onClick={this.addNewActivity}/>
             </div>
           </div>
-        </div>
+
+          <div className={`NewActivity__saved ${this.state.addingActivityStatus === 'success' ? '' : 'hide'}`}>
+            <h3 className="NewActivity__saved-header">Great job!</h3>
+            <p className="NewActivity__saved-text">Your activity has been saved.</p>
+            <img className="NewActivity__saved-gif" src={gifBravo} alt="bravo" />
+            <button className="Button NewActivity__saved-button" onClick={e => this.setState({addingActivityStatus: 'normal'})}>Add another</button>
+          </div>
+
+          <div className={`NewActivity__saved ${this.state.addingActivityStatus === 'fail' ? '' : 'hide'}`}>
+            <h3 className="NewActivity__saved-header">Something went wrong!</h3>
+            <p className="NewActivity__saved-text">Your activity hasn&apos;t been saved.</p>
+            <img className="NewActivity__saved-gif" src={gifDontKnow} alt="bravo" />
+            <button className="Button NewActivity__saved-button" onClick={e => this.setState({addingActivityStatus: 'normal'})}>Try again</button>
+          </div>
+      </div>
       </React.Fragment>
     );
   }

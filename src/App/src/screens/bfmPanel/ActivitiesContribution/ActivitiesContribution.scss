@@ -1,0 +1,69 @@
+@import "static/style/variables.scss";
+
+.ActivitiesContribution{
+  background-color: #fff;
+  box-shadow: $dashboard-shadow;
+  padding: 10px 15px;
+  box-sizing: border-box;
+  height: 100%;
+  display: grid;
+  grid-template-areas:
+    "header headerBest"
+    "list list";
+  grid-template-columns: 1fr 220px;
+  grid-column-gap: 20px;
+
+  &-header{
+    font-size: 18px;
+    font-weight: 500;
+    grid-area: header;
+  }
+  &-headerBest{
+    font-size: 18px;
+    font-weight: 500;
+    grid-area: headerBest;
+  }
+
+  &-list{
+    grid-area: list;
+    list-style: none;
+  }
+
+  &-item{
+    display: grid;
+    grid-template-areas:
+      "progress best"
+    grid-template-columns: 1fr 220px;
+    grid-column-gap: 20px;
+
+    &__progress{}
+    &__category{
+      font-size: 14px;
+      font-family: 'AftenScreen';
+    }
+  }
+
+  &-bar{
+    grid-area: progressBar;
+    background-color: #F5F6FA;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+    width:100%;
+    height:20px;
+    border-radius: 20px;
+    overflow: hidden;
+    &Progress{
+      width:50%;
+      height: 100%;
+      border-radius: 20px;
+      background: linear-gradient(to right, #EDA697 0%, #FCC5BA 100%)
+    }
+  }
+
+  &-finishingLine{
+    grid-area: finishingLine;
+    width:50px;
+    img{
+      width: 100%;
+    }
+  }
+}

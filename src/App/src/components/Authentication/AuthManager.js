@@ -1,4 +1,4 @@
-import { UserManager, UserManagerSettings, User } from 'oidc-client';
+import { UserManager } from 'oidc-client';
 
 export class AuthManager {
     constructor(){
@@ -14,19 +14,19 @@ export class AuthManager {
 
         this._userManager = new UserManager(settings);
     }
-    
+
     getUser(){
         return this._userManager.getUser();
     }
-    
+
     login(){
         return this._userManager.signinRedirect();
     }
-    
+
     renewToken(){
         return this._userManager.signinSilent();
     }
-    
+
     logout(){
         return this._userManager.signoutRedirect();
     }

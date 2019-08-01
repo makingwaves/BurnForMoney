@@ -7,6 +7,7 @@ import RankingList from '../RankingList/RankingList.js';
 import RankingFilter from '../RankingFilter/RankingFilter.js';
 import PointsAndMoney from '../PointsAndMoney/PointsAndMoney.js';
 import ProgressBonus from '../ProgressBonus/ProgressBonus.js';
+import ActivitiesContribution from '../ActivitiesContribution/ActivitiesContribution.js';
 
 const Dashboard = (props) =>{
   return (
@@ -42,7 +43,7 @@ const Dashboard = (props) =>{
         </div>
 
         <div className="DashboardGridItem DashboardGridItem-contribution">
-          Activities Contribution
+            <ActivitiesContribution />
         </div>
       </div>
 

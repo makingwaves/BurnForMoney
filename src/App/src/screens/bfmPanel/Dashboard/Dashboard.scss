@@ -30,6 +30,11 @@
   }
   &-main{
     grid-area: main;
+    height: 100vh;
+    overflow-y: auto;
+    @media only screen and (max-width: 600px) {
+      height: calc(100vh - 50px);
+    }
   }
   &-logo{
     @media only screen and (max-width: 600px) {

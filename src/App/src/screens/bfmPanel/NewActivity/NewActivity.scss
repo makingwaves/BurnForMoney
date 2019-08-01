@@ -3,6 +3,15 @@
 .NewActivity{
   max-width:590px;
   &__form{
+    overflow:hidden;
+    height:auto;
+    opacity:1;
+    transition: height 0s, opacity 1s;
+    &.hide{
+      opacity:0;
+      height:0;
+    }
+
     &-row{
       margin-bottom: 10px;
     }
@@ -65,6 +74,9 @@
       }
       &.Duration{
         margin-right: 10px;
+        &+.Duration{
+          margin-right: 0;
+        }
         input[type="number"]{
           width: 110px;
           padding-right: 55px;
@@ -174,4 +186,43 @@
     }
   }
 
+  &__saved{
+    overflow:hidden;
+    text-align: center;
+    height:auto;
+    opacity:1;
+    transition: height 0s, opacity 500ms;
+    &.hide{
+      opacity:0;
+      height:0;
+    }
+
+    &-header{
+      font-size: 36px;
+      line-height: 1.125;
+      font-weight: 500;
+      margin: 0 0 0px;
+    }
+    &-text{
+      font-size: 18px;
+      font-weight: 500;
+      margin: 0 0 30px;
+    }
+    &-gif{
+      display: block;
+      margin: 0 auto;
+    }
+    &-button{
+      display: inline-block;
+      font-size: 18px;
+      font-weight: bold;
+      font-family: "Volte2";
+      color: $pink-salmon;
+      border: 3px solid $pink-salmon;
+      background: #fff;
+      outline:none;
+      padding: 10px 40px;
+      margin: 30px 0;
+    }
+  }
 }

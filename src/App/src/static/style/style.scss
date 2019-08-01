@@ -1,3 +1,4 @@
+@import "static/style/variables.scss";
 @import "~slick-carousel/slick/slick.css";
 @import "~slick-carousel/slick/slick-theme.css";
 
@@ -10,6 +11,7 @@ body {
 }
 button{
   border: none;
+  cursor: pointer;
 }
 
 @font-face {
@@ -92,4 +94,21 @@ h5{
 
 .no-break-space{
   white-space: nowrap;
+}
+
+.Modal{
+  &__close {
+    position: absolute;
+    display: block;
+    background-color: $primary-color;
+    background-image: url('~static/img/x.svg');
+    background-repeat: no-repeat;
+    background-position: center;
+    width: 42px;
+    height: 42px;
+    top:0px;
+    right: 0px;
+    z-index: 100;
+    cursor: pointer;
+  }
 }
