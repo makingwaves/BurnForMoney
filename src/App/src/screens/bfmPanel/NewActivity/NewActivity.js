@@ -11,17 +11,6 @@ import gifDontKnow from 'static/gif/dont-know.gif';
 import authFetch from "../../../components/Authentication/AuthFetch"
 import {AuthManager} from "../../../components/Authentication/AuthManager"
 
-const customStyles = {
-  content : {
-    top                   : '50%',
-    left                  : '52%',
-    right                 : 'auto',
-    bottom                : 'auto',
-    marginRight           : '-50%',
-    transform             : 'translate(-52%, -50%)'
-  }
-};
-
 class NewActivity extends Component {
   api_url = process.env.REACT_APP_DASHBOARD_API_URL;
   categoriesWithDistance = ['Run', 'Ride', 'Walk'];
@@ -78,6 +67,19 @@ class NewActivity extends Component {
       );
     }
   };
+
+  resetForm = () => {
+    this.setState({
+      showDistance: false,
+      startDate: new Date().toISOString().substr(0, 10),
+      category: '',
+      distanceInKiloMeteres: '',
+      movingTimeInHours: 0,
+      movingTimeInMinutes: 0,
+      addingActivityStatus: 'normal'
+    });
+  }
+
 
   validate = () => {
     let timeInMinutes = (this.state.movingTimeInHours) * 60 + (this.state.movingTimeInMinutes)*1;
@@ -180,7 +182,7 @@ class NewActivity extends Component {
             <h3 className="NewActivity__saved-header">Great job!</h3>
             <p className="NewActivity__saved-text">Your activity has been saved.</p>
             <img className="NewActivity__saved-gif" src={gifBravo} alt="bravo" />
-            <button className="Button NewActivity__saved-button" onClick={e => this.setState({addingActivityStatus: 'normal'})}>Add another</button>
+            <button className="Button NewActivity__saved-button" onClick={e => this.resetForm()}>Add another</button>
           </div>
 
           <div className={`NewActivity__saved ${this.state.addingActivityStatus === 'fail' ? '' : 'hide'}`}>
