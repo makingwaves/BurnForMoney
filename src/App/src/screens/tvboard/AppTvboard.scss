@@ -105,4 +105,20 @@
             }
         }
     }
+    &-ProgressBonus{
+      margin: 0px 0px 20px 0px;
+      width: 430px;
+      height: 150px;
+      position: relative;
+      .ProgressBonus{
+        padding: 30px;
+        grid-template-areas:
+          "motivationText finishingLine"
+          "progressBar progressBar";
+        &-motivationText{
+          font-size:18px;
+          line-height: 1.4;
+        }
+      }
+    }
 }

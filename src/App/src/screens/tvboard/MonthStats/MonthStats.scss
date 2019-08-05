@@ -4,27 +4,36 @@
     &-card {
         margin: 0px 0px 20px 0px;
         background-color: #fff;
-
         box-shadow: 1px 2px 5px 0 rgba(0,0,0,0.1);
-
         width: 430px;
         height: 150px;
-
-        &-exposed {
-            background-color: #FFDCD5;
-        }
+        position: relative;
 
         &-val {
-            font-size: 51px;
-            font-weight: bold;
-            padding: 30px 0px 0px 30px;
+            font-size: 54px;
+            font-family: "Volte2";
+            line-height: 1;
+            font-weight: 600;
+            padding: 36px 0px 0px 30px;
+            .currency{
+              font-size: 18px;
+            }
         }
 
         &-txt {
             font-size: 18px;
-            font-weight: 600;
+            font-weight: normal;
+            font-family: "AftenScreen";
             padding: 0px 0px 0px 30px;
-            line-height: 23px;
+            line-height: 25px;
+        }
+        &-img{
+          width:70px;
+          position: absolute;
+          right: 30px;
+          top: 0;
+          bottom: 0;
+          margin: auto;
         }
     }
 }

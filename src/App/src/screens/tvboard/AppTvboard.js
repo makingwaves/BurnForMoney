@@ -6,6 +6,7 @@ import MonthCategoryStats from "./MonthStats/MonthCategoryStats";
 import MonthSummaryStats from "./MonthStats/MonthSummaryStats";
 
 import RankingList from '../bfmPanel/RankingList/RankingList.js';
+import ProgressBonus from '../bfmPanel/ProgressBonus/ProgressBonus.js';
 import { withNamespaces } from 'react-i18next';
 
 import authFetch from "../../components/Authentication/AuthFetch"
@@ -50,6 +51,9 @@ class AppTvboard extends Component {
                       {t("TV_Summary")}
                     </h4>
                     <div className="Tvboard__layout-board__summary-content">
+                      <div className="Tvboard-ProgressBonus">
+                        <ProgressBonus />
+                      </div>
                       <MonthSummaryStats data={this.state.bfmStats}/>
                     </div>
                   </div>
