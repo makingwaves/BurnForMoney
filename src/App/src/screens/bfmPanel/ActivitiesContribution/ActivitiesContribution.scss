@@ -6,41 +6,51 @@
   padding: 10px 15px;
   box-sizing: border-box;
   height: 100%;
-  display: grid;
-  grid-template-areas:
-    "header headerBest"
-    "list list";
-  grid-template-columns: 1fr 220px;
-  grid-column-gap: 20px;
 
   &-header{
     font-size: 18px;
     font-weight: 500;
-    grid-area: header;
-  }
-  &-headerBest{
-    font-size: 18px;
-    font-weight: 500;
-    grid-area: headerBest;
   }
 
   &-list{
-    grid-area: list;
+    padding: 0;
+    margin:30px 0;
     list-style: none;
   }
 
   &-item{
-    display: grid;
-    grid-template-areas:
-      "progress best"
-    grid-template-columns: 1fr 220px;
-    grid-column-gap: 20px;
-
-    &__progress{}
+    display: flex;
+    align-items: center;
+    margin-top: 20px;
     &__category{
       font-size: 14px;
       font-family: 'AftenScreen';
+      width:25%;
+
+      &__icon{
+        max-width: 24px;
+        max-height: 24px;
+        vertical-align: middle;
+        margin-right: 10px;
+      }
     }
+    &__progress{
+      width:60%;
+      &Bar{
+        height: 20px;
+        border-radius: 10px;
+        background: rgb(180,230,255);
+        background: linear-gradient(90deg, rgba(0,177,255,1) 0%, rgba(180,230,255,1) 100%);
+      }
+    }
+
+    &__stats{
+      width:15%;
+      font-size: 34px;
+      font-weight: bold;
+      text-align: right;
+    }
+
   }
 
   &-bar{

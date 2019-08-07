@@ -43,7 +43,9 @@ const Dashboard = (props) =>{
         </div>
 
         <div className="DashboardGridItem DashboardGridItem-contribution">
-            <ActivitiesContribution />
+            <ActivitiesContribution
+              categories={props.categories}
+             />
         </div>
       </div>
 

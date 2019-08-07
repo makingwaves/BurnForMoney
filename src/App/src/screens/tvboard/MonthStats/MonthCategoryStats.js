@@ -65,13 +65,13 @@ class MonthCategoryStats extends Component {
 
             frequentActivitiesList = mostFrequentActivities.map( i =>
                 <div className="MonthCategoryStats__category" key={i.category}>
-                <div className="MonthCategoryStats__category__icon">
-                    <img src={this.setIcon(i.category)} alt={i.category} />
-                </div>
-                <div className="MonthCategoryStats__category__progress">
-                    <div className="MonthCategoryStats__category__progress-bar" style={{ width : (i.points / thisMonthPoints)*100 + '%' }}></div>
-                    <div className="MonthCategoryStats__category__progress-value">{i.points} pt</div>
-                </div>
+                  <div className="MonthCategoryStats__category__icon">
+                      <img src={this.setIcon(i.category)} alt={i.category} />
+                  </div>
+                  <div className="MonthCategoryStats__category__progress">
+                      <div className="MonthCategoryStats__category__progress-bar" style={{ width : (i.points / thisMonthPoints)*100 + '%' }}></div>
+                      <div className="MonthCategoryStats__category__progress-value">{i.points} pt</div>
+                  </div>
                 </div>
             );
         }
