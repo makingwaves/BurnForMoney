@@ -54,14 +54,55 @@
   &Grid{
     display: grid;
     grid-template-columns: 3fr 2fr;
-    grid-template-rows: 75px auto;
+    grid-template-rows: auto;
     grid-template-areas:
-      "progress results"
-      "contribution ranking";
+      "summary ranking";
     grid-column-gap: 40px;
-    grid-row-gap: 30px;
 
     &Item{
+      margin-bottom:40px;
+
+      &-header{
+        display:flex;
+        padding-bottom: 20px;
+        align-items: center;
+        justify-content: space-between;
+        &__title{
+          font-size: 18px;
+          font-weight: 600;
+          margin: 0;
+        }
+        &__link{
+          font-size: 14px;
+          text-decoration:underline;
+          font-family: 'AftenScreen';
+          color:#000;
+          &:after{
+            content:'';
+            display: inline-block;
+            width: 13px;
+            height: 12px;
+            margin-left: 5px;
+            background-image: url('~static/img/arrowRightPink.svg');
+            vertical-align: middle;
+          }
+        }
+      }
+
+      &-summary{
+        grid-area: summary;
+      }
+      &-ranking{
+        grid-area: ranking;
+
+        &Content{
+          padding:20px;
+          background: #fff;
+          box-shadow: $dashboard-shadow;
+        }
+      }
+
+
       &-progress{
         grid-area: progress;
       }
@@ -71,39 +112,8 @@
       &-contribution{
         grid-area: contribution;
       }
-      &-ranking{
-        grid-area: ranking;
 
-        &Header{
-          display:flex;
-          padding-bottom: 20px;
-          align-items: center;
-          justify-content: space-between;
-          &-title{
-            margin: 0;
-          }
-          &-link{
-            font-size: 14px;
-            text-decoration:underline;
-            font-family: 'AftenScreen';
-            color:#000;
-            &:after{
-              content:'';
-              display: inline-block;
-              width: 13px;
-              height: 12px;
-              margin-left: 5px;
-              background-image: url('~static/img/arrowRightPink.svg');
-              vertical-align: middle;
-            }
-          }
-        }
-        &Content{
-          padding:20px;
-          background: #fff;
-          box-shadow: $dashboard-shadow;
-        }
-      }
+
     }
   }
 

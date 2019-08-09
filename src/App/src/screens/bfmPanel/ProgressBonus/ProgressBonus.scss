@@ -29,12 +29,50 @@
     height:20px;
     border-radius: 20px;
     overflow: hidden;
+    position: relative;
+
+
     &Progress{
       width:50%;
       height: 100%;
       border-radius: 20px;
-      background: linear-gradient(to right, #EDA697 0%, #FCC5BA 100%)
+      background: linear-gradient(to right, #EDA697 0%, #FCC5BA 100%);
+      position: absolute;
+      z-index: 2;
+      left:0px;
+      top: 0px;
+
+      &:after{
+        content:'';
+        background: url('~static/img/icon-run.svg');
+        display: block;
+        height: 20px;
+        width: 19px;
+        position: absolute;
+        right:3px;
+        top: 0px;
+      }
     }
+    &CurrentValue{
+      position: absolute;
+      top:4px;
+      left: 8px;
+      font-size:14px;
+      font-weight: 500;
+      line-height: 1;
+      color:#fff;
+    }
+    &MaxValue{
+      position: absolute;
+      z-index: 1;
+      top:4px;
+      right: 8px;
+      font-size:14px;
+      font-weight: 500;
+      line-height: 1;
+      color:$light-gray;
+    }
+
   }
 
   &-finishingLine{

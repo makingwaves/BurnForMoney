@@ -48,7 +48,6 @@ const ActivitiesContribution = (props) =>{
 
   return (
     <div className="ActivitiesContribution">
-      <p className="ActivitiesContribution-header">Top Activities Contribution</p>
       <ul className="ActivitiesContribution-list">
         {topFiveActivitiesContribution.topActivities.map( item => <ActivitiesContributionItem key={item.category} item={item} progress={progressBar(item.percent)} iconSVG={addIconElement(item.category)} />)}
       </ul>

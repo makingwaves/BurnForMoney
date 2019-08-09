@@ -3,28 +3,13 @@
 .PointsAndMoney{
   display: grid;
   grid-template-columns: 1fr 1fr;
-  grid-column-gap: 10px;
+  grid-column-gap: 50px;
 
   &-container{
     background-color: #fff;
     box-shadow: $dashboard-shadow;
     padding: 10px 15px;
-  }
-  &-score:after{
-    content: '';
-    width:24px;
-    height: 24px;
-    margin-left:10px;
-    display: inline-block;
-    background-size: cover;
-    background-repeat: none;
-
-    .PointsAndMoney-Points &{
-      background-image: url("~static/img/medal.svg");
-    }
-    .PointsAndMoney-Money &{
-      background-image: url("~static/img/money.svg");
-    }
+    position: relative;
   }
 
   &-value{
@@ -42,5 +27,13 @@
     line-height: 1;
     font-family: "AftenScreen";
     margin: 0;
+  }
+  &-icon{
+    width:50px;
+    position: absolute;
+    right: 15px;
+    top: 0;
+    bottom: 0;
+    margin: auto;
   }
 }

@@ -14,20 +14,36 @@ const Dashboard = (props) =>{
     <React.Fragment>
       <DashboardHeader header="Dashboard" />
       <div className="Dashboard-content DashboardGrid">
+        <div className="DashboardGridItem DashboardGridItem-summary">
+          <div className="DashboardGridItem-header">
+            <h4 className="DashboardGridItem-header__title">Summary</h4>
+          </div>
 
-        <div className="DashboardGridItem DashboardGridItem-progress">
-          <ProgressBonus />
+          <div className="DashboardGridItem DashboardGridItem-progress">
+            <ProgressBonus />
+          </div>
+
+          <div className="DashboardGridItem DashboardGridItem-results">
+            <PointsAndMoney />
+          </div>
+
+          <div className="DashboardGridItem-header">
+            <h4 className="DashboardGridItem-header__title">Top Activities Contribution</h4>
+          </div>
+          <div className="DashboardGridItem DashboardGridItem-contribution">
+              <ActivitiesContribution
+                categories={props.categories}
+               />
+          </div>
         </div>
 
-        <div className="DashboardGridItem DashboardGridItem-results">
-          <PointsAndMoney />
-        </div>
 
         <div className="DashboardGridItem DashboardGridItem-ranking">
-          <div className="DashboardGridItem-rankingHeader">
-            <h4 className="DashboardGridItem-rankingHeader-title">Rank</h4>
-            <Link to="/dashboard/participants" className="DashboardGridItem-rankingHeader-link">All participants</Link>
+          <div className="DashboardGridItem-header">
+            <h4 className="DashboardGridItem-header__title">Rank</h4>
+            <Link to="/dashboard/participants" className="DashboardGridItem-header__link">All participants</Link>
           </div>
+
           <div className="DashboardGridItem DashboardGridItem-rankingContent">
             <RankingFilter
               rankingCategory={props.rankingCategory}
@@ -42,11 +58,7 @@ const Dashboard = (props) =>{
           </div>
         </div>
 
-        <div className="DashboardGridItem DashboardGridItem-contribution">
-            <ActivitiesContribution
-              categories={props.categories}
-             />
-        </div>
+
       </div>
 
     </React.Fragment>
