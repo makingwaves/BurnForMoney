@@ -4,6 +4,23 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   grid-column-gap: 50px;
+  position: relative;
+  &:after{
+    content:'+';
+    position: absolute;
+    margin:auto;
+    top:0;
+    bottom: 0;
+    right:0;
+    left:0;
+    width: 20px;
+    text-align: center;
+    height: 50%;
+    line-height: 1;
+    font-size: 34px;
+    font-weight: bold;
+    font-family: "AftenScreen";
+  }
 
   &-container{
     background: rgb(180,230,255);
