@@ -6,6 +6,7 @@ import DashboardHeader from '../DashboardHeader/DashboardHeader.js';
 import RankingList from '../RankingList/RankingList.js';
 import RankingFilter from '../RankingFilter/RankingFilter.js';
 import PointsAndMoney from '../PointsAndMoney/PointsAndMoney.js';
+import TimeAndDistance from '../TimeAndDistance/TimeAndDistance.js';
 import ProgressBonus from '../ProgressBonus/ProgressBonus.js';
 import ActivitiesContribution from '../ActivitiesContribution/ActivitiesContribution.js';
 
@@ -25,6 +26,10 @@ const Dashboard = (props) =>{
 
           <div className="DashboardGridItem DashboardGridItem-results">
             <PointsAndMoney />
+          </div>
+
+          <div className="DashboardGridItem DashboardGridItem-results">
+            <TimeAndDistance />
           </div>
 
           <div className="DashboardGridItem-header">
@@ -50,7 +55,7 @@ const Dashboard = (props) =>{
               setRankinkCategory={props.setRankinkCategory}
               categories={props.categories}
             />
-            <h4 className="RankingCategory">{props.rankingCategory}</h4>
+            <h4 className="RankingListCategory">{props.rankingCategory}</h4>
             <RankingList
               ranking={props.ranking}
               rankingLoading={props.rankingLoading}

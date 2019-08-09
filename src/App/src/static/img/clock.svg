@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="52px" height="52px" viewBox="0 0 52 52" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 56 (81588) - https://sketch.com -->
+    <title>Group</title>
+    <desc>Created with Sketch.</desc>
+    <g id="BFM-Dashboard" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round">
+        <g id="Dashboard--MVP" transform="translate(-463.000000, -457.000000)" stroke="#FFFFFF">
+            <g id="Group-10" transform="translate(215.000000, 439.000000)">
+                <g id="Group" transform="translate(249.000000, 19.000000)">
+                    <g id="Group-14">
+                        <path d="M50,25 C50,38.8086957 38.8043478,50 25,50 C11.1869565,50 0,38.8086957 0,25 C0,11.1913043 11.1869565,0 25,0 C38.8043478,0 50,11.1913043 50,25 Z" id="Stroke-1"></path>
+                        <polyline id="Stroke-3" points="26.0869565 13.0434783 26.0869565 25 39.1304348 36.9565217"></polyline>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

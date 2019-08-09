@@ -1,12 +1,14 @@
 @import "static/style/variables.scss";
 
-.PointsAndMoney{
+.TimeAndDistance{
   display: grid;
   grid-template-columns: 1fr 1fr;
   grid-column-gap: 50px;
 
   &-container{
-    background-color: #fff;
+    background: rgb(180,230,255);
+    background: linear-gradient(90deg, rgba(0,177,255,1) 0%, rgba(180,230,255,1) 100%);
+    color: #fff;
     box-shadow: $dashboard-shadow;
     padding: 15px 15px;
     position: relative;
@@ -20,6 +22,7 @@
     font-size:18px;
     font-weight: 600;
     margin-left:5px;
+    margin-right: 10px;
     text-transform: uppercase;
   }
   &-description{

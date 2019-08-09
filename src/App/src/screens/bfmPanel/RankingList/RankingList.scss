@@ -4,6 +4,12 @@
   list-style: none;
   padding: 0;
   margin: 0;
+
+  &Category{
+    font-size: 18px;
+    font-weight: 600;
+  }
+
   &Item{
     height: 50px;
     margin-bottom: 10px;
